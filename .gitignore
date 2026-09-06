@@ -1,0 +1,21 @@
+# Секреты. Токен бота и ключ Anthropic — никогда в репозиторий.
+.env
+
+# Рабочие данные: база постов и отрисованные карточки
+data/
+webapp/_probe.html
+assets/stream_card.png
+.venv/
+__pycache__/
+*.pyc
+deploy/ключи/
+deploy/.env.сервер
+
+# Служебное от Vercel CLI: рядом с ним лежит и его токен
+vercel/.vercel/
+vercel/.env.local
+
+# Сессии Telegram-аккаунта: это доступ к переписке, не к боту
+*.session
+
+.DS_Store

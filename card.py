@@ -1,0 +1,1934 @@
+# -*- coding: utf-8 -*-
+"""Рисует карточку поста: вёрстка → снимок безголовым Chrome.
+
+Почему браузер, а не генерация картинки нейросетью: на карточке точный текст,
+а модели врут в кириллице. И почему не Pillow: тут нужны переносы, выравнивание
+и шрифт с характером — браузер это умеет из коробки, Pillow пришлось бы учить.
+"""
+
+import html
+import json
+import re
+import secrets
+import subprocess
+import tempfile
+import time
+from pathlib import Path
+
+import config
+
+ШРИФТЫ = """
+/* Шрифты лежат в проекте, а не тянутся из интернета: на сервере каждая
+   загрузка это секунды, а без сети карточка вообще осталась бы без шрифта.
+   Заголовочный Onest выбран за кириллицу: у прежнего Bricolage её нет, и
+   русские заголовки рисовались чем придётся, по-разному на разных машинах. */
+@font-face{{font-family:Onest;font-weight:800;font-display:block;
+  src:url('file://{папка}/onest-800-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}}
+@font-face{{font-family:Onest;font-weight:800;font-display:block;
+  src:url('file://{папка}/onest-800-latin.woff2') format('woff2')}}
+@font-face{{font-family:Plex;font-weight:400;font-display:block;
+  src:url('file://{папка}/plex-400-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}}
+@font-face{{font-family:Plex;font-weight:400;font-display:block;
+  src:url('file://{папка}/plex-400-latin.woff2') format('woff2')}}
+@font-face{{font-family:Plex;font-weight:600;font-display:block;
+  src:url('file://{папка}/plex-600-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}}
+@font-face{{font-family:Plex;font-weight:600;font-display:block;
+  src:url('file://{папка}/plex-600-latin.woff2') format('woff2')}}
+"""
+
+
+ШАБЛОН = """<meta charset="utf-8"><style>{шрифты}
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{width:1280px;height:720px;overflow:hidden}}
+body{{background:{фон};color:#C6CBB6;font-family:Plex,-apple-system,"Segoe UI",sans-serif;
+  display:flex;flex-direction:column;justify-content:center;padding:60px 68px;position:relative}}
+body::before{{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.028) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.028) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none}}
+.eyebrow{{font-size:15px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:{приглуш};margin-bottom:16px}}
+h1{{font-family:Onest,-apple-system,"Segoe UI",sans-serif;font-weight:800;font-size:{кегль}px;line-height:1.08;
+  letter-spacing:-.02em;color:{текст};margin-bottom:28px;max-width:15ch}}
+.col{{max-width:{ширина}}}
+.nb{{white-space:nowrap}}
+.line{{display:flex;gap:12px;align-items:baseline;margin-bottom:14px}}
+.dot{{width:8px;height:8px;border-radius:50%;background:{лайм};flex:0 0 auto;
+  box-shadow:0 0 12px rgba(199,226,75,.5);transform:translateY(-4px);
+  margin:0 8px}}
+/* Значок занимает то же место, что и точка, поэтому текст всех строк
+   начинается на одной вертикали независимо от того, есть значок или нет. */
+.ico{{width:24px;flex:0 0 auto;font-size:22px;line-height:1;text-align:center;
+  transform:translateY(1px)}}
+.line span{{font-size:23px;color:{текст};line-height:1.35}}
+.footer{{margin-top:24px;padding-top:18px;border-top:1px solid {рамка};font-size:21px;max-width:{ширина}}}
+.hero{{position:absolute;right:44px;bottom:30px}}
+.hero img{{height:470px;display:block;filter:drop-shadow(0 18px 40px rgba(0,0,0,.6))}}
+.wm{{position:absolute;left:68px;bottom:44px;height:46px;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}}
+</style>
+<div class="col">
+  <div class="eyebrow">{надпись}</div>
+  <h1>{заголовок}</h1>
+  {пункты}
+</div>
+<div class="footer">{вывод}</div>
+{герой}
+{знак}
+"""
+
+ЗНАЧОК = re.compile(r"^\s*([\U0001F000-\U0001FAFF\u2190-\u2BFF\u2600-\u27BF]"
+                    r"[\uFE0F\u200D\U0001F3FB-\U0001F3FF]*)\s*")
+
+
+def _пункт(строка: str) -> str:
+    """Строка списка. Значок из текста переезжает на место точки.
+
+    Иначе получается два маркера подряд: лаймовая точка вёрстки и эмодзи от
+    модели. А если точку просто убрать, строки со значком и без разъезжаются
+    по левому краю. Место у маркера одно, и занимает его либо точка, либо
+    значок.
+    """
+    м = ЗНАЧОК.match(строка or "")
+    if м:
+        маркер = f'<div class="ico">{html.escape(м.group(1))}</div>'
+        строка = строка[м.end():]
+    else:
+        маркер = '<div class="dot"></div>'
+    return f'<div class="line">{маркер}<span>{_текст(строка, 46)}</span></div>' 
+
+
+def _шрифты() -> str:
+    return ШРИФТЫ.format(папка=config.АССЕТЫ / "fonts")
+
+
+def _кегль(заголовок: str) -> int:
+    """Кегль заголовка под его длину.
+
+    Раньше длинное просто обрезалось многоточием, и на карточку выходил
+    обрубок вместо мысли. Места под три строки хватает, поэтому вместо
+    обрезки уменьшаем шрифт.
+    """
+    длина = len(" ".join((заголовок or "").split()))
+    if длина <= 34:
+        return 50
+    if длина <= 50:
+        return 44
+    return 38
+
+
+def _обрезать(строка: str, предел: int) -> str:
+    строка = " ".join(строка.split())
+    # точку перед пунктом рисует вёрстка; свой маркер модели тут лишний
+    строка = re.sub(r"^[•\-\u2013\u2014*]\s+", "", строка)
+    return строка if len(строка) <= предел else строка[: предел - 1].rstrip() + "…"
+
+
+def _текст(строка: str, предел: int) -> str:
+    """Экранирует и запрещает перенос внутри слов с дефисом.
+
+    Без этого «ИИ-ролика» разрывается на две строки прямо по дефису, и
+    заголовок выглядит опечаткой.
+    """
+    готово = html.escape(_обрезать(строка, предел))
+    return re.sub(r"(\w+-\w+)", r'<span class="nb">\1</span>', готово)
+
+
+def нарисовать(надпись: str, заголовок: str, пункты: list[str],
+               вывод: str, файл_позы: Path | None) -> Path | None:
+    """Возвращает путь к PNG или None, если Chrome недоступен.
+
+    `файл_позы` — уже отрисованный кот. Если его нет, карточка соберётся без
+    маскота: пост без кота лучше, чем отсутствие поста.
+    """
+    хром = config.хром()
+    if not хром:
+        return None
+
+    config.ВЫВОД.mkdir(parents=True, exist_ok=True)
+    # Без кота колонка растягивается на всю карточку. Иначе получается текст
+    # слева и огромная пустота справа, будто картинку не догрузили.
+    есть_кот = bool(файл_позы and Path(файл_позы).exists())
+    герой = f'<div class="hero"><img src="file://{файл_позы}"></div>' if есть_кот else ""
+
+    # Фирменный знак вместо надписи: логотип в тёмном варианте, тот же, что
+    # у приложения. Стоит слева внизу, чтобы никогда не налезать на кота.
+    лого = config.АССЕТЫ / "logo-dark.png"
+    знак = f'<img class="wm" src="file://{лого}">' if лого.exists() else ""
+
+    строки = "".join(_пункт(п) for п in пункты[:5])
+
+    страница = ШАБЛОН.format(
+        шрифты=_шрифты(),
+        фон=config.ФОН, текст=config.ТЕКСТ, приглуш=config.ПРИГЛУШ,
+        лайм=config.ЛАЙМ, рамка=config.РАМКА,
+        надпись=html.escape(_обрезать(надпись, 28)),
+        заголовок=_текст(заголовок, 70),
+        кегль=_кегль(заголовок) + (0 if есть_кот else 6),
+        ширина="58%" if есть_кот else "82%",
+        пункты=строки,
+        вывод=_текст(вывод, 72),
+        герой=герой, знак=знак,
+    )
+
+    return _снять(страница)
+
+
+def _снять(страница: str, ширина: int = 1280, высота: int = 720) -> Path | None:
+    """Вёрстка → PNG. Общая часть всех вёрсток."""
+    хром = config.хром()
+    if not хром:
+        return None
+    config.ВЫВОД.mkdir(parents=True, exist_ok=True)
+    # К секундам добавлен случайный хвост. Без него две отрисовки в одну
+    # секунду writeли бы в один файл, и вторая забирала чужую картинку. Пока
+    # рисовали по одной, это не всплывало; на карусели из семи слайдов и на
+    # двух процессах разом всплыло сразу.
+    итог = config.ВЫВОД / f"card_{int(time.time())}_{secrets.token_hex(3)}.png"
+    with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False,
+                                     encoding="utf-8") as f:
+        f.write(страница)
+        путь = f.name
+    try:
+        subprocess.run(
+            [хром, "--headless", "--disable-gpu", "--hide-scrollbars", "--no-sandbox",
+             # В контейнере /dev/shm всего 64 МБ, и на большой странице Chromium
+             # об это спотыкается. А фоновые запросы к сервисам Google он делает
+             # даже в headless: на сервере они упирались в таймаут и съедали
+             # полминуты на каждой карточке.
+             "--disable-dev-shm-usage", "--disable-background-networking",
+             "--no-first-run", "--disable-extensions", "--disable-sync",
+             "--disable-default-apps", "--mute-audio",
+             f"--screenshot={итог}", f"--window-size={ширина},{высота}",
+             "--default-background-color=12130Fff", "--force-device-scale-factor=1.5",
+             f"file://{путь}"],
+            capture_output=True, timeout=180)
+    except Exception:                                        # noqa: BLE001
+        return None
+    finally:
+        Path(путь).unlink(missing_ok=True)
+    return итог if итог.exists() else None
+
+АФИША = """<meta charset="utf-8"><style>{шрифты}
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{width:1280px;height:720px;overflow:hidden}}
+body{{background:{фон};color:{текст};font-family:Plex,-apple-system,"Segoe UI",sans-serif;
+  position:relative;display:flex;flex-direction:column;align-items:center}}
+/* сетка как на обычных карточках, чтобы афиша осталась из той же семьи */
+.grid{{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.03) 1px,transparent 1px);
+  background-size:40px 40px}}
+/* свет за котом: он поднимает взгляд к надписи, и свет ведёт туда же */
+.glow{{position:absolute;left:50%;top:56%;width:900px;height:900px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(199,226,75,.26) 0%,rgba(199,226,75,.08) 38%,transparent 66%)}}
+.eyebrow{{position:relative;margin-top:44px;display:flex;align-items:center;gap:10px;
+  font-size:15px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
+  color:{приглуш}}}
+.dot{{width:10px;height:10px;border-radius:50%;background:#ff4b3e;
+  box-shadow:0 0 14px rgba(255,75,62,.9)}}
+h1{{position:relative;margin-top:10px;font-family:Onest,-apple-system,"Segoe UI",sans-serif;
+  font-weight:800;font-size:104px;line-height:.98;letter-spacing:.01em;
+  color:{лайм};text-shadow:0 0 60px rgba(199,226,75,.35);white-space:nowrap}}
+.sub{{position:relative;margin-top:8px;font-size:20px;letter-spacing:.02em;color:{приглуш}}}
+.hero{{position:absolute;left:50%;bottom:74px;transform:translateX(-50%)}}
+.hero img{{height:400px;display:block;filter:drop-shadow(0 24px 50px rgba(0,0,0,.65))}}
+.foot{{position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;
+  align-items:center;gap:18px;font-size:19px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase}}
+.foot span{{color:{текст}}}
+.foot i{{color:{лайм};font-style:normal;font-size:14px}}
+.wm{{position:absolute;left:54px;bottom:34px;height:42px;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}}
+</style>
+<div class="grid"></div><div class="glow"></div>
+<div class="eyebrow"><span class="dot"></span>{надпись}</div>
+<h1>{заголовок}</h1>
+<div class="sub">{подзаголовок}</div>
+{герой}
+<div class="foot">{площадки}</div>
+{знак}
+"""
+
+
+def афиша(надпись: str, заголовок: str, подзаголовок: str,
+          площадки: list[str], файл_позы) -> Path | None:
+    """Афиша стрима. Отдельная вёрстка, потому что задача другая.
+
+    Обычная карточка объясняет, афиша зовёт. Объяснять тут нечего: важно,
+    чтобы с расстояния читались два слова и было понятно, куда идти. Поэтому
+    ни списка, ни колонки текста, только надпись, кот под ней и площадки.
+    """
+    хром = config.хром()
+    if not хром:
+        return None
+    config.ВЫВОД.mkdir(parents=True, exist_ok=True)
+
+    # Без кота колонка растягивается на всю карточку. Иначе получается текст
+    # слева и огромная пустота справа, будто картинку не догрузили.
+    есть_кот = bool(файл_позы and Path(файл_позы).exists())
+    герой = f'<div class="hero"><img src="file://{файл_позы}"></div>' if есть_кот else ""
+    лого = config.АССЕТЫ / "logo-dark.png"
+    знак = f'<img class="wm" src="file://{лого}">' if лого.exists() else ""
+    ряд = '<i>◆</i>'.join(f"<span>{html.escape(п)}</span>" for п in площадки)
+
+    страница = АФИША.format(
+        шрифты=_шрифты(),
+        фон=config.ФОН, текст=config.ТЕКСТ, приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ,
+        надпись=html.escape(надпись), заголовок=html.escape(заголовок),
+        подзаголовок=html.escape(подзаголовок), площадки=ряд,
+        герой=герой, знак=знак)
+    return _снять(страница)
+
+
+# ── КАРУСЕЛЬ ───────────────────────────────────────────────────────────────
+# Квадрат, а не 16:9: слайды листают с телефона, и квадрат занимает экран
+# целиком. Все три вёрстки ниже намеренно построены на одной сетке, чтобы
+# при пролистывании ничего не прыгало.
+
+СЛАЙД = """<meta charset="utf-8"><style>{шрифты}
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{width:{ширина}px;height:{высота}px;overflow:hidden}}
+body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans-serif;
+  position:relative;display:flex;flex-direction:column;
+  padding:{поле_верх}px {поле_бок}px {поле_низ}px}}
+.grid{{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.03) 1px,transparent 1px);
+  background-size:54px 54px}}
+/* Счётчика слайдов нет намеренно: TikTok, телеграм и остальные рисуют свой
+   поверх картинки, и два счётчика рядом выглядят как ошибка вёрстки. */
+.полоса{{position:absolute;left:0;bottom:{низ_полосы}px;height:6px;background:{лайм};
+  box-shadow:0 0 26px rgba(199,226,75,.45)}}
+.знак{{position:absolute;left:{поле_бок}px;bottom:{низ_знака}px;height:44px;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}}
+{ещё}
+</style>
+<div class="grid"></div>
+{нутро}
+<img class="знак" src="file://{лого}">
+<div class="полоса" style="width:{доля}%"></div>
+"""
+
+ОБЛОЖКА_ЕЩЁ = """
+.над{{font-size:{над}px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:{приглуш};margin-bottom:26px;position:relative}}
+h1{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;line-height:1.04;
+  letter-spacing:-.025em;color:{текст};max-width:13ch;position:relative}}
+/* В квадрате кот стоит справа от текста, в вертикали по центру под ним:
+   колонка там узкая, и сбоку ему просто негде поместиться. */
+.кот{{position:absolute;right:{кот_право};left:{кот_лево};bottom:{низ_кота}px;
+  transform:{сдвиг_кота}}}
+.кот img{{height:{кот_высота}px;display:block;
+  filter:drop-shadow(0 22px 46px rgba(0,0,0,.6))}}
+/* Подсказка стоит под заголовком, а не в углу: угол занимает кот, и там она
+   попадала ему под лапу. */
+.листай{{margin-top:38px;font-size:{листай}px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:{лайм};position:relative}}
+"""
+
+СЛАЙД_ЕЩЁ = """
+/* Текст всегда начинается на одной высоте, на всех слайдах карусели. Раньше
+   он центрировался без кота и прижимался вверх с котом, и при листании
+   прыгал: то вверху, то посередине. Ровный старт читается спокойнее любой
+   отдельно взятой красивой композиции. */
+.стек{{margin:0 0 auto;position:relative;padding-top:{текст_сверху}px}}
+.шапка{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;
+  line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:14ch}}
+.цифра{{font-family:Onest,sans-serif;font-weight:800;font-size:{цифра}px;line-height:1;
+  color:{лайм};letter-spacing:-.03em;margin:30px 0 20px;
+  text-shadow:0 0 60px rgba(199,226,75,.28)}}
+.мысль{{font-size:{мысль}px;line-height:1.38;color:{мягкий};max-width:{мера}ch}}
+.черта{{width:{черта}px;height:4px;background:{лайм};margin:38px 0 30px}}
+"""
+
+ФИНАЛ_ЕЩЁ = """
+.вывод{{font-family:Onest,sans-serif;font-weight:800;font-size:{вывод}px;line-height:1.1;
+  letter-spacing:-.02em;color:{текст};max-width:14ch;position:relative;
+  margin-top:auto;margin-bottom:auto}}
+.точка{{position:absolute;left:{поле_бок}px;top:{поле_верх}px;font-size:{точка}px;
+  font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:{лайм}}}
+"""
+
+
+# Квадрат для телеграма, вертикаль для TikTok. Отличаются не только размером:
+# у вертикали сверху и снизу лежит интерфейс площадки, поэтому поля больше, и
+# всё важное уходит в середину.
+# Кегли тоже часть формата, а не мелочь. Вертикаль вдвое выше квадрата, и
+# шрифт, подобранный под квадрат, теряется в ней настолько, что слайд читается
+# хуже, чем в телеграме.
+ФОРМАТЫ = {
+    "квадрат": {
+        "текст_сверху": 40,
+        "ширина": 1080, "высота": 1080, "поле_бок": 68, "поле_верх": 74,
+        "поле_низ": 74, "низ_знака": 56, "низ_полосы": 0,
+        "над": 23, "листай": 21, "кот_высота": 540, "кот_право": 10,
+        "кот_лево": "auto", "обложка_кегли": (82, 70, 60),
+        "шапка_кегли": (62, 54, 46), "цифра": 156, "мысль": 37,
+        "черта": 104, "вывод": 60, "точка": 23, "мера": 24,
+    },
+    # Широкий для одиночных картинок в телеграм. Высоты здесь вдвое меньше,
+    # чем в вертикали, поэтому кегли считаются заново, а не масштабируются: тот
+    # же шрифт, ужатый пропорционально, в 16:9 читается мелко.
+    "широкий": {
+        "текст_сверху": 20,
+        "ширина": 1280, "высота": 720, "поле_бок": 72, "поле_верх": 62,
+        "поле_низ": 62, "низ_знака": 44, "низ_полосы": 0,
+        "над": 19, "листай": 18, "кот_высота": 400, "кот_право": 10,
+        "кот_лево": "auto", "обложка_кегли": (66, 56, 48),
+        "шапка_кегли": (54, 46, 40), "цифра": 128, "мысль": 30,
+        "черта": 88, "вывод": 50, "точка": 19, "мера": 30,
+    },
+    # 3:4 это самый высокий формат из тех, что TikTok называет
+    # рекомендованными. На экране телефона такая картинка занимает три
+    # четверти высоты по центру, а подпись и колонка значков ложатся на её
+    # нижнюю часть. Отсюда и поля: снизу и справа снизу пусто.
+    "3к4": {
+        "ширина": 1080, "высота": 1440, "поле_бок": 80, "поле_верх": 150,
+        # Логотип и полоса стоят ниже: TikTok закрывает подписью только нижние
+        # сто восемьдесят пикселей картинки, а не треть, как я закладывал.
+        # Освободившаяся полоса уходит коту, ему было тесно.
+        "поле_низ": 320, "низ_знака": 205, "низ_полосы": 176,
+        # Текст начинается не у самого края: на всех слайдах на одной высоте и
+        # с воздухом сверху. Раньше он жался к верхней кромке, а на соседнем
+        # слайде оказывался посередине.
+        "текст_сверху": 170,
+        "над": 27, "листай": 25, "кот_высота": 470, "кот_право": "auto",
+        "кот_лево": "50%", "обложка_кегли": (104, 88, 76),
+        "шапка_кегли": (76, 66, 56), "цифра": 180, "мысль": 42,
+        "черта": 118, "вывод": 74, "точка": 27, "мера": 20,
+    },
+    # Границы вертикали заданы не на глаз, а по тому, что рисует сама
+    # площадка. Сверху вкладки и поиск, справа снизу колонка лайков и
+    # комментариев, внизу слева ник с подписью и полоса перемотки. Под всё это
+    # оставлено пустое поле, и ни одна буква туда не заходит.
+    "вертикаль": {
+        "текст_сверху": 60,
+        "ширина": 1080, "высота": 1920, "поле_бок": 84, "поле_верх": 260,
+        "поле_низ": 520, "низ_знака": 520, "низ_полосы": 500,
+        "над": 30, "листай": 28, "кот_высота": 620, "кот_право": "auto",
+        "кот_лево": "50%", "обложка_кегли": (118, 100, 86),
+        "шапка_кегли": (86, 74, 62), "цифра": 210, "мысль": 46,
+        "черта": 130, "вывод": 82, "точка": 30, "мера": 20,
+    },
+}
+
+
+def _общее(номер: int, всего: int, формат: str = "квадрат") -> dict:
+    return {
+        **ФОРМАТЫ.get(формат, ФОРМАТЫ["квадрат"]),
+        "шрифты": _шрифты(), "фон": config.ФОН, "текст": config.ТЕКСТ,
+        "приглуш": config.ПРИГЛУШ, "лайм": config.ЛАЙМ, "рамка": config.РАМКА,
+        "номер": номер, "всего": всего,
+        "доля": round(100 * номер / max(всего, 1)),
+        # Текст слайда светлее приглушённого: слайд смотрят с руки, и цвет
+        # подписи в интерфейсе тут читается уже плохо.
+        "мягкий": "#B9BFAE",
+        "лого": config.АССЕТЫ / "logo-dark.png",
+    }
+
+
+def слайд_обложка(надпись: str, заголовок: str, поза, номер: int, всего: int,
+                  формат: str = "квадрат"):
+    """Первый слайд: цепляет и заставляет листнуть."""
+    д = _общее(номер, всего, формат)
+    длина = len(" ".join((заголовок or "").split()))
+    б, с, м = д["обложка_кегли"]
+    кегль = б if длина <= 26 else с if длина <= 40 else м
+    # Путь обязан быть полным: file:// от относительного браузер молча не
+    # откроет, и вместо кота останется пустое место.
+    кот = (f'<div class="кот"><img src="file://{Path(поза).resolve()}"></div>'
+           if поза and Path(поза).exists() else "")
+    нутро = (f'<div class="над">{html.escape(_обрезать(надпись, 40))}</div>'
+             f'<h1>{_текст(заголовок, 60)}</h1>'
+             f'<div class="листай">Листайте →</div>{кот}')
+    # Кот стоит по центру там, где формат так велит, и тогда его надо поднять
+    # над нижним полем и сдвинуть на половину собственной ширины. Определяем
+    # это по самому формату, а не по его имени: имён со временем станет больше.
+    по_центру = д["кот_лево"] == "50%"
+    д = {**д, "низ_кота": д["поле_низ"] - 40 if по_центру else 0,
+         "сдвиг_кота": "translateX(-50%)" if по_центру else "none"}
+    return _снять(СЛАЙД.format(**д, ещё=ОБЛОЖКА_ЕЩЁ.format(**д, кегль=кегль),
+                               нутро=нутро), д["ширина"], д["высота"])
+
+
+def слайд(заголовок: str, мысль: str, цифра: str, номер: int, всего: int,
+          формат: str = "квадрат"):
+    """Середина: одна мысль, при желании с крупным значением."""
+    д = _общее(номер, всего, формат)
+    длина = len(" ".join((заголовок or "").split()))
+    б, с, м = д["шапка_кегли"]
+    кегль = б if длина <= 26 else с if длина <= 40 else м
+    метка = (f'<div class="цифра">{html.escape(_обрезать(цифра, 12))}</div>'
+             if (цифра or "").strip() else '<div class="черта"></div>')
+    куски = [f'<div class="стек"><div class="шапка">{_текст(заголовок, 52)}</div>'
+             f'{метка}<div class="мысль">{_текст(мысль, 150)}</div></div>']
+    return _снять(СЛАЙД.format(**д, ещё=СЛАЙД_ЕЩЁ.format(**д, кегль=кегль),
+                               нутро="".join(куски)),
+                  д["ширина"], д["высота"])
+
+
+def слайд_финал(вывод: str, номер: int, всего: int,
+                формат: str = "квадрат"):
+    """Последний: одна фраза, к которой всё вело."""
+    нутро = (f'<div class="точка">Итог</div>'
+             f'<div class="вывод">{_текст(вывод, 110)}</div>')
+    д = _общее(номер, всего, формат)
+    return _снять(СЛАЙД.format(**д, ещё=ФИНАЛ_ЕЩЁ.format(**д),
+                               нутро=нутро), д["ширина"], д["высота"])
+
+
+# ── ОБЛОЖКА ЭФИРА ──────────────────────────────────────────────────────────
+# Вертикаль 1080x1920 для TikTok. Главная особенность не размер, а то, что
+# площадка кладёт поверх обложки свой интерфейс: сверху имя и название эфира,
+# снизу чат и кнопки. Поэтому всё важное живёт в средней полосе, а верхние
+# 15 и нижние 25 процентов остаются фоном.
+
+ОБЛОЖКА = """<meta charset="utf-8"><style>{шрифты}
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{width:1080px;height:1920px;overflow:hidden}}
+body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans-serif;
+  position:relative;display:flex;flex-direction:column;align-items:center;
+  padding:290px 60px 480px}}
+.grid{{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.035) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.035) 1px,transparent 1px);
+  background-size:60px 60px}}
+/* свет за котом ведёт взгляд от надписи вниз, к нему */
+.glow{{position:absolute;left:50%;top:62%;width:1100px;height:1100px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(199,226,75,.24) 0%,
+             rgba(199,226,75,.07) 40%,transparent 68%)}}
+.eyebrow{{position:relative;display:flex;align-items:center;gap:14px;
+  font-size:24px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+  color:{приглуш}}}
+.dot{{width:16px;height:16px;border-radius:50%;background:#ff4b3e;
+  box-shadow:0 0 22px rgba(255,75,62,.9)}}
+h1{{position:relative;margin-top:26px;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{кегль}px;line-height:.96;letter-spacing:-.01em;text-align:center;
+  color:{лайм};text-shadow:0 0 80px rgba(199,226,75,.4);white-space:nowrap}}
+.sub{{position:relative;margin-top:22px;font-size:38px;letter-spacing:.01em;
+  color:{текст};opacity:.82;text-align:center}}
+.hero{{position:relative;margin-top:auto}}
+.hero img{{height:620px;display:block;
+  filter:drop-shadow(0 30px 60px rgba(0,0,0,.7))}}
+.foot{{position:relative;margin-top:38px;display:flex;align-items:center;gap:18px}}
+.foot img{{height:46px}}
+.foot span{{font-size:30px;font-weight:600;letter-spacing:.1em;color:{приглуш}}}
+</style>
+<div class="grid"></div><div class="glow"></div>
+<div class="eyebrow"><span class="dot"></span>{надпись}</div>
+<h1>{заголовок}</h1>
+<div class="sub">{подзаголовок}</div>
+{герой}
+<div class="foot"><img src="file://{лого}"><span>{ник}</span></div>
+"""
+
+
+def обложка_эфира(надпись: str, заголовок: str, подзаголовок: str,
+                  ник: str, файл_позы) -> Path | None:
+    """Вертикальная обложка эфира. Читается с ленты, а не с монитора."""
+    if not config.хром():
+        return None
+    config.ВЫВОД.mkdir(parents=True, exist_ok=True)
+    # Заголовок в одну строку и во всю ширину: так он читается с ленты, где
+    # картинка размером с ноготь. Кегль подбираем под длину слова.
+    длина = max(len(заголовок or ""), 1)
+    кегль = 150 if длина <= 8 else 124 if длина <= 11 else 104 if длина <= 14 else 84
+    герой = (f'<div class="hero"><img src="file://{Path(файл_позы).resolve()}"></div>'
+             if файл_позы and Path(файл_позы).exists() else "")
+    страница = ОБЛОЖКА.format(
+        шрифты=_шрифты(), фон=config.ФОН, текст=config.ТЕКСТ,
+        приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ, кегль=кегль,
+        надпись=html.escape(надпись), заголовок=html.escape(заголовок),
+        подзаголовок=html.escape(подзаголовок), ник=html.escape(ник),
+        герой=герой, лого=config.АССЕТЫ / "logo-dark.png")
+    return _снять(страница, 1080, 1920)
+
+
+def пережать(путь, вид: str = "jpeg", ширина: int = 0):
+    """Готовит отрисованный слайд под требования площадки.
+
+    Рисуем мы в полуторном масштабе и в PNG: так резче и без потерь. Но TikTok
+    PNG не принимает вовсе и не берёт картинки крупнее 1080p, поэтому перед
+    отправкой туда файл надо и пережать, и ужать. Делается это здесь, а не в
+    отрисовке: остальным площадкам исходник как раз годится.
+    """
+    from PIL import Image
+    п = Path(путь)
+    if not п.exists():
+        return None
+    i = Image.open(п).convert("RGB")
+    if ширина and i.width > ширина:
+        i = i.resize((ширина, round(i.height * ширина / i.width)), Image.LANCZOS)
+    if вид != "jpeg":
+        return п
+    цель = п.with_name(п.stem + f"_{i.width}.jpg")
+    i.save(цель, quality=92, subsampling=0)
+    return цель
+
+
+# ── ВИДЫ СЛАЙДОВ ───────────────────────────────────────────────────────────
+# Одна вёрстка на все слайды означает ленту, в которой всё одинаковое. Для
+# телеграма это терпимо, для TikTok губительно: там пять публикаций в день, и
+# на третьей зритель узнаёт картинку и листает мимо, не читая.
+#
+# Поэтому видов несколько. Обвязка у всех общая, чтобы канал оставался узнаваем:
+# та же сетка, тот же лайм, тот же логотип и полоса. Меняется только то, как
+# устроена мысль внутри.
+
+ВИДЫ = {
+    "мысль":   "заголовок, черта, одна мысль под ней",
+    "цифра":   "огромное значение во весь слайд, подпись мелко",
+    "было":    "две половины: как было и как стало",
+    "список":  "три-четыре пункта с лаймовыми галочками",
+    "цитата":  "крупная реплика в кавычках",
+    "шаг":     "номер шага в круге и что делать",
+    "термин":  "слово крупно и объяснение словарём",
+    "правка":  "зачёркнутое неверное сверху, верное снизу",
+    "полосы":  "простая диаграмма из лаймовых полос",
+    "консоль": "моноширинный блок, будто окно терминала",
+    "вопрос":  "огромный знак вопроса и сам вопрос",
+    "против":  "две стороны через лаймовое «против»",
+    "таймлайн": "вертикальная линия с точками и подписями",
+    "рейтинг": "пронумерованный список первых мест",
+    "плитки":  "четыре короткие плитки сеткой",
+    "формула": "A плюс B равно C, крупно",
+    "факт":    "лаймовая плашка «факт» и утверждение",
+    "миф":     "перечёркнутый миф и правда под ним",
+    "воп-отв": "вопрос и ответ, как в переписке",
+    "подчерк": "фраза, в которой одно слово подчёркнуто",
+    "лестница": "три ступени вверх, каждая со словом",
+    "кольцо":  "круговая доля, крупно, с подписью",
+    "буквица": "огромная первая буква и абзац",
+    "чипы":    "россыпь лаймовых плашек со словами",
+    "двацифры": "два больших числа рядом, для сравнения",
+    "слои":    "карточки стопкой, одна поверх другой",
+    "вывод":   "фраза между двумя лаймовыми линиями",
+    "галочки": "список, где часть отмечена, часть нет",
+    "записка": "текст на приподнятой карточке, как заметка",
+    "разрыв":  "одно слово во всю ширину, разорванное строкой",
+    # Вторая волна: то, чего не хватало, чтобы за листанием было интересно
+    # следить, а не просто читать. Здесь больше движения и больше форм.
+    "разбивка": "огромный номер раздела, как заставка между частями",
+    "пузыри":   "переписка: реплики слева и справа",
+    "телефон":  "содержимое внутри рамки телефона",
+    "стрелка":  "от одного к другому через большую лаймовую стрелку",
+    "штамп":    "повёрнутая печать поверх утверждения",
+    "отсчёт":   "три, два, один, и вывод",
+    "опрос":    "два варианта с долями, как голосование",
+    "узлы":     "точки, соединённые линиями, как схема",
+    "тройка":   "три коротких показателя в ряд",
+    "выделение": "абзац, в котором подсвечена одна строка",
+    "ценник":   "крупная цена на ярлыке",
+    "полоска":  "шкала от плохо к хорошо с отметкой",
+}
+
+ВИДЫ_CSS = """
+.шапка{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;
+  line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:14ch}}
+.мысль{{font-size:{мысль}px;line-height:1.38;color:{мягкий};max-width:{мера}ch}}
+.черта{{width:{черта}px;height:4px;background:{лайм};margin:38px 0 30px}}
+/* Правило одно на весь файл. Второе такое же жило в другом блоке CSS, и
+   правки в одном месте молча не работали: слайды с котом слушались одного
+   определения, без кота другого, и текст при листании прыгал. */
+.стек{{margin:0 0 auto;position:relative;padding-top:{текст_сверху}px}}
+
+.огонь{{font-family:Onest,sans-serif;font-weight:800;font-size:{огонь}px;
+  line-height:.9;color:{лайм};letter-spacing:-.04em;
+  text-shadow:0 0 90px rgba(199,226,75,.32)}}
+
+.пара{{display:flex;flex-direction:column;gap:26px}}
+.полка{{border-left:5px solid {рамка};padding-left:26px}}
+.полка.в{{border-left-color:{лайм}}}
+.полка .к{{font-size:{над}px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:{приглуш};margin-bottom:10px}}
+.полка.в .к{{color:{лайм}}}
+.полка .з{{font-family:Onest,sans-serif;font-weight:800;
+  font-size:{полка}px;line-height:1.14;color:{текст}}}
+.полка.б .з{{color:{приглуш}}}
+
+ul.пункты{{list-style:none;display:flex;flex-direction:column;gap:24px}}
+ul.пункты li{{display:flex;gap:20px;align-items:flex-start;
+  font-size:{пункт}px;line-height:1.32;color:{текст}}}
+ul.пункты b{{color:{лайм};font-weight:800;flex:0 0 auto;line-height:1}}
+
+.реплика{{font-family:Onest,sans-serif;font-weight:800;font-size:{цитата}px;
+  line-height:1.16;color:{текст};position:relative;padding-left:.62em}}
+/* Кавычка стоит слева в поле, а не над первой буквой: наезжая на неё, она
+   читалась как часть слова. */
+.лапки{{position:absolute;left:-.08em;top:-.16em;
+  color:{лайм};opacity:.3;line-height:1}}
+
+.кружок{{width:{круг}px;height:{круг}px;border-radius:50%;border:5px solid {лайм};
+  display:grid;place-items:center;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{вкруге}px;color:{лайм};margin-bottom:34px}}
+
+.слово{{font-family:Onest,sans-serif;font-weight:800;font-size:{слово}px;
+  line-height:1;color:{лайм};letter-spacing:-.03em}}
+.произн{{font-size:{над}px;color:{приглуш};margin:14px 0 26px;font-style:italic}}
+
+.зачерк{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.12;color:#8a5b52;text-decoration:line-through;
+  text-decoration-color:#E2703A;text-decoration-thickness:5px}}
+.верно{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.12;color:{текст};margin-top:30px}}
+.верно span{{color:{лайм}}}
+
+.бары{{display:flex;flex-direction:column;gap:22px}}
+.бары{{gap:30px}}
+.бар .п{{font-size:{пункт}px;color:{текст};margin-bottom:12px;
+  display:flex;justify-content:space-between;align-items:baseline}}
+.бар .п span:last-child{{color:{приглуш}}}
+.бар .л{{height:30px;border-radius:6px;background:{рамка}}}
+.бар .л i{{display:block;height:100%;border-radius:4px;background:{лайм};
+  box-shadow:0 0 24px rgba(199,226,75,.35)}}
+
+.окно{{background:{поверхность};border:1px solid {рамка};border-radius:16px;
+  overflow:hidden;font-family:Plex,ui-monospace,monospace}}
+.окно .верх{{display:flex;gap:9px;padding:16px 20px;
+  border-bottom:1px solid {рамка}}}
+.окно .верх i{{width:12px;height:12px;border-radius:50%;background:{рамка}}}
+.окно pre{{padding:24px 24px 28px;font-size:{консоль}px;line-height:1.6;
+  color:{мягкий};white-space:pre-wrap}}
+.окно pre b{{color:{лайм};font-weight:400}}
+
+.вопзнак{{font-family:Onest,sans-serif;font-weight:800;font-size:{огонь}px;
+  line-height:.8;color:{лайм};opacity:.9;margin-bottom:.05em;
+  text-shadow:0 0 90px rgba(199,226,75,.3)}}
+
+.бой{{display:flex;flex-direction:column;gap:18px}}
+.бой .сторона{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.1;color:{текст}}}
+.бой .против{{font-size:{над}px;font-weight:600;letter-spacing:.22em;
+  text-transform:uppercase;color:{лайм}}}
+
+.лента-время{{position:relative;padding-left:38px}}
+.лента-время:before{{content:"";position:absolute;left:8px;top:10px;bottom:10px;
+  width:3px;background:{рамка}}}
+.лента-время .точка{{position:relative;margin-bottom:30px}}
+.лента-время .точка:last-child{{margin-bottom:0}}
+.лента-время .точка:before{{content:"";position:absolute;left:-38px;top:.35em;
+  width:19px;height:19px;border-radius:50%;background:{лайм};
+  box-shadow:0 0 20px rgba(199,226,75,.5)}}
+.лента-время .к{{font-size:{над}px;letter-spacing:.16em;text-transform:uppercase;
+  color:{приглуш};margin-bottom:6px}}
+.лента-время .з{{font-size:{пункт}px;line-height:1.28;color:{текст}}}
+
+ol.места{{list-style:none;display:flex;flex-direction:column;gap:22px}}
+ol.места li{{display:flex;gap:22px;align-items:baseline;
+  font-size:{пункт}px;line-height:1.28;color:{текст}}}
+ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};line-height:1;flex:0 0 auto;min-width:1.2em}}
+
+.сетка4{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+.сетка4 div{{background:{поверхность};border:1px solid {рамка};border-radius:14px;
+  padding:24px 22px;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{полка}px;line-height:1.12;color:{текст}}}
+.сетка4 div:nth-child(4n+1){{color:{лайм}}}
+
+.формула{{display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.1;color:{текст}}}
+.формула i{{color:{лайм};font-style:normal}}
+.формула .итог{{color:{лайм}}}
+
+.плашка{{display:inline-block;background:{лайм};color:{фон};
+  font-weight:700;font-size:{над}px;letter-spacing:.18em;text-transform:uppercase;
+  padding:9px 18px;border-radius:8px;margin-bottom:26px}}
+.плашка.ржавая{{background:{ржавый};color:{текст}}}
+
+.вопрос-стр{{font-size:{пункт}px;line-height:1.3;color:{приглуш};
+  border-left:5px solid {рамка};padding-left:22px;margin-bottom:28px}}
+.ответ-стр{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.14;color:{текст};border-left:5px solid {лайм};padding-left:22px}}
+
+.подчерк u{{text-decoration:none;color:{лайм};
+  box-shadow:inset 0 -.18em 0 rgba(199,226,75,.28)}}
+
+.ступени{{display:flex;align-items:flex-end;gap:14px;margin-top:20px}}
+.ступени div{{flex:1;background:{поверхность};border:1px solid {рамка};
+  border-top:4px solid {лайм};border-radius:12px 12px 0 0;padding:20px 16px;
+  font-family:Onest,sans-serif;font-weight:800;font-size:{над}px;
+  line-height:1.2;color:{текст}}}
+.ступени div:nth-child(1){{min-height:120px}}
+.ступени div:nth-child(2){{min-height:190px}}
+.ступени div:nth-child(3){{min-height:260px;color:{лайм}}}
+
+.кольцо{{display:flex;align-items:center;gap:34px}}
+.кольцо .круг{{width:{кольцо}px;height:{кольцо}px;border-radius:50%;flex:0 0 auto;
+  display:grid;place-items:center;
+  background:conic-gradient({лайм} var(--д), {рамка} 0)}}
+.кольцо .круг span{{width:72%;height:72%;border-radius:50%;background:{фон};
+  display:grid;place-items:center;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{вкруге}px;color:{лайм}}}
+
+.буквица p{{font-size:{пункт}px;line-height:1.36;color:{мягкий}}}
+.буквица p:first-letter{{font-family:Onest,sans-serif;font-weight:800;
+  font-size:{огонь}px;line-height:.78;float:left;margin:.06em .12em 0 0;
+  color:{лайм}}}
+
+.чипы{{display:flex;flex-wrap:wrap;gap:14px}}
+.чипы span{{background:{поверхность};border:1px solid {рамка};border-radius:999px;
+  padding:14px 24px;font-size:{над}px;color:{текст}}}
+.чипы span.я{{background:{лайм};color:{фон};border-color:{лайм};font-weight:700}}
+
+.двацифры{{display:flex;gap:28px}}
+.двацифры div{{flex:1}}
+.двацифры .ч{{font-family:Onest,sans-serif;font-weight:800;
+  font-size:{двацифры}px;line-height:.95;letter-spacing:-.03em;color:{приглуш}}}
+.двацифры div:last-child .ч{{color:{лайм};
+  text-shadow:0 0 70px rgba(199,226,75,.3)}}
+.двацифры .п{{font-size:{над}px;color:{приглуш};margin-top:12px;
+  letter-spacing:.14em;text-transform:uppercase}}
+
+.слои{{position:relative;padding-left:18px}}
+.слои div{{background:{поверхность};border:1px solid {рамка};border-radius:14px;
+  padding:22px 24px;font-size:{пункт}px;line-height:1.26;color:{текст};
+  margin-bottom:-10px;position:relative}}
+.слои div:nth-child(1){{transform:translateX(-18px);opacity:.55}}
+.слои div:nth-child(2){{transform:translateX(-9px);opacity:.78}}
+.слои div:nth-child(3){{border-color:{лайм};color:{текст}}}
+
+.междулиний{{border-top:4px solid {лайм};border-bottom:4px solid {лайм};
+  padding:34px 0;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{цитата}px;line-height:1.14;color:{текст}}}
+
+ul.галочки{{list-style:none;display:flex;flex-direction:column;gap:22px}}
+ul.галочки li{{display:flex;gap:18px;align-items:flex-start;
+  font-size:{пункт}px;line-height:1.3;color:{текст}}}
+ul.галочки li.нет{{color:{приглуш}}}
+ul.галочки b{{flex:0 0 auto;width:1.1em;height:1.1em;border-radius:5px;
+  border:3px solid {рамка};display:grid;place-items:center;
+  color:transparent;line-height:1}}
+ul.галочки li.да b{{background:{лайм};border-color:{лайм};color:{фон}}}
+
+.записка{{background:{поверхность};border:1px solid {рамка};
+  border-left:6px solid {лайм};border-radius:0 16px 16px 0;padding:30px 32px;
+  box-shadow:0 26px 60px rgba(0,0,0,.55);font-size:{пункт}px;line-height:1.34;
+  color:{текст}}}
+.записка .к{{font-size:{над}px;letter-spacing:.18em;text-transform:uppercase;
+  color:{лайм};margin-bottom:14px}}
+
+.разрыв{{font-family:Onest,sans-serif;font-weight:800;font-size:{разрыв}px;
+  line-height:.92;letter-spacing:-.04em;color:{текст};text-transform:uppercase}}
+.разрыв i{{color:{лайм};font-style:normal;display:block}}
+
+.разбивка{{font-family:Onest,sans-serif;font-weight:800;font-size:{разбивка}px;
+  line-height:.82;color:{рамка};letter-spacing:-.05em}}
+.разбивка+.шапка{{margin-top:-.12em}}
+
+.пузыри{{display:flex;flex-direction:column;gap:18px}}
+.пузыри div{{max-width:82%;padding:22px 26px;border-radius:22px;
+  font-size:{пункт}px;line-height:1.3}}
+.пузыри .он{{background:{поверхность};border:1px solid {рамка};color:{текст};
+  border-bottom-left-radius:6px;align-self:flex-start}}
+.пузыри .я{{background:{лайм};color:{фон};font-weight:600;
+  border-bottom-right-radius:6px;align-self:flex-end}}
+
+.телефон{{border:5px solid {рамка};border-radius:34px;padding:30px 26px;
+  background:{поверхность};position:relative}}
+.телефон:before{{content:"";position:absolute;left:50%;top:12px;
+  transform:translateX(-50%);width:78px;height:7px;border-radius:99px;
+  background:{рамка}}}
+.телефон .з{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.12;color:{текст};margin:14px 0 12px}}
+.телефон .т{{font-size:{мысль}px;line-height:1.36;color:{мягкий}}}
+
+.стрелка{{display:flex;align-items:center;gap:22px}}
+/* min-width:0 обязателен: без него колонка не даёт себя сжать, и длинное
+   слово вылезает за край холста вместо переноса. */
+/* Кегль здесь меньше базового, а перенос только для слов, которые совсем не
+   влезают: колонки узкие, и «расшифровывает» иначе рвётся посередине. */
+.стрелка .бок{{flex:1 1 0;min-width:0;overflow-wrap:break-word;
+  font-family:Onest,sans-serif;font-weight:800;
+  font-size:{стрелка_кегль}px;line-height:1.14;color:{текст}}}
+.стрелка .бок.тускло{{color:{приглуш}}}
+.стрелка .знак{{position:static;height:auto;flex:0 0 auto;color:{лайм};
+  font-size:{стрелка}px;line-height:1;filter:none}}
+
+.штамп{{display:inline-block;border:5px solid {ржавый};color:{ржавый};
+  border-radius:14px;padding:14px 24px;font-family:Onest,sans-serif;
+  font-weight:800;font-size:{над}px;letter-spacing:.16em;text-transform:uppercase;
+  transform:rotate(-9deg);opacity:.92;margin-bottom:26px}}
+
+/* Числа убывают по размеру и светлеют к последнему: так читается обратный
+   отсчёт, а не случайная разница кеглей. */
+.отсчёт{{display:flex;gap:22px;align-items:baseline;margin-bottom:30px}}
+.отсчёт span{{font-family:Onest,sans-serif;font-weight:800;line-height:1;
+  color:{приглуш};opacity:.5;font-size:{отсчёт1}px}}
+.отсчёт span:nth-child(2){{opacity:.75;font-size:{отсчёт2}px}}
+.отсчёт span:last-child{{color:{лайм};opacity:1;font-size:{отсчёт3}px;
+  text-shadow:0 0 60px rgba(199,226,75,.3)}}
+
+.опрос{{display:flex;flex-direction:column;gap:20px}}
+.опрос .строка{{position:relative;border:1px solid {рамка};border-radius:14px;
+  overflow:hidden;background:{поверхность}}}
+.опрос .залив{{position:absolute;inset:0;background:rgba(199,226,75,.16)}}
+.опрос .верх{{position:relative;display:flex;justify-content:space-between;
+  padding:20px 24px;font-size:{пункт}px;color:{текст}}}
+.опрос .строка.лидер{{border-color:{лайм}}}
+.опрос .строка.лидер .залив{{background:rgba(199,226,75,.3)}}
+
+.узлы{{display:flex;align-items:center;gap:0}}
+.узлы .у{{flex:0 0 auto;width:{узел}px;height:{узел}px;border-radius:50%;
+  border:4px solid {лайм};display:grid;place-items:center;color:{лайм};
+  font-family:Onest,sans-serif;font-weight:800;font-size:{над}px}}
+.узлы .у.тускло{{border-color:{рамка};color:{приглуш}}}
+.узлы .н{{flex:1;height:4px;background:{рамка}}}
+.подузлы{{display:flex;margin-top:16px}}
+.подузлы span{{flex:1;font-size:{над}px;color:{приглуш};text-align:center}}
+.подузлы span:first-child{{text-align:left}}
+.подузлы span:last-child{{text-align:right}}
+
+.тройка{{display:flex;gap:18px}}
+.тройка div{{flex:1;border-top:4px solid {лайм};padding-top:20px}}
+.тройка .ч{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1;color:{лайм}}}
+.тройка .п{{font-size:{над}px;color:{приглуш};margin-top:12px;line-height:1.3}}
+
+.выделение p{{font-size:{пункт}px;line-height:1.5;color:{мягкий};margin:0}}
+.выделение p.свет{{color:{фон};background:{лайм};display:inline;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  padding:.12em .2em;font-weight:600}}
+
+.ярлык{{display:inline-block;background:{лайм};color:{фон};border-radius:16px;
+  padding:26px 34px;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{ценник}px;line-height:1;position:relative}}
+.ярлык:after{{content:"";position:absolute;right:22px;top:-11px;width:16px;
+  height:16px;border-radius:50%;background:{фон}}}
+
+.шкала{{position:relative;margin:34px 0 12px}}
+.шкала .л{{height:14px;border-radius:99px;
+  background:linear-gradient(90deg,{рамка},{лайм})}}
+.шкала .м{{position:absolute;top:-14px;width:6px;height:42px;border-radius:99px;
+  background:{текст}}}
+.шкала-п{{display:flex;justify-content:space-between;font-size:{пункт}px;
+  color:{приглуш};margin-top:18px}}
+.шкала-п span:last-child{{color:{лайм}}}
+"""
+
+
+def _виды_размеры(д: dict) -> dict:
+    """Кегли для видов считаются от базовых, чтобы не заводить их трижды."""
+    ш = д["шапка_кегли"][0]
+    return {**д,
+            "огонь": round(ш * 3.4), "полка": round(ш * 0.82),
+            "пункт": round(д["мысль"] * 1.06), "цитата": round(ш * 0.92),
+            "круг": round(ш * 1.9), "вкруге": round(ш * 0.95),
+            "слово": round(ш * 1.15), "консоль": round(д["мысль"] * 0.88),
+            "кольцо": round(ш * 3.1), "двацифры": round(ш * 1.9),
+            "разрыв": round(ш * 1.35), "ржавый": config.РЖАВЫЙ,
+            "разбивка": round(ш * 4.2), "стрелка": round(ш * 1.4),
+            "узел": round(ш * 1.15), "ценник": round(ш * 1.5),
+            "стрелка_кегль": round(ш * 0.46),
+            "отсчёт1": round(ш * 0.8), "отсчёт2": round(ш * 1.2),
+            "отсчёт3": round(ш * 2.2),
+            "поверхность": config.ПОВЕРХНОСТЬ}
+
+
+def _подсветить(текст: str) -> str:
+    """Слово в *звёздочках* становится лаймовым.
+
+    Тег в содержимое пускать нельзя: текст приходит от модели, и любой её
+    вымысел уехал бы в вёрстку как разметка. Поэтому подсветка задаётся
+    безобидным знаком, а тег ставим сами, уже после экранирования.
+    """
+    import re
+    return re.sub(r"\*(.+?)\*", r"<span>\1</span>", текст)
+
+
+def _нутро(вид: str, д: dict, з: dict) -> str:
+    """Разметка одного вида. `з` это его содержимое, у каждого своё."""
+    т = lambda к, п=200: _текст(з.get(к, ""), п)                 # noqa: E731
+    if вид == "цифра":
+        return (f'<div class="стек"><div class="огонь">{т("цифра", 12)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "было":
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="пара">'
+                f'<div class="полка б"><div class="к">Было</div>'
+                f'<div class="з">{т("было", 90)}</div></div>'
+                f'<div class="полка в"><div class="к">Стало</div>'
+                f'<div class="з">{т("стало", 90)}</div></div></div></div>')
+    if вид == "список":
+        пункты = "".join(f"<li><b>✓</b><span>{_текст(п, 120)}</span></li>"
+                         for п in (з.get("пункты") or [])[:4])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><ul class="пункты">{пункты}</ul></div>')
+    if вид == "цитата":
+        return (f'<div class="стек"><div class="реплика">'
+                f'<span class="лапки">«</span>{т("цитата", 150)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("кто", 80)}</div></div>')
+    if вид == "шаг":
+        return (f'<div class="стек"><div class="кружок">{т("номер", 2)}</div>'
+                f'<div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "термин":
+        return (f'<div class="стек"><div class="слово">{т("слово", 22)}</div>'
+                f'<div class="произн">{т("как", 40)}</div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "правка":
+        return (f'<div class="стек"><div class="зачерк">{т("неверно", 80)}</div>'
+                f'<div class="верно">{_подсветить(т("верно", 80))}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "полосы":
+        бары = ""
+        for б in (з.get("полосы") or [])[:4]:
+            доля = max(6, min(100, int(б.get("доля", 50))))
+            бары += (f'<div class="бар"><div class="п"><span>'
+                     f'{_текст(б.get("имя", ""), 40)}</span>'
+                     f'<span>{_текст(б.get("сколько", ""), 12)}</span></div>'
+                     f'<div class="л"><i style="width:{доля}%"></i></div></div>')
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="бары">{бары}</div></div>')
+    if вид == "консоль":
+        строки = "\n".join(
+            (f"<b>{html.escape(с[1:])}</b>" if с.startswith(">") else html.escape(с))
+            for с in (з.get("строки") or []))
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="окно">'
+                f'<div class="верх"><i></i><i></i><i></i></div>'
+                f'<pre>{строки}</pre></div></div>')
+    if вид == "вопрос":
+        return (f'<div class="стек"><div class="вопзнак">?</div>'
+                f'<div class="шапка">{т("заголовок", 70)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "против":
+        return (f'<div class="стек"><div class="бой">'
+                f'<div class="сторона">{т("слева", 60)}</div>'
+                f'<div class="против">против</div>'
+                f'<div class="сторона">{т("справа", 60)}</div></div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "таймлайн":
+        точки = "".join(
+            f'<div class="точка"><div class="к">{_текст(п.get("когда",""), 24)}</div>'
+            f'<div class="з">{_текст(п.get("что",""), 90)}</div></div>'
+            for п in (з.get("точки") or [])[:4])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="лента-время">{точки}</div></div>')
+    if вид == "рейтинг":
+        места = "".join(f"<li><b>{н}</b><span>{_текст(п, 110)}</span></li>"
+                        for н, п in enumerate((з.get("места") or [])[:4], 1))
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><ol class="места">{места}</ol></div>')
+    if вид == "плитки":
+        плитки = "".join(f"<div>{_текст(п, 44)}</div>"
+                         for п in (з.get("плитки") or [])[:4])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="сетка4">{плитки}</div></div>')
+    if вид == "формула":
+        return (f'<div class="стек"><div class="формула">'
+                f'<span>{т("а", 30)}</span><i>+</i><span>{т("б", 30)}</span>'
+                f'<i>=</i><span class="итог">{т("итог", 30)}</span></div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид in ("факт", "миф"):
+        плашка = "Факт" if вид == "факт" else "Миф"
+        класс = "плашка" if вид == "факт" else "плашка ржавая"
+        верх = (f'<div class="шапка">{т("заголовок", 70)}</div>' if вид == "факт"
+                else f'<div class="зачерк">{т("заголовок", 70)}</div>'
+                     f'<div class="верно">{_подсветить(т("правда", 80))}</div>')
+        return (f'<div class="стек"><div class="{класс}">{плашка}</div>{верх}'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "воп-отв":
+        return (f'<div class="стек">'
+                f'<div class="вопрос-стр">{т("вопрос", 110)}</div>'
+                f'<div class="ответ-стр">{т("ответ", 130)}</div></div>')
+    if вид == "подчерк":
+        фраза = _подсветить(т("фраза", 130)).replace("<span>", "<u>").replace("</span>", "</u>")
+        return (f'<div class="стек"><div class="шапка подчерк">{фраза}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "лестница":
+        ступени = "".join(f"<div>{_текст(с, 40)}</div>"
+                          for с in (з.get("ступени") or [])[:3])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="ступени">{ступени}</div></div>')
+    if вид == "кольцо":
+        доля = max(3, min(100, int(з.get("доля", 50))))
+        return (f'<div class="стек"><div class="кольцо">'
+                f'<div class="круг" style="--д:{доля}%"><span>{доля}%</span></div>'
+                f'<div><div class="шапка">{т("заголовок", 40)}</div>'
+                f'<div class="мысль" style="margin-top:18px">{т("текст", 120)}</div>'
+                f'</div></div></div>')
+    if вид == "буквица":
+        return (f'<div class="стек буквица"><p>{т("текст", 320)}</p></div>')
+    if вид == "чипы":
+        чипы = "".join(
+            f'<span class="{"я" if п.get("свой") else ""}">{_текст(п.get("имя",""), 30)}</span>'
+            for п in (з.get("чипы") or [])[:8])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="чипы">{чипы}</div></div>')
+    if вид == "двацифры":
+        return (f'<div class="стек"><div class="двацифры">'
+                f'<div><div class="ч">{т("было", 10)}</div>'
+                f'<div class="п">{т("было_п", 26)}</div></div>'
+                f'<div><div class="ч">{т("стало", 10)}</div>'
+                f'<div class="п">{т("стало_п", 26)}</div></div></div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "слои":
+        слои = "".join(f"<div>{_текст(с, 90)}</div>"
+                       for с in (з.get("слои") or [])[:3])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="слои">{слои}</div></div>')
+    if вид == "вывод":
+        return (f'<div class="стек"><div class="междулиний">{т("вывод", 130)}</div>'
+                f'<div class="мысль" style="margin-top:30px">{т("текст")}</div></div>')
+    if вид == "галочки":
+        пункты = "".join(
+            f'<li class="{"да" if п.get("да") else "нет"}"><b>✓</b>'
+            f'<span>{_текст(п.get("имя",""), 90)}</span></li>'
+            for п in (з.get("пункты") or [])[:4])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><ul class="галочки">{пункты}</ul></div>')
+    if вид == "записка":
+        return (f'<div class="стек"><div class="записка">'
+                f'<div class="к">{т("метка", 30)}</div>{т("текст", 260)}</div></div>')
+    if вид == "разрыв":
+        слова = (з.get("слова") or [])[:3]
+        строки = "".join(f"<i>{_текст(с, 22)}</i>" if н else f"{_текст(с, 22)}"
+                         for н, с in enumerate(слова))
+        return (f'<div class="стек"><div class="разрыв">{строки}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "разбивка":
+        return (f'<div class="стек"><div class="разбивка">{т("номер", 3)}</div>'
+                f'<div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "пузыри":
+        реплики = "".join(
+            f'<div class="{"я" if р.get("свой") else "он"}">'
+            f'{_текст(р.get("текст",""), 110)}</div>'
+            for р in (з.get("реплики") or [])[:4])
+        return f'<div class="стек"><div class="пузыри">{реплики}</div></div>'
+    if вид == "телефон":
+        return (f'<div class="стек"><div class="телефон">'
+                f'<div class="з">{т("заголовок", 50)}</div>'
+                f'<div class="т">{т("текст", 190)}</div></div></div>')
+    if вид == "стрелка":
+        return (f'<div class="стек"><div class="стрелка">'
+                f'<div class="бок тускло">{т("от", 40)}</div>'
+                f'<div class="знак">→</div>'
+                f'<div class="бок">{т("к", 40)}</div></div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "штамп":
+        return (f'<div class="стек"><div class="штамп">{т("метка", 20)}</div>'
+                f'<div class="шапка">{т("заголовок", 70)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "отсчёт":
+        числа = "".join(f"<span>{_текст(с, 3)}</span>"
+                        for с in (з.get("числа") or ["3", "2", "1"])[:3])
+        return (f'<div class="стек"><div class="отсчёт">{числа}</div>'
+                f'<div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="мысль">{т("текст")}</div></div>')
+    if вид == "опрос":
+        строки = ""
+        лидер = max((int(в.get("доля", 0)) for в in (з.get("варианты") or [])),
+                    default=0)
+        for в in (з.get("варианты") or [])[:3]:
+            доля = max(3, min(100, int(в.get("доля", 50))))
+            класс = "строка лидер" if доля == лидер else "строка"
+            строки += (f'<div class="{класс}">'
+                       f'<div class="залив" style="width:{доля}%"></div>'
+                       f'<div class="верх"><span>{_текст(в.get("имя",""), 60)}</span>'
+                       f'<span>{доля}%</span></div></div>')
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="опрос">{строки}</div></div>')
+    if вид == "узлы":
+        точки = (з.get("узлы") or [])[:4]
+        ряд, подписи = "", ""
+        for н, у in enumerate(точки):
+            если_свой = "у" if у.get("свой") else "у тускло"
+            ряд += f'<div class="{если_свой}">{н + 1}</div>'
+            if н < len(точки) - 1:
+                ряд += '<div class="н"></div>'
+            подписи += f"<span>{_текст(у.get('имя',''), 24)}</span>"
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="узлы">{ряд}</div>'
+                f'<div class="подузлы">{подписи}</div></div>')
+    if вид == "тройка":
+        плитки = "".join(
+            f'<div><div class="ч">{_текст(п.get("что",""), 10)}</div>'
+            f'<div class="п">{_текст(п.get("имя",""), 44)}</div></div>'
+            for п in (з.get("тройка") or [])[:3])
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="тройка">{плитки}</div></div>')
+    if вид == "выделение":
+        куски = (з.get("абзац") or "").split("*")
+        абзац = "".join(
+            (f'<p class="свет">{_текст(к, 120)}</p>' if н % 2
+             else f'<p>{_текст(к, 200)}</p>')
+            for н, к in enumerate(куски) if к.strip())
+        return f'<div class="стек выделение">{абзац}</div>'
+    if вид == "ценник":
+        return (f'<div class="стек"><div class="ярлык">{т("цена", 12)}</div>'
+                f'<div class="черта"></div>'
+                f'<div class="шапка">{т("заголовок", 50)}</div>'
+                f'<div class="мысль" style="margin-top:22px">{т("текст")}</div></div>')
+    if вид == "полоска":
+        где = max(2, min(97, int(з.get("отметка", 50))))
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="шкала"><div class="л"></div>'
+                f'<div class="м" style="left:{где}%"></div></div>'
+                f'<div class="шкала-п"><span>{т("слева", 26)}</span>'
+                f'<span>{т("справа", 26)}</span></div>'
+                f'<div class="мысль" style="margin-top:26px">{т("текст")}</div></div>')
+    # «мысль» и всё незнакомое
+    метка = (f'<div class="огонь" style="font-size:{д["цифра"]}px;margin:30px 0 20px">'
+             f'{т("цифра", 12)}</div>' if з.get("цифра") else '<div class="черта"></div>')
+    return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+            f'{метка}<div class="мысль">{т("текст")}</div></div>')
+
+
+# ── ДИЗАЙНЫ ────────────────────────────────────────────────────────────────
+# Оформление меняет холст, вёрстка меняет устройство мысли. Дизайн меняет
+# характер целиком: шрифт, ритм, украшения, ощущение материала.
+#
+# Что остаётся неизменным во всех десяти: наши цвета и кот. Это и делает их
+# одной семьёй, а не десятью разными каналами.
+
+def _фейсы(набор) -> str:
+    """@font-face для перечисленных начертаний, кириллица и латиница."""
+    папка = config.АССЕТЫ / "fonts"
+    куски = []
+    for файл, семья, вес in набор:
+        for подмн in ("cyrillic", "latin"):
+            путь = папка / f"{файл}-{подмн}.woff2"
+            if путь.exists():
+                куски.append(
+                    f"@font-face{{font-family:'{семья}';font-weight:{вес};"
+                    f"font-display:block;src:url('file://{путь}') format('woff2')}}")
+    return "".join(куски)
+
+
+ДИЗАЙНЫ = {
+    "фирменный": {
+        "о": "наш нынешний: Onest и Plex, тонкая сетка",
+        "фейсы": [], "масштаб": {}, "css": ""},
+
+    "швейцарский": {
+        "масштаб": {"заголовок": 1.02, "над": .86},
+        "о": "Inter, строгая сетка, волосяные линейки, много воздуха",
+        "фейсы": [("inter-800", "Inter", 800), ("inter-400", "Inter", 400)],
+        "css": """
+body{{font-family:Inter,sans-serif}}
+.grid{{display:none}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.огонь,.слово,.разрыв,.сторона{{
+  font-family:Inter,sans-serif;font-weight:800;letter-spacing:-.035em}}
+.над,.точка,.листай{{letter-spacing:.34em;font-weight:400}}
+.черта{{height:1px;width:100%;background:{рамка}}}
+.мысль{{font-weight:400}}
+body:before{{content:"";position:absolute;left:{поле_бок}px;right:{поле_бок}px;
+  top:{поле_верх}px;height:1px;background:{рамка}}}
+"""},
+
+    "брутальный": {
+        "масштаб": {"заголовок": 1.42, "мысль": 1.06, "огонь": 1.15},
+        "о": "Oswald, узкие заглавные во всю ширину, ничего лишнего",
+        "фейсы": [("oswald-600", "Oswald", 600), ("golos-400", "Golos", 400)],
+        "css": """
+body{{font-family:Golos,sans-serif}}
+.grid{{display:none}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.огонь,.слово{{
+  font-family:Oswald,sans-serif;font-weight:600;text-transform:uppercase;
+  letter-spacing:0;line-height:.98}}
+.мысль{{}}
+.над,.точка{{font-family:Oswald,sans-serif;letter-spacing:.2em}}
+.черта{{height:10px;width:100%;background:{лайм}}}
+"""},
+
+    "редакционный": {
+        "масштаб": {"заголовок": 1.12, "мысль": .96},
+        "о": "Playfair и Golos, засечки, узкая колонка, тонкие правила",
+        "фейсы": [("playfair-800", "Playfair", 800), ("golos-400", "Golos", 400)],
+        "css": """
+body{{font-family:Golos,serif}}
+.grid{{display:none}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
+  font-family:Playfair,serif;font-weight:800;letter-spacing:-.01em;
+  line-height:1.06}}
+.огонь,.слово{{font-family:Playfair,serif}}
+.над,.точка,.листай{{font-family:Golos,sans-serif;letter-spacing:.28em}}
+.мысль{{max-width:{мера}ch;line-height:1.5}}
+.черта{{height:1px;width:64%;background:{приглуш};opacity:.6}}
+body:after{{content:"";position:absolute;left:{поле_бок}px;
+  top:{поле_верх}px;bottom:{поле_низ}px;width:1px;background:{рамка};opacity:.7}}
+"""},
+
+    "терминал": {
+        "масштаб": {"заголовок": .82, "мысль": .9, "огонь": .8},
+        "о": "всё моноширинным, скобки, полоски развёртки",
+        "фейсы": [("jetbrains-700", "JB", 700), ("jetbrains-400", "JB", 400)],
+        "css": """
+body{{font-family:JB,monospace}}
+.grid{{display:none}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.огонь,.слово{{
+  font-family:JB,monospace;font-weight:700;letter-spacing:-.02em;line-height:1.12}}
+.мысль,.над,.точка{{font-family:JB,monospace}}
+.шапка:before{{content:"// "; color:{лайм}}}
+.черта{{height:2px;width:38%;background:{лайм}}}
+body:after{{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(180deg,rgba(199,226,75,.05) 0 1px,
+             transparent 1px 5px)}}
+"""},
+
+    "плакат": {
+        "масштаб": {"заголовок": .88, "над": .82, "огонь": .84},
+        "о": "Unbounded, широкие буквы, крупная лаймовая плита",
+        "фейсы": [("unbounded-800", "Unbounded", 800), ("manrope-400", "Manrope", 400)],
+        "css": """
+body{{font-family:Manrope,sans-serif}}
+.grid{{opacity:.35}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.огонь,.слово{{
+  font-family:Unbounded,sans-serif;font-weight:800;letter-spacing:-.04em;
+  line-height:1.02}}
+.над,.точка,.листай{{font-family:Unbounded,sans-serif;
+  letter-spacing:.2em}}
+.черта{{height:14px;width:52%;background:{лайм};border-radius:2px}}
+body:before{{content:"";position:absolute;left:0;bottom:0;width:100%;
+  height:26%;background:linear-gradient(0deg,rgba(199,226,75,.1),transparent)}}
+"""},
+
+    "журнал": {
+        "масштаб": {"заголовок": 1.55, "мысль": 1.0, "огонь": 1.3},
+        "о": "Cormorant и Manrope, крупный контраст кеглей, курсив",
+        "фейсы": [("cormorant-700", "Cormorant", 700), ("manrope-400", "Manrope", 400),
+                  ("manrope-800", "Manrope", 800)],
+        "css": """
+body{{font-family:Manrope,sans-serif}}
+.grid{{display:none}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
+  font-family:Cormorant,serif;font-weight:700;letter-spacing:-.005em;
+  line-height:1.02}}
+.огонь,.слово{{font-family:Cormorant,serif;font-weight:700}}
+.над,.точка,.листай{{font-family:Manrope,sans-serif;font-weight:800;
+  letter-spacing:.24em}}
+.мысль{{font-style:italic;line-height:1.5}}
+.черта{{height:1px;width:100%;background:{рамка}}}
+"""},
+
+    "чертёж": {
+        "масштаб": {"заголовок": 1.0, "мысль": .86},
+        "о": "Manrope и моноширинные пометки, синька, засечки по краям",
+        "фейсы": [("manrope-800", "Manrope", 800), ("manrope-400", "Manrope", 400),
+                  ("jetbrains-400", "JB", 400)],
+        "css": """
+body{{font-family:Manrope,sans-serif}}
+.grid{{background-size:40px 40px;
+  background-image:linear-gradient(rgba(199,226,75,.08) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.08) 1px,transparent 1px)}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.огонь,.слово{{
+  font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.03em}}
+.над,.точка,.номер,.листай{{font-family:JB,monospace;letter-spacing:.16em}}
+.мысль{{font-family:JB,monospace;line-height:1.55}}
+.черта{{height:2px;width:100%;background:{лайм};opacity:.8}}
+body:before{{content:"";position:absolute;left:{поле_бок}px;top:{поле_верх}px;
+  width:26px;height:26px;border-left:2px solid {лайм};border-top:2px solid {лайм}}}
+body:after{{content:"";position:absolute;right:{поле_бок}px;bottom:{поле_низ}px;
+  width:26px;height:26px;border-right:2px solid {лайм};border-bottom:2px solid {лайм}}}
+"""},
+
+    "заметка": {
+        "масштаб": {"заголовок": 1.75, "мысль": .98, "над": 1.3, "огонь": 1.5},
+        "о": "рукописный акцент Caveat поверх аккуратного текста",
+        "фейсы": [("caveat-700", "Caveat", 700), ("golos-400", "Golos", 400),
+                  ("golos-700", "Golos", 700)],
+        "css": """
+body{{font-family:Golos,sans-serif}}
+.grid{{background-size:100% 54px;
+  background-image:linear-gradient(rgba(199,226,75,.05) 1px,transparent 1px)}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
+  font-family:Caveat,cursive;font-weight:700;line-height:.98;
+  letter-spacing:0;color:{текст}}}
+.огонь,.слово{{font-family:Caveat,cursive;font-weight:700}}
+.над,.точка,.листай{{font-family:Caveat,cursive;
+  letter-spacing:.04em;text-transform:none;color:{лайм}}}
+.мысль{{font-family:Golos,sans-serif}}
+.черта{{height:5px;width:46%;background:{лайм};border-radius:99px;
+  transform:rotate(-.6deg)}}
+"""},
+
+    "минимал": {
+        "масштаб": {"заголовок": .58, "мысль": .78, "огонь": .5, "над": .74},
+        "о": "Inter мелко, огромные поля, один лаймовый штрих",
+        "фейсы": [("inter-400", "Inter", 400), ("inter-800", "Inter", 800)],
+        "css": """
+body{{font-family:Inter,sans-serif;padding:{минполе}px}}
+.grid{{display:none}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
+  font-family:Inter,sans-serif;font-weight:400;
+  letter-spacing:-.01em;line-height:1.32}}
+.огонь,.слово{{font-family:Inter,sans-serif;font-weight:800}}
+.мысль{{;color:{приглуш}}}
+.над,.точка,.листай{{;letter-spacing:.3em}}
+.черта{{height:2px;width:34px;background:{лайм}}}
+.номер{{opacity:.35}}
+"""},
+
+    "неон": {
+        "масштаб": {"заголовок": 1.04},
+        "о": "Rubik, мягкое свечение, скруглённые формы",
+        "фейсы": [("rubik-800", "Rubik", 800), ("manrope-400", "Manrope", 400)],
+        "css": """
+body{{font-family:Manrope,sans-serif}}
+.grid{{opacity:.3}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
+  font-family:Rubik,sans-serif;font-weight:800;letter-spacing:-.025em;
+  text-shadow:0 0 42px rgba(199,226,75,.22)}}
+.огонь,.слово{{font-family:Rubik,sans-serif;font-weight:800;
+  text-shadow:0 0 120px rgba(199,226,75,.55)}}
+.над,.точка,.листай{{letter-spacing:.24em}}
+.черта{{height:6px;width:44%;background:{лайм};border-radius:99px;
+  box-shadow:0 0 30px rgba(199,226,75,.7)}}
+body:before{{content:"";position:absolute;left:50%;top:38%;width:130%;height:80%;
+  transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(199,226,75,.16) 0%,
+             rgba(199,226,75,.04) 45%,transparent 72%)}}
+"""},
+}
+
+
+def размеры_дизайна(имя: str, д: dict) -> dict:
+    """Правит кегли под характер дизайна.
+
+    Множителями, а не размерами в em: em считается от родителя, а у заголовка
+    свой размер в пикселях, и такая правка давала крошечный текст вместо
+    крупного. Ошибка тихая, потому что вёрстка не ломается, просто выглядит не
+    так, как задумано.
+    """
+    м = (ДИЗАЙНЫ.get(имя) or {}).get("масштаб") or {}
+    if not м:
+        return д
+    д = dict(д)
+    if "заголовок" in м:
+        к = м["заголовок"]
+        д["шапка_кегли"] = tuple(round(з * к) for з in д["шапка_кегли"])
+        д["обложка_кегли"] = tuple(round(з * к) for з in д["обложка_кегли"])
+        for поле in ("цитата", "вывод", "полка", "слово"):
+            if поле in д:
+                д[поле] = round(д[поле] * к)
+    for поле, ключ in (("мысль", "мысль"), ("над", "над"), ("огонь", "огонь")):
+        if поле in м and ключ in д:
+            д[ключ] = round(д[ключ] * м[поле])
+    if "мысль" in м:
+        д["пункт"] = round(д.get("пункт", д["мысль"]) * м["мысль"])
+    return д
+
+
+def _дизайн(имя: str, д: dict) -> str:
+    """Шрифты и стили выбранного дизайна."""
+    з = ДИЗАЙНЫ.get(имя)
+    if not з:
+        return ""
+    css = з["css"]
+    if css:
+        css = css.format(**{**д, "минполе": round(д["поле_бок"] * 2.1)})
+    return _фейсы(з["фейсы"]) + css
+
+
+# ── ОФОРМЛЕНИЕ ─────────────────────────────────────────────────────────────
+# Вёрстка отвечает за то, как устроена мысль. Оформление за то, как выглядит
+# сам холст: фон, свет, рамка, ощущение материала. Это разные оси, и вместе
+# они дают куда больше сочетаний, чем каждая по отдельности.
+#
+# Все оформления держатся одной палитры канала. Меняется подача, не цвета.
+
+ОФОРМЛЕНИЯ = {
+    "сетка":    "тёмный фон с еле заметной сеткой, наш обычный",
+    "чистый":   "просто тёмный фон, без сетки и без света",
+    "свет":     "тёмный фон и мягкое лаймовое свечение сверху",
+    "рамка":    "тонкая лаймовая рамка по краю холста",
+    "инверсия": "лаймовый фон, тёмный текст",
+    "полоса":   "широкая диагональная лаймовая полоса за текстом",
+    "карточка": "содержимое лежит на приподнятой панели",
+    "зерно":    "тёмный фон с плёночным зерном",
+    "линии":    "крупные диагональные линии в углу",
+    "контур":   "фон в клетку чертежа, будто набросок",
+}
+
+ОФОРМЛЕНИЯ_CSS = {
+    "сетка": "",
+    "чистый": """
+.grid{display:none}
+""",
+    "свет": """
+.grid{opacity:.4}
+body:before{content:"";position:absolute;left:50%;top:-38%;width:150%;
+  height:95%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(199,226,75,.18) 0%,
+             rgba(199,226,75,.05) 42%,transparent 70%)}
+""",
+    # Здесь и в других оформлениях со скобками они удвоены: строка проходит
+    # через format, и одинарная скобка в CSS была бы принята за подстановку.
+    "рамка": """
+body:before{{content:"";position:absolute;inset:34px;border:3px solid {лайм};
+  border-radius:22px;opacity:.55;pointer-events:none}}
+""",
+    "инверсия": """
+body{{background:{лайм};color:{фон}}}
+.grid{{background-image:linear-gradient(rgba(18,19,15,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(18,19,15,.05) 1px,transparent 1px)}}
+.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.формула,
+.сетка4 div,.ступени div,.слои div{{color:{фон}}}
+.мысль,.над,.произн,.бар .п,.лента-время .к,.двацифры .п{{color:rgba(18,19,15,.62)}}
+.черта,.полоса{{background:{фон}}}
+.огонь,.слово,.вопзнак,.кружок,.чипы span.я,.междулиний{{color:{фон}}}
+.кружок{{border-color:{фон}}}
+.междулиний{{border-color:{фон}}}
+.номер{{color:rgba(18,19,15,.5)}}
+.знак{{filter:brightness(0) saturate(0)}}
+.полоса{{box-shadow:none}}
+""",
+    "полоса": """
+body:before{content:"";position:absolute;left:-25%;top:-30%;width:150%;
+  height:70%;transform:rotate(-18deg);pointer-events:none;
+  background:linear-gradient(180deg,rgba(199,226,75,.12),transparent)}
+""",
+    "карточка": """
+body{{padding:0}}
+.нутро-панель{{position:absolute;inset:{панель}px;background:{поверхность};
+  border:1px solid {рамка};border-radius:28px;
+  box-shadow:0 40px 90px rgba(0,0,0,.55)}}
+""",
+    "зерно": """
+body:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
+  background-image:radial-gradient(rgba(255,255,255,.55) .5px,transparent .5px);
+  background-size:3px 3px}
+""",
+    "линии": """
+body:before{content:"";position:absolute;right:-10%;top:-10%;width:70%;height:70%;
+  pointer-events:none;opacity:.5;transform:rotate(-30deg);
+  background:repeating-linear-gradient(90deg,rgba(199,226,75,.16) 0 3px,
+             transparent 3px 26px)}
+""",
+    "контур": """
+.grid{background-size:36px 36px;
+  background-image:linear-gradient(rgba(199,226,75,.07) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.07) 1px,transparent 1px)}
+body:before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(199,226,75,.14) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.14) 1px,transparent 1px);
+  background-size:180px 180px}
+""",
+}
+
+
+def _оформление(имя: str, д: dict) -> tuple[str, str]:
+    """Стили холста и, если нужно, дополнительный слой."""
+    css = ОФОРМЛЕНИЯ_CSS.get(имя, "")
+    if "{лайм}" in css or "{панель}" in css:
+        css = css.format(**{**д, "панель": round(д["поле_бок"] * 0.5)})
+    слой = ('<div class="нутро-панель"></div>' if имя == "карточка" else "")
+    return слой, css
+
+
+# Куда поставить кота. Он фирменный знак, и на каждом слайде в одной позе
+# приедается так же, как одинаковая вёрстка. Поэтому мест несколько, и каждое
+# по-своему уживается с текстом.
+КОТ_ГДЕ = {
+    "нет":       "без кота",
+    # низ
+    "угол":      "выглядывает снизу справа из-за края",
+    "угол-лево": "выглядывает снизу слева из-за края",
+    "рядом":     "стоит справа в полный рост",
+    "слева":     "стоит слева в полный рост",
+    "по-центру": "стоит по центру под текстом",
+    "низ-край":  "стоит по центру, наполовину ушёл за нижний край",
+    # верх
+    "выше":      "свесился с верхнего края справа",
+    "выше-лево": "свесился с верхнего края слева",
+    "над-текстом": "сидит по центру над заголовком",
+    # мелкий, как знак
+    "печать":    "маленький в нижнем правом углу, как подпись",
+    "печать-лево": "маленький в нижнем левом углу",
+    "печать-верх": "маленький в верхнем правом углу",
+    # крупный и приглушённый
+    "тень":      "огромный и полупрозрачный за текстом",
+    "тень-край": "огромный и полупрозрачный, уходит за правый край",
+    "силуэт":    "во весь холст, еле различимый",
+    # особые
+    "лежит":     "лежит вдоль нижнего края, вытянувшись",
+    "боком":     "стоит справа, развёрнут и наклонён",
+    "заглянул":  "заглядывает сбоку справа, видна половина",
+    "малыш":     "совсем мелкий, сидит рядом с чертой",
+    "фон-угол":  "крупный в правом нижнем углу, приглушённый",
+}
+
+КОТ_CSS = """
+.кот-слой{{position:absolute;pointer-events:none}}
+.кот-слой img{{display:block}}
+/* Реплика кота. Он у нас знает, что находится внутри картинки, и иногда
+   комментирует происходящее из угла кадра. Облачко привязано к нему самому,
+   а не к холсту: куда переехал кот, туда и реплика. */
+.реплика-кота{{position:absolute;bottom:{реплика_низ}px;right:{поле_бок}px;
+  background:{лайм};color:{фон};border-radius:20px;padding:16px 22px;
+  font-family:Plex,sans-serif;font-weight:600;font-size:{реплика}px;
+  line-height:1.25;max-width:{ширина_реплики}px;text-align:left;
+  box-shadow:0 18px 40px rgba(0,0,0,.5)}}
+.реплика-кота:after{{content:"";position:absolute;right:34px;bottom:-11px;
+  width:0;height:0;border:12px solid transparent;border-top-color:{лайм};
+  border-bottom:0}}
+.реплика-слева{{right:auto;left:{поле_бок}px}}
+.реплика-слева:after{{right:auto;left:34px}}
+
+.кот-угол{{right:-{отступ}px;bottom:{низ}px}}
+.кот-угол img{{height:{крупно}px;filter:drop-shadow(0 24px 50px rgba(0,0,0,.65))}}
+.кот-угол-лево{{left:-{отступ}px;bottom:{низ}px}}
+.кот-угол-лево img{{height:{крупно}px;transform:scaleX(-1);
+  filter:drop-shadow(0 24px 50px rgba(0,0,0,.65))}}
+.кот-рядом{{right:{поле_бок}px;bottom:{низ}px}}
+.кот-рядом img{{height:{крупно}px;filter:drop-shadow(0 24px 50px rgba(0,0,0,.6))}}
+.кот-слева{{left:{поле_бок}px;bottom:{низ}px}}
+.кот-слева img{{height:{крупно}px;transform:scaleX(-1);
+  filter:drop-shadow(0 24px 50px rgba(0,0,0,.6))}}
+.кот-по-центру{{left:50%;bottom:{низ}px;transform:translateX(-50%)}}
+.кот-по-центру img{{height:{крупно}px;filter:drop-shadow(0 24px 50px rgba(0,0,0,.6))}}
+.кот-низ-край{{left:50%;bottom:-{полкота}px;transform:translateX(-50%)}}
+.кот-низ-край img{{height:{крупно}px;filter:drop-shadow(0 -10px 40px rgba(0,0,0,.5))}}
+
+.кот-выше{{right:{поле_бок}px;top:{вверх}px}}
+.кот-выше img{{height:{средне}px;filter:drop-shadow(0 20px 40px rgba(0,0,0,.6))}}
+.кот-выше-лево{{left:{поле_бок}px;top:{вверх}px}}
+.кот-выше-лево img{{height:{средне}px;transform:scaleX(-1);
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,.6))}}
+.кот-над-текстом{{left:50%;top:{вверх}px;transform:translateX(-50%)}}
+.кот-над-текстом img{{height:{средне}px;filter:drop-shadow(0 18px 36px rgba(0,0,0,.55))}}
+
+.кот-печать{{right:{поле_бок}px;bottom:{низ_знака}px}}
+.кот-печать img{{height:{мелко}px;opacity:.92;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.6))}}
+.кот-печать-лево{{left:{поле_бок}px;bottom:{низ_знака}px}}
+.кот-печать-лево img{{height:{мелко}px;opacity:.92;transform:scaleX(-1);
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.6))}}
+.кот-печать-верх{{right:{поле_бок}px;top:{поле_верх}px}}
+.кот-печать-верх img{{height:{мелко}px;opacity:.9;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.6))}}
+
+.кот-тень{{left:50%;top:52%;transform:translate(-50%,-50%)}}
+.кот-тень img{{height:{огромно}px;opacity:.14;filter:grayscale(.3)}}
+.кот-тень-край{{right:-{четверть}px;top:50%;transform:translateY(-50%)}}
+.кот-тень-край img{{height:{огромно}px;opacity:.16}}
+.кот-силуэт{{left:50%;top:50%;transform:translate(-50%,-50%)}}
+.кот-силуэт img{{height:{вовесь}px;opacity:.07;filter:grayscale(1) brightness(1.6)}}
+
+.кот-лежит{{left:50%;bottom:{низ_знака}px;transform:translateX(-50%) rotate(-90deg)}}
+.кот-лежит img{{height:{средне}px;opacity:.9}}
+.кот-боком{{right:{поле_бок}px;bottom:{низ}px;transform:rotate(8deg)}}
+.кот-боком img{{height:{крупно}px;filter:drop-shadow(0 24px 46px rgba(0,0,0,.6))}}
+.кот-заглянул{{right:-{полкота}px;bottom:{низ}px}}
+.кот-заглянул img{{height:{крупно}px;filter:drop-shadow(0 22px 44px rgba(0,0,0,.6))}}
+.кот-малыш{{left:{поле_бок}px;bottom:{низ_знака}px}}
+.кот-малыш img{{height:{кроха}px;opacity:.95}}
+.кот-фон-угол{{right:-{четверть}px;bottom:-{четверть}px}}
+.кот-фон-угол img{{height:{огромно}px;opacity:.2}}
+"""
+
+
+# Насколько крупно кот стоит в кадре. Это не про саму картинку позы, а про то,
+# сколько места она занимает: один и тот же кот, снятый одинаково крупно на
+# каждом слайде, читается как повторяющаяся наклейка.
+КРУПНОСТЬ = {"общий": 0.72, "средний": 1.0, "крупный": 1.4, "деталь": 2.0}
+
+
+def _кот(где: str, поза, д: dict, крупность: str = "средний",
+         реплика: str = "", высота_явно: int = 0, низ_явно: int = 0
+         ) -> tuple[str, str]:
+    """Слой с котом и его стили. Пустая пара, если кота не просили."""
+    if где in ("", "нет", None) or not поза or not Path(поза).exists():
+        return "", ""
+    база = д["кот_высота"]
+    высота = round(база * КРУПНОСТЬ.get(крупность, 1.0))
+    # Ширину берём из самой картинки. Считать её долей высоты нельзя: позы
+    # разной формы, и «выглядывает на четверть» у широкой и узкой означало
+    # совсем разное. Отсюда же и колонка под текст: она равна тому, сколько
+    # кот реально занимает, плюс зазор.
+    try:
+        from PIL import Image
+        с_ш, с_в = Image.open(поза).size
+        доля = с_ш / с_в
+    except Exception:                                        # noqa: BLE001
+        доля = 0.7
+    ширина_кота = max(1, round(высота * доля))
+    # Кот не должен занимать больше трети высоты холста: остальное нужно
+    # тексту, и делят они слайд именно по высоте.
+    предел = round(д["высота"] * 0.34)
+    if высота_явно:
+        высота = высота_явно
+    if высота > предел:
+        высота = предел
+    ширина_кота = max(1, round(высота * доля))
+    размеры = {
+        # За край уходит доля самого кота, а не число пикселей. Считали от
+        # базовой высоты, и получалось наоборот: крупному срезало пол-морды, а
+        # мелкий прятался целиком, оставляя от себя полоску.
+        # Низ отсчитывается от логотипа, а не от края: раньше кот садился
+        # прямо на знак и на полосу прогресса.
+        "отступ": round(ширина_кота * 0.16),
+        "низ": низ_явно or (д["низ_знака"] + 62),
+        "крупно": высота, "огромно": round(высота * 1.7),
+        "мелко": round(высота * 0.3), "средне": round(высота * 0.62),
+        "вверх": round(высота * 0.04), "полкота": round(ширина_кота * 0.22),
+        # Строго над макушкой: кот стоит на «низ», значит облачко начинается
+        # выше его роста, иначе садится ему на голову.
+        "реплика_низ": round(д["низ_знака"] + 62 + высота + 18),
+        "реплика": round(д["мысль"] * 0.72),
+        "ширина_реплики": round(д["ширина"] * 0.38),
+        # Сколько места оставить под котом: его рост плюс зазор.
+        "подвал": высота + 36,
+        "четверть": round(ширина_кота * 0.4), "вовесь": round(высота * 2.4),
+        "кроха": round(высота * 0.2), "поле_верх": д["поле_верх"],
+        "поле_бок": д["поле_бок"], "низ_знака": д["низ_знака"],
+        "лайм": config.ЛАЙМ, "фон": config.ФОН,
+    }
+    слева = где.endswith("-лево") or где == "слева"
+    # «тень» и «силуэт» лежат за текстом и колонку не занимают.
+    свой_угол = где not in ("тень", "силуэт", "по-центру", "низ-край",
+                            "над-текстом", "лежит")
+    пузырь = (f'<div class="реплика-кота{" реплика-слева" if слева else ""}">'
+              f'{_текст(реплика, 70)}</div>'
+              if (реплика or "").strip() else "")
+    слой = (f'{пузырь}<div class="кот-слой кот-{где}">'
+            f'<img src="file://{Path(поза).resolve()}"></div>')
+    # Кот и текст делят слайд по высоте, а не по ширине. Сначала было
+    # наоборот: текст ужимался вбок и оставлял коту колонку. Читалось плохо,
+    # строки рвались по одному слову. Теперь текст прижат вверх и держит всю
+    # ширину, а коту достаётся нижняя полоса, которая всё равно пустует.
+    полоса_кота = ""
+    if свой_угол:
+        полоса_кота = (f".стек>*:last-child{{margin-bottom:{размеры['подвал']}px}}")
+    return слой, КОТ_CSS.format(**размеры) + полоса_кота
+
+
+def страница_вида(вид: str, содержимое: dict, номер: int, всего: int,
+                  формат: str = "квадрат", поза=None, кот: str = "нет",
+                  оформление: str = "сетка", дизайн: str = "фирменный",
+                  крупность: str = "средний", реплика: str = "") -> tuple:
+    """Вёрстка слайда и его размеры, без отрисовки.
+
+    Отделено от снимка, чтобы композицию можно было проверить, ничего не
+    рисуя: проверка гоняет ту же страницу и спрашивает у браузера координаты.
+    """
+    return _страница_вида(вид, содержимое, номер, всего, формат, поза, кот,
+                          оформление, дизайн, крупность, реплика)
+
+
+def слайд_вида(вид: str, содержимое: dict, номер: int, всего: int,
+               формат: str = "квадрат", поза=None, кот: str = "нет",
+               оформление: str = "сетка", дизайн: str = "фирменный",
+               крупность: str = "средний", реплика: str = "",
+               проверять: bool = True):
+    """Слайд выбранного вида. Обвязка общая, внутренность своя.
+
+    Перед снимком композиция проверяется замером. Если кот с текстом всё же
+    пересеклись, слайд рисуется без кота: пустое место лучше наложения, и это
+    решается тут, а не глазами человека после отрисовки.
+    """
+    страница, ш, в = _страница_вида(вид, содержимое, номер, всего, формат, поза,
+                                    кот, оформление, дизайн, крупность, реплика)
+
+    if проверять and кот not in ("", "нет", None):
+        # Место коту считаем от настоящего низа текста, а не от края холста.
+        # Текст у каждой вёрстки своей длины, и любое заранее выбранное число
+        # рано или поздно оказывалось либо наложением, либо дырой.
+        пусто, _, _ = _страница_вида(вид, содержимое, номер, всего, формат,
+                                     None, "нет", оформление, дизайн,
+                                     крупность, "")
+        зам = _замерить(пусто, ш, в)
+        д = ФОРМАТЫ.get(формат, ФОРМАТЫ["квадрат"])
+        тексты = зам.get("текст") or []
+        if тексты:
+            низ_текста = max(т_[3] for т_ in тексты)
+            дно = в - д["низ_знака"] - 95          # выше логотипа и полосы
+            место = дно - низ_текста - 40          # зазор от текста
+            есть_реплика = bool((реплика or "").strip())
+            нужно = 240 + (90 if есть_реплика else 0)
+            if место >= нужно:
+                высота_кота = min(место - (90 if есть_реплика else 0),
+                                  round(в * 0.36))
+                страница, ш, в = _страница_вида(
+                    вид, содержимое, номер, всего, формат, поза, кот,
+                    оформление, дизайн, крупность, реплика,
+                    высота_кота, в - дно)
+            else:
+                кот, реплика = "нет", ""
+                страница = пусто
+    if проверять and кот not in ("", "нет", None):
+        беды = проверить_композицию(_замерить(страница, ш, в), формат)
+        # Отступаем по одному шагу, а не сразу до пустого слайда. Мешает чаще
+        # облачко, а не сам кот: у реплики своя ширина, и на длинном тексте она
+        # до него дотягивается. Сначала убираем её.
+        if беды and реплика:
+            страница, ш, в = _страница_вида(вид, содержимое, номер, всего,
+                                            формат, поза, кот, оформление,
+                                            дизайн, крупность, "")
+            беды = проверить_композицию(_замерить(страница, ш, в), формат)
+            if not беды:
+                print(f"композиция «{вид}»: реплика не помещалась, убрал её")
+        if беды:
+            print(f"композиция «{вид}»: {'; '.join(беды)} — рисую без кота")
+            страница, ш, в = _страница_вида(вид, содержимое, номер, всего,
+                                            формат, None, "нет", оформление,
+                                            дизайн, крупность, "")
+    return _снять(страница, ш, в)
+
+
+def _страница_вида(вид, содержимое, номер, всего, формат, поза, кот,
+                   оформление, дизайн, крупность, реплика,
+                   высота_кота=0, низ_кота=0) -> tuple:
+    д = размеры_дизайна(дизайн, _виды_размеры(_общее(номер, всего, формат)))
+    длина = len(" ".join(str(содержимое.get("заголовок", "")).split()))
+    б, с, м = д["шапка_кегли"]
+    д["кегль"] = б if длина <= 26 else с if длина <= 40 else м
+    слой, стили_кота = _кот(кот, поза, д, крупность, реплика,
+                            высота_кота, низ_кота)
+    панель, стили_холста = _оформление(оформление, д)
+    # Оформление идёт последним: оно перекрывает то, что задала вёрстка, а не
+    # наоборот. Иначе инверсия не смогла бы перекрасить текст.
+    # Порядок важен: дизайн перебивает базовую типографику, а оформление
+    # холста идёт последним и перебивает всё, включая цвет текста.
+    ещё = (ВИДЫ_CSS.format(**д) + _дизайн(дизайн, д)
+           + стили_кота + стили_холста)
+    слой = панель + слой
+    # Кот идёт перед содержимым: у него своё позиционирование, и в потоке
+    # он бы сдвинул текст.
+    нутро = слой + _нутро(вид, д, содержимое)
+    return (СЛАЙД.format(**д, ещё=ещё, нутро=нутро),
+            д["ширина"], д["высота"])
+
+
+# ── ПРОВЕРКА КОМПОЗИЦИИ ────────────────────────────────────────────────────
+# Смотреть на картинки глазами и ловить наложения по одному оказалось долго и
+# ненадёжно: каждый раз вылезало новое место. Браузер знает координаты каждого
+# блока точно, надо просто спросить.
+#
+# Проверка гоняет ту же страницу без снимка, забирает у неё прямоугольники
+# всех значимых блоков и сверяет их между собой. Ошибки композиции ловятся до
+# того, как что-то нарисовано.
+
+ЗАМЕР = """
+<script>
+window.addEventListener('load', function () {
+  var что = {текст: ['.шапка','.мысль','h1','.над','.з','.верно','.зачерк',
+                     '.реплика','.вывод','.огонь','.слово','.цифра','.пункты li',
+                     '.бок','.сторона','.ч','.п','.т','.произн','.междулиний',
+                     '.шкала-п','.подузлы'],
+             кот: ['.кот-слой img'], реплика: ['.реплика-кота'],
+             знак: ['.знак'], полоса: ['.полоса']};
+  var корень = document.documentElement;
+  var итог = {холст: [corner_w(), corner_h()]};
+  function corner_w() { return корень.offsetWidth || innerWidth; }
+  function corner_h() { return корень.offsetHeight || innerHeight; }
+  for (var роль in что) {
+    итог[роль] = [];
+    что[роль].forEach(function (с) {
+      document.querySelectorAll(с).forEach(function (э) {
+        var р = э.getBoundingClientRect();
+        if (р.width > 1 && р.height > 1)
+          итог[роль].push([Math.round(р.left), Math.round(р.top),
+                           Math.round(р.right), Math.round(р.bottom)]);
+      });
+    });
+  }
+  document.body.setAttribute('data-замер', JSON.stringify(итог));
+});
+</script>
+"""
+
+
+def _замерить(страница: str, ширина: int = 1080, высота: int = 1440) -> dict:
+    """Координаты блоков со страницы. Пусто, если браузер не ответил.
+
+    Размер окна задаём явно: без него браузер берёт свои 800x600, и любой блок
+    оказывается «за краем холста». Первая версия проверки из-за этого ругалась
+    на всё подряд, включая заведомо верную расстановку.
+    """
+    хром = config.хром()
+    if not хром:
+        return {}
+    config.ВЫВОД.mkdir(parents=True, exist_ok=True)
+    файл = config.ВЫВОД / f"замер_{secrets.token_hex(4)}.html"
+    файл.write_text(страница + ЗАМЕР, encoding="utf-8")
+    try:
+        готово = subprocess.run(
+            [хром, "--headless", "--disable-gpu", "--no-sandbox",
+             f"--window-size={ширина},{высота}",
+             "--virtual-time-budget=3000", "--dump-dom", f"file://{файл}"],
+            capture_output=True, text=True, timeout=90)
+        м = re.search(r'data-замер="([^"]+)"', готово.stdout)
+        if not м:
+            return {}
+        import html as _html
+        return json.loads(_html.unescape(м.group(1)))
+    except Exception:                                        # noqa: BLE001
+        return {}
+    finally:
+        файл.unlink(missing_ok=True)
+
+
+def _пересекаются(а, б, допуск: int = 2) -> bool:
+    return not (а[2] - допуск <= б[0] or б[2] - допуск <= а[0]
+                or а[3] - допуск <= б[1] or б[3] - допуск <= а[1])
+
+
+def проверить_композицию(замер: dict, формат: str = "3к4") -> list[str]:
+    """Что не так с расстановкой. Пустой список означает «всё чисто».
+
+    Проверяем ровно то, что портит картинку: наложения текста на кота и на его
+    реплику, вылет за холст сверх допустимого и заход в поле площадки.
+    """
+    if not замер:
+        return ["не удалось замерить страницу"]
+    ш, в = замер["холст"]
+    беды = []
+    д = ФОРМАТЫ.get(формат, ФОРМАТЫ["квадрат"])
+
+    for имя, роль in (("кот", "кот"), ("реплика кота", "реплика")):
+        for э in замер.get(роль, []):
+            for т_ in замер.get("текст", []):
+                if _пересекаются(э, т_):
+                    беды.append(f"{имя} накрывает текст")
+                    break
+            else:
+                continue
+            break
+
+    for э in замер.get("кот", []):
+        снаружи = max(0, -э[0]) + max(0, э[2] - ш) + max(0, э[3] - в)
+        if снаружи > (э[2] - э[0]) * 0.3:
+            беды.append("кота срезает краем больше чем на треть")
+        if э[3] > в - д["поле_низ"] * 0.25:
+            беды.append("кот заходит в нижнее поле площадки")
+
+    for р in замер.get("реплика", []):
+        for к_ in замер.get("кот", []):
+            if _пересекаются(р, к_):
+                беды.append("реплика села на кота")
+                break
+
+    for роль, имя in (("кот", "кот"), ("реплика", "реплика")):
+        for э in замер.get(роль, []):
+            if э[0] < -1 and роль == "реплика" or (роль == "реплика" and э[2] > ш):
+                беды.append("реплика не помещается в холст")
+            for п in замер.get("полоса", []) + замер.get("знак", []):
+                if _пересекаются(э, п):
+                    беды.append(f"{имя} налезает на логотип или полосу")
+                    break
+
+    return sorted(set(беды))

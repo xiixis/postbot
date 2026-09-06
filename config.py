@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+"""Настройки. Всё из окружения — в код секреты не попадают."""
+
+import os
+import shutil
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+КОРЕНЬ = Path(__file__).resolve().parent
+load_dotenv(КОРЕНЬ / ".env")
+
+ТОКЕН = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+КАНАЛ = os.getenv("TELEGRAM_CHANNEL", "").strip()
+АДМИН = int(os.getenv("TELEGRAM_ADMIN_ID", "0") or 0)
+# Модель зовётся через Claude Code, по подписке. Платный API запрещён, ключа
+# здесь нет и быть не должно — см. агент.py. Имена те, что понимает CLI:
+# короткий псевдоним всегда берёт свежую модель своего уровня и не устаревает.
+МОДЕЛЬ = os.getenv("CLAUDE_MODEL", "opus").strip()
+# Второй проход по тексту. Модель та же по умолчанию: голос это не та задача,
+# на которой стоит экономить, но переключить можно одной переменной.
+МОДЕЛЬ_ГУМАНИЗАТОРА = os.getenv("HUMANIZER_MODEL", "").strip() or МОДЕЛЬ
+# Разбор заметки на показатели это простая работа, ей хватает модели попроще.
+МОДЕЛЬ_РАЗБОРА = os.getenv("EXTRACT_MODEL", "sonnet").strip()
+КЛЮЧ_GEMINI = os.getenv("GEMINI_API_KEY", "").strip()
+МОДЕЛЬ_КАРТИНОК = os.getenv("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image").strip()
+
+# Мини-приложение. Свой домен, если бот на сервере; иначе адрес выдаст туннель.
+ПОРТ = int(os.getenv("WEBAPP_PORT", "8137") or 8137)
+АДРЕС_ВЕБА = os.getenv("WEBAPP_URL", "").strip().rstrip("/")
+
+# Рабочие данные. В контейнере это подключённый том, иначе папка рядом с кодом:
+# карточки и база не должны исчезать при обновлении образа.
+ДАННЫЕ = Path(os.getenv("POSTBOT_DATA", "").strip() or (КОРЕНЬ / "data"))
+БАЗА = ДАННЫЕ / "posts.db"
+ВЫВОД = ДАННЫЕ / "cards"
+АССЕТЫ = КОРЕНЬ / "assets"
+МАСКОТ = АССЕТЫ / "mascot"
+
+# Фирменные цвета 4xTube — те же, что в карточках постов
+ФОН, ПОВЕРХНОСТЬ, РАМКА = "#12130F", "#1B1E17", "#2C3024"
+ТЕКСТ, ПРИГЛУШ, ЛАЙМ, РЖАВЫЙ = "#F1F3EA", "#7C8270", "#C7E24B", "#E2703A"
+
+
+def хром() -> str:
+    """Путь к безголовому Chrome. Им рисуются карточки.
+
+    На сервере обычно chromium из пакетов, на маке — обычный Chrome.
+    Ищем сами, чтобы не заставлять прописывать путь руками.
+    """
+    явный = os.getenv("CHROME_PATH", "").strip()
+    if явный:
+        return явный
+    кандидаты = [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "chromium", "chromium-browser", "google-chrome", "google-chrome-stable",
+    ]
+    for к in кандидаты:
+        найден = к if os.path.isfile(к) else shutil.which(к)
+        if найден:
+            return найден
+    return ""
+
+
+def агент_на_месте() -> bool:
+    """Есть ли claude, которым бот сочиняет. Ввозим внутри: config читается
+    первым, и тянуть в него другие модули значило бы завести круг."""
+    try:
+        import агент
+        return агент.доступен()
+    except Exception:                                        # noqa: BLE001
+        return False
+
+
+def проверить() -> list[str]:
+    """Чего не хватает для запуска. Пусто — можно стартовать."""
+    беды = []
+    if not ТОКЕН:
+        беды.append("TELEGRAM_BOT_TOKEN не задан — бот не сможет подключиться")
+    if not КАНАЛ:
+        беды.append("TELEGRAM_CHANNEL не задан — публиковать некуда")
+    if not АДМИН:
+        беды.append("TELEGRAM_ADMIN_ID не задан — кнопки будут доступны кому угодно")
+    if not агент_на_месте():
+        беды.append("Claude Code не найден — сочинять нечем. Поставьте его и "
+                    "войдите в подписку (наберите `claude`, затем /login), "
+                    "либо пропишите полный путь в CLAUDE_BIN")
+    if not КЛЮЧ_GEMINI:
+        беды.append("GEMINI_API_KEY не задан — кот не будет рисоваться в новой позе, "
+                    "пойдут заготовки из комплекта")
+    if not хром():
+        беды.append("Chrome не найден, карточки не отрисуются. "
+                    "На сервере: apt install chromium, либо задайте CHROME_PATH")
+    return беды

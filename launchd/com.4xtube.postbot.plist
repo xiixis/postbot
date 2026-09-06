@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Автозапуск бота на macOS. Расписание работает, только пока бот жив, а
+  держать ради этого открытый терминал неудобно: закрыли окно, и посты
+  перестали выходить.
+
+  Установка (пути подставьте свои):
+    cp launchd/com.4xtube.postbot.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.4xtube.postbot.plist
+
+  Остановить:  launchctl unload ~/Library/LaunchAgents/com.4xtube.postbot.plist
+  Посмотреть:  tail -f ~/4xSoft/postbot/data/bot.log
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.4xtube.postbot</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>-u</string>
+    <string>bot.py</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/xiix/4xSoft/postbot</string>
+
+  <!-- cloudflared лежит в /opt/homebrew/bin, а launchd про него не знает -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/xiix/4xSoft/postbot/data/bot.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/xiix/4xSoft/postbot/data/bot.log</string>
+</dict>
+</plist>

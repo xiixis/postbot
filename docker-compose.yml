@@ -1,0 +1,39 @@
+# Запуск на сервере: бот и Caddy рядом.
+#
+# Caddy нужен не для красоты: Telegram открывает мини-приложение только по
+# https с настоящим сертификатом. Caddy получает его сам у Let's Encrypt и
+# продлевает без напоминаний, поэтому возиться с сертификатами не придётся
+# ни разу.
+services:
+  bot:
+    build: .
+    restart: always
+    env_file: .env
+    # Chromium раскладывает страницу в разделяемой памяти, а docker по
+    # умолчанию даёт под неё 64 МБ. На карточке 2560x1440 этого не хватает.
+    shm_size: "512m"
+    volumes:
+      - data:/data
+    expose:
+      - "8137"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    depends_on: [bot]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # адрес вида 1-2-3-4.sslip.io, подставляется из .env
+      WEBAPP_HOST: ${WEBAPP_HOST}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+# Имена томов только латиницей: docker compose кириллицу в них не принимает.
+volumes:
+  data:
+  caddy_data:
+  caddy_config:

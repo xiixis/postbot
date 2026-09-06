@@ -1,0 +1,27 @@
+# Развёртывание на Fly.io. Адрес приложения получается сразу и навсегда,
+# поэтому туннель на сервере не нужен: WEBAPP_URL задаётся один раз.
+app = "postbot-4xtube"
+primary_region = "waw"           # Варшава, ближайший к Киеву регион
+
+[build]
+
+[env]
+  POSTBOT_DATA = "/data"
+  WEBAPP_PORT = "8137"
+  TZ = "Europe/Kiev"
+
+[http_service]
+  internal_port = 8137
+  force_https = true
+  auto_stop_machines = false     # бот должен жить всегда: иначе встанет расписание
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[mounts]]
+  source = "postbot_data"
+  destination = "/data"
+
+[[vm]]
+  memory = "512mb"               # Chromium на карточку берёт около 300 МБ
+  cpu_kind = "shared"
+  cpus = 1
