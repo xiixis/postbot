@@ -356,9 +356,9 @@ h1{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;line-h
    которой листали, а призыв — то, что делать дальше. Отсюда кегль поменьше,
    лаймовая полоска слева вместо кнопки и место над логотипом. */
 .призыв{{position:absolute;left:{поле_бок}px;right:{поле_бок}px;
-  bottom:{призыв_низ}px;font-family:Plex,sans-serif;font-weight:600;
-  font-size:{призыв}px;line-height:1.3;color:{текст};
-  padding-left:{призыв_отступ}px;border-left:3px solid {лайм}}}
+  bottom:{призыв_низ}px;font-family:Plex,sans-serif;font-weight:700;
+  font-size:{призыв}px;line-height:1.25;color:{лайм};
+  padding-left:{призыв_отступ}px;border-left:5px solid {лайм}}}
 """
 
 
@@ -488,7 +488,7 @@ def слайд_финал(вывод: str, номер: int, всего: int,
     На обложке та же просьба выглядела бы как плата за вход.
     """
     д = _общее(номер, всего, формат)
-    д["призыв"] = round(д["мысль"] * 0.78)
+    д["призыв"] = round(д["мысль"] * 0.98)
     д["призыв_низ"] = д["низ_знака"] + 78
     д["призыв_отступ"] = round(д["поле_бок"] * 0.35)
     нутро = (f'<div class="точка">Итог</div>'
