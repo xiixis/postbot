@@ -1,0 +1,549 @@
+/* Палитра и шкала взяты из приложения 4xTube: те же переменные, те же
+   скругления и та же кривая движения. Мини-приложение должно читаться как
+   его продолжение, а не как отдельный сайт. */
+:root{
+  --bg:#0f0f0f; --surface:#171717; --surface-2:#1f1f1f; --surface-3:#2b2b2b;
+  --border:#2e2e2e; --border-strong:#454545;
+  --text:#f2f2f0; --muted:#8d8d87;
+  --accent:#c6ff34; --accent-hover:#d3ff5e; --accent-soft:#2b3a0d; --on-accent:#171717;
+  --violet:#a78bfa; --danger:#ff6b6b; --warn:#ffb648;
+  --radius:.5rem; --radius-sm:.25rem;
+  --shadow:0 8px 26px rgba(0,0,0,.7); --shadow-soft:0 2px 8px rgba(0,0,0,.4);
+  --dur-micro:.2s; --dur-swap:.3s;
+  --плавно:transform .2s var(--ease-out),background-color .2s var(--ease-out),
+           border-color .2s var(--ease-out),color .2s var(--ease-out),
+           opacity .2s var(--ease-out);
+  --ease-out:cubic-bezier(.05,.7,.1,1);
+  --press:scale(.97);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-tap-highlight-color:transparent}
+button,.вещь,.ячейка,.станок,.нстр,.сырьёкн div{touch-action:manipulation}
+/* Корень 16, а не 14. При 14 вся вторая ступень шкалы уходила ниже
+   двенадцати пикселей — предела, за которым текст на телефоне уже не
+   читают, а разбирают. Шкала осталась та же, просто вся крупнее. */
+html{font-size:clamp(16px,.25vw+14.8px,18px)}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:.875rem/1.5 -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding:calc(var(--верх, 0px)) 1rem
+          calc(1.25rem + var(--низ, env(safe-area-inset-bottom)));
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+/* Обводка фокуса. Её не было вовсе: человек с клавиатурой не видел, где
+   находится. Только focus-visible — мышью она не мешает. */
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;
+  border-radius:var(--radius-sm)}
+
+/* ── шапка ───────────────────────────────────────────────────────────── */
+header{display:flex;align-items:center;gap:.625rem;padding:1rem 0 .875rem;
+  min-width:0}
+header img{width:1.75rem;height:1.75rem;display:block}
+header .name{font-weight:700;letter-spacing:-.01em;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+header #mac{margin-left:auto;font-size:.75rem;padding:.3125rem .625rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:999px;
+  color:var(--muted)}
+header #mac.off{border-color:var(--warn);color:var(--warn)}
+header #mac{flex:0 0 auto}
+@media (max-width:30rem){header #mac .слово{display:none}}
+header .ch{color:var(--muted);font-size:.75rem;min-width:0;flex:0 1 auto;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:999px;padding:.3125rem .625rem;transition:var(--плавно)}
+header .ch:active{transform:var(--press)}
+/* основной канал подсвечен: это канал на десять тысяч человек, и то, что
+   пишем сейчас именно туда, должно читаться с одного взгляда */
+header .ch.main{color:var(--accent);border-color:var(--accent);
+  background:var(--accent-soft)}
+.pick{display:flex;align-items:center;gap:.625rem;width:100%;text-align:left;
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  border-radius:var(--radius);padding:.75rem;margin-bottom:.5rem;
+  transition:var(--плавно)}
+.pick:active{transform:var(--press)}
+.pick.on{border-color:var(--accent);background:var(--accent-soft)}
+.pick .галка{width:1.25rem;color:var(--accent)}
+.pick .низ{font-size:.75rem;color:var(--muted)}
+
+/* ── цех ─────────────────────────────────────────────────────────────
+   Главное в приложении не пост, а машина, которая их делает. При пяти
+   публикациях в день отдельный пост перестаёт быть событием: важнее,
+   работает ли станок, чем он занят и не кончилось ли сырьё. Поэтому
+   верхний экран это станки, а посты живут внутри них. */
+/* Когда главную кнопку рисует телеграм, наша такая же в вёрстке лишняя:
+   одно действие не должно быть на экране дважды. */
+body[data-родная="да"] #создать,
+body[data-родная="да"] #дособрать,
+body[data-родная="да"] [data-забрать]{display:none}
+.назад{background:transparent;border:0;color:var(--muted);font-size:.8125rem;
+  padding:.75rem 0 .5rem;display:flex;align-items:center;gap:.375rem;
+  transition:var(--плавно)}
+.назад:active{transform:var(--press)}
+.lbl.свер{margin-top:1.25rem}
+.сводка{display:flex;align-items:center;gap:.625rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);padding:.75rem;
+  margin-bottom:.75rem}
+.сводка .кол{flex:1;min-width:0;text-align:center}
+.сводка b{display:block;font-size:1.375rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums}
+.сводка span{display:block;font-size:.6875rem;color:var(--muted);
+  line-height:1.3;margin-top:.1875rem}
+.сводка .раз{width:1px;align-self:stretch;background:var(--border);flex:0 0 auto}
+.сводка b.тревога{color:var(--warn)}
+
+.станок{background:var(--surface);border:1px solid var(--border);
+  border-radius:.75rem;padding:.875rem;margin-bottom:.625rem;
+  transition:var(--плавно)}
+.станок.спит{opacity:.62}
+.станок.работает{border-color:var(--accent)}
+.станок.встал{border-color:var(--danger)}
+.станок.обесточен{border-color:var(--warn)}
+.сост-станка{display:flex;align-items:flex-start;gap:.625rem;margin-top:.75rem;
+  padding-top:.75rem;border-top:1px solid var(--border)}
+.сост-станка .зн{font-size:1.125rem;flex:0 0 auto;line-height:1.2}
+.сост-станка b{display:block;font-weight:600;font-size:.8125rem}
+.сост-станка span{color:var(--muted);font-size:.6875rem;line-height:1.4;
+  overflow-wrap:anywhere}
+.станок.работает .сост-станка b{color:var(--accent)}
+.станок.встал .сост-станка b{color:var(--danger)}
+.станок.обесточен .сост-станка b{color:var(--warn)}
+.станок .вещь .час{flex:0 0 auto;font-size:.6875rem;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.станок .вещь.ждут .т{color:var(--warn)}
+.станок:active{transform:var(--press)}
+.станок .гол{display:flex;align-items:center;gap:.6875rem}
+.станок .гол .зн{font-size:1.375rem;flex:0 0 auto}
+.станок .гол b{font-size:.875rem;font-weight:700}
+.станок .гол .низ{font-size:.6875rem;color:var(--muted);margin-top:.125rem;
+  line-height:1.35}
+/* Тумблер, а не кнопка: у автопилота два состояния, и они должны читаться
+   без нажатия. */
+.тумблер{margin-left:auto;width:2.875rem;height:1.625rem;border-radius:999px;
+  background:var(--surface-3);border:1px solid var(--border-strong);
+  position:relative;flex:0 0 auto;transition:var(--плавно)}
+/* Сам тумблер должен остаться тумблером по виду, поэтому область нажатия
+   растим невидимо — до нормы в 44 точки. */
+.тумблер::after{content:"";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);width:2.875rem;height:2.75rem}
+.тумблер i{position:absolute;top:.125rem;left:.125rem;width:1.25rem;height:1.25rem;
+  border-radius:50%;background:var(--muted);display:block;transition:var(--плавно)}
+.тумблер.on{background:var(--accent-soft);border-color:var(--accent)}
+.тумблер.on i{left:auto;right:.125rem;background:var(--accent)}
+/* Шкала это топливо станка: сколько вышло, сколько готово ждать и сколько
+   ячеек пустует. Пустая ячейка — работа, а не отсутствие. */
+.шкала{display:flex;gap:.25rem;margin-top:.8125rem}
+.шкала span{flex:1;height:.5625rem;border-radius:.1875rem;background:var(--surface-3)}
+.шкала span.вышло{background:var(--border-strong)}
+.шкала span.готов{background:var(--accent)}
+/* Ячейка, над которой станок работает прямо сейчас. Заливка ползёт слева
+   направо — это и есть индикатор, отдельной полоски не нужно. */
+.шкала span.идёт{background:linear-gradient(90deg,var(--accent) 50%,
+  var(--surface-3) 50%);background-size:200% 100%;
+  animation:наполняется 1.6s linear infinite}
+@keyframes наполняется{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){
+  .шкала span.идёт{animation:none;background:var(--accent-soft)}}
+.подшкала{display:flex;margin-top:.5rem;font-size:.6875rem;color:var(--muted);
+  gap:.5rem}
+.подшкала b{color:var(--text);font-weight:600}
+.подшкала span:last-child{margin-left:auto;text-align:right}
+.станок .вещь{display:flex;align-items:center;gap:.5625rem;padding:.5625rem 0;
+  border-top:1px solid var(--border);font-size:.8125rem}
+.станок .вещь img{width:1.75rem;aspect-ratio:3/4;object-fit:cover;
+  object-position:top;border-radius:var(--radius-sm);flex:0 0 auto;
+  background:var(--surface-2)}
+.станок .вещь .т{flex:1;min-width:0;line-height:1.3;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.станок .вещь .сост{flex:0 0 auto;font-size:.6875rem;color:var(--accent)}
+.внутрь{display:flex;align-items:center;justify-content:center;gap:.375rem;
+  color:var(--muted);font-size:.6875rem;padding-top:.6875rem;
+  border-top:1px solid var(--border);margin-top:.125rem}
+
+/* Ячейка смены. Час слева — это адрес поста в дне. */
+.ячейка{display:flex;align-items:center;gap:.5625rem;padding:.625rem;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);margin-bottom:.375rem;transition:var(--плавно)}
+.ячейка:active{transform:var(--press)}
+.ячейка .час{font-size:.8125rem;font-variant-numeric:tabular-nums;
+  width:2.625rem;flex:0 0 auto;color:var(--accent)}
+.ячейка.прошла .час{color:var(--muted)}
+.ячейка img{width:1.875rem;aspect-ratio:3/4;object-fit:cover;object-position:top;
+  border-radius:var(--radius-sm);flex:0 0 auto;background:var(--surface-2)}
+.ячейка .т{flex:1;min-width:0;font-size:.8125rem;line-height:1.3;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ячейка .сост{flex:0 0 auto;font-size:.6875rem;color:var(--muted)}
+.ячейка .сост.готов{color:var(--accent)}
+.ячейка.пуста{border-style:dashed;border-color:var(--border-strong);
+  background:transparent;justify-content:center;color:var(--muted);
+  font-size:.8125rem;padding:.8125rem}
+.ячейка.пуста.прошла{opacity:.45;border-color:var(--border)}
+
+/* Пост, который ждёт одобрения. Он показан не как ячейка: у него нет
+   часа, и притворяться частью смены он не должен. */
+.карточка-ждёт{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.625rem;margin-bottom:.5rem}
+.карточка-ждёт .верхушка{display:flex;align-items:center;gap:.625rem;
+  transition:var(--плавно)}
+.карточка-ждёт .верхушка:active{transform:var(--press)}
+.карточка-ждёт img{border-radius:var(--radius-sm);object-fit:cover;
+  object-position:top;flex:0 0 auto;background:var(--surface-2)}
+.карточка-ждёт .т{flex:1;min-width:0;font-size:.8125rem;line-height:1.3;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.карточка-ждёт .стр{color:var(--border-strong);flex:0 0 auto}
+.часы-выбор{display:flex;flex-wrap:wrap;gap:.375rem;margin-top:.625rem;
+  padding-top:.625rem;border-top:1px solid var(--border)}
+.часы-выбор button{border:1px solid var(--border-strong);background:transparent;
+  color:var(--text);border-radius:999px;height:2.25rem;padding:0 .875rem;
+  font-size:.75rem;font-variant-numeric:tabular-nums;transition:var(--плавно)}
+.часы-выбор button:active{transform:var(--press);background:var(--accent-soft);
+  border-color:var(--accent);color:var(--accent)}
+.ячейка .сост.одобрен{color:var(--accent)}
+/* Номер поста. Он же в чате бота, в логе и в ошибках, и без него owner не
+   может сказать «поправь 71»: заголовки у похожих постов совпадают. */
+.номер{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;
+  margin-right:.15rem}
+
+.нстр{display:flex;align-items:center;gap:.625rem;padding:.75rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:.375rem;font-size:.8125rem;
+  transition:var(--плавно)}
+.нстр:active{transform:var(--press)}
+.нстр .знч{margin-left:auto;color:var(--accent);font-size:.6875rem;
+  text-align:right}
+.нстр .стр{color:var(--border-strong)}
+
+.сырьёкн{display:flex;gap:.5rem}
+.сырьёкн div{flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:.5625rem;padding:.6875rem;font-size:.6875rem;color:var(--muted);
+  line-height:1.35;transition:var(--плавно)}
+.сырьёкн div:active{transform:var(--press)}
+.сырьёкн b{display:block;color:var(--text);font-size:.8125rem;font-weight:600;
+  margin-bottom:.125rem}
+
+/* Заказ. Первым спрашивается количество: при пяти публикациях в день это
+   и есть настоящий вопрос, а «про что» станок решит сам. */
+.счётчик{display:flex;align-items:center;gap:.875rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:.75rem;padding:1rem;
+  margin-bottom:.75rem}
+.счётчик button{width:3rem;height:3rem;border-radius:999px;
+  border:1px solid var(--border-strong);background:transparent;color:var(--text);
+  font-size:1.25rem;flex:0 0 auto;transition:var(--плавно)}
+.счётчик button:active:not(:disabled){transform:var(--press)}
+.счётчик button:disabled{opacity:.3}
+.счётчик .ч{flex:1;text-align:center;min-width:0}
+.счётчик .ч b{display:block;font-size:2.125rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums}
+.счётчик .ч span{font-size:.6875rem;color:var(--muted);display:block;
+  margin-top:.25rem}
+.станки{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.станки button{border:1px solid var(--border);background:var(--surface);
+  border-radius:.5625rem;padding:.75rem;font-size:.8125rem;line-height:1.3;
+  text-align:left;color:var(--text);transition:var(--плавно)}
+.станки button b{display:block;font-weight:600;margin-bottom:.125rem}
+.станки button span{color:var(--muted);font-size:.6875rem}
+.станки button.on{border-color:var(--accent);background:var(--accent-soft)}
+.станки button.on b{color:var(--accent)}
+.ячч{display:flex;flex-wrap:wrap;gap:.375rem}
+.ячч button{border:1px solid var(--border);background:var(--surface);
+  border-radius:999px;padding:.5rem .75rem;font-size:.6875rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;transition:var(--плавно)}
+.ячч button.on{border-color:var(--accent);background:var(--accent-soft);
+  color:var(--accent)}
+.ячч button:active{transform:var(--press)}
+
+.часы-станка{display:flex;flex-wrap:wrap;gap:.375rem}
+.часы-станка span{border:1px solid var(--accent);background:var(--accent-soft);
+  color:var(--accent);border-radius:999px;padding:.5rem .75rem;font-size:.6875rem;
+  font-variant-numeric:tabular-nums}
+.часы-станка span.плюс{border-color:var(--border-strong);background:transparent;
+  color:var(--muted)}
+
+.углы{display:flex;flex-wrap:wrap;gap:.375rem}
+.углы span{border:1px solid var(--border);background:var(--surface);
+  border-radius:999px;padding:.5rem .75rem;font-size:.6875rem;color:var(--muted)}
+.углы span.on{border-color:var(--accent);color:var(--accent);
+  background:var(--accent-soft)}
+.углы span.был{opacity:.4}
+
+/* ── вкладки ─────────────────────────────────────────────────────────── */
+.tabs{display:flex;gap:.25rem;background:var(--surface);border:1px solid var(--border);
+  border-radius:999px;padding:.25rem;margin-bottom:1rem}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;color:var(--muted);
+  border-radius:999px;padding:.5rem;font-size:.8125rem;font-weight:600;
+  transition:var(--плавно)}
+.tabs button.on{background:var(--surface-3);color:var(--text)}
+.tabs button:active{transform:var(--press)}
+.tabs .dot[hidden]{display:none}
+.tabs .dot{display:inline-block;min-width:1.25rem;margin-left:.25rem;
+  font-size:.6875rem;color:var(--on-accent);background:var(--accent);
+  border-radius:999px;padding:0 .3rem}
+
+/* ── общие блоки ─────────────────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.875rem;box-shadow:var(--shadow-soft)}
+.card + .card{margin-top:.625rem}
+.lbl{font-size:.75rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:1.25rem 0 .5rem}
+.lbl:first-child{margin-top:0}
+.muted{color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:2.5rem 1rem;line-height:1.6}
+.empty b{display:block;color:var(--text);margin-bottom:.25rem}
+
+.stats{display:flex;gap:.5rem;margin-top:.75rem}
+/* min-width:0 обязателен: без него колонка не даёт себя сжать, и длинное
+   слово распирает строку вместо переноса. */
+.stats div{flex:1 1 0;min-width:0;background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);padding:.625rem;text-align:center;
+  font-size:.6875rem;color:var(--muted);overflow-wrap:anywhere}
+
+/* Факты это не числа, а предложения разной длины. В плитках со «сводкой» они
+   ломали строку: там крупный жирный текст по центру, рассчитанный на «165$»,
+   а приходит «перестали использовать, аватаров в роликах нет». */
+/* Справка о проекте: один список, а не девять карточек. Правило «.факты div»
+   цепляло и вложенные подпись со значением, поэтому каждый факт рисовался
+   рамкой внутри рамки и блок съедал половину экрана. */
+.факты{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-top:.75rem;overflow:hidden}
+.факты>div{padding:.5rem .75rem;min-width:0}
+.факты>div+div{border-top:1px solid var(--border)}
+.факты .к{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.125rem}
+.факты .з{font-size:.8125rem;line-height:1.35;color:var(--text);
+  overflow-wrap:anywhere}
+.stats b{display:block;font-size:1.125rem;color:var(--text);font-weight:700;
+  line-height:1.2;font-variant-numeric:tabular-nums}
+
+.идея{display:flex;gap:.375rem;margin-bottom:.375rem}
+.идея .взять{flex:1;text-align:left;background:var(--surface);color:var(--text);
+  border:1px solid var(--border);border-radius:var(--radius);padding:.625rem .75rem;
+  font-size:.8125rem;line-height:1.35;transition:var(--плавно)}
+.идея .взять:active{transform:var(--press)}
+.идея .выкинуть{background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:var(--radius);padding:0 .625rem;font-size:.75rem}
+
+.chips{display:flex;flex-wrap:wrap;gap:.375rem}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--muted);
+  border-radius:999px;padding:.4375rem .875rem;font-size:.8125rem;
+  transition:var(--плавно)}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chip:active{transform:var(--press)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  border:1px solid var(--border);background:var(--surface);color:var(--text);
+  border-radius:999px;padding:.625rem 1.25rem;font-size:.8125rem;
+  transition:var(--плавно);box-shadow:var(--shadow-soft)}
+.btn:active:not(:disabled){transform:var(--press)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);
+  color:var(--on-accent);font-weight:600}
+.btn.wide{width:100%;padding:.8125rem}
+.btn.ghost{background:transparent;border-color:var(--border)}
+.btn.danger{color:var(--danger);border-color:var(--border)}
+.row{display:flex;gap:.5rem}
+.row .btn{flex:1}
+
+/* ── пост ────────────────────────────────────────────────────────────── */
+.shot{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--radius);
+  border:1px solid var(--border);display:block;background:var(--surface-2)}
+/* Карточка очереди. Одна карточка это одно решение: что за пост, куда он
+   поедет и что с ним сделать. Всё, что не помогает решить, ушло на вкладку
+   «Ещё»: раньше первый экран показывал разом план, цифры, копилку, факты,
+   рубрики и пять кнопок, и глазу не за что было зацепиться. */
+/* Превью крупнее: пост узнаётся по картинке быстрее, чем по заголовку,
+   а она была самым мелким элементом карточки. */
+/* Единственный акцент на карточке. Раньше зелёными были все кнопки подряд,
+   на экран приходилось пять зелёных полос, и глазу не за что было зацепиться. */
+
+/* Адреса одной строкой: выбранные подписаны, остальные значком. Четыре
+   кнопки в две строки занимали столько же места, сколько само решение, и
+   повторялись у каждого поста. Остальное — время, правка, убрать — ушло
+   под «⋯»: было восемь кнопок на карточку и сорок на экран. */
+
+/* Полоска хода. Генерация идёт минутами, и человек за это время сворачивает
+   приложение. Вернувшись, он должен увидеть, что работа идёт, на любом
+   экране, а не только в листе, из которого её запустил. */
+.полоска{display:flex;align-items:center;gap:.625rem;background:var(--surface);
+  border:1px solid var(--accent);border-radius:var(--radius);
+  padding:.75rem .875rem;margin-bottom:.625rem}
+.полоска .что{font-weight:600;font-size:.8125rem}
+.полоска .этап{margin-left:auto;color:var(--muted);font-size:.75rem;
+  text-align:right;overflow-wrap:anywhere}
+
+/* Пачка. Пять постов в день в TikTok одобряются не по одному — это главная
+   ежедневная работа, и у неё должна быть своя строка. */
+.строчка{display:flex;gap:.625rem;align-items:baseline;font-size:.8125rem;
+  padding:.5rem 0;border-top:1px solid var(--border);line-height:1.35}
+.строчка span{margin-left:auto;flex:0 0 auto;color:var(--muted);font-size:.75rem}
+/* Создание переехало наверх: это второе по частоте действие после
+   одобрения, а внизу его приходилось искать под всей лентой. */
+#создать{border-color:var(--border-strong);background:transparent;
+  height:3.5rem;margin-bottom:1rem}
+.пусто{text-align:center;color:var(--muted);padding:2.5rem 1rem;line-height:1.5}
+.пусто b{display:block;color:var(--text);font-size:1rem;margin-bottom:.375rem}
+
+/* Куда поедет пост. Ряд переключателей прямо на карточке: раньше выбрать
+   площадку можно было только кнопками в чате бота. */
+/* Ровно две колонки, а не перенос: при переносе четвёртая площадка вставала
+   одна во всю ширину и выглядела как отдельная кнопка. */
+.куда{display:grid;grid-template-columns:1fr 1fr;gap:.375rem;margin-top:.375rem}
+.куда button{min-width:0;background:var(--surface-2);
+  border:1px solid var(--border);color:var(--muted);border-radius:var(--radius);
+  padding:.4375rem .5rem;font-size:.75rem;transition:var(--плавно);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.куда button.on{border-color:var(--accent);color:var(--accent);
+  background:var(--accent-soft)}
+.куда button.серая{opacity:.45}
+.куда button:active{transform:var(--press)}
+.аккаунт{display:flex;align-items:center;gap:.75rem}
+.кружок{width:2.75rem;height:2.75rem;border-radius:50%;display:grid;
+  place-items:center;font-size:1.35rem;background:var(--surface-3);
+  border:1px solid var(--border);flex:0 0 auto}
+.ттпост{margin-top:.5rem}
+.ттпост .t{margin:.5rem 0 .625rem;font-weight:600}
+.лента.малая img{width:32%}
+/* Карусель листается пальцем и прилипает к слайду: так же, как в телеграме */
+.лента{display:flex;gap:.5rem;overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;padding-bottom:.375rem;margin:0 -1px}
+.лента::-webkit-scrollbar{height:0}
+.лента img{width:74%;flex:0 0 auto;aspect-ratio:1;object-fit:cover;
+  scroll-snap-align:center;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--surface-2)}
+.лента img:only-child{width:100%}
+.счётслайдов{font-size:.75rem;color:var(--muted);margin-top:.375rem;text-align:center}
+.post{margin-top:.75rem;white-space:pre-wrap;word-wrap:break-word;line-height:1.55}
+.post b{font-weight:700}
+.post code{background:var(--surface-3);border-radius:var(--radius-sm);
+  padding:.0625rem .3125rem;font-size:.8125em;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.post blockquote{margin:.5rem 0;padding:.125rem 0 .125rem .75rem;
+  border-left:2px solid var(--accent);color:var(--text)}
+.post a{color:var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:.375rem;align-items:center;
+  font-size:.75rem;color:var(--muted)}
+.tag{background:var(--surface-2);border:1px solid var(--border);
+  border-radius:999px;padding:.125rem .5rem}
+.tag.when{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.tag.done{color:var(--muted)}
+
+/* строка расписания */
+.line{display:flex;gap:.75rem;align-items:center;width:100%;text-align:left;
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  border-radius:var(--radius);padding:.75rem;transition:var(--плавно)}
+.line:active{transform:var(--press)}
+.line img{width:4.5rem;aspect-ratio:16/9;object-fit:cover;border-radius:var(--radius-sm);
+  flex:0 0 auto;background:var(--surface-2)}
+.line .t{font-size:.8125rem;line-height:1.35;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.line .w{font-size:.6875rem;color:var(--accent);margin-top:.25rem}
+.line .w.past{color:var(--muted)}
+.сам{color:var(--muted);font-weight:400}
+.охват{color:var(--muted);font-variant-numeric:tabular-nums;margin-left:.375rem}
+
+/* ── работа ──────────────────────────────────────────────────────────── */
+.work{display:flex;flex-direction:column;gap:.625rem;padding:1.5rem .875rem}
+.step{display:flex;align-items:center;gap:.625rem;color:var(--muted);
+  font-size:.8125rem;transition:var(--dur-swap)}
+.step.on{color:var(--text)}
+.step.done{color:var(--muted)}
+.spin{width:.875rem;height:.875rem;border-radius:50%;flex:0 0 auto;
+  border:2px solid var(--surface-3);border-top-color:var(--accent);
+  animation:vr .7s linear infinite}
+.step.done .spin{border-color:var(--accent);animation:none}
+.step:not(.on):not(.done) .spin{border-color:var(--surface-3);animation:none}
+@keyframes vr{to{transform:rotate(360deg)}}
+
+/* Широкий экран. Приложение задумано под телефон, поэтому на мониторе оно
+   не растягивается во всю ширину — колонка остаётся читаемой. Раскрывается
+   только очередь: одобрять посты удобнее, когда все карточки видны разом,
+   а не по одной в длинной ленте. */
+@media (min-width:52rem){
+  body{padding-left:2rem;padding-right:2rem}
+  header,#путь,#ход,#view{max-width:34rem;margin-left:auto;margin-right:auto}
+  /* В цехе станков всего два: рядом они читаются лучше, чем друг под
+     другом, и весь день помещается в один взгляд. */
+  body[data-экран="цех"] header,
+  body[data-экран="цех"] #путь,
+  body[data-экран="цех"] #ход,
+  body[data-экран="цех"] #view{max-width:52rem}
+  .куда{grid-template-columns:repeat(4,1fr)}
+  #создать{max-width:34rem;margin-left:auto;margin-right:auto;display:flex}
+}
+
+/* Кому движение мешает — тому его нет. Раньше правило гасило только
+   кружок ожидания, а нажатия и листы продолжали прыгать. */
+@media (prefers-reduced-motion:reduce){
+  .spin{animation:none}
+  *,*::before,*::after{animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .sheet .in{animation:none}
+}
+
+@media (hover:hover){
+  .кн:hover,.btn:hover,.станок:hover,.ячейка:hover,.нстр:hover,
+  .вещь:hover,.сырьёкн div:hover{border-color:var(--border-strong)}
+  .btn.primary:hover{background:var(--accent-hover)}
+}
+
+/* ── лист снизу ──────────────────────────────────────────────────────── */
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;
+  display:flex;align-items:flex-end;animation:fade var(--dur-micro) var(--ease-out)}
+.снизу{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 28%);
+  padding-top:1rem;margin-top:.25rem}
+.sheet .in{width:100%;max-height:92vh;overflow:auto;background:var(--bg);
+  border-top-left-radius:1rem;border-top-right-radius:1rem;
+  border-top:1px solid var(--border);padding:.75rem 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  animation:up var(--dur-swap) var(--ease-out)}
+.ручка-листа{display:flex;align-items:center;margin:-.25rem -.25rem .75rem;
+  padding-right:2.75rem;touch-action:none;position:relative;min-height:2.75rem}
+.grip{width:2.25rem;height:.25rem;border-radius:999px;background:var(--surface-3);
+  margin:0 auto;display:block}
+.закрыть{position:absolute;right:0;top:50%;transform:translateY(-50%);
+  width:2.75rem;height:2.75rem;border-radius:999px;border:0;background:transparent;
+  color:var(--muted);font-size:.9375rem;line-height:1;display:grid;
+  place-items:center;transition:var(--плавно)}
+/* Кружок рисуем внутри: он и есть фирменная мелкая кнопка, а внешние
+   44 точки остаются целью нажатия. */
+.закрыть::before{content:"";position:absolute;width:1.75rem;height:1.75rem;
+  border-radius:999px;background:var(--surface-2);border:1px solid var(--border);
+  transition:var(--плавно)}
+.закрыть span{position:relative}
+.закрыть:active::before{background:var(--surface-3);border-color:var(--border-strong)}
+.закрыть:active{color:var(--text)}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(4%)}}
+
+.toast{position:fixed;left:50%;bottom:1.25rem;transform:translateX(-50%);
+  background:var(--surface-3);border:1px solid var(--border-strong);
+  border-radius:999px;padding:.5rem 1rem;font-size:.8125rem;z-index:800;
+  box-shadow:var(--shadow);animation:fade var(--dur-micro)}
+.toast.bad{border-color:var(--danger);color:var(--danger)}
+
+select{width:100%;background:var(--surface);color:var(--text);
+  border:1px solid var(--border);border-radius:var(--radius);padding:.625rem .75rem}
+.галка{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;font-size:.8125rem;
+  color:var(--muted)}
+.галка input{width:1rem;height:1rem;accent-color:var(--accent)}
+input[type=datetime-local],input[type=text],input[type=url],textarea{
+  width:100%;background:var(--surface);color:var(--text);
+  border:1px solid var(--border);border-radius:var(--radius);padding:.625rem .75rem;
+  transition:border-color var(--dur-micro)}
+input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:9rem;line-height:1.5}
+.field{margin-bottom:.5rem}
+.field label{display:block;font-size:.6875rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.hint{font-size:.75rem;color:var(--muted);margin-top:.375rem;line-height:1.45}
+.gear{border:1px solid var(--border);background:var(--surface);color:var(--muted);
+  border-radius:999px;width:2.75rem;height:2.75rem;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:var(--плавно)}
+.gear:active{transform:var(--press)}
+.gear.off{border-color:var(--warn);background:var(--surface-2)}
+.step.live{color:var(--accent);font-variant-numeric:tabular-nums}
+.plat{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.625rem;margin-bottom:.5rem}

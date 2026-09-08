@@ -36,6 +36,10 @@ class Ручка(BaseHTTPRequestHandler):
         self.send_header("Content-Type", тип)
         self.send_header("Content-Length", str(len(тело)))
         self.send_header("Cache-Control", кэш)
+        # Та же защита, что и в облаке: запаска включается в худший день, и
+        # приложение не должно оказаться в этот день голым.
+        for имя, значение in config.ЗАЩИТА.items():
+            self.send_header(имя, значение)
         self.end_headers()
         self.wfile.write(тело)
 

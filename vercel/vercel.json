@@ -1,6 +1,30 @@
 {
-  "regions": ["dub1"],
+  "regions": [
+    "dub1"
+  ],
   "rewrites": [
-    { "source": "/api/:route*", "destination": "/api/index?route=:route*" }
+    {
+      "source": "/api/:route*",
+      "destination": "/api/index?route=:route*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://telegram.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'; font-src 'self'; frame-ancestors https://web.telegram.org https://*.telegram.org; base-uri 'none'; object-src 'none'; form-action 'none'"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
   ]
 }
