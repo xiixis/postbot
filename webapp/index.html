@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#0f0f0f">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Редактор 4xTube</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -18,20 +19,35 @@
   --radius:.5rem; --radius-sm:.25rem;
   --shadow:0 8px 26px rgba(0,0,0,.7); --shadow-soft:0 2px 8px rgba(0,0,0,.4);
   --dur-micro:.2s; --dur-swap:.3s;
+  --плавно:transform .2s var(--ease-out),background-color .2s var(--ease-out),
+           border-color .2s var(--ease-out),color .2s var(--ease-out),
+           opacity .2s var(--ease-out);
   --ease-out:cubic-bezier(.05,.7,.1,1);
   --press:scale(.97);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{font-size:clamp(14px,.25vw+12.8px,17px)}
+html{-webkit-tap-highlight-color:transparent}
+button,.вещь,.ячейка,.станок,.нстр,.сырьёкн div{touch-action:manipulation}
+/* Корень 16, а не 14. При 14 вся вторая ступень шкалы уходила ниже
+   двенадцати пикселей — предела, за которым текст на телефоне уже не
+   читают, а разбирают. Шкала осталась та же, просто вся крупнее. */
+html{font-size:clamp(16px,.25vw+14.8px,18px)}
 body{
   margin:0;background:var(--bg);color:var(--text);
   font:.875rem/1.5 -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
-  padding:0 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  padding:calc(var(--верх, 0px)) 1rem
+          calc(1.25rem + var(--низ, env(safe-area-inset-bottom)));
 }
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
+/* Обводка фокуса. Её не было вовсе: человек с клавиатурой не видел, где
+   находится. Только focus-visible — мышью она не мешает. */
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;
+  border-radius:var(--radius-sm)}
 
 /* ── шапка ───────────────────────────────────────────────────────────── */
 header{display:flex;align-items:center;gap:.625rem;padding:1rem 0 .875rem;
@@ -48,7 +64,7 @@ header #mac{flex:0 0 auto}
 header .ch{color:var(--muted);font-size:.75rem;min-width:0;flex:0 1 auto;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   background:var(--surface);border:1px solid var(--border);
-  border-radius:999px;padding:.3125rem .625rem;transition:var(--dur-micro)}
+  border-radius:999px;padding:.3125rem .625rem;transition:var(--плавно)}
 header .ch:active{transform:var(--press)}
 /* основной канал подсвечен: это канал на десять тысяч человек, и то, что
    пишем сейчас именно туда, должно читаться с одного взгляда */
@@ -57,18 +73,218 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 .pick{display:flex;align-items:center;gap:.625rem;width:100%;text-align:left;
   background:var(--surface);border:1px solid var(--border);color:var(--text);
   border-radius:var(--radius);padding:.75rem;margin-bottom:.5rem;
-  transition:var(--dur-micro)}
+  transition:var(--плавно)}
 .pick:active{transform:var(--press)}
 .pick.on{border-color:var(--accent);background:var(--accent-soft)}
 .pick .галка{width:1.25rem;color:var(--accent)}
 .pick .низ{font-size:.75rem;color:var(--muted)}
+
+/* ── цех ─────────────────────────────────────────────────────────────
+   Главное в приложении не пост, а машина, которая их делает. При пяти
+   публикациях в день отдельный пост перестаёт быть событием: важнее,
+   работает ли станок, чем он занят и не кончилось ли сырьё. Поэтому
+   верхний экран это станки, а посты живут внутри них. */
+/* Когда главную кнопку рисует телеграм, наша такая же в вёрстке лишняя:
+   одно действие не должно быть на экране дважды. */
+body[data-родная="да"] #создать,
+body[data-родная="да"] #дособрать,
+body[data-родная="да"] [data-забрать]{display:none}
+.назад{background:transparent;border:0;color:var(--muted);font-size:.8125rem;
+  padding:.75rem 0 .5rem;display:flex;align-items:center;gap:.375rem;
+  transition:var(--плавно)}
+.назад:active{transform:var(--press)}
+.lbl.свер{margin-top:1.25rem}
+.сводка{display:flex;align-items:center;gap:.625rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);padding:.75rem;
+  margin-bottom:.75rem}
+.сводка .кол{flex:1;min-width:0;text-align:center}
+.сводка b{display:block;font-size:1.375rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums}
+.сводка span{display:block;font-size:.6875rem;color:var(--muted);
+  line-height:1.3;margin-top:.1875rem}
+.сводка .раз{width:1px;align-self:stretch;background:var(--border);flex:0 0 auto}
+.сводка b.тревога{color:var(--warn)}
+
+.станок{background:var(--surface);border:1px solid var(--border);
+  border-radius:.75rem;padding:.875rem;margin-bottom:.625rem;
+  transition:var(--плавно)}
+.станок.спит{opacity:.62}
+.станок.работает{border-color:var(--accent)}
+.станок.встал{border-color:var(--danger)}
+.станок.обесточен{border-color:var(--warn)}
+.сост-станка{display:flex;align-items:flex-start;gap:.625rem;margin-top:.75rem;
+  padding-top:.75rem;border-top:1px solid var(--border)}
+.сост-станка .зн{font-size:1.125rem;flex:0 0 auto;line-height:1.2}
+.сост-станка b{display:block;font-weight:600;font-size:.8125rem}
+.сост-станка span{color:var(--muted);font-size:.6875rem;line-height:1.4;
+  overflow-wrap:anywhere}
+.станок.работает .сост-станка b{color:var(--accent)}
+.станок.встал .сост-станка b{color:var(--danger)}
+.станок.обесточен .сост-станка b{color:var(--warn)}
+.станок .вещь .час{flex:0 0 auto;font-size:.6875rem;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.станок .вещь.ждут .т{color:var(--warn)}
+.станок:active{transform:var(--press)}
+.станок .гол{display:flex;align-items:center;gap:.6875rem}
+.станок .гол .зн{font-size:1.375rem;flex:0 0 auto}
+.станок .гол b{font-size:.875rem;font-weight:700}
+.станок .гол .низ{font-size:.6875rem;color:var(--muted);margin-top:.125rem;
+  line-height:1.35}
+/* Тумблер, а не кнопка: у автопилота два состояния, и они должны читаться
+   без нажатия. */
+.тумблер{margin-left:auto;width:2.875rem;height:1.625rem;border-radius:999px;
+  background:var(--surface-3);border:1px solid var(--border-strong);
+  position:relative;flex:0 0 auto;transition:var(--плавно)}
+/* Сам тумблер должен остаться тумблером по виду, поэтому область нажатия
+   растим невидимо — до нормы в 44 точки. */
+.тумблер::after{content:"";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);width:2.875rem;height:2.75rem}
+.тумблер i{position:absolute;top:.125rem;left:.125rem;width:1.25rem;height:1.25rem;
+  border-radius:50%;background:var(--muted);display:block;transition:var(--плавно)}
+.тумблер.on{background:var(--accent-soft);border-color:var(--accent)}
+.тумблер.on i{left:auto;right:.125rem;background:var(--accent)}
+/* Шкала это топливо станка: сколько вышло, сколько готово ждать и сколько
+   ячеек пустует. Пустая ячейка — работа, а не отсутствие. */
+.шкала{display:flex;gap:.25rem;margin-top:.8125rem}
+.шкала span{flex:1;height:.5625rem;border-radius:.1875rem;background:var(--surface-3)}
+.шкала span.вышло{background:var(--border-strong)}
+.шкала span.готов{background:var(--accent)}
+/* Ячейка, над которой станок работает прямо сейчас. Заливка ползёт слева
+   направо — это и есть индикатор, отдельной полоски не нужно. */
+.шкала span.идёт{background:linear-gradient(90deg,var(--accent) 50%,
+  var(--surface-3) 50%);background-size:200% 100%;
+  animation:наполняется 1.6s linear infinite}
+@keyframes наполняется{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){
+  .шкала span.идёт{animation:none;background:var(--accent-soft)}}
+.подшкала{display:flex;margin-top:.5rem;font-size:.6875rem;color:var(--muted);
+  gap:.5rem}
+.подшкала b{color:var(--text);font-weight:600}
+.подшкала span:last-child{margin-left:auto;text-align:right}
+.станок .вещь{display:flex;align-items:center;gap:.5625rem;padding:.5625rem 0;
+  border-top:1px solid var(--border);font-size:.8125rem}
+.станок .вещь img{width:1.75rem;aspect-ratio:3/4;object-fit:cover;
+  object-position:top;border-radius:var(--radius-sm);flex:0 0 auto;
+  background:var(--surface-2)}
+.станок .вещь .т{flex:1;min-width:0;line-height:1.3;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.станок .вещь .сост{flex:0 0 auto;font-size:.6875rem;color:var(--accent)}
+.внутрь{display:flex;align-items:center;justify-content:center;gap:.375rem;
+  color:var(--muted);font-size:.6875rem;padding-top:.6875rem;
+  border-top:1px solid var(--border);margin-top:.125rem}
+
+/* Ячейка смены. Час слева — это адрес поста в дне. */
+.ячейка{display:flex;align-items:center;gap:.5625rem;padding:.625rem;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);margin-bottom:.375rem;transition:var(--плавно)}
+.ячейка:active{transform:var(--press)}
+.ячейка .час{font-size:.8125rem;font-variant-numeric:tabular-nums;
+  width:2.625rem;flex:0 0 auto;color:var(--accent)}
+.ячейка.прошла .час{color:var(--muted)}
+.ячейка img{width:1.875rem;aspect-ratio:3/4;object-fit:cover;object-position:top;
+  border-radius:var(--radius-sm);flex:0 0 auto;background:var(--surface-2)}
+.ячейка .т{flex:1;min-width:0;font-size:.8125rem;line-height:1.3;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ячейка .сост{flex:0 0 auto;font-size:.6875rem;color:var(--muted)}
+.ячейка .сост.готов{color:var(--accent)}
+.ячейка.пуста{border-style:dashed;border-color:var(--border-strong);
+  background:transparent;justify-content:center;color:var(--muted);
+  font-size:.8125rem;padding:.8125rem}
+.ячейка.пуста.прошла{opacity:.45;border-color:var(--border)}
+
+/* Пост, который ждёт одобрения. Он показан не как ячейка: у него нет
+   часа, и притворяться частью смены он не должен. */
+.карточка-ждёт{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:.625rem;margin-bottom:.5rem}
+.карточка-ждёт .верхушка{display:flex;align-items:center;gap:.625rem;
+  transition:var(--плавно)}
+.карточка-ждёт .верхушка:active{transform:var(--press)}
+.карточка-ждёт img{border-radius:var(--radius-sm);object-fit:cover;
+  object-position:top;flex:0 0 auto;background:var(--surface-2)}
+.карточка-ждёт .т{flex:1;min-width:0;font-size:.8125rem;line-height:1.3;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.карточка-ждёт .стр{color:var(--border-strong);flex:0 0 auto}
+.часы-выбор{display:flex;flex-wrap:wrap;gap:.375rem;margin-top:.625rem;
+  padding-top:.625rem;border-top:1px solid var(--border)}
+.часы-выбор button{border:1px solid var(--border-strong);background:transparent;
+  color:var(--text);border-radius:999px;height:2.25rem;padding:0 .875rem;
+  font-size:.75rem;font-variant-numeric:tabular-nums;transition:var(--плавно)}
+.часы-выбор button:active{transform:var(--press);background:var(--accent-soft);
+  border-color:var(--accent);color:var(--accent)}
+.ячейка .сост.одобрен{color:var(--accent)}
+/* Номер поста. Он же в чате бота, в логе и в ошибках, и без него owner не
+   может сказать «поправь 71»: заголовки у похожих постов совпадают. */
+.номер{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;
+  margin-right:.15rem}
+
+.нстр{display:flex;align-items:center;gap:.625rem;padding:.75rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:.375rem;font-size:.8125rem;
+  transition:var(--плавно)}
+.нстр:active{transform:var(--press)}
+.нстр .знч{margin-left:auto;color:var(--accent);font-size:.6875rem;
+  text-align:right}
+.нстр .стр{color:var(--border-strong)}
+
+.сырьёкн{display:flex;gap:.5rem}
+.сырьёкн div{flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:.5625rem;padding:.6875rem;font-size:.6875rem;color:var(--muted);
+  line-height:1.35;transition:var(--плавно)}
+.сырьёкн div:active{transform:var(--press)}
+.сырьёкн b{display:block;color:var(--text);font-size:.8125rem;font-weight:600;
+  margin-bottom:.125rem}
+
+/* Заказ. Первым спрашивается количество: при пяти публикациях в день это
+   и есть настоящий вопрос, а «про что» станок решит сам. */
+.счётчик{display:flex;align-items:center;gap:.875rem;background:var(--surface);
+  border:1px solid var(--border);border-radius:.75rem;padding:1rem;
+  margin-bottom:.75rem}
+.счётчик button{width:3rem;height:3rem;border-radius:999px;
+  border:1px solid var(--border-strong);background:transparent;color:var(--text);
+  font-size:1.25rem;flex:0 0 auto;transition:var(--плавно)}
+.счётчик button:active:not(:disabled){transform:var(--press)}
+.счётчик button:disabled{opacity:.3}
+.счётчик .ч{flex:1;text-align:center;min-width:0}
+.счётчик .ч b{display:block;font-size:2.125rem;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums}
+.счётчик .ч span{font-size:.6875rem;color:var(--muted);display:block;
+  margin-top:.25rem}
+.станки{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.станки button{border:1px solid var(--border);background:var(--surface);
+  border-radius:.5625rem;padding:.75rem;font-size:.8125rem;line-height:1.3;
+  text-align:left;color:var(--text);transition:var(--плавно)}
+.станки button b{display:block;font-weight:600;margin-bottom:.125rem}
+.станки button span{color:var(--muted);font-size:.6875rem}
+.станки button.on{border-color:var(--accent);background:var(--accent-soft)}
+.станки button.on b{color:var(--accent)}
+.ячч{display:flex;flex-wrap:wrap;gap:.375rem}
+.ячч button{border:1px solid var(--border);background:var(--surface);
+  border-radius:999px;padding:.5rem .75rem;font-size:.6875rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;transition:var(--плавно)}
+.ячч button.on{border-color:var(--accent);background:var(--accent-soft);
+  color:var(--accent)}
+.ячч button:active{transform:var(--press)}
+
+.часы-станка{display:flex;flex-wrap:wrap;gap:.375rem}
+.часы-станка span{border:1px solid var(--accent);background:var(--accent-soft);
+  color:var(--accent);border-radius:999px;padding:.5rem .75rem;font-size:.6875rem;
+  font-variant-numeric:tabular-nums}
+.часы-станка span.плюс{border-color:var(--border-strong);background:transparent;
+  color:var(--muted)}
+
+.углы{display:flex;flex-wrap:wrap;gap:.375rem}
+.углы span{border:1px solid var(--border);background:var(--surface);
+  border-radius:999px;padding:.5rem .75rem;font-size:.6875rem;color:var(--muted)}
+.углы span.on{border-color:var(--accent);color:var(--accent);
+  background:var(--accent-soft)}
+.углы span.был{opacity:.4}
 
 /* ── вкладки ─────────────────────────────────────────────────────────── */
 .tabs{display:flex;gap:.25rem;background:var(--surface);border:1px solid var(--border);
   border-radius:999px;padding:.25rem;margin-bottom:1rem}
 .tabs button{flex:1;min-width:0;border:0;background:transparent;color:var(--muted);
   border-radius:999px;padding:.5rem;font-size:.8125rem;font-weight:600;
-  transition:var(--dur-micro)}
+  transition:var(--плавно)}
 .tabs button.on{background:var(--surface-3);color:var(--text)}
 .tabs button:active{transform:var(--press)}
 .tabs .dot[hidden]{display:none}
@@ -80,7 +296,7 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 .card{background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius);padding:.875rem;box-shadow:var(--shadow-soft)}
 .card + .card{margin-top:.625rem}
-.lbl{font-size:.6875rem;font-weight:600;letter-spacing:.14em;
+.lbl{font-size:.75rem;font-weight:600;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted);margin:1.25rem 0 .5rem}
 .lbl:first-child{margin-top:0}
 .muted{color:var(--muted)}
@@ -98,10 +314,14 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 /* Факты это не числа, а предложения разной длины. В плитках со «сводкой» они
    ломали строку: там крупный жирный текст по центру, рассчитанный на «165$»,
    а приходит «перестали использовать, аватаров в роликах нет». */
-.факты{display:flex;flex-direction:column;gap:.375rem;margin-top:.75rem}
-.факты div{background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:.5rem .75rem;min-width:0}
-.факты .к{font-size:.625rem;letter-spacing:.08em;text-transform:uppercase;
+/* Справка о проекте: один список, а не девять карточек. Правило «.факты div»
+   цепляло и вложенные подпись со значением, поэтому каждый факт рисовался
+   рамкой внутри рамки и блок съедал половину экрана. */
+.факты{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);margin-top:.75rem;overflow:hidden}
+.факты>div{padding:.5rem .75rem;min-width:0}
+.факты>div+div{border-top:1px solid var(--border)}
+.факты .к{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);margin-bottom:.125rem}
 .факты .з{font-size:.8125rem;line-height:1.35;color:var(--text);
   overflow-wrap:anywhere}
@@ -111,7 +331,7 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 .идея{display:flex;gap:.375rem;margin-bottom:.375rem}
 .идея .взять{flex:1;text-align:left;background:var(--surface);color:var(--text);
   border:1px solid var(--border);border-radius:var(--radius);padding:.625rem .75rem;
-  font-size:.8125rem;line-height:1.35;transition:var(--dur-micro)}
+  font-size:.8125rem;line-height:1.35;transition:var(--плавно)}
 .идея .взять:active{transform:var(--press)}
 .идея .выкинуть{background:transparent;border:1px solid var(--border);color:var(--muted);
   border-radius:var(--radius);padding:0 .625rem;font-size:.75rem}
@@ -119,14 +339,14 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 .chips{display:flex;flex-wrap:wrap;gap:.375rem}
 .chip{border:1px solid var(--border);background:var(--surface);color:var(--muted);
   border-radius:999px;padding:.4375rem .875rem;font-size:.8125rem;
-  transition:var(--dur-micro)}
+  transition:var(--плавно)}
 .chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .chip:active{transform:var(--press)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
   border:1px solid var(--border);background:var(--surface);color:var(--text);
   border-radius:999px;padding:.625rem 1.25rem;font-size:.8125rem;
-  transition:var(--dur-micro);box-shadow:var(--shadow-soft)}
+  transition:var(--плавно);box-shadow:var(--shadow-soft)}
 .btn:active:not(:disabled){transform:var(--press)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.primary{background:var(--accent);border-color:var(--accent);
@@ -144,21 +364,35 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
    поедет и что с ним сделать. Всё, что не помогает решить, ушло на вкладку
    «Ещё»: раньше первый экран показывал разом план, цифры, копилку, факты,
    рубрики и пять кнопок, и глазу не за что было зацепиться. */
-.карта{background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;margin-bottom:.625rem}
-.карта .верх{display:flex;gap:.75rem;padding:.75rem;align-items:flex-start}
-.карта .мини{width:4.5rem;flex:0 0 auto;border-radius:var(--radius-sm);
-  background:var(--surface-2);aspect-ratio:3/4;object-fit:cover;display:block}
-.карта .мини.широкая{aspect-ratio:16/9;width:6rem}
-.карта .тело{min-width:0;flex:1}
-.карта .т{font-weight:600;line-height:1.3;overflow-wrap:anywhere}
-.карта .под{margin-top:.25rem;font-size:.75rem;color:var(--muted);
-  display:flex;flex-wrap:wrap;gap:.375rem .625rem}
-.карта .низ{padding:0 .75rem .75rem;display:flex;flex-direction:column;gap:.375rem}
-.карта .ряд{display:flex;gap:.375rem}
-.карта .ряд .btn{flex:1;min-width:0;white-space:nowrap;padding-left:.5rem;
-  padding-right:.5rem}
-.карта .ряд .btn.узкая{flex:0 0 auto;padding-left:1rem;padding-right:1rem}
+/* Превью крупнее: пост узнаётся по картинке быстрее, чем по заголовку,
+   а она была самым мелким элементом карточки. */
+/* Единственный акцент на карточке. Раньше зелёными были все кнопки подряд,
+   на экран приходилось пять зелёных полос, и глазу не за что было зацепиться. */
+
+/* Адреса одной строкой: выбранные подписаны, остальные значком. Четыре
+   кнопки в две строки занимали столько же места, сколько само решение, и
+   повторялись у каждого поста. Остальное — время, правка, убрать — ушло
+   под «⋯»: было восемь кнопок на карточку и сорок на экран. */
+
+/* Полоска хода. Генерация идёт минутами, и человек за это время сворачивает
+   приложение. Вернувшись, он должен увидеть, что работа идёт, на любом
+   экране, а не только в листе, из которого её запустил. */
+.полоска{display:flex;align-items:center;gap:.625rem;background:var(--surface);
+  border:1px solid var(--accent);border-radius:var(--radius);
+  padding:.75rem .875rem;margin-bottom:.625rem}
+.полоска .что{font-weight:600;font-size:.8125rem}
+.полоска .этап{margin-left:auto;color:var(--muted);font-size:.75rem;
+  text-align:right;overflow-wrap:anywhere}
+
+/* Пачка. Пять постов в день в TikTok одобряются не по одному — это главная
+   ежедневная работа, и у неё должна быть своя строка. */
+.строчка{display:flex;gap:.625rem;align-items:baseline;font-size:.8125rem;
+  padding:.5rem 0;border-top:1px solid var(--border);line-height:1.35}
+.строчка span{margin-left:auto;flex:0 0 auto;color:var(--muted);font-size:.75rem}
+/* Создание переехало наверх: это второе по частоте действие после
+   одобрения, а внизу его приходилось искать под всей лентой. */
+#создать{border-color:var(--border-strong);background:transparent;
+  height:3.5rem;margin-bottom:1rem}
 .пусто{text-align:center;color:var(--muted);padding:2.5rem 1rem;line-height:1.5}
 .пусто b{display:block;color:var(--text);font-size:1rem;margin-bottom:.375rem}
 
@@ -169,7 +403,7 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 .куда{display:grid;grid-template-columns:1fr 1fr;gap:.375rem;margin-top:.375rem}
 .куда button{min-width:0;background:var(--surface-2);
   border:1px solid var(--border);color:var(--muted);border-radius:var(--radius);
-  padding:.4375rem .5rem;font-size:.75rem;transition:var(--dur-micro);
+  padding:.4375rem .5rem;font-size:.75rem;transition:var(--плавно);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .куда button.on{border-color:var(--accent);color:var(--accent);
   background:var(--accent-soft)}
@@ -209,7 +443,7 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 /* строка расписания */
 .line{display:flex;gap:.75rem;align-items:center;width:100%;text-align:left;
   background:var(--surface);border:1px solid var(--border);color:var(--text);
-  border-radius:var(--radius);padding:.75rem;transition:var(--dur-micro)}
+  border-radius:var(--radius);padding:.75rem;transition:var(--плавно)}
 .line:active{transform:var(--press)}
 .line img{width:4.5rem;aspect-ratio:16/9;object-fit:cover;border-radius:var(--radius-sm);
   flex:0 0 auto;background:var(--surface-2)}
@@ -232,7 +466,6 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
 .step.done .spin{border-color:var(--accent);animation:none}
 .step:not(.on):not(.done) .spin{border-color:var(--surface-3);animation:none}
 @keyframes vr{to{transform:rotate(360deg)}}
-.сетка{display:block}
 
 /* Широкий экран. Приложение задумано под телефон, поэтому на мониторе оно
    не растягивается во всю ширину — колонка остаётся читаемой. Раскрывается
@@ -240,17 +473,31 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
    а не по одной в длинной ленте. */
 @media (min-width:52rem){
   body{padding-left:2rem;padding-right:2rem}
-  header,.tabs,#view{max-width:34rem;margin-left:auto;margin-right:auto}
-  body[data-вкладка="new"] header,
-  body[data-вкладка="new"] .tabs,
-  body[data-вкладка="new"] #view{max-width:64rem}
-  .сетка{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;align-items:start}
-  .сетка .карта{margin-bottom:0}
+  header,#путь,#ход,#view{max-width:34rem;margin-left:auto;margin-right:auto}
+  /* В цехе станков всего два: рядом они читаются лучше, чем друг под
+     другом, и весь день помещается в один взгляд. */
+  body[data-экран="цех"] header,
+  body[data-экран="цех"] #путь,
+  body[data-экран="цех"] #ход,
+  body[data-экран="цех"] #view{max-width:52rem}
   .куда{grid-template-columns:repeat(4,1fr)}
   #создать{max-width:34rem;margin-left:auto;margin-right:auto;display:flex}
 }
 
-@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+/* Кому движение мешает — тому его нет. Раньше правило гасило только
+   кружок ожидания, а нажатия и листы продолжали прыгать. */
+@media (prefers-reduced-motion:reduce){
+  .spin{animation:none}
+  *,*::before,*::after{animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .sheet .in{animation:none}
+}
+
+@media (hover:hover){
+  .кн:hover,.btn:hover,.станок:hover,.ячейка:hover,.нстр:hover,
+  .вещь:hover,.сырьёкн div:hover{border-color:var(--border-strong)}
+  .btn.primary:hover{background:var(--accent-hover)}
+}
 
 /* ── лист снизу ──────────────────────────────────────────────────────── */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:600;
@@ -261,8 +508,22 @@ header .ch.main{color:var(--accent);border-color:var(--accent);
   border-top-left-radius:1rem;border-top-right-radius:1rem;
   border-top:1px solid var(--border);padding:.75rem 1rem calc(1.25rem + env(safe-area-inset-bottom));
   animation:up var(--dur-swap) var(--ease-out)}
+.ручка-листа{display:flex;align-items:center;margin:-.25rem -.25rem .75rem;
+  padding-right:2.75rem;touch-action:none;position:relative;min-height:2.75rem}
 .grip{width:2.25rem;height:.25rem;border-radius:999px;background:var(--surface-3);
-  margin:0 auto .875rem}
+  margin:0 auto;display:block}
+.закрыть{position:absolute;right:0;top:50%;transform:translateY(-50%);
+  width:2.75rem;height:2.75rem;border-radius:999px;border:0;background:transparent;
+  color:var(--muted);font-size:.9375rem;line-height:1;display:grid;
+  place-items:center;transition:var(--плавно)}
+/* Кружок рисуем внутри: он и есть фирменная мелкая кнопка, а внешние
+   44 точки остаются целью нажатия. */
+.закрыть::before{content:"";position:absolute;width:1.75rem;height:1.75rem;
+  border-radius:999px;background:var(--surface-2);border:1px solid var(--border);
+  transition:var(--плавно)}
+.закрыть span{position:relative}
+.закрыть:active::before{background:var(--surface-3);border-color:var(--border-strong)}
+.закрыть:active{color:var(--text)}
 @keyframes fade{from{opacity:0}}
 @keyframes up{from{transform:translateY(4%)}}
 
@@ -288,8 +549,8 @@ textarea{resize:vertical;min-height:9rem;line-height:1.5}
   text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
 .hint{font-size:.75rem;color:var(--muted);margin-top:.375rem;line-height:1.45}
 .gear{border:1px solid var(--border);background:var(--surface);color:var(--muted);
-  border-radius:999px;width:1.875rem;height:1.875rem;font-size:.875rem;
-  display:flex;align-items:center;justify-content:center;transition:var(--dur-micro)}
+  border-radius:999px;width:2.75rem;height:2.75rem;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:var(--плавно)}
 .gear:active{transform:var(--press)}
 .gear.off{border-color:var(--warn);background:var(--surface-2)}
 .step.live{color:var(--accent);font-variant-numeric:tabular-nums}
@@ -299,20 +560,19 @@ textarea{resize:vertical;min-height:9rem;line-height:1.5}
 </head>
 <body>
 <header>
-  <img src="/logo.png" alt="">
+  <img src="/logo.png" alt="" width="28" height="28">
   <div class="name">Редактор</div>
   <button class="ch" id="mac" title="Состояние мака"></button>
   <button class="ch" id="ch"></button>
-  <button class="gear" id="звук" title="Звук уведомлений">🔔</button>
-  <button class="gear" id="gear" title="Настройки">⚙️</button>
+  <button class="gear" id="звук" title="Звук уведомлений"
+          aria-label="Звук уведомлений">🔔</button>
+  <button class="gear" id="gear" title="Настройки"
+          aria-label="Настройки">⚙️</button>
 </header>
 
-<div class="tabs">
-  <button data-tab="new" class="on">Очередь<span class="dot" id="cnt" hidden>0</span></button>
-  <button data-tab="plan">План<span class="dot" id="cnt2" hidden>0</span></button>
-  <button data-tab="more">Ещё</button>
-</div>
+<div id="путь" hidden></div>
 
+<div id="ход" hidden></div>
 <div id="view"></div>
 <script>
 const ТГ = window.Telegram?.WebApp;
@@ -322,10 +582,36 @@ const AUTH = ТГ?.initData || "";
 const КЛЮЧ = (new URLSearchParams(location.search).get("key")
               || localStorage.getItem("ключ") || "");
 if (КЛЮЧ) { try { localStorage.setItem("ключ", КЛЮЧ); } catch (e) {} }
-// вкладку можно открыть сразу: /#plan, /#past
-let С = null, вкладка = (location.hash.slice(1) || "new"), рубрика = null, тема = "";
+let С = null, рубрика = null, тема = "";
 
-if (ТГ) { ТГ.ready(); ТГ.expand(); ТГ.setHeaderColor?.("#0f0f0f"); ТГ.setBackgroundColor?.("#0f0f0f"); }
+// Мини-приложение живёт внутри телеграма, и половина его удобства — это
+// не наша вёрстка, а то, что даёт сама площадка. Берём то, что есть, и
+// молча обходимся без остального: у людей разные версии клиента.
+const версия = н => !!ТГ?.isVersionAtLeast?.(н);
+
+if (ТГ) {
+  ТГ.ready(); ТГ.expand();
+  ТГ.setHeaderColor?.("#0f0f0f");
+  ТГ.setBackgroundColor?.("#0f0f0f");
+  if (версия("7.10")) ТГ.setBottomBarColor?.("#0f0f0f");
+  // Свайп вниз по умолчанию закрывает приложение. У нас длинный цех и
+  // длинные листы: пролистывая их, человек регулярно выкидывал себя в чат.
+  if (версия("7.7")) ТГ.disableVerticalSwipes?.();
+  // Отступы под чёлку и полосу жеста считает сам телеграм: в вебвью
+  // env(safe-area-inset) врёт.
+  const отступы = () => {
+    const н = ТГ.contentSafeAreaInset || {}, б = ТГ.safeAreaInset || {};
+    document.documentElement.style.setProperty(
+      "--низ", `${(н.bottom || 0) + (б.bottom || 0)}px`);
+    document.documentElement.style.setProperty(
+      "--верх", `${(н.top || 0) + (б.top || 0)}px`);
+  };
+  if (версия("8.0")) {
+    отступы();
+    ТГ.onEvent?.("safeAreaChanged", отступы);
+    ТГ.onEvent?.("contentSafeAreaChanged", отступы);
+  }
+}
 const тук = (в="light") => ТГ?.HapticFeedback?.impactOccurred?.(в);
 
 async function зов(путь, тело) {
@@ -339,10 +625,14 @@ async function зов(путь, тело) {
   return д;
 }
 
+// Всплывашка сообщает об итоге действия, и человек с чтецом экрана должен
+// его услышать: без aria-live она для него просто не существует.
 function сказать(текст, плохо) {
   document.querySelector(".toast")?.remove();
   const э = document.createElement("div");
   э.className = "toast" + (плохо ? " bad" : "");
+  э.setAttribute("role", плохо ? "alert" : "status");
+  э.setAttribute("aria-live", плохо ? "assertive" : "polite");
   э.textContent = текст;
   document.body.appendChild(э);
   setTimeout(() => э.remove(), 2600);
@@ -357,95 +647,520 @@ const экр = т => (т || "").replace(/[&<>"]/g,
   с => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[с]));
 
 // ── экраны ────────────────────────────────────────────────────────────────
-function рисовать() {
-  document.body.dataset.вкладка = вкладка;
-  document.querySelectorAll(".tabs button").forEach(б =>
-    б.classList.toggle("on", б.dataset.tab === вкладка));
-  const в = document.getElementById("view");
-  в.innerHTML = вкладка === "new" ? экранОчередь()
-              : вкладка === "plan" ? экранПлан()
-              : экранЕщё();
-  подвязать();
+// Пропорции у площадок называются по-своему; в настройках станка человеку
+// нужны цифры, а не наши внутренние клички.
+const ВИДЫ_ФОРМАТА = {"квадрат": "1:1", "широкий": "16:9", "3к4": "3:4",
+                      "вертикаль": "9:16"};
+
+const ВИДЫ_РАБОТ = {
+  "заказ": "🎠 Собираю заказ",
+  "карусель": "🎠 Собираю карусель", "пост": "📝 Сочиняю пост",
+  "переписать": "✏️ Переписываю", "перерисовать": "🎨 Перерисовываю кота",
+  "неделя": "📅 Набиваю план на неделю", "обновить": "🔄 Обновляю",
+  "запланировать": "🕑 Ставлю в план", "опубликовать": "🚀 Публикую",
+};
+let опросХода = null;
+
+// Что делает работа, человеческими словами. «заказ · 2 из 3 · слайд 4 из 9»
+// само по себе ничего не значит; «вторая из трёх, слайд 4 из 9» — значит.
+function словами(з) {
+  const части = String(з.этап || "").split("·").map(с => с.trim()).filter(Boolean);
+  const партия = части.length > 1 ? части.shift() : "";
+  const этап = части.join(" · ") || "начинаю";
+  const куда = з.куда ? " для " + чистоеИмя(площадкаИмя(з.куда)) : "";
+  const сколько = з.сколько > 1 ? ` · ${з.сколько} штуки` : "";
+  return {
+    что: (ВИДЫ_РАБОТ[з.вид] || з.вид) + куда,
+    этап: (партия ? партия + " · " : "") + этап,
+    подпись: сколько,
+  };
 }
+const площадкаИмя = код => ((С.pipeline || []).find(п => п.код === код) || {}).имя
+                          || код || "";
 
-const Заглавная = с => с.charAt(0).toUpperCase() + с.slice(1);
-
-// Главный экран это очередь на одобрение. Ничего, кроме неё: решение о посте
-// принимается по обложке, заголовку и адресу, всё остальное только мешает.
-function экранОчередь() {
-  const черновики = С.drafts || [];
-  const план = (С.schedule || []).slice(0, 3);
-
-  const очередь = черновики.length
-    ? `<div class="сетка">${черновики.map(карта).join("")}</div>`
-    : `<div class="пусто"><b>Очередь пуста</b>
-         Нажмите «Создать» внизу или включите конвейер во вкладке «Ещё»,
-         и он будет собирать посты сам.</div>`;
-
-  const скоро = план.length ? `
-    <div class="lbl">Скоро выйдет</div>
-    ${план.map(п => строка(п, true)).join("")}` : "";
-
-  return `
-    <div class="lbl">На одобрении${черновики.length ? " · " + черновики.length : ""}</div>
-    ${очередь}
-    ${скоро}
-    <div style="height:.75rem"></div>
-    <button class="btn primary wide" id="создать"
-            ${С.mac?.alive ? "" : "disabled"}>✨ Создать пост</button>
-    ${С.mac?.alive ? "" : `<div class="hint" style="margin-top:.625rem">
-      💤 Мак выключен. Сочинять и публиковать сейчас нельзя: фирменные иконки
-      и отложка телеграма работают только с него.</div>`}`;
-}
-
-// Подпись главной кнопки говорит, куда именно уйдёт пост. «Опубликовать» без
-// адреса заставляло вспоминать, что выбрано, и проверять переключатели.
-function кудаПодпись(п) {
-  const выбраны = (п.where || []).filter(в => в.выбрана);
-  if (!выбраны.length) return "🚀 Опубликовать";
-  if (выбраны.length === 1) return "🚀 Опубликовать в " + чистоеИмя(выбраны[0].имя);
-  return `🚀 Опубликовать везде · ${выбраны.length}`;
-}
-const чистоеИмя = и => (и || "").replace(/^\S+\s/, "");
-
-function карта(п) {
-  const рис = кар(п);
-  const слайдов = (п.images || []).length;
-  const куда = (п.where || []).filter(в => в.выбрана).map(в => в.имя).join(", ")
-            || "никуда не назначен";
-  const когда = п.when ? п.when : "без времени";
-  return `
-    <div class="карта" data-карта="${п.id}">
-      <div class="верх">
-        ${рис ? `<img class="мини${слайдов ? "" : " широкая"}" src="${рис}" alt="">`
-              : ""}
-        <div class="тело">
-          <div class="т">${экр(п.title)}</div>
-          <div class="под">
-            <span>${экр(куда)}</span>
-            <span>${слайдов ? слайдов + " слайдов" : экр(п.rubric)}</span>
-            <span>${экр(когда)}</span>
-          </div>
-        </div>
-      </div>
-      <div class="низ">
-        <div class="куда" data-карта-куда="${п.id}">
-          ${(п.where || []).map(в =>
-            `<button class="${в.выбрана ? "on" : ""}${в.готова ? "" : " серая"}"
-               data-куда="${в.код}" data-пост="${п.id}"
-               title="${в.готова ? "" : "ключи не заданы, публикация не пройдёт"}"
-             >${экр(в.имя)}</button>`).join("")}
-        </div>
-        <button class="btn primary" data-пуб="${п.id}">${кудаПодпись(п)}</button>
-        <div class="ряд">
-          <button class="btn" data-время="${п.id}">🕑 Время</button>
-          <button class="btn ghost" data-открыть="${п.id}">✏️ Править</button>
-          <button class="btn ghost узкая" data-убрать="${п.id}"
-                  title="Убрать пост из очереди">✖️</button>
-        </div>
-      </div>
+function ходРабот() {
+  const э = document.getElementById("ход");
+  const работы = С?.работы || [];
+  // Пока открыт лист шагов, он и есть состояние: показывать то же самое
+  // ещё и полоской сверху значит говорить одно и то же трижды.
+  const влисте = !!document.querySelector(".sheet .work");
+  э.hidden = !работы.length || влисте;
+  э.innerHTML = работы.map(з => {
+    const с = словами(з);
+    return `<div class="полоска">
+      <span class="spin"></span>
+      <span class="что">${экр(с.что)}</span>
+      <span class="этап">${экр(с.этап)}</span>
     </div>`;
+  }).join("");
+
+  // Пока что-то делается, состояние подтягивается само: иначе полоска
+  // застынет на первом этапе и будет врать. Весь экран перерисовываем
+  // только когда работа кончилась — иначе лента прыгала бы каждые три
+  // секунды под руками.
+  clearTimeout(опросХода);
+  if (!работы.length) return;
+  опросХода = setTimeout(async () => {
+    try { С = await зов("/api/state"); } catch (e) { ходРабот(); return; }
+    ходРабот();
+    if (!(С.работы || []).length) { рисовать(); считать(); }
+  }, 3000);
 }
+
+// Верхний экран это станки, а не лента постов. Внутрь станка заходят за
+// сменой, из смены — в пост. Возврат всегда один и тот же, поэтому вкладки
+// не нужны и заблудиться негде.
+let экран = "цех", станок = null;
+
+const АДРЕСА = {"цех": "shop", "сырьё": "stock"};
+
+function идти(куда, код) {
+  экран = куда; станок = код || null;
+  // В адресе латиница: кириллицу браузер кодирует процентами, и ссылка
+  // перестаёт узнаваться при возврате.
+  location.hash = куда === "станок" ? "m-" + код : (АДРЕСА[куда] || "shop");
+  рисовать();
+  window.scrollTo(0, 0);
+}
+
+const НАЗАД = {станок: "Цех", "сырьё": "Цех"};
+
+// ── родные кнопки телеграма ───────────────────────────────────────────
+// «Назад» и главное действие рисует сам клиент. Они не уезжают со скроллом,
+// не занимают место в вёрстке и выглядят так, как человек привык во всех
+// остальных мини-приложениях. В обычном браузере их нет, и тогда работают
+// наши собственные — поэтому те никуда не деваются, а только прячутся.
+let нажатиеГлавной = null;
+
+function главноеДело() {
+  if (!С) return null;
+  const спит = !С.mac?.alive;
+  if (экран === "цех") {
+    const пусто = (С.pipeline || []).reduce((а, н) => а + смена(н.код).пусто, 0);
+    return {текст: пусто ? `✨ Собрать недостающее · ${пусто}` : "✨ Собрать пост",
+            нельзя: спит, что: () => листЗаказа()};
+  }
+  if (экран === "станок") {
+    const н = (С.pipeline || []).find(п => п.код === станок) || {};
+    const с = смена(станок);
+    if (н.режим !== "сам" && с.готово)
+      return {текст: `📥 Забрать ${с.готово}`, нельзя: спит,
+              что: () => document.querySelector("[data-забрать]")?.click()};
+    return {текст: с.пусто ? `✨ Дособрать · ${с.пусто}` : "✨ Собрать ещё",
+            нельзя: спит, что: () => листЗаказа({код: станок})};
+  }
+  return null;
+}
+
+function площадка() {
+  if (!ТГ) return;
+  // Пока открыт лист, «назад» означает «закрой лист», а не «уйди в цех»:
+  // иначе экран под ним менялся, а сам лист оставался висеть.
+  if (версия("6.1") && ТГ.BackButton) {
+    (НАЗАД[экран] || document.querySelector(".sheet"))
+      ? ТГ.BackButton.show() : ТГ.BackButton.hide();
+  }
+  const главная = ТГ.MainButton;
+  if (!главная) return;
+  // Пока открыт лист, главное действие принадлежит ему: две главные
+  // кнопки разом — верный способ нажать не ту.
+  const дело = document.querySelector(".sheet") ? null : главноеДело();
+  document.body.dataset.родная = дело ? "да" : "";
+  if (нажатиеГлавной) { главная.offClick(нажатиеГлавной); нажатиеГлавной = null; }
+  if (!дело) return главная.hide();
+  нажатиеГлавной = () => { тук("medium"); дело.что(); };
+  главная.onClick(нажатиеГлавной);
+  главная.setParams({text: дело.текст, color: "#c6ff34", text_color: "#171717",
+                     is_active: !дело.нельзя, is_visible: true});
+}
+
+function рисовать() {
+  document.body.dataset.экран = экран;
+  ходРабот();
+  const п = document.getElementById("путь");
+  // Своя строка «назад» показывается всегда, даже когда телеграм рисует
+  // свою кнопку. Две стрелки лучше, чем ни одной: на части клиентов родная
+  // не появляется, и человек оказывался заперт внутри станка.
+  п.hidden = !НАЗАД[экран];
+  if (!п.hidden) п.innerHTML =
+    `<button class="назад" data-идти="цех">← ${экр(НАЗАД[экран])}</button>`;
+  const в = document.getElementById("view");
+  в.innerHTML = экран === "станок" ? экранСтанок(станок)
+              : экран === "сырьё" ? экранСырьё()
+              : экранЦех();
+  подвязать();
+  площадка();
+}
+
+// ── станок ────────────────────────────────────────────────────────────
+// Внутри площадки всё её: смена по часам, очередь и её же настройки.
+// «Пять в день» — свойство TikTok, а не приложения, и искать его в общем
+// списке настроек значит каждый раз вспоминать, чьё оно.
+function экранСтанок(код) {
+  const н = (С.pipeline || []).find(п => п.код === код);
+  if (!н) return `<div class="пусто"><b>Станка нет</b>Вернитесь в цех.</div>`;
+  const руками = н.режим !== "сам";
+  const с = смена(код);
+  const без_ячейки = с.ждут || [];
+  const вышли = (С.history || []).filter(п => ушёл(п, код)).slice(0, 6);
+
+  const ячейки = с.ячейки.map(я => я.п ? `
+    <div class="ячейка${я.вышло ? " прошла" : ""}" data-пост="${я.п.id}">
+      <span class="час">${экр(я.ч)}</span>
+      ${кар(я.п) ? `<img src="${кар(я.п)}" alt="Превью: ${экр(я.п.title)}"
+                 width="30" height="40" loading="lazy">` : ""}
+      <span class="т">${экр(я.п.title)}</span>
+      <span class="сост${я.вышло ? "" : я.одобрен ? " одобрен" : " готов"}">${я.вышло
+        ? "вышло" + (я.п.views ? " · 👁 " + я.п.views : "")
+        : я.одобрен ? (руками ? "забрать" : "одобрен") : "в плане"}</span>
+    </div>` : `
+    <div class="ячейка пуста${вМинутах(я.ч) <= вМинутах(С.now) ? " прошла" : ""}"
+         ${вМинутах(я.ч) > вМинутах(С.now) ? `data-пусто="${экр(я.ч)}"` : ""}
+      >${экр(я.ч)} · ${вМинутах(я.ч) <= вМинутах(С.now)
+        ? "прошла впустую" : "пусто · собрать"}</div>`
+  ).join("") || `<div class="ячейка пуста">часы выхода не заданы</div>`;
+
+  return `
+    <div class="станок" style="margin-bottom:1rem">
+      <div class="гол">
+        <span class="зн" style="font-size:1.625rem">${экр(значок(н.имя))}</span>
+        <div>
+          <b style="font-size:1.0625rem">${экр(чистоеИмя(н.имя))}</b>
+          <div class="низ">${код === "tiktok" && С.tiktok?.connected
+            ? экр("@" + (С.tiktok.nick || "")) + " · подключён"
+            : код === "телеграм" ? экр(С.channel || "канал не задан")
+            : (н.вкл ? "автопилот включён" : "автопилот выключен")}</div>
+        </div>
+        <div class="тумблер${н.вкл ? " on" : ""}" data-вкл="${н.код}"
+             title="Автопилот"><i></i></div>
+      </div>
+    </div>
+
+    <div class="lbl">Смена сегодня · ${с.вышло} вышло из
+      ${(н.часы || []).length}</div>
+    ${ячейки}
+
+    <div class="row" style="margin-top:.625rem">
+      ${руками && с.готово ? `<button class="btn primary" id="забрать-все"
+        >📥 Забрать ${с.готово}</button>` : ""}
+      <button class="btn ghost" id="дособрать" ${С.mac?.alive ? "" : "disabled"}
+        >✨ ${с.пусто ? "Дособрать · " + с.пусто : "Собрать ещё"}</button>
+    </div>
+
+    ${без_ячейки.length ? `
+      <div class="lbl свер">На одобрении · ${без_ячейки.length}</div>
+      <div class="hint" style="margin:-.25rem 0 .5rem">Пока пост не одобрен,
+        он в смену не встаёт. Выберите ему час — или откройте и посмотрите.</div>
+      ${без_ячейки.map(п => `
+        <div class="карточка-ждёт">
+          <div class="верхушка" data-пост="${п.id}">
+            ${кар(п) ? `<img src="${кар(п)}" alt="Превью: ${экр(п.title)}"
+                 width="44" height="59" loading="lazy">` : ""}
+            <span class="т"><span class="номер">№${п.id}</span> ${экр(п.title)}</span>
+            <span class="стр">›</span>
+          </div>
+          <div class="часы-выбор">${(с.ячейки.filter(я => !я.п)
+            .map(я => `<button data-одобрить="${п.id}" data-час="${экр(я.ч)}"
+              >${экр(я.ч)}</button>`).join("")) ||
+            '<span class="муть" style="font-size:.75rem">свободных ячеек нет</span>'}
+          </div>
+        </div>`).join("")}` : `
+      <div class="hint" style="margin-top:.625rem">Всё одобренное разложено
+        по ячейкам выше. Ничего не ждёт.</div>`}
+
+    <div class="lbl свер">Настройки станка</div>
+    <div class="нстр" data-нстр="режим">Публикует
+      <span class="знч">${руками ? "выкладываете вы" : "станок сам"}</span>
+      <span class="стр">›</span></div>
+    <div class="нстр" data-нстр="часы">Сколько в день
+      <span class="знч">${(н.часы || []).length}</span><span class="стр">›</span></div>
+    <div class="нстр" data-нстр="дней">Запас
+      <span class="знч">на ${н.дней} дн. · ${н.запас} шт.</span>
+      <span class="стр">›</span></div>
+    <div class="нстр" data-идти="сырьё">Угол следующей
+      <span class="знч">${экр(н.угол || "по кругу")}</span>
+      <span class="стр">›</span></div>
+    <div class="нстр" data-нстр="формат">Формат
+      <span class="знч">${экр(ВИДЫ_ФОРМАТА[н.формат] || н.формат || "—")}${
+        н.файл ? " · " + экр(н.файл.toUpperCase()) : ""}${
+        н.ширина ? " " + н.ширина : ""}</span>
+      <span class="стр">›</span></div>
+    <div class="нстр" data-нстр="аккаунт">Аккаунт
+      <span class="знч">${код === "tiktok"
+        ? экр(С.tiktok?.nick ? "@" + С.tiktok.nick : "не подключён")
+        : экр(С.channel || "канал не задан")}</span>
+      <span class="стр">›</span></div>
+
+    <div class="lbl свер">Часы выхода</div>
+    <div class="часы-станка">${(н.часы || []).map(ч =>
+      `<span>${экр(ч)}</span>`).join("")}<span class="плюс"
+      data-нстр="часы">＋</span></div>
+
+    ${вышли.length ? `
+      <div class="lbl свер">Уже вышли</div>
+      ${вышли.map(п => строка(п)).join("")}` : ""}`;
+}
+
+// ── сырьё ─────────────────────────────────────────────────────────────
+// Идеи, углы и факты — это не «настройки», а материал, из которого станок
+// делает посты. Когда карусели выходят похожими друг на друга, чинить надо
+// здесь, и путь сюда должен быть очевиден прямо из цеха.
+function экранСырьё() {
+  const идеи = С.ideas || [];
+  const факты = С.facts || [];
+  const углы = С.углы || [];
+  const текущий = ((С.pipeline || []).find(п => п.код === "tiktok") || {}).угол;
+  const место = углы.indexOf(текущий);
+
+  return `
+    <div class="lbl">Копилка · ${идеи.length}</div>
+    <div class="идея">
+      <label for="заметка" class="sr">Заметка в копилку</label>
+      <input type="text" id="заметка" style="flex:1" autocomplete="off"
+             placeholder="Ссылка, мысль или «каналов стало 6»…">
+      <button class="btn" id="в-копилку" aria-label="Записать в копилку">💡</button>
+    </div>
+    <div class="hint">Голосовое прямо боту в чат попадает сюда же: он
+      расшифрует и запишет.</div>
+    ${идеи.map(и => `
+      <div class="идея" style="margin-top:.375rem">
+        <button class="взять" data-взять-идею="${экр(и.text)}">${экр(и.text)}</button>
+        <button class="выкинуть" data-убрать-идею="${и.id}"
+                aria-label="Выкинуть идею">✖️</button>
+      </div>`).join("")}
+
+    ${углы.length ? `
+      <div class="lbl свер">Углы · идут по кругу</div>
+      <div class="hint" style="margin:-.25rem 0 .5rem">Чтобы карусели не
+        приедались, станок берёт следующий угол по кругу и не повторяется,
+        пока не пройдёт все ${углы.length}.</div>
+      <div class="углы">${углы.map((у, и) => `<span class="${
+        у === текущий ? "on" : место >= 0 && и < место ? "был" : ""
+      }">${экр(у)}</span>`).join("")}</div>` : ""}
+
+    <div class="lbl свер">Что бот знает о проекте · ${факты.length}</div>
+    ${факты.length ? `<div class="факты">${факты.map(ф => `
+      <div style="display:flex;gap:.625rem;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div class="к">${экр(ф.name)}</div>
+          <div class="з">${экр(ф.value)}</div>
+        </div>
+        <button class="выкинуть" data-факт-долой="${экр(ф.name)}"
+          aria-label="Забыть факт «${экр(ф.name)}»">✖️</button></div>`).join("")}</div>`
+      : `<div class="пусто" style="padding:1.25rem 1rem"><b>Пусто</b>
+           Бот пишет вслепую. Расскажите ему про проект.</div>`}
+    <button class="btn wide ghost" id="факт-новый"
+            style="margin-top:.5rem">＋ Добавить факт</button>`;
+}
+
+// ── смена станка ──────────────────────────────────────────────────────
+const назначен = (п, код) => (п.where || []).some(в => в.код === код && в.выбрана);
+const ушёл = (п, код) => !!(((п.card || {})["выложено"] || {})[код])
+                       || (код === "телеграм" && !!п.link);
+const сегодня = с => (с || "").startsWith("сегодня");
+const часПоста = п => ((п.when || "").split(" в ").pop() || "").trim();
+const вМинутах = ч => {
+  const м = /(\d{1,2}):(\d{2})/.exec(ч || "");
+  return м ? +м[1] * 60 + +м[2] : -1;
+};
+
+// Часы берутся из настроек станка, в них раскладывается запланированное.
+// Вышедшее садится в ближайшую свободную ячейку: точная минута выхода не
+// важна, важно, что ячейка отработана и дырой не считается.
+function смена(код) {
+  const н = (С.pipeline || []).find(п => п.код === код) || {};
+  const план = (С.schedule || []).filter(п => сегодня(п.when) && назначен(п, код));
+  const вышли = (С.history || []).filter(п => сегодня(п.published) && ушёл(п, код));
+  const занятые = new Map(план.map(п => [часПоста(п), п]));
+  const ячейки = (н.часы || []).map(ч => {
+    const п = занятые.get(ч);
+    if (п) занятые.delete(ч);
+    return {ч, п, вышло: false};
+  });
+  for (const в of вышли) {
+    const когда = вМинутах((в.published || "").split(" в ").pop());
+    let лучшая = -1, ближе = 1e9;
+    ячейки.forEach((я, и) => {
+      if (я.п) return;
+      const д = Math.abs(вМинутах(я.ч) - когда);
+      if (д < ближе) { ближе = д; лучшая = и; }
+    });
+    if (лучшая >= 0) { ячейки[лучшая].п = в; ячейки[лучшая].вышло = true; }
+  }
+  // Пост, поставленный на час, которого в настройках нет, всё равно виден:
+  // прятать запланированное значит врать про день.
+  for (const [ч, п] of занятые) ячейки.push({ч, п, вышло: false});
+  ячейки.sort((а, б) => вМинутах(а.ч) - вМинутах(б.ч));
+
+  // В смену пост попадает только после одобрения. Раньше свежие черновики
+  // садились в ячейки сами, и человек видел день закрытым, хотя ничего
+  // ещё не смотрел: смена показывала намерение, а не решение.
+  const свои = (С.drafts || []).filter(п => назначен(п, код));
+  const сейчас = вМинутах(С.now);
+  // Одобренный пост занимает свою ячейку. Отметка стоит на самом посте:
+  // так она переживает перезагрузку и видна и боту, и приложению.
+  const одобрен = п => ((п.card || {})["ячейка"] || "").trim();
+  for (const я of ячейки) {
+    if (я.п) continue;
+    const п = свои.find(x => одобрен(x) === я.ч);
+    if (п) { я.п = п; я.одобрен = true; }
+  }
+  const свободные = свои.filter(п => !одобрен(п) || !ячейки.some(я => я.п === п));
+
+  return {ячейки, вышло: вышли.length,
+          готово: ячейки.filter(я => я.п && !я.вышло).length,
+          ждут: свободные,
+          пусто: ячейки.filter(я => !я.п).length,
+          следующая: (ячейки.find(я => !я.п && вМинутах(я.ч) > сейчас) || {}).ч};
+}
+
+// ── цех ───────────────────────────────────────────────────────────────
+function экранЦех() {
+  const черновики = С.drafts || [];
+  const свод = (С.pipeline || []).map(н =>
+    ({н, с: смена(н.код), очередь: черновики.filter(п => назначен(п, н.код))}));
+  const вышло = свод.reduce((а, с) => а + с.с.вышло, 0);
+  const готовы = свод.reduce((а, с) => а + с.с.готово, 0);
+  const пусто = свод.reduce((а, с) => а + с.с.пусто, 0);
+  const охват = ((С.reach || [])[0] || {}).avg;
+  const ничьи = черновики.filter(п => !(п.where || []).some(в => в.выбрана));
+
+  // Состояние станка живёт в самой карточке, а не полоской над экраном:
+  // в цехе ломается машина, и говорить надо про машину — что с ней,
+  // почему и что вернёт её в строй.
+  const станки = свод.map(({н, с, очередь}) => {
+    // Только своя работа. Раньше карточка обоих станков зажигалась на любой
+    // генерации, и заказ для TikTok подсвечивал заодно телеграм.
+    const работа = (С.работы || []).find(р =>
+      ["заказ", "карусель", "новый"].includes(р.вид) &&
+      (!р.куда || р.куда === н.код));
+    const беда = (С.беды || []).find(б => !б.куда || б.куда === н.код);
+    const спит = !С.mac?.alive;
+    const закрыта = н.вкл && !с.пусто && !с.готово && с.вышло;
+    const руками = н.режим !== "сам";
+    const состояние =
+      спит ? {класс: "обесточен", зн: "💤", т: "Обесточен",
+              п: "Мак выключен: собирать, рисовать и забирать файлы нельзя."}
+    : работа ? {класс: "работает", зн: "",
+                т: словами(работа).что.replace(/^\S+\s/, ""),
+                п: экр(словами(работа).этап)}
+    : беда ? {класс: "встал", зн: "🛑", т: "Встал",
+              п: экр(беда.беда)}
+    : закрыта ? {класс: "", зн: "🌙", т: "Смена закрыта",
+                 п: `${с.вышло} из ${(н.часы || []).length} вышло. Следующая партия соберётся к утру.`}
+    : null;
+
+    return `
+    <div class="станок${н.вкл ? "" : " спит"}${состояние ? " " + состояние.класс : ""}"
+         data-станок="${н.код}">
+      <div class="гол">
+        <span class="зн">${экр(значок(н.имя))}</span>
+        <div>
+          <b>${экр(чистоеИмя(н.имя))}</b>
+          <div class="низ">${н.вкл ? "пишет сам" : "спит"} ·
+            ${руками ? "выкладываете вы" : "публикует сам"} ·
+            ${н.часов} в день</div>
+        </div>
+        <div class="тумблер${н.вкл ? " on" : ""}" data-вкл="${н.код}"
+             title="Автопилот"><i></i></div>
+      </div>
+
+      ${состояние ? `<div class="сост-станка">
+        ${состояние.зн ? `<span class="зн">${состояние.зн}</span>`
+                       : '<span class="spin"></span>'}
+        <div><b>${состояние.т}</b><span>${состояние.п}</span></div>
+      </div>` : ""}
+
+      <div class="шкала">${(() => {
+        // Первая пустая ячейка мигает, пока станок работает: труд виден
+        // там же, где виден его итог, и отдельной полоски для этого не надо.
+        let первая_пустая = работа
+          ? с.ячейки.findIndex(я => !я.п) : -1;
+        return с.ячейки.map((я, и) =>
+          `<span class="${я.вышло ? "вышло" : я.п ? "готов"
+            : и === первая_пустая ? "идёт" : ""}"></span>`).join("")
+          || '<span class="' + (работа ? "идёт" : "") + '"></span>';
+      })()}</div>
+      <div class="подшкала">
+        <span><b>${с.вышло}</b> вышло · <b>${с.готово}</b> готово ·
+          <b>${с.пусто}</b> пусто</span>
+        <span>${с.следующая ? "ячейка " + экр(с.следующая) : "на сегодня всё"}</span>
+      </div>
+
+      ${(с.ждут || []).length ? `<div class="вещь ждут">
+        <span class="т">⏳ ${(с.ждут || []).length}
+          ${склонить((с.ждут || []).length, "пост ждёт", "поста ждут", "постов ждут")}
+          одобрения</span>
+        <span class="сост">посмотреть</span></div>` : ""}
+      ${с.ячейки.filter(я => я.п && !я.вышло).slice(0, 2).map(я => `
+        <div class="вещь" data-пост="${я.п.id}">
+          ${кар(я.п) ? `<img src="${кар(я.п)}" alt="Превью: ${экр(я.п.title)}"
+                 width="30" height="40" loading="lazy">` : ""}
+          <span class="час">${экр(я.ч)}</span>
+          <span class="т">${экр(я.п.title)}</span>
+          <span class="сост">${руками ? "забрать" : "готов"}</span>
+        </div>`).join("")}
+      ${с.готово > 2 ? `<div class="вещь"><span class="т муть"
+        >и ещё ${с.готово - 2}</span></div>` : ""}
+
+      ${руками && с.готово ? `<button class="btn primary" data-забрать="${н.код}"
+        style="width:100%;height:2.75rem;margin-top:.625rem"
+        >📥 Забрать ${с.готово} ${склонить(с.готово, "файлами", "файлами", "файлами")}</button>`
+      : беда ? `<div class="row" style="margin-top:.625rem">
+          <button class="btn" data-забрать="${н.код}">📥 Забрать файлами</button>
+          <button class="btn ghost" data-станок-снова="${н.код}">🔁 Ещё раз</button>
+        </div>` : ""}
+
+      <div class="внутрь">внутрь станка · вся смена и настройки ›</div>
+    </div>`;
+  }).join("");
+
+  return `
+    <div class="сводка">
+      <div class="кол"><b>${вышло}</b><span>вышло<br>сегодня</span></div>
+      <div class="раз"></div>
+      <div class="кол"><b>${готовы}</b><span>готовы<br>ждут вас</span></div>
+      <div class="раз"></div>
+      <div class="кол"><b class="${пусто ? "тревога" : ""}">${пусто}</b>
+        <span>ячейки<br>пустуют</span></div>
+      <div class="раз"></div>
+      <div class="кол"><b>${охват || "—"}</b><span>средний<br>охват</span></div>
+    </div>
+
+    ${станки || `<div class="пусто"><b>Станков нет</b>
+      Конвейер не отозвался — настройки видно боту: ⚙️ → Конвейер.</div>`}
+
+    ${ничьи.length ? `<div class="lbl свер">Без адреса · ${ничьи.length}</div>
+      ${ничьи.map(п => строка(п)).join("")}` : ""}
+
+    <div class="lbl свер">Сырьё</div>
+    <div class="сырьёкн">
+      <div data-идти="сырьё"><b>💡 ${(С.ideas || []).length}
+        ${идей((С.ideas || []).length)}</b>
+        ${(С.ideas || []).length ? "из копилки, ждут своей карусели"
+                                 : "копилка пуста — бот пишет наугад"}</div>
+      <div data-идти="сырьё"><b>🧠 ${(С.facts || []).length}
+        ${фактов((С.facts || []).length)}</b>
+        о проекте, из них бот и пишет</div>
+    </div>
+
+    <div style="height:.75rem"></div>
+    <button class="btn primary wide" id="создать" ${С.mac?.alive ? "" : "disabled"}
+      >✨ ${пусто ? "Собрать недостающее · " + пусто : "Собрать пост"}</button>`;
+}
+
+const чистоеИмя = и => (и || "").replace(/^\S+\s/, "");
+const значок = и => (и || "").split(" ")[0];
+
+// Русское число согласуется по последней цифре, кроме подростков.
+function склонить(н, один, два, много) {
+  if (н % 100 >= 11 && н % 100 <= 14) return много;
+  const п = н % 10;
+  return п === 1 ? один : п >= 2 && п <= 4 ? два : много;
+}
+const постов = н => склонить(н, "пост", "поста", "постов");
+const фактов = н => склонить(н, "факт", "факта", "фактов");
+const идей = н => склонить(н, "идея", "идеи", "идей");
 
 function строка(п, толькоЧасы) {
   const рис = кар(п);
@@ -458,106 +1173,10 @@ function строка(п, толькоЧасы) {
   const когда = п.when ? `<div class="w">${час}${сам}${метка}</div>`
               : п.published ? `<div class="w past">вышел ${п.published} ${охват}</div>` : "";
   return `<button class="line" data-open="${п.id}" style="margin-top:.5rem">
-    ${рис ? `<img src="${рис}" alt="">` : ""}
+    ${рис ? `<img src="${рис}" alt="Превью: ${экр(п.title)}"
+             width="72" height="41" loading="lazy">` : ""}
     <div><div class="t">${экр(п.title)}</div>${когда}</div>
   </button>`;
-}
-
-function экранПлан() {
-  const план = С.schedule || [];
-  const было = (С.history || []).slice(0, 12);
-  if (!план.length && !было.length) return `<div class="пусто">
-    <b>Пока пусто</b>Ни одного запланированного и ни одного вышедшего поста.</div>`;
-
-  // По дням, а не сплошным списком: так видно, где в неделе дыра.
-  const дни = new Map();
-  план.forEach(п => {
-    const д = (п.when || "").split(" в ")[0] || "когда-нибудь";
-    (дни.get(д) || дни.set(д, []).get(д)).push(п);
-  });
-  const расписание = план.length
-    ? [...дни].map(([д, список]) =>
-        `<div class="lbl">${экр(д)}</div>` +
-        список.map(п => строка(п, true)).join("")).join("")
-    : `<div class="card muted">Ничего не запланировано</div>`;
-
-  const охват = (С.reach || []).slice(0, 4).map(р =>
-    `<div><b>${р.avg}</b>${экр(р.rubric)}</div>`).join("");
-
-  return `${расписание}
-    ${было.length ? `
-      <div style="height:1rem"></div>
-      <div class="lbl">Уже вышли${С.main_channel ? " в " + экр(С.main_channel) : ""}</div>
-      ${охват ? `<div class="stats">${охват}</div>
-                 <div class="hint">В среднем просмотров по рубрикам</div>` : ""}
-      ${было.map(п => строка(п)).join("")}` : ""}`;
-}
-
-// Всё, что не решение прямо сейчас. Раньше это лежало на первом экране и
-// заслоняло собой очередь.
-function экранЕщё() {
-  const т = С.tiktok || {};
-  const копилка = (С.ideas || []).length ? `
-    <div class="lbl">Копилка идей</div>
-    ${С.ideas.map(и => `
-      <div class="идея">
-        <button class="взять" data-идея="${и.id}">${экр(и.text)}</button>
-        <button class="выкинуть" data-убрать-идею="${и.id}">✖️</button>
-      </div>`).join("")}` : "";
-
-  const факты = (С.facts || []).length ? `
-    <div class="lbl">Бот знает о проекте</div>
-    <div class="факты">${С.facts.slice(0, 8).map(ф =>
-      `<div><div class="к">${экр(ф.name)}</div>
-            <div class="з">${экр(ф.value)}</div></div>`).join("")}</div>` : "";
-
-  const конв = (С.pipeline || []).map(п => `
-    <button class="pick" data-конвейер="${п.код}">
-      <span>${п.вкл ? "🤖" : "💤"}</span>
-      <span style="flex:1">
-        <b>${экр(п.имя)}</b>
-        <span class="hint" style="display:block;margin:.125rem 0 0">
-          ${п.вкл ? "сочиняет сам" : "спит"} ·
-          ${п.режим === "сам" ? "публикует сам" : "готовит, публикуете вы"} ·
-          ${п.часов} в день</span>
-      </span>
-      <span class="муть">${п.готово} из ${п.запас}</span>
-    </button>`).join("");
-
-  return `
-    <div class="lbl">Записать в копилку</div>
-    <div class="идея">
-      <input type="text" id="заметка" style="flex:1"
-             placeholder="Ссылка, мысль или «каналов стало 6»">
-      <button class="btn" id="в-копилку">💡</button>
-    </div>
-    <div class="hint">Сюда же можно надиктовать голосовое прямо боту в чат:
-      он расшифрует и запишет.</div>
-    ${копилка}
-
-    <div style="height:1rem"></div>
-    <div class="lbl">Конвейер</div>
-    ${конв || `<div class="card muted">Конвейер не настроен</div>`}
-
-    <div style="height:1rem"></div>
-    <div class="lbl">TikTok</div>
-    ${т.connected
-      ? `<div class="card аккаунт"><div class="кружок">🎵</div>
-           <div><div class="т">${экр(т.name || "TikTok")}</div>
-           ${т.nick ? `<div class="w">@${экр(т.nick)}</div>` : ""}</div></div>`
-      : `<a class="btn wide" style="text-decoration:none"
-            href="${т.link || "#"}" target="_blank" rel="noopener">
-           🔗 Подключить TikTok</a>`}
-
-    ${факты}
-
-    <div style="height:1rem"></div>
-    <div class="lbl">Прочее</div>
-    <button class="btn wide" id="go-week" ${С.mac?.alive ? "" : "disabled"}>📅 План на неделю</button>
-    <div style="height:.375rem"></div>
-    <button class="btn ghost wide" id="go-clean" ${С.mac?.alive ? "" : "disabled"}
-            title="Удалить картинки, на которые больше не ссылается ни один пост"
-    >🧹 Прибраться</button>`;
 }
 
 function открыть(п) {
@@ -576,11 +1195,36 @@ function открыть(п) {
           title="Другая поза кота">🎨</button>`}
       </div>`;
 
+  // Забрать файлами. TikTok у нас в ручном режиме, и это самый частый путь
+  // публикации: папка открывается на маке, файлы приходят сюда же в чат.
+  const забрать = (слайды.length || рис) ? `
+      <button class="btn wide ghost" data-act="take"
+              style="margin-top:.5rem">📥 Забрать файлы</button>` : "";
+
+  // Перерисовка по одному слайду. У кота бывает пять лап: пикселям всё
+  // хорошо, автоматика такое не ловит, а видно сразу. Пересобирать из-за
+  // одной картинки всю карусель — минуты работы и восемь новых файлов.
+  const перерисовка = (слайды.length > 1 && п.status !== "published") ? `
+      <div class="lbl">Перерисовать слайд</div>
+      <div class="chips" id="слайды">${слайды.map((_, и) =>
+        `<button class="chip" data-слайд="${и + 1}">${и + 1}</button>`).join("")}
+      </div>
+      <div class="row" style="margin-top:.5rem">
+        <button class="btn ghost" data-act="кот-база" disabled
+                title="Другая поза из библиотеки — мгновенно">🎲 Другой кот</button>
+        <button class="btn ghost" data-act="кот-новый" disabled
+                title="Нарисовать заново и добавить в библиотеку">✨ Нарисовать</button>
+        <button class="btn ghost danger" data-act="кот-брак" disabled
+                title="Эта поза бракованная, больше её не брать">🚫</button>
+      </div>` : "";
+
   const низ = план ? `
       <div class="row снизу">
         <button class="btn primary" data-act="pub">🚀 Опубликовать сейчас</button>
       </div>
       ${правки}
+      ${забрать}
+      ${перерисовка}
       <div class="row" style="margin-top:.5rem">
         <button class="btn ghost" data-act="move">🕑 Перенести</button>
         <button class="btn danger" data-act="off">Снять с плана</button>
@@ -602,6 +1246,8 @@ function открыть(п) {
         <button class="btn primary" data-act="plan">🕑 Запланировать</button>
       </div>
       ${правки}
+      ${забрать}
+      ${перерисовка}
       <div class="row" style="margin-top:.5rem">
         <button class="btn ghost" data-act="pub">🚀 Сейчас</button>
         <button class="btn ghost" data-act="again">🔄 Другой</button>
@@ -625,27 +1271,84 @@ function открыть(п) {
       </div>`}
     <div style="height:.75rem"></div>
     ${слайды.length
-      ? `<div class="лента">${слайды.map(с =>
-           `<img src="${с}" alt="" loading="lazy">`).join("")}</div>
+      ? `<div class="лента">${слайды.map((с, и) =>
+           `<img src="${с}" alt="Слайд ${и + 1} из ${слайды.length}" loading="lazy"
+              width="200" height="267">`).join("")}</div>
          <div class="счётслайдов">${слайды.length} слайда, листайте вбок</div>`
-      : рис ? `<img class="shot" src="${рис}" alt="">` : ""}
+      : рис ? `<img class="shot" src="${рис}" alt="Обложка: ${экр(п.title)}"
+        width="360" height="203">` : ""}
     <div class="post">${п.html}</div>
     ${низ}`, п);
 }
+
+// Листы приходят и уходят из разных мест, и следить за каждым «remove»
+// значит однажды забыть. Наблюдатель ловит их все разом.
+if (ТГ?.MainButton) new MutationObserver(() => площадка())
+  .observe(document.body, {childList: true});
 
 function лист(нутро, п) {
   document.querySelector(".sheet")?.remove();
   const э = document.createElement("div");
   э.className = "sheet";
-  э.innerHTML = `<div class="in"><div class="grip"></div>${нутро}</div>`;
-  э.addEventListener("click", с => { if (с.target === э) э.remove(); });
+  // Закрыть лист можно было только промахом мимо него. Лист занимает до
+  // 92% высоты — промахиваться некуда, и человек оставался внутри. Теперь
+  // три выхода: крестик, «назад» и потянуть вниз за полоску.
+  э.innerHTML = `<div class="in">
+    <div class="ручка-листа">
+      <span class="grip"></span>
+      <button class="закрыть" aria-label="Закрыть"><span>✕</span></button>
+    </div><div class="нутро">${нутро}</div></div>`;
+  э.addEventListener("click", с => { if (с.target === э) закрытьЛист(); });
+  э.querySelector(".закрыть").onclick = () => { тук(); закрытьЛист(); };
+  тянуть(э);
   document.body.appendChild(э);
   if (п) действия(э, п);
   return э;
 }
 
+function закрытьЛист() {
+  const э = document.querySelector(".sheet");
+  if (!э) return false;
+  э.remove();
+  return true;
+}
+
+// Потянуть вниз за верх листа — привычный способ его убрать. Считаем только
+// вертикаль и только от полоски: иначе жест перехватывал бы прокрутку
+// длинного содержимого.
+function тянуть(э) {
+  const шапка = э.querySelector(".ручка-листа");
+  const в = э.querySelector(".in");
+  let старт = null;
+  шапка.addEventListener("touchstart", с => { старт = с.touches[0].clientY; },
+                         {passive: true});
+  шапка.addEventListener("touchmove", с => {
+    if (старт === null) return;
+    const сдвиг = Math.max(0, с.touches[0].clientY - старт);
+    в.style.transform = `translateY(${сдвиг}px)`;
+    в.style.transition = "none";
+  }, {passive: true});
+  шапка.addEventListener("touchend", с => {
+    const сдвиг = Math.max(0, (с.changedTouches[0]?.clientY || старт) - старт);
+    старт = null;
+    в.style.transition = "";
+    в.style.transform = "";
+    if (сдвиг > 70) { тук(); закрытьЛист(); }
+  }, {passive: true});
+}
+
 function действия(э, п) {
   let выбран = null;
+
+  // Номер слайда выбирается отдельно от действия: «перерисовать» без
+  // указания какой — самая частая ошибка, если чип сразу что-то запускает.
+  э.querySelectorAll("[data-слайд]").forEach(б => б.onclick = () => {
+    тук();
+    const уже = б.classList.contains("on");
+    э.querySelectorAll("[data-слайд]").forEach(д => д.classList.remove("on"));
+    if (!уже) б.classList.add("on");
+    э.querySelectorAll('[data-act^="кот-"]').forEach(д => д.disabled = уже);
+  });
   э.querySelectorAll("[data-slot]").forEach(б => б.onclick = () => {
     тук();
     э.querySelectorAll("[data-slot]").forEach(д => д.classList.remove("on"));
@@ -701,6 +1404,22 @@ function действия(э, п) {
         const свежий = await работа("/api/repose", {id: п.id}, ШАГИ_КОТ);
         if (свежий) открыть(свежий);
         return;
+      } else if (что === "take") {
+        э.remove();
+        await работа("/api/take", {id: п.id, куда: "tiktok"}, ШАГИ_ФАЙЛЫ);
+        сказать("📥 Файлы в чате, папка открыта на маке");
+        return;
+      } else if (что.startsWith("кот-")) {
+        const слайд = +(э.querySelector("[data-слайд].on")?.dataset.слайд || 0);
+        if (!слайд) return;
+        э.remove();
+        const свежий = await работа("/api/repose", {
+          id: п.id, слайд,
+          новая: что === "кот-новый",
+          брак: что === "кот-брак",
+        }, что === "кот-новый" ? ШАГИ_КОТ_НОВЫЙ : ШАГИ_КОТ);
+        if (свежий) открыть(свежий);
+        return;
       } else if (что === "again") {
         await зов("/api/drop", {id: п.id});
         э.remove();
@@ -740,6 +1459,11 @@ const ШАГИ_КАРУСЕЛЬ = [["читаю", "🔗 Читаю ссылку"
                        ["рисую", "🎨 Рисую слайды"],
                        ["готово", "✅ Готово"]];
 const ШАГИ_КОТ  = [["рисую", "🎨 Рисую кота заново"], ["готово", "✅ Готово"]];
+const ШАГИ_КОТ_НОВЫЙ = [["рисую", "✨ Придумываю новую позу"],
+                        ["готово", "✅ Готово"]];
+const ШАГИ_ФАЙЛЫ = [["собираю", "📥 Собираю файлы"], ["готово", "✅ Готово"]];
+const ШАГИ_ЗАКАЗ = [["думаю", "🧠 Придумываю темы"], ["пишу", "✍️ Пишу сценарии"],
+                    ["рисую", "🎨 Рисую слайды"], ["готово", "✅ Готово"]];
 const ШАГИ_ПЛАН = [["пишу", "📅 Набиваю расписание"], ["готово", "✅ Готово"]];
 
 // Долгая работа: показываем шаги, спрашиваем состояние, возвращаем готовый пост
@@ -842,7 +1566,11 @@ function править(п) {
     кнопка.disabled = true;
     кнопка.textContent = "⏳ Рисую карточку…";
     try {
-      const о = await зов("/api/update", {
+      // Правка уходит заданием на мак: карточку надо перерисовать браузером,
+      // а это секунды. Ответ приходит с ключом задания, а не с готовым
+      // состоянием, поэтому дожидаемся его через «довести», как все долгие
+      // действия. Раньше здесь стояло С = о.state, и состояние обнулялось.
+      const о = await довести(await зов("/api/update", {
         id: п.id,
         body: э.querySelector("#p-body").value,
         card: {
@@ -851,11 +1579,11 @@ function править(п) {
           card_lines: э.querySelector("#c-lines").value.split("\n")
                         .map(с => с.trim()).filter(Boolean),
           card_footer: э.querySelector("#c-foot").value,
-        }});
-      С = о.state; рисовать(); считать();
+        }}));
+      рисовать(); считать();
       сказать("💾 Сохранил");
       э.remove();
-      открыть(о.post);
+      открыть(о.post || п);
     } catch (e) {
       сказать(e.message, true);
       кнопка.disabled = false;
@@ -909,7 +1637,7 @@ function планЛист() {
     э.remove();
     await работа("/api/plan", {days: дней, times: [время]}, ШАГИ_ПЛАН);
     сказать("📅 Расписание набито");
-    вкладка = "plan"; рисовать();
+    идти("цех");
   };
 }
 
@@ -1002,13 +1730,23 @@ function новый_вопрос(текст) {
 
 // ── настройки ─────────────────────────────────────────────────────────────
 function настройки() {
+  // Обслуживание цеха: то, что делают раз в неделю. Отдельного экрана не
+  // заслуживает, но и пропасть не должно — раньше эти две кнопки жили на
+  // вкладке «Ещё», и вместе с ней чуть не потерялись.
   const э = лист(`
     <div class="lbl">Настройки</div>
     <button class="btn wide" id="n-access">👥 Кто может пользоваться</button>
     <div style="height:.5rem"></div>
-    <button class="btn wide" id="n-stream">🔴 Анонс стрима</button>`);
+    <button class="btn wide" id="n-stream">🔴 Анонс стрима</button>
+    <div class="lbl свер">Обслуживание</div>
+    <button class="btn wide ghost" id="go-week">📅 Набить план на неделю</button>
+    <div style="height:.5rem"></div>
+    <button class="btn wide ghost" id="go-clean">🧹 Прибраться</button>
+    <div class="hint">Уборка стирает отрисовки, которые ни к какому посту
+      уже не относятся.</div>`);
   э.querySelector("#n-access").onclick = () => { э.remove(); доступ(); };
   э.querySelector("#n-stream").onclick = () => { э.remove(); настройкиСтрима(); };
+  подвязать();
 }
 
 async function доступ() {
@@ -1160,60 +1898,159 @@ function подвязать() {
   // Создание переехало в лист: на главном экране остаётся очередь, а не
   // форма, которую заполняют раз в день.
   const сз = document.getElementById("создать");
-  if (сз) сз.onclick = () => { тук(); листСоздания(); };
+  if (сз) сз.onclick = () => { тук(); листЗаказа(); };
 
-  // Карточка очереди: переключить площадку, опубликовать, время, править.
-  document.querySelectorAll("[data-куда][data-пост]").forEach(б => б.onclick = async () => {
+  // Переходы вглубь и обратно. Один и тот же атрибут и в шапке, и в цехе.
+  document.querySelectorAll("[data-идти]").forEach(э => э.onclick = () => {
+    тук(); идти(э.dataset.идти);
+  });
+
+  // Станок целиком — дверь внутрь. Тумблер и вещи внутри него нажимаются
+  // сами по себе, поэтому клик по ним до двери не доходит.
+  document.querySelectorAll("[data-станок]").forEach(э => э.onclick = (с) => {
+    if (с.target.closest("[data-вкл],[data-пост]")) return;
+    тук(); идти("станок", э.dataset.станок);
+  });
+
+  // Автопилот. Переключается прямо из цеха: это главный рычаг, и прятать
+  // его в настройках значит заставлять ходить туда каждый раз.
+  document.querySelectorAll("[data-вкл]").forEach(э => э.onclick = async () => {
+    тук("medium");
+    try {
+      const о = await зов("/api/pipeline", {net: э.dataset.вкл, what: "auto"});
+      С.pipeline = о.pipeline || С.pipeline;
+      рисовать(); считать();
+    } catch (e) { сказать(e.message, true); }
+  });
+
+  document.querySelectorAll("[data-пост]").forEach(э => э.onclick = () => {
+    const ид = +э.dataset.пост;
+    const п = [...(С.drafts || []), ...(С.schedule || []), ...(С.history || [])]
+      .find(x => x.id === ид);
+    if (!п) return сказать("Пост не нашёлся, обновите приложение", true);
     тук();
+    try { открыть(п); }
+    catch (e) { сказать("Не открылось: " + e.message, true); }
+  });
+
+  // Пустая ячейка — это работа, а не отсутствие: нажатие ставит заказ.
+  document.querySelectorAll("[data-пусто]").forEach(э => э.onclick = () => {
+    тук(); листЗаказа({код: станок, час: э.dataset.пусто});
+  });
+
+  // Настройки станка живут внутри станка и открываются тем же листом.
+  document.querySelectorAll("[data-нстр]").forEach(э => э.onclick = () => {
+    тук(); листКонвейера(станок);
+  });
+
+  document.querySelectorAll("[data-факт-долой]").forEach(б => б.onclick = async () => {
+    тук("medium");
     try {
-      const о = await зов("/api/where", {id: +б.dataset.пост, net: б.dataset.куда});
-      const п = (С.drafts || []).find(x => x.id == б.dataset.пост);
-      if (п) п.where = о.where;
-      рисовать();
+      await зов("/api/facts/drop", {name: б.getAttribute("data-факт-долой")});
+      С = await зов("/api/state");
+      сказать("Забыл"); рисовать(); считать();
     } catch (e) { сказать(e.message, true); }
   });
 
-  document.querySelectorAll("[data-пуб]").forEach(б => б.onclick = async () => {
-    const п = (С.drafts || []).find(x => x.id == б.dataset.пуб);
-    if (!п) return;
+  const фн = document.getElementById("факт-новый");
+  if (фн) фн.onclick = () => {
+    const э = лист(`
+      <div class="t">Что ещё бот должен знать</div>
+      <div class="hint">Короткое имя и значение. Из этого он и пишет:
+        неверный факт разъедется по всем постам сразу.</div>
+      <input type="text" id="ф-имя" placeholder="Каналов на ютубе"
+             style="margin-top:.625rem">
+      <input type="text" id="ф-знач" placeholder="5" style="margin-top:.375rem">
+      <button class="btn primary wide" id="ф-сохр"
+              style="margin-top:.75rem">Запомнить</button>`);
+    э.querySelector("#ф-сохр").onclick = async () => {
+      const имя = э.querySelector("#ф-имя").value.trim();
+      const знач = э.querySelector("#ф-знач").value.trim();
+      if (!имя || !знач) return сказать("Нужны и имя, и значение", true);
+      тук("medium");
+      try {
+        await зов("/api/facts/save", {name: имя, value: знач});
+        С = await зов("/api/state");
+        э.remove(); сказать("🧠 Запомнил"); рисовать(); считать();
+      } catch (e) { сказать(e.message, true); }
+    };
+  };
+
+  // Забрать всё готовое одной кнопкой прямо из цеха: при ручной публикации
+  // это и есть ежедневная работа, и ходить за ней внутрь станка незачем.
+  document.querySelectorAll("[data-забрать]").forEach(б => б.onclick = async (с) => {
+    с.stopPropagation();
+    const код = б.getAttribute("data-забрать");
+    const готовы = смена(код).ячейки.filter(я => я.п && !я.вышло).map(я => я.п);
+    if (!готовы.length) return сказать("Забирать нечего", true);
     тук("medium");
-    б.disabled = true; б.textContent = "⏳ Отправляю…";
-    try {
-      await довести(await зов("/api/publish", {id: п.id}));
-      сказать("🚀 Опубликовано");
-      С = await зов("/api/state"); рисовать(); считать();
-    } catch (e) {
-      сказать(e.message, true);
-      б.disabled = false; б.textContent = кудаПодпись(п);
+    б.disabled = true;
+    let взято = 0;
+    for (const п of готовы) {
+      б.textContent = `⏳ ${взято + 1} из ${готовы.length}…`;
+      try {
+        await работа("/api/take", {id: п.id, куда: код}, ШАГИ_ФАЙЛЫ);
+        взято++;
+      } catch (e) { сказать(e.message, true); break; }
     }
+    б.disabled = false;
+    if (взято) сказать(`📥 ${взято} в чате, папки открыты на маке`);
+    рисовать();
   });
 
-  document.querySelectorAll("[data-время]").forEach(б => б.onclick = () => {
-    const п = (С.drafts || []).find(x => x.id == б.dataset.время);
-    if (п) { тук(); открыть(п); }
-  });
-  document.querySelectorAll("[data-открыть]").forEach(б => б.onclick = () => {
-    const п = (С.drafts || []).find(x => x.id == б.dataset.открыть);
-    if (п) { тук(); править(п); }
-  });
-  document.querySelectorAll("[data-убрать]").forEach(б => б.onclick = async () => {
-    const ид = +б.dataset.убрать;
+  // Повтор после сбоя. Станок встал — вернуть его в строй должно быть
+  // одним нажатием там же, где написано, что он встал.
+  document.querySelectorAll("[data-станок-снова]").forEach(б => б.onclick = async (с) => {
+    с.stopPropagation();
+    const код = б.getAttribute("data-станок-снова");
+    const готовы = смена(код).ячейки.filter(я => я.п && !я.вышло).map(я => я.п);
+    if (!готовы.length) return сказать("Повторять нечего", true);
     тук("medium");
     try {
-      С = (await зов("/api/drop", {id: ид})).state;
-      сказать("Убрал из очереди"); рисовать(); считать();
+      await довести(await зов("/api/publish", {id: готовы[0].id}));
+      сказать("🚀 Ушло");
+      С = await зов("/api/state"); рисовать(); считать();
     } catch (e) { сказать(e.message, true); }
   });
-  document.querySelectorAll("[data-карта] .верх").forEach(э => э.onclick = () => {
-    const ид = +э.closest("[data-карта]").dataset.карта;
-    const п = (С.drafts || []).find(x => x.id == ид);
-    if (п) { тук(); открыть(п); }
+
+  // Одобрить — значит дать посту час в смене. Ни времени в расписании, ни
+  // публикации это не включает: в ручном режиме выкладывает человек.
+  document.querySelectorAll("[data-одобрить]").forEach(б => б.onclick = async (с) => {
+    с.stopPropagation();
+    тук("medium");
+    б.disabled = true;
+    try {
+      const о = await зов("/api/approve", {
+        id: +б.getAttribute("data-одобрить"),
+        час: б.getAttribute("data-час"),
+      });
+      С = о.state || С;
+      сказать(`🕑 В смену на ${б.getAttribute("data-час")}`);
+      рисовать(); считать();
+    } catch (e) { сказать(e.message, true); б.disabled = false; }
   });
 
-  // Конвейер на вкладке «Ещё»: нажатие открывает лист площадки.
-  document.querySelectorAll("[data-конвейер]").forEach(б => б.onclick = () => {
-    тук(); листКонвейера(б.dataset.конвейер);
-  });
+  const доб = document.getElementById("дособрать");
+  if (доб) доб.onclick = () => { тук(); листЗаказа({код: станок}); };
+
+  const зб = document.getElementById("забрать-все");
+  if (зб) зб.onclick = async () => {
+    const с = смена(станок);
+    const готовы = с.ячейки.filter(я => я.п && !я.вышло).map(я => я.п);
+    if (!готовы.length) return;
+    тук("medium");
+    зб.disabled = true;
+    let взято = 0;
+    for (const п of готовы) {
+      зб.textContent = `⏳ ${взято + 1} из ${готовы.length}…`;
+      try {
+        await работа("/api/take", {id: п.id, куда: станок}, ШАГИ_ФАЙЛЫ);
+        взято++;
+      } catch (e) { сказать(e.message, true); break; }
+    }
+    зб.disabled = false; зб.textContent = `📥 Забрать ${готовы.length}`;
+    if (взято) сказать(`📥 ${взято} в чате, папки открыты на маке`);
+  };
 
   const н = document.getElementById("go-week");
   if (н) н.onclick = () => { тук(); планЛист(); };
@@ -1250,10 +2087,14 @@ function подвязать() {
   document.querySelectorAll("[data-идея]").forEach(б => б.onclick = () => {
     тук(); листСоздания((С.ideas || []).find(и => и.id == б.dataset.идея)?.text || "");
   });
+  document.querySelectorAll("[data-взять-идею]").forEach(б => б.onclick = () => {
+    тук(); листЗаказа({тема: б.getAttribute("data-взять-идею")});
+  });
+
   document.querySelectorAll("[data-убрать-идею]").forEach(б => б.onclick = async () => {
     тук();
     try {
-      const о = await зов("/api/ideas/drop", {id: +б.dataset.убратьИдея});
+      const о = await зов("/api/ideas/drop", {id: +б.getAttribute("data-убрать-идею")});
       С.ideas = о.ideas; рисовать();
     } catch (e) { сказать(e.message, true); }
   });
@@ -1269,6 +2110,115 @@ function подвязать() {
 
 // Лист создания: тип поста, рубрика и тема. Открывается кнопкой, а не висит
 // на главном экране.
+// Заказ станку. Не «создай пост», а «закрой мне столько ячеек»: разница
+// видна на пятой публикации за день, когда собирать по одной и каждую
+// руками ставить на время — десять действий вместо одного.
+// ВНИМАНИЕ на составные имена: dataset убирает дефис, только если следом
+// идёт латинская строчная буква. «data-з-станок» остаётся ключом
+// «з-станок», и dataset.зСтанок равен undefined. Такие атрибуты читаем
+// через getAttribute.
+function листЗаказа(нач = {}) {
+  const станки = С.pipeline || [];
+  let куда = нач.код || станок || (станки[0] || {}).код;
+  let своя = нач.тема || "";
+  let выбраны = нач.час ? [нач.час] : null;   // null — ещё не трогали руками
+  let сколько = нач.час ? 1 : 0;              // 0 — посчитаем от пустых ячеек
+
+  const свободные = код => смена(код).ячейки
+    .filter(я => !я.п && вМинутах(я.ч) > вМинутах(С.now)).map(я => я.ч);
+
+  const э = лист("");
+  нарисовать();
+
+  function нарисовать() {
+    const н = станки.find(с => с.код === куда) || {};
+    const руками = н.режим !== "сам";
+    const ячейки = свободные(куда);
+    if (!сколько) сколько = Math.max(1, Math.min(10, ячейки.length || 1));
+    if (!выбраны) выбраны = ячейки.slice(0, сколько);
+    выбраны = выбраны.filter(ч => ячейки.includes(ч));
+
+    э.querySelector(".нутро").innerHTML = `
+      <div class="t">Заказ станку</div>
+
+      <div class="lbl свер">Сколько собрать</div>
+      <div class="счётчик">
+        <button id="з-мин" aria-label="Меньше"
+          ${сколько <= 1 ? "disabled" : ""}>−</button>
+        <div class="ч"><b>${сколько}</b>
+          <span>${склонить(сколько, "карусель", "карусели", "каруселей")} ·
+            около ${сколько} мин.</span></div>
+        <button id="з-плюс" aria-label="Больше"
+          ${сколько >= 10 ? "disabled" : ""}>＋</button>
+      </div>
+
+      <div class="lbl">На какой станок</div>
+      <div class="станки">${станки.map(с => `
+        <button class="${с.код === куда ? "on" : ""}" data-з-станок="${с.код}">
+          <b>${экр(с.имя)}</b>
+          <span>${с.режим === "сам" ? "публикует сам" : "выкладываете вы"} ·
+            ${с.часов} в день</span>
+        </button>`).join("")}</div>
+
+      ${руками ? `<div class="hint">Станок выкладываете вы, поэтому время
+        постам не ставится: они лягут в очередь и будут ждать в ячейках.</div>`
+      : ячейки.length ? `
+        <div class="lbl свер">В какие ячейки</div>
+        <div class="ячч">${ячейки.map(ч =>
+          `<button class="${выбраны.includes(ч) ? "on" : ""}"
+             data-з-час="${экр(ч)}">${экр(ч)}</button>`).join("")}</div>
+        <div class="hint">Что не поместится в выбранные — ляжет в очередь
+          станка без времени.</div>`
+      : `<div class="hint">Свободных ячеек на сегодня нет — соберу в очередь
+          станка, время поставите сами.</div>`}
+
+      <div class="lbl свер">Про что · можно не отвечать</div>
+      <label for="з-тема" class="sr">Тема заказа</label>
+      <input type="text" id="з-тема" value="${экр(своя)}" autocomplete="off"
+             placeholder="Придумает сам${н.угол ? ", следующий угол — «"
+               + экр(н.угол) + "»" : ""}…">
+      ${(С.ideas || []).length ? `<div class="chips" style="margin-top:.5rem">
+        ${(С.ideas || []).slice(0, 3).map(и =>
+          `<button class="chip" data-з-идея="${экр(и.text)}"
+            >💡 ${экр(и.text.slice(0, 44))}</button>`).join("")}</div>` : ""}
+
+      <button class="btn primary wide" id="з-пуск" style="margin-top:.875rem"
+        ${С.mac?.alive ? "" : "disabled"}>✨ Собрать ${сколько}</button>
+      <div class="hint" style="text-align:center">Можно закрыть приложение —
+        бот напишет в чат, когда всё будет готово.</div>`;
+    связать();
+  }
+
+  function связать() {
+    э.querySelector("#з-мин").onclick = () => { тук(); сколько--; нарисовать(); };
+    э.querySelector("#з-плюс").onclick = () => { тук(); сколько++; нарисовать(); };
+    э.querySelectorAll("[data-з-станок]").forEach(б => б.onclick = () => {
+      тук(); куда = б.getAttribute("data-з-станок"); выбраны = null; сколько = 0; нарисовать();
+    });
+    э.querySelectorAll("[data-з-час]").forEach(б => б.onclick = () => {
+      тук();
+      const ч = б.getAttribute("data-з-час");
+      выбраны = выбраны.includes(ч) ? выбраны.filter(x => x !== ч) : [...выбраны, ч];
+      выбраны.sort();
+      нарисовать();
+    });
+    э.querySelectorAll("[data-з-идея]").forEach(б => б.onclick = () => {
+      тук(); своя = б.getAttribute("data-з-идея"); нарисовать();
+    });
+    const поле = э.querySelector("#з-тема");
+    поле.oninput = () => { своя = поле.value; };
+    э.querySelector("#з-пуск").onclick = async () => {
+      тук("medium");
+      э.remove();
+      try {
+        await работа("/api/order", {сколько, куда, часы: выбраны, тема: своя},
+                     ШАГИ_ЗАКАЗ);
+        сказать(`🎠 Собрал ${сколько}`);
+      } catch (e) { сказать(e.message, true); }
+    };
+  }
+}
+
 function листСоздания(тема_ = "") {
   тема = тема_;
   const чипы = ["Сам выберу", ...С.rubrics].map(и => {
@@ -1330,16 +2280,6 @@ function листКонвейера(код) {
 }
 
 function считать() {
-  // На «Очереди» — сколько постов ждут одобрения, на «Плане» — сколько
-  // стоит в расписании. Раньше на очереди висел счётчик расписания, и цифра
-  // ноль рядом с четырьмя черновиками читалась как ошибка.
-  const пары = [["cnt", (С.drafts || []).length],
-                ["cnt2", (С.schedule || []).length]];
-  for (const [ид, н] of пары) {
-    const д = document.getElementById(ид);
-    д.textContent = н;
-    д.hidden = !н;
-  }
   const ч = document.getElementById("ch");
   ч.textContent = С.channel || "канал не задан";
   ч.classList.toggle("main", С.channels?.["выбран"] === "основной");
@@ -1357,9 +2297,6 @@ function считать() {
   к.title = С.silent ? "Все посты уходят без звука" : "Посты со звуком, ночью тихо";
 }
 
-document.querySelectorAll(".tabs button").forEach(б => б.onclick = () => {
-  тук(); вкладка = б.dataset.tab; рисовать();
-});
 document.getElementById("gear").onclick = () => { тук(); настройки(); };
 document.getElementById("ch").onclick = () => { тук(); каналы(); };
 document.getElementById("звук").onclick = async () => {
@@ -1372,9 +2309,22 @@ document.getElementById("звук").onclick = async () => {
   } catch (e) { сказать(e.message, true); }
 };
 
+ТГ?.BackButton?.onClick?.(() => { тук(); if (!закрытьЛист()) идти("цех"); });
+
+// Escape — то же самое для тех, кто открыл приложение в браузере.
+addEventListener("keydown", с => {
+  if (с.key !== "Escape") return;
+  if (!закрытьЛист() && экран !== "цех") идти("цех");
+});
+
 (async () => {
   try {
     С = await зов("/api/state");
+    // Ссылка вида #станок-tiktok открывает станок сразу: её удобно держать
+    // на телефоне под рукой.
+    const адрес = decodeURIComponent(location.hash.slice(1));
+    if (адрес.startsWith("m-")) { экран = "станок"; станок = адрес.slice(2); }
+    else if (адрес === "stock") экран = "сырьё";
     считать(); рисовать();
   } catch (e) {
     document.getElementById("view").innerHTML =

@@ -26,3 +26,7 @@ graphify-out/cache/
 graphify-out/wiki/
 .graphify_python
 .graphify_root
+
+# Изолированные рабочие копии для параллельных сессий. Живут внутри проекта,
+# но принадлежат конкретной сессии: коммитить их в общую историю нельзя.
+.claude/worktrees/

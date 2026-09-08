@@ -19,7 +19,8 @@ from pathlib import Path
 МОДУЛИ = ["access.py", "api.py", "card.py", "channels.py", "config.py", "content.py",
           "crosspost.py", "db.py", "facts.py", "icons.py", "ideas.py", "jobs.py", "markup.py", "publish.py", "repeats.py",
           "storage.py", "stream.py", "telegram.py", "threads.py", "tiktok.py",
-          "times.py", "варианты.py", "x.py", "площадки.py", "подпись.py",
+          "times.py", "варианты.py", "x.py", "конвейер.py", "площадки.py",
+          "подпись.py",
           "уборка.py"]
 
 ТРЕБОВАНИЯ = """\
