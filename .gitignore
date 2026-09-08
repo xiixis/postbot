@@ -2,10 +2,10 @@
 .env
 
 # Рабочие данные: база постов и отрисованные карточки
-data/
+data
 webapp/_probe.html
 assets/stream_card.png
-.venv/
+.venv
 __pycache__/
 *.pyc
 deploy/ключи/
@@ -22,7 +22,7 @@ vercel/.env.local
 
 # Граф знаний. Сам граф и отчёты в репозитории — они и есть карта проекта.
 # Кэш разбора и вики машинные: сотни мелких файлов на прогон, сливать нечего.
-graphify-out/cache/
+graphify-out/cache
 graphify-out/wiki/
 .graphify_python
 .graphify_root
@@ -30,3 +30,9 @@ graphify-out/wiki/
 # Изолированные рабочие копии для параллельных сессий. Живут внутри проекта,
 # но принадлежат конкретной сессии: коммитить их в общую историю нельзя.
 .claude/worktrees/
+
+# Шаблоны для .venv, data, node_modules и graphify-out/cache нарочно записаны БЕЗ
+# слеша на конце. В рабочих копиях (git worktree) это не каталоги, а симлинки на
+# основное дерево — их ставит хук CwdChanged. Шаблон вида «data/» совпадает
+# только с каталогом, симлинк он не ловит, и тогда git считает ссылку мусором, а
+# ExitWorktree отказывается удалять копию без discard_changes.
