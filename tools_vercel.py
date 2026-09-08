@@ -8,8 +8,11 @@
     python3 tools_vercel.py
 """
 
+import json
 import shutil
 from pathlib import Path
+
+import config
 
 КОРЕНЬ = Path(__file__).resolve().parent
 ЦЕЛЬ = КОРЕНЬ / "vercel"
@@ -35,13 +38,20 @@ psycopg[binary]>=3.1
 # regions это не украшение. База живёт в Ирландии, и функция, поднятая по
 # умолчанию в Вашингтоне, ходила к ней через океан на каждый запрос. Дублин
 # стоит рядом с базой, и то же самое приложение открывается заметно быстрее.
-НАСТРОЙКИ = """{
-  "regions": ["dub1"],
-  "rewrites": [
-    { "source": "/api/:route*", "destination": "/api/index?route=:route*" }
-  ]
-}
-"""
+# Заголовки безопасности берутся из config, а не пишутся здесь: приложение
+# отдают два входа, облако и сам мак, и защита у них обязана быть одна. Что
+# именно каждое правило закрывает — рассказано там же, рядом с ними.
+НАСТРОЙКИ = json.dumps({
+    "regions": ["dub1"],
+    "rewrites": [
+        {"source": "/api/:route*", "destination": "/api/index?route=:route*"},
+    ],
+    "headers": [
+        {"source": "/(.*)",
+         "headers": [{"key": имя, "value": значение}
+                     for имя, значение in config.ЗАЩИТА.items()]},
+    ],
+}, ensure_ascii=False, indent=2) + "\n"
 
 
 def собрать() -> None:

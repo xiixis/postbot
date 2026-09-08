@@ -72,28 +72,15 @@ class handler(BaseHTTPRequestHandler):
         делать нечего. Поэтому здесь код просто кладётся в очередь заданием, а
         человеку показывается, что можно возвращаться в приложение.
         """
-        код = (запрос.get("code") or "").strip()
-        беда = (запрос.get("error_description") or запрос.get("error") or "").strip()
-        if код:
-            try:
-                jobs.подготовить()
-                jobs.поставить("тикток_вход", {"code": код})
-                нутро = ("<h2>Готово</h2><p>Аккаунт подключается. Вернитесь в "
-                         "приложение, через несколько секунд там появится имя "
-                         "профиля.</p>")
-            except Exception as e:                           # noqa: BLE001
-                нутро = f"<h2>Код получен, но не сохранился</h2><pre>{e}</pre>"
-        elif беда:
-            нутро = f"<h2>TikTok отказал</h2><p>{беда}</p>"
-        else:
-            нутро = "<h2>Ни кода, ни ошибки</h2>"
-        страница = ("<meta charset='utf-8'><meta name='viewport' "
-                    "content='width=device-width,initial-scale=1'><style>"
-                    "body{font:16px/1.6 system-ui;max-width:34rem;margin:3rem auto;"
-                    "padding:0 1rem;background:#12130F;color:#F1F3EA}"
-                    "h2{color:#C7E24B}pre{background:#1B1E17;padding:1rem;"
-                    "border-radius:.5rem;overflow-x:auto}</style>"
-                    + нутро).encode()
+        def поставить(код: str) -> None:
+            jobs.подготовить()
+            jobs.поставить("тикток_вход", {"code": код})
+
+        import tiktok
+        страница = tiktok.страница_возврата(
+            запрос.get("code") or "",
+            запрос.get("error_description") or запрос.get("error") or "",
+            поставить)
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(страница)))
