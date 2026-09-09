@@ -753,6 +753,96 @@ h1{{position:relative;margin-top:26px;font-family:Onest,sans-serif;font-weight:8
 """
 
 
+# ── СТОРИС ─────────────────────────────────────────────────────────────────
+# Тот же холст 1080x1920, но задача другая. Обложка эфира зовёт смотреть прямо
+# сейчас, отсюда красная точка. Сторис зовёт в профиль: он живёт сутки, его
+# смотрят между делом, и единственное действие, которого мы хотим, — тап по
+# аватару наверху. Поэтому кот показывает вверх, а призыв стоит плашкой, а не
+# строкой: в ленте строку теряют.
+#
+# Зоны площадки те же и они жёстче, чем у поста: сверху TikTok кладёт аватар и
+# имя, снизу поле ответа. Всё важное живёт между 20% и 72% высоты.
+
+СТОРИС = """<meta charset="utf-8"><style>{шрифты}
+*{{box-sizing:border-box;margin:0;padding:0}}
+html,body{{width:1080px;height:1920px;overflow:hidden}}
+body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans-serif;
+  position:relative;display:flex;flex-direction:column;align-items:center;
+  padding:330px 70px 430px}}
+.grid{{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.04) 1px,transparent 1px);
+  background-size:60px 60px}}
+/* Свет смещён вверх, к заголовку: он тут главный, а не кот. */
+.glow{{position:absolute;left:50%;top:40%;width:1200px;height:1200px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(199,226,75,.20) 0%,
+             rgba(199,226,75,.06) 42%,transparent 70%)}}
+.eyebrow{{position:relative;font-size:26px;font-weight:600;letter-spacing:.32em;
+  text-transform:uppercase;color:{приглуш}}}
+h1{{position:relative;margin-top:34px;font-family:Onest,sans-serif;font-weight:800;
+  font-size:{кегль}px;line-height:1.02;letter-spacing:-.015em;text-align:center;
+  color:{текст}}}
+h1 span{{color:{лайм};text-shadow:0 0 70px rgba(199,226,75,.45)}}
+.sub{{position:relative;margin-top:28px;font-size:40px;line-height:1.3;
+  color:{текст};opacity:.78;text-align:center;max-width:820px}}
+.hero{{position:relative;margin-top:auto}}
+.hero img{{height:{рост}px;display:block;
+  filter:drop-shadow(0 34px 64px rgba(0,0,0,.75))}}
+/* Призыв плашкой: лайм по тёмному даёт и акцент, и точку входа для тапа. */
+.cta{{position:relative;margin-top:34px;background:{лайм};color:{по_лайму};
+  font-weight:700;font-size:42px;letter-spacing:.01em;
+  padding:26px 44px;border-radius:14px;box-shadow:0 0 60px rgba(199,226,75,.25)}}
+.foot{{position:relative;margin-top:26px;display:flex;align-items:center;gap:16px}}
+.foot img{{height:42px}}
+.foot span{{font-size:28px;font-weight:600;letter-spacing:.1em;color:{приглуш}}}
+</style>
+<div class="grid"></div><div class="glow"></div>
+<div class="eyebrow">{надпись}</div>
+<h1>{заголовок}</h1>
+<div class="sub">{подзаголовок}</div>
+{герой}
+<div class="cta">{призыв}</div>
+<div class="foot"><img src="file://{лого}"><span>{ник}</span></div>
+"""
+
+
+def сторис(надпись: str, заголовок: str, подзаголовок: str, призыв: str,
+           ник: str = "", поза: str = "vverh") -> Path | None:
+    """Вертикальный кадр 1080x1920 для сторис: зовёт в профиль.
+
+    Ключевое слово заголовка берётся в *звёздочки* и выходит лаймом — один
+    приём выделения на кадр, как у тех референсов, что взлетели. Кегль
+    подбираем по длине: в сторис заголовок читают с расстояния вытянутой руки
+    и мельче 64 px он перестаёт цеплять.
+    """
+    import mascot
+    if not config.хром():
+        return None
+    config.ВЫВОД.mkdir(parents=True, exist_ok=True)
+    чистый = " ".join((заголовок or "").split())
+    знаков = len(чистый.replace("*", ""))
+    кегль = 116 if знаков <= 18 else 100 if знаков <= 28 else 86 if знаков <= 40 else 72
+    файл = mascot.взять(поза) if поза else None
+    рост = 560 if знаков <= 28 else 500
+    герой = (f'<div class="hero"><img src="file://{Path(файл).resolve()}"></div>'
+             if файл and Path(файл).exists() else "")
+    страница = СТОРИС.format(
+        шрифты=_шрифты(), фон=config.ФОН, текст=config.ТЕКСТ,
+        приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ, по_лайму=config.ФОН,
+        кегль=кегль, рост=рост,
+        надпись=html.escape(надпись),
+        заголовок=_подсветить(html.escape(чистый)),
+        подзаголовок=html.escape(подзаголовок),
+        призыв=html.escape(призыв), герой=герой,
+        # Ник берётся только тот, что передали. Подставлять config.КАНАЛ
+        # нельзя: там телеграм, а сторис уходит в TikTok, и чужой адрес в
+        # кадре зовёт туда, куда зритель всё равно не попадёт.
+        ник=html.escape(ник or ""),
+        лого=config.АССЕТЫ / "logo-dark.png")
+    return _снять(страница, 1080, 1920)
+
+
 def обложка_эфира(надпись: str, заголовок: str, подзаголовок: str,
                   ник: str, файл_позы) -> Path | None:
     """Вертикальная обложка эфира. Читается с ленты, а не с монитора."""
