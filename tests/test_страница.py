@@ -114,6 +114,45 @@ class БезИнлайна(unittest.TestCase):
         self.assertTrue(tools_vercel.ЦЕЛЬ.name)
 
 
+class Навигация(unittest.TestCase):
+    """Нижняя навигация — единственный явный способ попасть в разделы.
+
+    До неё переходы были неявными: в сырьё попадали кнопкой из цеха, а
+    прошлого не было вовсе. Раздел, в который нельзя ткнуть пальцем, для
+    человека не существует.
+    """
+
+    def setUp(self):
+        self.разметка = СТРАНИЦА.read_text(encoding="utf-8")
+        self.кнопки = re.findall(r"<button[^>]*data-раздел=[^>]*>",
+                                 self.разметка)
+
+    def test_разделы_те_самые_и_в_этом_порядке(self):
+        пункты = re.findall(r'data-раздел="([^"]+)"', self.разметка)
+        self.assertEqual(пункты, ["today", "plan", "out", "stock"])
+
+    def test_разделов_не_больше_пяти(self):
+        """Больше пяти в нижней навигации не читаются и не попадают пальцем."""
+        self.assertLessEqual(len(self.кнопки), 5)
+
+    def test_у_каждого_пункта_есть_имя(self):
+        """Иконка без подписи для чтеца экрана — кнопка без названия."""
+        for к in self.кнопки:
+            self.assertIn("aria-label=", к)
+
+    def test_у_каждого_пункта_есть_видимая_подпись(self):
+        """Одни иконки человек разгадывает, а не читает."""
+        подписи = re.findall(r'<span class="под">([^<]+)</span>', self.разметка)
+        self.assertEqual(len(подписи), len(self.кнопки))
+
+    def test_иконки_рисуются_а_не_набираются_эмодзи(self):
+        """Эмодзи зависят от гарнитуры устройства и не подчиняются цвету."""
+        for к in re.findall(
+                r"<button[^>]*data-раздел=.*?</button>",
+                self.разметка, re.S):
+            self.assertIn("<svg", к)
+
+
 @unittest.skipIf(NODE is None, "node не установлен")
 class СинтаксисСтраницы(unittest.TestCase):
     def test_каждый_скрипт_разбирается(self):
