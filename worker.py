@@ -65,7 +65,8 @@ def сделать(работа: dict) -> int | None:
         import config
         import выгрузка
         return выгрузка.забрать(int(данные["id"]), данные.get("куда") or "tiktok",
-                                config.АДМИН)
+                                config.АДМИН,
+                                файлами=bool(данные.get("файлами")))
     if вид == "опубликовать":
         import publish
         publish.опубликовать(int(данные["id"]), данные.get("by") or None)
