@@ -338,7 +338,7 @@ h1{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;line-h
    отдельно взятой красивой композиции. */
 .стек{{margin:0 0 auto;position:relative;padding-top:{текст_сверху}px}}
 .шапка{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;
-  line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:14ch}}
+  line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:{мера_вывода}px}}
 .цифра{{font-family:Onest,sans-serif;font-weight:800;font-size:{цифра}px;line-height:1;
   color:{лайм};letter-spacing:-.03em;margin:30px 0 20px;
   text-shadow:0 0 60px rgba(199,226,75,.28)}}
@@ -347,24 +347,24 @@ h1{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;line-h
    карусели акцент занимал около процента площади при норме 4-6. Тонкая
    цветная надпись площади не даёт: с расстояния ленты её не видно.
    Заливка видна. */
-.свет{{color:{фон};background:{лайм};padding:.04em .18em;border-radius:3px;
+.свет{{color:{по_лайму};background:{лайм};padding:.04em .18em;border-radius:3px;
   box-decoration-break:clone;-webkit-box-decoration-break:clone;font-weight:800}}
 .черта{{width:{черта}px;height:4px;background:{лайм};margin:38px 0 30px}}
 """
 
 ФИНАЛ_ЕЩЁ = """
 .вывод{{font-family:Onest,sans-serif;font-weight:800;font-size:{вывод}px;line-height:1.1;
-  letter-spacing:-.02em;color:{текст};max-width:14ch;position:relative;
+  letter-spacing:-.02em;color:{текст};max-width:{мера_вывода}px;position:relative;
   margin-top:auto;margin-bottom:auto}}
 .точка{{position:absolute;left:{поле_бок}px;top:{поле_верх}px;font-size:{точка}px;
   font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:{лайм}}}
 /* Призыв живёт под выводом и спорить с ним не должен: вывод это мысль, ради
    которой листали, а призыв — то, что делать дальше. Отсюда кегль поменьше,
    лаймовая полоска слева вместо кнопки и место над логотипом. */
-.призыв{{position:absolute;left:{поле_бок}px;right:{поле_бок}px;
+.призыв{{position:absolute;left:{поле_бок}px;max-width:{мера_вывода}px;
   bottom:{призыв_низ}px;font-family:Plex,sans-serif;font-weight:700;
-  font-size:{призыв}px;line-height:1.25;color:{лайм};
-  padding-left:{призыв_отступ}px;border-left:5px solid {лайм}}}
+  font-size:{призыв}px;line-height:1.25;color:{по_лайму};background:{лайм};
+  padding:{призыв_поле}px {призыв_бок}px;border-radius:6px}}
 """
 
 
@@ -457,7 +457,7 @@ def светлый_ли(номер: int) -> bool:
 
 def _общее(номер: int, всего: int, формат: str = "квадрат") -> dict:
     палитра = dict(СВЕТЛЫЕ) if светлый_ли(номер) else {}
-    return {
+    итог = {
         **ФОРМАТЫ.get(формат, ФОРМАТЫ["квадрат"]),
         "шрифты": _шрифты(), "фон": config.ФОН, "текст": config.ТЕКСТ,
         "приглуш": config.ПРИГЛУШ, "лайм": config.ЛАЙМ, "рамка": config.РАМКА,
@@ -475,6 +475,18 @@ def _общее(номер: int, всего: int, формат: str = "квад�
         # соседствует с ними.
         **палитра,
     }
+    # Буквы поверх лаймовой заливки. Раньше в этих местах стоял {фон}, и на
+    # тёмном кадре это давало почти чёрные буквы по лайму — как и задумано.
+    # Но на светлом кадре палитра меняет фон и текст местами, {фон}
+    # становится кремовым, и подпись по лайму падала до 1.3:1 — в ленте её
+    # просто не видно. Поэтому цвет берётся не из темы, а прямо из
+    # фирменного тёмного, и не зависит от того, какой это кадр.
+    итог["по_лайму"] = config.ФОН
+    # Мера вывода в пикселях, а не в ch. Единица ch это ширина нуля, и для
+    # жирной кириллицы она врёт: слово из десяти букв оказывается шире
+    # четырнадцати нулей, вылезает за холст и обрезается краем кадра.
+    итог["мера_вывода"] = итог["ширина"] - 2 * итог["поле_бок"]
+    return итог
 
 
 # Средняя ширина знака у Onest ExtraBold в долях кегля. Мерено по готовым
@@ -596,9 +608,17 @@ def слайд_финал(вывод: str, номер: int, всего: int,
     просьба важнее, чем то, кто её произносит.
     """
     д = _общее(номер, всего, формат)
-    д["призыв"] = round(д["мысль"] * 0.98)
+    # Кегль призыва снижен с 0.98 до 0.86 от «мысли»: на плашке он стал
+    # заметнее сам по себе, и в прежнем размере лайм занимал 9% кадра
+    # вместо положенных 4–6.
+    д["призыв"] = round(д["мысль"] * 0.86)
     д["призыв_низ"] = д["низ_знака"] + 78
     д["призыв_отступ"] = round(д["поле_бок"] * 0.35)
+    # Поля плашки с призывом. По кругу в треть бокового поля акцент
+    # занимал 11% кадра при норме 4–6%, а выше 8% он перестаёт быть
+    # акцентом и превращается во второй фон.
+    д["призыв_поле"] = round(д["поле_бок"] * 0.10)
+    д["призыв_бок"] = round(д["поле_бок"] * 0.16)
     зов = (призыв or "").strip()
     точка_и_вывод = (f'<div class="точка">Итог</div>'
                      f'<div class="вывод">{_текст(вывод, 110)}</div>')
@@ -629,8 +649,28 @@ def слайд_финал(вывод: str, номер: int, всего: int,
 
     нутро = точка_и_вывод + (f'<div class="призыв">{_текст(зов, 90)}</div>'
                              if зов else "")
-    return _снять(СЛАЙД.format(**д, ещё=ФИНАЛ_ЕЩЁ.format(**д),
-                               нутро=нутро), д["ширина"], д["высота"])
+    # Запасной путь раньше снимал кадр вслепую: проверки здесь не было вовсе,
+    # и обрезанное слово уходило в карусель молча — именно так вышли три
+    # карусели 9 сентября. Теперь замеряем, и если не сходится, уменьшаем
+    # кегль вывода ступенями. Приём не новый: тем же способом выше
+    # подбирается рост кота — пробуем, меряем, убавляем.
+    #
+    # Ниже 0.64 не опускаемся. От 190 px это 122 px, и крупная строка ещё
+    # держит иерархию к призыву; дальше кадр перестаёт читаться с расстояния
+    # ленты, а это хуже, чем перенос.
+    полный = д["вывод"]
+    страница = беды = None
+    for доля in (1.0, 0.86, 0.74, 0.64):
+        д["вывод"] = round(полный * доля)
+        страница = СЛАЙД.format(**д, ещё=ФИНАЛ_ЕЩЁ.format(**д), нутро=нутро)
+        беды = проверить_композицию(
+            _замерить(страница, д["ширина"], д["высота"]), формат)
+        if not беды:
+            if доля < 1.0:
+                print(f"композиция «финал»: вывод уменьшен до {round(доля * 100)}%")
+            return _снять(страница, д["ширина"], д["высота"])
+    print(f"композиция «финал»: {'; '.join(беды)} — не сошлось и на 64%")
+    return _снять(страница, д["ширина"], д["высота"])
 
 
 # ── ОБЛОЖКА ЭФИРА ──────────────────────────────────────────────────────────
@@ -781,13 +821,13 @@ def пережать(путь, вид: str = "jpeg", ширина: int = 0):
 
 ВИДЫ_CSS = """
 .шапка{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;
-  line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:14ch}}
+  line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:{мера_вывода}px}}
 .мысль{{font-size:{мысль}px;line-height:1.38;color:{мягкий};max-width:{мера}ch}}
 /* Плашка-маркер. Раньше жила только в вёрстке «выделение», и на всей
    карусели акцент занимал около процента площади при норме 4-6. Тонкая
    цветная надпись площади не даёт: с расстояния ленты её не видно.
    Заливка видна. */
-.свет{{color:{фон};background:{лайм};padding:.04em .18em;border-radius:3px;
+.свет{{color:{по_лайму};background:{лайм};padding:.04em .18em;border-radius:3px;
   box-decoration-break:clone;-webkit-box-decoration-break:clone;font-weight:800}}
 .черта{{width:{черта}px;height:4px;background:{лайм};margin:38px 0 30px}}
 /* Правило одно на весь файл. Второе такое же жило в другом блоке CSS, и
@@ -893,7 +933,7 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
 .формула i{{color:{лайм};font-style:normal}}
 .формула .итог{{color:{лайм}}}
 
-.плашка{{display:inline-block;background:{лайм};color:{фон};
+.плашка{{display:inline-block;background:{лайм};color:{по_лайму};
   font-weight:700;font-size:{над}px;letter-spacing:.18em;text-transform:uppercase;
   padding:9px 18px;border-radius:8px;margin-bottom:26px}}
 .плашка.ржавая{{background:{ржавый};color:{текст}}}
@@ -931,7 +971,7 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
 .чипы{{display:flex;flex-wrap:wrap;gap:14px}}
 .чипы span{{background:{поверхность};border:1px solid {рамка};border-radius:999px;
   padding:14px 24px;font-size:{над}px;color:{текст}}}
-.чипы span.я{{background:{лайм};color:{фон};border-color:{лайм};font-weight:700}}
+.чипы span.я{{background:{лайм};color:{по_лайму};border-color:{лайм};font-weight:700}}
 
 .двацифры{{display:flex;gap:28px}}
 .двацифры div{{flex:1}}
@@ -961,7 +1001,7 @@ ul.галочки li.нет{{color:{приглуш}}}
 ul.галочки b{{flex:0 0 auto;width:1.1em;height:1.1em;border-radius:5px;
   border:3px solid {рамка};display:grid;place-items:center;
   color:transparent;line-height:1}}
-ul.галочки li.да b{{background:{лайм};border-color:{лайм};color:{фон}}}
+ul.галочки li.да b{{background:{лайм};border-color:{лайм};color:{по_лайму}}}
 
 .записка{{background:{поверхность};border:1px solid {рамка};
   border-left:6px solid {лайм};border-radius:0 16px 16px 0;padding:30px 32px;
@@ -983,7 +1023,7 @@ ul.галочки li.да b{{background:{лайм};border-color:{лайм};color
   font-size:{пункт}px;line-height:1.3}}
 .пузыри .он{{background:{поверхность};border:1px solid {рамка};color:{текст};
   border-bottom-left-radius:6px;align-self:flex-start}}
-.пузыри .я{{background:{лайм};color:{фон};font-weight:600;
+.пузыри .я{{background:{лайм};color:{по_лайму};font-weight:600;
   border-bottom-right-radius:6px;align-self:flex-end}}
 
 .телефон{{border:5px solid {рамка};border-radius:34px;padding:30px 26px;
@@ -1048,7 +1088,7 @@ ul.галочки li.да b{{background:{лайм};border-color:{лайм};color
 .тройка .п{{font-size:{над}px;color:{приглуш};margin-top:12px;line-height:1.3}}
 
 .выделение p{{font-size:{пункт}px;line-height:1.5;color:{мягкий};margin:0}}
-.выделение p.свет{{color:{фон};background:{лайм};display:inline;
+.выделение p.свет{{color:{по_лайму};background:{лайм};display:inline;
   box-decoration-break:clone;-webkit-box-decoration-break:clone;
   padding:.12em .2em;font-weight:600}}
 
@@ -2119,6 +2159,18 @@ window.addEventListener('load', function () {
       });
     });
   }
+  // Переполнение на уровне букв. getBoundingClientRect отдаёт прямоугольник
+  // БЛОКА, и длинное слово, вылезшее за его край, в такой замер не попадает
+  // вовсе: прямоугольник остаётся в границах холста, а буквы уже за ним.
+  // Браузер знает об этом точно, и спросить надо его, а не считать по
+  // средней ширине знака — для жирной кириллицы среднее врёт почти вдвое.
+  итог.перелив = [];
+  что.текст.forEach(function (с) {
+    document.querySelectorAll(с).forEach(function (э) {
+      if (э.scrollWidth > э.clientWidth + 1)
+        итог.перелив.push([с, э.scrollWidth, э.clientWidth]);
+    });
+  });
   document.body.setAttribute('data-замер', JSON.stringify(итог));
 });
 </script>
@@ -2225,5 +2277,12 @@ def проверить_композицию(замер: dict, формат: str 
             if _пересекаются(т_, п):
                 беды.append("текст налезает на логотип")
                 break
+
+    # Слово шире своей колонки. Все проверки выше смотрят на прямоугольники
+    # блоков, а буквы способны вылезти за блок и остаться незамеченными:
+    # именно так 9 сентября три финала ушли с обрезанным словом у правого
+    # края, и ни одного предупреждения при этом не было.
+    if замер.get("перелив"):
+        беды.append("слово шире колонки")
 
     return sorted(set(беды))
