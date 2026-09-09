@@ -240,14 +240,20 @@ def обработать(путь: str, данные: dict, кто: int) -> tupl
             else:
                 db.снять_с_плана(ид)
         db.отметить_выложенным(ид, (данные.get("link") or "").strip())
-        return 200, {"ok": True, "post": db.взять(ид)}
+        # Через _пост, а не сырым рядом: в базе images лежит строкой JSON, и
+        # приложение падало на `слайды.map is not a function`.
+        return 200, {"ok": True, "post": _пост(db.взять(ид)),
+                     "state": _состояние()}
 
     if путь.endswith("/link"):
         ид = int(данные["id"])
         if not db.взять(ид):
             return 404, {"error": "поста нет"}
         db.запомнить_ссылку(ид, (данные.get("link") or "").strip())
-        return 200, {"ok": True, "post": db.взять(ид)}
+        # Через _пост, а не сырым рядом: в базе images лежит строкой JSON, и
+        # приложение падало на `слайды.map is not a function`.
+        return 200, {"ok": True, "post": _пост(db.взять(ид)),
+                     "state": _состояние()}
 
     if путь.endswith("/repose"):
         return 200, {"job": jobs.поставить("перерисовать", {
