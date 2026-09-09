@@ -627,6 +627,14 @@ function открыть(п) {
       <button class="btn wide ghost" data-act="take"
               style="margin-top:.5rem">📥 Забрать файлы</button>` : "";
 
+  // Отметка ручной выкладки. Через API её не узнать: прав на «список моих
+  // видео» у приложения нет, только публикация, да и ключ песочный. Без
+  // отметки пост остаётся черновиком, снова попадает в «чего не хватает» и
+  // врёт в сводке.
+  const выложил = п.status === "published" ? "" : `
+      <button class="btn wide ghost" data-act="posted"
+              style="margin-top:.5rem">✅ Выложил руками</button>`;
+
   // Перерисовка по одному слайду. У кота бывает пять лап: пикселям всё
   // хорошо, автоматика такое не ловит, а видно сразу. Пересобирать из-за
   // одной картинки всю карусель — минуты работы и восемь новых файлов.
@@ -650,6 +658,7 @@ function открыть(п) {
       </div>
       ${правки}
       ${забрать}
+      ${выложил}
       ${перерисовка}
       <div class="row" style="margin-top:.5rem">
         <button class="btn ghost" data-act="move">🕑 Перенести</button>
@@ -658,7 +667,8 @@ function открыть(п) {
     : п.status === "published"
     ? `<div class="row снизу">
          ${п.link ? `<a class="btn ghost" style="text-decoration:none"
-             href="${п.link}" target="_blank">↗️ В канале</a>` : ""}
+             href="${п.link}" target="_blank">↗️ Открыть</a>`
+           : `<button class="btn ghost" data-act="link">🔗 Добавить ссылку</button>`}
          <button class="btn" data-act="repeat">🔁 Повторить</button>
        </div>
 
@@ -673,6 +683,7 @@ function открыть(п) {
       </div>
       ${правки}
       ${забрать}
+      ${выложил}
       ${перерисовка}
       <div class="row" style="margin-top:.5rem">
         <button class="btn ghost" data-act="pub">🚀 Сейчас</button>
@@ -852,6 +863,24 @@ function действия(э, п) {
         рубрика = п.rubric === "стрим" ? рубрика : п.rubric;
         return сочинить(п.rubric === "стрим" ? "stream"
                       : п.rubric === "карусель" ? "carousel" : "post");
+      } else if (что === "posted") {
+        // Ссылку спрашиваем, но не требуем: кто выкладывает на ходу, тот
+        // адрес пришлёт потом или не пришлёт вовсе. Отмена окна не должна
+        // отменять саму отметку, поэтому пустая строка — это тоже «да».
+        const адрес = prompt("Ссылка на выложенный пост (можно пропустить):",
+                             "") || "";
+        const о = await зов("/api/posted", {id: п.id, link: адрес.trim()});
+        С = о.state || С;
+        сказать("Отметил вышедшим");
+        if (о.post) открыть(о.post); else э.remove();
+        return;
+      } else if (что === "link") {
+        const адрес = (prompt("Ссылка на этот пост:", п.link || "") || "").trim();
+        if (!адрес) return;
+        const о = await зов("/api/link", {id: п.id, link: адрес});
+        сказать("Сохранил ссылку");
+        if (о.post) открыть(о.post);
+        return;
       } else if (что === "off") {
         await довести(await зов("/api/unschedule", {id: п.id}));
         сказать("Снял с плана");
