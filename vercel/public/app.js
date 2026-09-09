@@ -672,10 +672,19 @@ function открыть(п) {
     : п.status === "published"
     ? `<div class="row снизу">
          ${п.link ? `<a class="btn ghost" style="text-decoration:none"
-             href="${п.link}" target="_blank">↗️ Открыть</a>`
-           : `<button class="btn ghost" data-act="link">🔗 Добавить ссылку</button>`}
+             href="${п.link}" target="_blank">↗️ Открыть</a>` : ""}
          <button class="btn" data-act="repeat">🔁 Повторить</button>
        </div>
+
+       <div class="lbl" style="margin-top:.75rem">Ссылка на пост</div>
+       <div class="row">
+         <input id="ссылка-поста" type="url" inputmode="url"
+                placeholder="https://www.tiktok.com/@…"
+                value="${п.link ? экр(п.link) : ""}" style="flex:1">
+         <button class="btn ghost" data-act="link">Сохранить</button>
+       </div>
+       <div class="hint">Пост выкладывали руками, поэтому адрес знает только
+         человек. Можно оставить пустым.</div>
 
        ${п.views ? `<div class="hint">👁 ${п.views} просмотров${
            п.reactions ? ` · ${п.reactions} реакций и пересылок` : ""}</div>` : ""}`
@@ -872,20 +881,27 @@ function действия(э, п) {
         return сочинить(п.rubric === "стрим" ? "stream"
                       : п.rubric === "карусель" ? "carousel" : "post");
       } else if (что === "posted") {
-        // Ссылку спрашиваем, но не требуем: кто выкладывает на ходу, тот
-        // адрес пришлёт потом или не пришлёт вовсе. Отмена окна не должна
-        // отменять саму отметку, поэтому пустая строка — это тоже «да».
-        const адрес = prompt("Ссылка на выложенный пост (можно пропустить):",
-                             "") || "";
-        const о = await зов("/api/posted", {id: п.id, link: адрес.trim()});
+        // Ссылку не спрашиваем окном: prompt в мини-приложении телеграма не
+        // показывается вовсе — нажатие выглядело как «ничего не произошло».
+        // Отмечаем сразу, а поле для адреса появляется на карточке вышедшего.
+        const о = await зов("/api/posted", {id: п.id, link: ""});
         С = о.state || С;
         сказать("Отметил вышедшим");
         if (о.post) открыть(о.post); else э.remove();
         return;
       } else if (что === "link") {
-        const адрес = (prompt("Ссылка на этот пост:", п.link || "") || "").trim();
-        if (!адрес) return;
+        // Своё поле вместо prompt, по той же причине.
+        const поле = э.querySelector("#ссылка-поста");
+        if (!поле) return;
+        const адрес = (поле.value || "").trim();
+        if (!адрес) { поле.focus(); return; }
+        if (!/^https?:\/\//i.test(адрес)) {
+          сказать("Ссылка должна начинаться с http", true);
+          поле.focus();
+          return;
+        }
         const о = await зов("/api/link", {id: п.id, link: адрес});
+        С = о.state || С;
         сказать("Сохранил ссылку");
         if (о.post) открыть(о.post);
         return;
