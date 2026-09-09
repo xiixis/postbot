@@ -684,6 +684,87 @@ def история(смещение: int = 0, сколько: int = 20, запр
     return list(ряды), int(всего or 0)
 
 
+def по_неделям(недель: int = 8, канал: str | None = None) -> list[dict]:
+    """Штук и средний охват по неделям, от старой недели к свежей.
+
+    Неделю считаем сами, а не запросом: `strftime` в sqlite и `date_trunc` в
+    постгресе пишутся по-разному, и отчёт на маке разошёлся бы с облачным.
+
+    Пустые недели остаются в ответе нулями. Провал в выпуске — это тоже
+    сведения, и график, который просто пропускает такую неделю, врёт: он
+    показывает ровный ряд там, где на деле была дыра.
+    """
+    from datetime import timedelta
+    недель = max(1, min(int(недель or 8), 52))
+    сегодня = datetime.now(timezone.utc).date()
+    эта = сегодня - timedelta(days=сегодня.weekday())     # понедельник
+    начала = [эта - timedelta(weeks=н) for н in range(недель - 1, -1, -1)]
+    порог = datetime(начала[0].year, начала[0].month, начала[0].day,
+                     tzinfo=timezone.utc).isoformat(timespec="seconds")
+    условие = " AND (channel=? OR channel IS NULL OR channel='')" if канал else ""
+    значения = (порог, канал) if канал else (порог,)
+    with соединение() as c:
+        ряды = c.execute(
+            "SELECT published_at, views FROM posts WHERE status='published'"
+            f" AND published_at >= ?{условие}", значения).fetchall()
+    корзины = {н: {"штук": 0, "сумма": 0, "с_числом": 0} for н in начала}
+    for р in ряды:
+        try:
+            когда = datetime.fromisoformat(str(р["published_at"])).date()
+        except (TypeError, ValueError):
+            continue
+        корзина = корзины.get(когда - timedelta(days=когда.weekday()))
+        if корзина is None:
+            continue
+        корзина["штук"] += 1
+        просмотры = р["views"] if "views" in р.keys() else None
+        if просмотры:
+            корзина["сумма"] += int(просмотры)
+            корзина["с_числом"] += 1
+    итог = []
+    for н in начала:
+        к = корзины[н]
+        итог.append({
+            "неделя": н.isoformat(), "штук": к["штук"],
+            # Среднее по тем, у кого числа есть. Пост без охвата не должен
+            # тянуть неделю к нулю: у него не «ноль просмотров», у него
+            # просто никто не спрашивал.
+            "охват": round(к["сумма"] / к["с_числом"]) if к["с_числом"] else 0})
+    return итог
+
+
+def итоги(канал: str | None = None) -> dict:
+    """Окна выпуска и охваты одним запросом, а не пятью.
+
+    Раздел «Вышло» открывают с телефона, и каждый лишний поход к базе за
+    океан человек чувствует пальцами.
+    """
+    from datetime import timedelta
+    сейчас = datetime.now(timezone.utc)
+    неделя = (сейчас - timedelta(days=7)).isoformat(timespec="seconds")
+    месяц = (сейчас - timedelta(days=30)).isoformat(timespec="seconds")
+    прошлый = (сейчас - timedelta(days=60)).isoformat(timespec="seconds")
+    свой = " AND (channel=? OR channel IS NULL OR channel='')" if канал else ""
+    хвост = (канал,) if канал else ()
+    with соединение() as c:
+        ряд = c.execute(
+            "SELECT COUNT(*) AS всего,"
+            " COUNT(*) FILTER (WHERE published_at >= ?) AS за7,"
+            " COUNT(*) FILTER (WHERE published_at >= ?) AS за30,"
+            " AVG(views) FILTER (WHERE published_at >= ? AND views > 0)"
+            "   AS охват30,"
+            " AVG(views) FILTER (WHERE published_at >= ? AND published_at < ?"
+            "   AND views > 0) AS охват_прошлые30,"
+            " COUNT(*) FILTER (WHERE views > 0) AS с_числами"
+            f" FROM posts WHERE status='published'{свой}",
+            (неделя, месяц, месяц, прошлый, месяц) + хвост).fetchone()
+    return {"всего": int(ряд["всего"] or 0), "за7": int(ряд["за7"] or 0),
+            "за30": int(ряд["за30"] or 0),
+            "охват30": round(float(ряд["охват30"] or 0)),
+            "охват_прошлые30": round(float(ряд["охват_прошлые30"] or 0)),
+            "с_числами": int(ряд["с_числами"] or 0)}
+
+
 def последние(сколько: int = 10, канал: str | None = None) -> list:
     условие = " AND channel=?" if канал else ""
     значения = (канал, сколько) if канал else (сколько,)
