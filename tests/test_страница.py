@@ -19,9 +19,18 @@ from pathlib import Path
 NODE = shutil.which("node")
 
 
+ФАЙЛЫ = ["core.js", "sheets.js", "screens.js", "app.js"]
+
+
 def _скрипт() -> str:
-    """Скрипт страницы, теперь отдельным файлом."""
-    return (ПАПКА / "app.js").read_text(encoding="utf-8")
+    """Все скрипты страницы одной строкой, в порядке подключения.
+
+    Один файл вырос до без малого двух тысяч строк, и его разложили по
+    четырём. Проверка обязана смотреть на все: иначе «экр» переедет в
+    соседний файл, а тест будет искать его в старом и не найдёт.
+    """
+    return "\n".join((ПАПКА / имя).read_text(encoding="utf-8")
+                     for имя in ФАЙЛЫ)
 
 
 def _прогнать(выражение: str) -> str:
@@ -82,9 +91,17 @@ class БезИнлайна(unittest.TestCase):
     def test_страница_ссылается_на_свои_файлы(self):
         разметка = СТРАНИЦА.read_text(encoding="utf-8")
         self.assertIn('href="app.css"', разметка)
-        self.assertIn('src="app.js"', разметка)
-        self.assertTrue((ПАПКА / "app.js").exists())
         self.assertTrue((ПАПКА / "app.css").exists())
+        for имя in ФАЙЛЫ:
+            self.assertIn(f'src="{имя}"', разметка)
+            self.assertTrue((ПАПКА / имя).exists())
+
+    def test_порядок_подключения_соблюдён(self):
+        """core объявляет то, чем пользуются остальные, а app запускает всё.
+        Перепутанный порядок ломает страницу молча: она просто пустая."""
+        разметка = СТРАНИЦА.read_text(encoding="utf-8")
+        места = [разметка.index(f'src="{имя}"') for имя in ФАЙЛЫ]
+        self.assertEqual(места, sorted(места))
 
     def test_файлы_страницы_уезжают_в_сборку(self):
         """Сборщик берёт из webapp всё, кроме черновиков с «_» в начале."""
@@ -93,18 +110,46 @@ class БезИнлайна(unittest.TestCase):
         import tools_vercel
         едут = {ф.name for ф in sorted(ПАПКА.iterdir())
                 if ф.is_file() and not ф.name.startswith("_")}
-        self.assertLessEqual({"index.html", "app.js", "app.css"}, едут)
+        self.assertLessEqual({"index.html", "app.css", *ФАЙЛЫ}, едут)
         self.assertTrue(tools_vercel.ЦЕЛЬ.name)
 
 
 @unittest.skipIf(NODE is None, "node не установлен")
 class СинтаксисСтраницы(unittest.TestCase):
-    def test_скрипт_разбирается(self):
+    def test_каждый_скрипт_разбирается(self):
         """Ошибка в скрипте не видна на глаз: страница просто перестаёт
         исполняться, и приложение показывает пустоту."""
-        итог = subprocess.run([NODE, "--check", "-"], input=_скрипт(),
-                              capture_output=True, text=True, timeout=20)
-        self.assertEqual(итог.returncode, 0, итог.stderr.strip())
+        for имя in ФАЙЛЫ:
+            with self.subTest(файл=имя):
+                итог = subprocess.run(
+                    [NODE, "--check", "-"],
+                    input=(ПАПКА / имя).read_text(encoding="utf-8"),
+                    capture_output=True, text=True, timeout=20)
+                self.assertEqual(итог.returncode, 0, итог.stderr.strip())
+
+    def test_модулей_нет(self):
+        """`node --check` читает поток как обычный скрипт: «import» наверху
+        файла уронил бы проверку, а вместе с ней и всю защиту от опечаток.
+
+        Обычные скрипты делят между собой глобальные объявления верхнего
+        уровня — именно на этом и держится разбиение на четыре файла."""
+        for имя in ФАЙЛЫ:
+            текст = (ПАПКА / имя).read_text(encoding="utf-8")
+            self.assertNotRegex(текст, r"(?m)^\s*(import|export)\s")
+
+    def test_объявления_не_повторяются(self):
+        """Одно и то же имя верхнего уровня в двух файлах — это SyntaxError
+        на весь набор, и страница не исполнится вовсе."""
+        видели = {}
+        for имя in ФАЙЛЫ:
+            текст = (ПАПКА / имя).read_text(encoding="utf-8")
+            for объявление in re.findall(
+                    r"(?m)^(?:const|let|function)\s+([^\s(=,]+)", текст):
+                self.assertNotIn(
+                    объявление, видели,
+                    f"«{объявление}» объявлено и в {видели.get(объявление)},"
+                    f" и в {имя}")
+                видели[объявление] = имя
 
 
 if __name__ == "__main__":
