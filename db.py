@@ -516,17 +516,26 @@ def сводка(канал: str | None = None) -> dict:
     Пост становится принадлежащим каналу только когда вышел, поэтому
     фильтровать раньше нечего и незачем.
     """
+    from datetime import timedelta
     условие = " FILTER (WHERE status='published' AND channel=?)" if канал \
         else " FILTER (WHERE status='published')"
+    # Неделя считается тем же запросом, а не вторым: сводку показывает главный
+    # экран бота, он перерисовывается на каждое нажатие, а база за океаном.
+    порог = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(
+        timespec="seconds")
+    значения = (канал, порог) if канал else (порог,)
     with соединение() as c:
         ряд = c.execute(
             "SELECT COUNT(*) AS всего,"
             f" COUNT(*){условие} AS опубликовано,"
+            " COUNT(*) FILTER (WHERE status='published' AND published_at >= ?)"
+            "   AS за_неделю,"
             " COUNT(*) FILTER (WHERE status='draft') AS черновики,"
             " COUNT(*) FILTER (WHERE status='scheduled') AS запланировано"
-            " FROM posts", (канал,) if канал else ()).fetchone()
+            " FROM posts", значения).fetchone()
     return {k: (ряд[k] or 0)
-            for k in ("всего", "опубликовано", "черновики", "запланировано")}
+            for k in ("всего", "опубликовано", "за_неделю", "черновики",
+                      "запланировано")}
 
 
 def последние(сколько: int = 10, канал: str | None = None) -> list:
