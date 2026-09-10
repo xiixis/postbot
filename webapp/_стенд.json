@@ -16,7 +16,7 @@
     "image": null,
     "images": [],
     "when": "сегодня в 18:00",
-    "when_iso": "2026-09-10T01:47:31.765688+00:00",
+    "when_iso": "2026-09-10T15:26:52.104507+00:00",
     "published": null,
     "views": null,
     "outside": {},
@@ -50,7 +50,7 @@
     "image": null,
     "images": [],
     "when": "завтра в 09:00",
-    "when_iso": "2026-09-10T21:47:31.765688+00:00",
+    "when_iso": "2026-09-11T11:26:52.104507+00:00",
     "published": null,
     "views": null,
     "outside": {},
@@ -84,7 +84,7 @@
     "image": null,
     "images": [],
     "when": "завтра в 15:00",
-    "when_iso": "2026-09-11T03:47:31.765688+00:00",
+    "when_iso": "2026-09-11T17:26:52.104507+00:00",
     "published": null,
     "views": null,
     "outside": {},
@@ -184,7 +184,15 @@
     "status": "published",
     "card": {},
     "image": null,
-    "images": [],
+    "images": [
+     "https://example.invalid/слайд1.jpg",
+     "https://example.invalid/слайд2.jpg",
+     "https://example.invalid/слайд3.jpg",
+     "https://example.invalid/слайд4.jpg",
+     "https://example.invalid/слайд5.jpg",
+     "https://example.invalid/слайд6.jpg",
+     "https://example.invalid/слайд7.jpg"
+    ],
     "when": null,
     "when_iso": null,
     "published": "сегодня в 09:00",
@@ -390,12 +398,12 @@
   "slots": [
    {
     "label": "сегодня 18:00",
-    "iso": "2026-09-10T01:47:31.765688+00:00",
+    "iso": "2026-09-10T15:26:52.104507+00:00",
     "human": "сегодня в 18:00"
    }
   ],
   "now": "14:20",
-  "today": "2026-09-09",
+  "today": "2026-09-10",
   "channels": {
    "выбран": "основной"
   },
@@ -518,7 +526,15 @@
     "status": "published",
     "card": {},
     "image": null,
-    "images": [],
+    "images": [
+     "https://example.invalid/слайд1.jpg",
+     "https://example.invalid/слайд2.jpg",
+     "https://example.invalid/слайд3.jpg",
+     "https://example.invalid/слайд4.jpg",
+     "https://example.invalid/слайд5.jpg",
+     "https://example.invalid/слайд6.jpg",
+     "https://example.invalid/слайд7.jpg"
+    ],
     "when": null,
     "when_iso": null,
     "published": "сегодня в 09:00",

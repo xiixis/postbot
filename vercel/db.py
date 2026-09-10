@@ -52,6 +52,29 @@ _КЛЮЧ = "SERIAL PRIMARY KEY" if ПОСТГРЕС else "INTEGER PRIMARY KEY A
         key   TEXT PRIMARY KEY,
         value TEXT NOT NULL
     )""",
+    # Справочник тем. Пополняется руками: конвейер выбирает из него, но своих
+    # тем не заводит, иначе «не повторяться» превращается в «каждый раз новое
+    # название той же мысли».
+    f"""CREATE TABLE IF NOT EXISTS themes (
+        id       {_КЛЮЧ},
+        рубрика  TEXT    NOT NULL,
+        предмет  TEXT    NOT NULL,
+        синонимы TEXT    NOT NULL DEFAULT '',
+        активна  INTEGER NOT NULL DEFAULT 1
+    )""",
+    # Журнал применений. Позиция это сквозной номер поста по порядку выхода:
+    # по ней считается разрыв между двумя применениями одной темы. По дате
+    # считать нельзя — два поста выходят в один день, а разрыв между ними есть.
+    f"""CREATE TABLE IF NOT EXISTS theme_usage (
+        id         {_КЛЮЧ},
+        theme_id   INTEGER NOT NULL,
+        post_id    INTEGER,
+        позиция    INTEGER NOT NULL,
+        дата       TEXT    NOT NULL,
+        охват      INTEGER,
+        вовлечение REAL
+    )""",
+    "CREATE INDEX IF NOT EXISTS idx_usage_theme ON theme_usage(theme_id)",
 ]
 
 # Колонки, добавленные после первого выпуска. База у владельца уже живёт,
@@ -557,6 +580,51 @@ def о_чём_писали(сколько: int = 40) -> list[str]:
             суть = ""
         итог.append(f"{с['title']} — {суть}" if суть.strip() else с["title"])
     return итог
+
+
+def применения_тем() -> dict:
+    """Что и на каких позициях уже выходило: {theme_id: [позиции]}.
+
+    Отдаётся целиком, а не по одной теме: справочник маленький, а запрос на
+    каждую тему превратил бы выбор в десяток обращений к базе.
+    """
+    итог: dict = {}
+    with соединение() as c:
+        ряды = c.execute(
+            "SELECT theme_id, позиция FROM theme_usage ORDER BY позиция").fetchall()
+    for р in ряды:
+        итог.setdefault(р["theme_id"], []).append(р["позиция"])
+    return итог
+
+
+def позиция_следующего() -> int:
+    """Сквозной номер поста, который выйдет следующим.
+
+    Считается от журнала, а не от числа постов: пост может не иметь темы
+    (анонс стрима), и тогда позиция и число постов разойдутся.
+    """
+    with соединение() as c:
+        ряд = c.execute("SELECT MAX(позиция) AS край FROM theme_usage").fetchone()
+    # sqlite отдаёт Row, постгрес — dict; общий у них только доступ по ключу.
+    край = ряд["край"] if ряд else None
+    return (край or 0) + 1
+
+
+def отметить_тему(theme_id: int, позиция: int, post_id: int | None = None) -> None:
+    """Записывает применение темы. Без этого правило пяти постов слепо."""
+    with соединение() as c:
+        c.execute("INSERT INTO theme_usage (theme_id, post_id, позиция, дата)"
+                  " VALUES (?, ?, ?, ?)", (theme_id, post_id, позиция, _сейчас()))
+
+
+def справочник_тем(только_активные: bool = True) -> list:
+    """Темы, из которых конвейеру разрешено выбирать."""
+    условие = " WHERE активна=1" if только_активные else ""
+    with соединение() as c:
+        ряды = c.execute(
+            f"SELECT id, рубрика, предмет, синонимы FROM themes{условие}"
+            " ORDER BY id").fetchall()
+    return [dict(р) for р in ряды]
 
 
 def что_зашло(сколько: int = 6, канал: str | None = None) -> dict:
