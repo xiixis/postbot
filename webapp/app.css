@@ -450,7 +450,12 @@ body[data-родная="да"] [data-забрать]{display:none}
 .line .t{font-size:.8125rem;line-height:1.35;display:-webkit-box;
   -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .line .w{font-size:.6875rem;color:var(--accent);margin-top:.25rem}
-.line .w.past{color:var(--muted)}
+/* Строка вышедшего поста: час, площадка и охват в один ряд. Раскладка
+   живёт здесь, а не вторым правилом с тем же селектором — задвоенный
+   селектор это способ однажды погасить одно правило другим и не понять,
+   почему. */
+.line .w.past{color:var(--muted);display:flex;align-items:center;
+  gap:.5rem;flex-wrap:wrap}
 .сам{color:var(--muted);font-weight:400}
 .охват{color:var(--muted);font-variant-numeric:tabular-nums;margin-left:.375rem}
 
@@ -656,11 +661,8 @@ body{padding-bottom:calc(4.25rem + env(safe-area-inset-bottom))}
    иначе шесть фишек подряд читаются как один длинный список. */
 .фишки .разделитель{flex:0 0 auto;width:1px;align-self:stretch;
   background:var(--border);margin:.25rem .25rem}
-.chip.on{border-color:var(--accent);color:var(--accent);
-  background:var(--accent-soft)}
 .сколько-нашлось{font-size:.75rem;color:var(--muted);margin:.5rem 0 .25rem;
   font-variant-numeric:tabular-nums}
-.line .w.past{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
 .line .куда{font-size:.6875rem;color:var(--muted);border:1px solid var(--border);
   border-radius:999px;padding:.0625rem .375rem}
 .охват.нет{color:var(--muted);opacity:.75}
