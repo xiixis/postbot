@@ -69,6 +69,16 @@ function открыть(п) {
          <button class="btn" data-act="repeat">🔁 Повторить</button>
        </div>
 
+       ${слайды.length ? `<div class="row" style="margin-top:.5rem">
+         <button class="btn ghost wide" data-act="folder"
+           ${С.mac?.alive ? "" : "disabled"}>📂 Перейти в рабочую папку</button>
+       </div>
+       <div class="hint">${С.mac?.alive
+         ? "Папка со слайдами и подписью откроется на маке. Если её удалили,"
+           + " бот соберёт её заново — слайды хранятся не только там."
+         : "Мак выключен: папка лежит на его диске, и открыть её некому."}</div>`
+       : ""}
+
        <div class="lbl" style="margin-top:.75rem">Ссылка на пост</div>
        <div class="row">
          <input id="ссылка-поста" type="url" inputmode="url"
@@ -121,7 +131,8 @@ function открыть(п) {
       ? `<div class="лента">${слайды.map((с, и) =>
            `<img src="${с}" alt="Слайд ${и + 1} из ${слайды.length}" loading="lazy"
               width="200" height="267">`).join("")}</div>
-         <div class="счётслайдов">${слайды.length} слайда, листайте вбок</div>`
+         <div class="счётслайдов">${слайды.length} ${склонить(слайды.length,
+           "слайд", "слайда", "слайдов")}, листайте вбок</div>`
       : рис ? `<img class="shot" src="${рис}" alt="Обложка: ${экр(п.title)}"
         width="360" height="203">` : ""}
     <div class="post">${п.html}</div>
@@ -250,6 +261,14 @@ function действия(э, п) {
         э.remove();
         const свежий = await работа("/api/repose", {id: п.id}, ШАГИ_КОТ);
         if (свежий) открыть(свежий);
+        return;
+      } else if (что === "folder") {
+        // Проверять папку отсюда нечем: она на маке, а приложение в облаке.
+        // Поэтому просто просим мак показать её, а он уже решает, открыть
+        // или собрать заново.
+        э.remove();
+        await работа("/api/folder", {id: п.id, куда: "tiktok"}, ШАГИ_ФАЙЛЫ);
+        сказать("📂 Мак показывает папку. Если её удалили — соберёт заново");
         return;
       } else if (что === "take" || что === "take-files") {
         const файлами = что === "take-files";
