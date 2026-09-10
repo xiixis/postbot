@@ -52,6 +52,29 @@ _КЛЮЧ = "SERIAL PRIMARY KEY" if ПОСТГРЕС else "INTEGER PRIMARY KEY A
         key   TEXT PRIMARY KEY,
         value TEXT NOT NULL
     )""",
+    # Справочник тем. Пополняется руками: конвейер выбирает из него, но своих
+    # тем не заводит, иначе «не повторяться» превращается в «каждый раз новое
+    # название той же мысли».
+    f"""CREATE TABLE IF NOT EXISTS themes (
+        id       {_КЛЮЧ},
+        рубрика  TEXT    NOT NULL,
+        предмет  TEXT    NOT NULL,
+        синонимы TEXT    NOT NULL DEFAULT '',
+        активна  INTEGER NOT NULL DEFAULT 1
+    )""",
+    # Журнал применений. Позиция это сквозной номер поста по порядку выхода:
+    # по ней считается разрыв между двумя применениями одной темы. По дате
+    # считать нельзя — два поста выходят в один день, а разрыв между ними есть.
+    f"""CREATE TABLE IF NOT EXISTS theme_usage (
+        id         {_КЛЮЧ},
+        theme_id   INTEGER NOT NULL,
+        post_id    INTEGER,
+        позиция    INTEGER NOT NULL,
+        дата       TEXT    NOT NULL,
+        охват      INTEGER,
+        вовлечение REAL
+    )""",
+    "CREATE INDEX IF NOT EXISTS idx_usage_theme ON theme_usage(theme_id)",
 ]
 
 # Колонки, добавленные после первого выпуска. База у владельца уже живёт,
