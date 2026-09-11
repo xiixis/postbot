@@ -1012,6 +1012,11 @@ def пережать(путь, вид: str = "jpeg", ширина: int = 0):
     "выделение": "абзац, в котором подсвечена одна строка",
     "ценник":   "крупная цена на ярлыке",
     "полоска":  "шкала от плохо к хорошо с отметкой",
+    # Третья волна: списана с чужих каруселей, разобранных 12 сентября 2026.
+    # Все три держатся на знаках инструментов — без них они не работают.
+    "замена":   "платное слева, бесплатная замена справа, одна пара крупно",
+    "столбики": "вертикальные столбики со знаком инструмента внутри",
+    "поток":    "карточки шагов, соединённые стрелками, как схема",
 }
 
 ВИДЫ_CSS = """
@@ -1142,6 +1147,53 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
 .сетка4 div:has(.плашка-зн){{display:flex;flex-direction:column;gap:12px}}
 .сетка4 .плитка-п{{font-family:Golos,sans-serif;font-weight:400;
   font-size:.62em;line-height:1.3;color:{приглуш}}}
+
+/* Замена: одна пара на кадр, крупно. У olegxyz и block g на кадре ровно одна
+   пара, и она читается с ленты; в нашей первой пробе их было две, и обе
+   мельчали вдвое. */
+.замена{{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;
+  gap:18px;margin-top:14px}}
+.замена .бок{{background:{поверхность};border:1px solid {рамка};border-radius:22px;
+  padding:28px 22px;display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:14px}}
+.замена .метка-з{{font-size:{над}px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;padding:8px 16px;border-radius:999px}}
+.замена .платно .метка-з{{background:{ржавый};color:{текст}}}
+.замена .даром .метка-з{{background:{лайм};color:{по_лайму}}}
+.замена .плашка-зн{{width:2.6em;height:2.6em;border-radius:.5em;font-size:{полка}px}}
+.замена .имя{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
+  line-height:1.1;color:{текст}}}
+.замена .цена{{font-size:{над}px;line-height:1.3;color:{приглуш}}}
+.замена .стрелка{{align-self:center;font-size:{полка}px;color:{лайм};
+  font-weight:800}}
+
+/* Столбики: знак инструмента стоит внутри столбика, подпись — над ним. Так
+   у aiexplorer59 (1,7 млн показов): столбик без знака читается как график, со
+   знаком — как ответ на вопрос «кому отдать». */
+.столбики{{display:flex;align-items:flex-end;justify-content:center;gap:26px;
+  margin-top:24px;height:{столбики_высота}px}}
+.столбики .ст{{display:flex;flex-direction:column;align-items:center;gap:12px;
+  flex:1;max-width:200px;height:100%;justify-content:flex-end}}
+.столбики .подпись-в{{font-size:{над}px;color:{приглуш};line-height:1.2;
+  text-align:center;border-bottom:2px solid {лайм};padding-bottom:4px}}
+.столбики .тело{{width:100%;border-radius:999px 999px 0 0;display:flex;
+  align-items:flex-start;justify-content:center;padding-top:22px;
+  background:{поверхность};border:1px solid {рамка}}}
+.столбики .ст.главный .тело{{background:{лайм};border-color:{лайм}}}
+.столбики .тело i{{width:44px;height:44px;background:{знак_цвет};display:block}}
+.столбики .ст.главный .тело i{{background:{по_лайму}}}
+.столбики .имя-ст{{font-family:Onest,sans-serif;font-weight:800;font-size:{над}px;
+  color:{текст};line-height:1.2;text-align:center}}
+
+/* Поток: шаги карточками со стрелками между ними. Нумерация тут не украшение
+   — порядок шагов и есть содержание. */
+.поток{{display:flex;flex-direction:column;gap:10px;margin-top:18px}}
+.поток .шаг-к{{background:{поверхность};border:1px solid {рамка};border-radius:16px;
+  padding:20px 24px;display:flex;gap:18px;align-items:baseline}}
+.поток .шаг-к b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};
+  font-size:{над}px;flex:0 0 auto;min-width:1.6em}}
+.поток .шаг-к span{{font-size:{пункт}px;line-height:1.26;color:{текст}}}
+.поток .вниз{{align-self:center;color:{лайм};font-size:{над}px;line-height:1}}
 
 .формула{{display:flex;align-items:center;gap:20px;flex-wrap:wrap;
   font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
@@ -1341,6 +1393,9 @@ def _виды_размеры(д: dict) -> dict:
             "разбивка": round(ш * 4.2), "стрелка": round(ш * 1.4),
             "узел": round(ш * 1.15), "ценник": round(ш * 1.5),
             "стрелка_кегль": round(ш * 0.46),
+            # Столбики живут в поле фиксированной высоты: без неё столбик с
+            # долей 100% растягивал кадр, а с долей 20% схлопывался в полоску.
+            "столбики_высота": round(д["высота"] * 0.42),
             "отсчёт1": round(ш * 0.8), "отсчёт2": round(ш * 1.2),
             "отсчёт3": round(ш * 2.2),
             # Своя поверхность у инверсии: тёмная плашка на лайме потянула бы
@@ -1489,6 +1544,47 @@ def _нутро(вид: str, д: dict, з: dict) -> str:
                 плитки += f"<div>{_текст(п, 44)}</div>"
         return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
                 f'<div class="черта"></div><div class="сетка4">{плитки}</div></div>')
+    if вид == "замена":
+        def бок(класс, ярлык, з_имя, з_цена):
+            маска, имя, _ = _знак_инструмента(з.get(з_имя, ""))
+            знак = (f'<span class="плашка-зн"><i style="{маска}"></i></span>'
+                    if маска else "")
+            видно = имя if маска else _текст(з.get(з_имя, ""), 34)
+            return (f'<div class="бок {класс}"><div class="метка-з">{ярлык}</div>'
+                    f'{знак}<div class="имя">{_текст(видно, 34)}</div>'
+                    f'<div class="цена">{т(з_цена, 46)}</div></div>')
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="замена">'
+                + бок("платно", "Платно", "платное", "цена_платного")
+                + '<div class="стрелка">→</div>'
+                + бок("даром", "Бесплатно", "бесплатное", "цена_бесплатного")
+                + f'</div><div class="мысль" style="margin-top:24px">'
+                  f'{т("текст", 120)}</div></div>')
+    if вид == "столбики":
+        столбцы = _срез("столбики", вид, з.get("столбики"), 4)
+        доли = [max(18, min(100, int(с.get("доля", 50)))) for с in столбцы]
+        верх = max(доли) if доли else 100
+        тело = ""
+        for с, доля in zip(столбцы, доли):
+            маска, имя, _ = _знак_инструмента(с.get("имя", ""))
+            знак = f'<i style="{маска}"></i>' if маска else ""
+            главный = " главный" if доля == верх else ""
+            тело += (f'<div class="ст{главный}">'
+                     f'<div class="подпись-в">{_текст(с.get("подпись", ""), 26)}</div>'
+                     f'<div class="тело" style="height:{доля}%">{знак}</div>'
+                     f'<div class="имя-ст">{_текст(с.get("имя", ""), 26)}</div></div>')
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="столбики">{тело}</div></div>')
+    if вид == "поток":
+        шаги = _срез("шаги", вид, з.get("шаги"), 4)
+        тело = ""
+        for н, ш_ in enumerate(шаги, 1):
+            if н > 1:
+                тело += '<div class="вниз">↓</div>'
+            тело += (f'<div class="шаг-к"><b>{н:02d}</b>'
+                     f'<span>{_текст(ш_, 90)}</span></div>')
+        return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
+                f'<div class="черта"></div><div class="поток">{тело}</div></div>')
     if вид == "формула":
         return (f'<div class="стек"><div class="формула">'
                 f'<span>{т("а", 30)}</span><i>+</i><span>{т("б", 30)}</span>'
