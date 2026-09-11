@@ -67,6 +67,19 @@ def положить(файл: Path) -> str | None:
     return f"{АДРЕС}/storage/v1/object/public/{ВЕДРО}/{имя}"
 
 
+def положить_все(файлы) -> list[str]:
+    """Ссылки на все файлы в прежнем порядке; не залитый остаётся путём.
+
+    По одному десять слайдов шли ~7 с: каждый — отдельный поход в хранилище
+    в Ирландии. Четыре разом — около двух.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    файлы = [ф for ф in файлы if ф]
+    with ThreadPoolExecutor(max_workers=4) as пул:
+        ссылки = list(пул.map(lambda ф: положить(ф), файлы))
+    return [с or str(ф) for с, ф in zip(ссылки, файлы)]
+
+
 def байты(ссылка: str) -> bytes | None:
     """Содержимое карточки, откуда бы она ни лежала."""
     if not ссылка:

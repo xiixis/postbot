@@ -6,13 +6,17 @@
 и шрифт с характером — браузер это умеет из коробки, Pillow пришлось бы учить.
 """
 
+import copy
+import hashlib
 import html
 import json
 import re
 import secrets
 import subprocess
 import tempfile
+import threading
 import time
+from collections import OrderedDict
 from pathlib import Path
 
 import config
@@ -188,6 +192,14 @@ def _снять(страница: str, ширина: int = 1280, высота: i
     # рисовали по одной, это не всплывало; на карусели из семи слайдов и на
     # двух процессах разом всплыло сразу.
     итог = config.ВЫВОД / f"card_{int(time.time())}_{secrets.token_hex(3)}.png"
+    # Сначала живой браузер: запуск Chrome на каждый кадр стоил секунду с
+    # лишним. Нет модуля (облачная копия) или он не справился — старым путём.
+    try:
+        import браузер
+        if браузер.снять(страница, ширина, высота, итог):
+            return итог
+    except ImportError:
+        pass
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False,
                                      encoding="utf-8") as f:
         f.write(страница)
@@ -1020,6 +1032,10 @@ ul.пункты b{{color:{лайм};font-weight:800;flex:0 0 auto;line-height:1}
    тёмными: иначе лайм по лайму и строка исчезает. Правило идёт
    после общего и весит больше — так и задумано. */
 .верно span.свет{{color:{по_лайму}}}
+/* Неразрывное слово с дефисом («из-за») лежит в плашке своим span и
+   попадало под общее правило .верно span: лайм по лайму, пустая плашка на
+   кадре 7 поста 98. Внутри плашки цвет берётся от неё. */
+.свет .nb{{color:inherit}}
 
 .бары{{display:flex;flex-direction:column;gap:22px}}
 .бары{{gap:30px}}
@@ -2389,6 +2405,46 @@ function замерить_всё() {
       });
     });
   });
+  // Буквы цвета своего фона и слова, порванные посреди строки. Коробка у
+  // таких слов в порядке, и проверки выше считают кадр чистым. А на снимке
+  // вместо «из-за» пустая плашка (кадр 7 поста 98) или «Формул / а» в
+  // «стрелке» (посты 90, 96, 98): там overflow-wrap:break-word, и длинное
+  // слово рвётся без дефиса. Переносов с дефисом в вёрстке нет, так что слово
+  // на двух строках — всегда поломка.
+  итог.невидимо = [];
+  итог.порвано = [];
+  function цвет(с) { return ((с || '').match(/[0-9.]+/g) || []).map(Number); }
+  function фон_под(э) {
+    for (var у = э; у && у.nodeType === 1; у = у.parentElement) {
+      var ц = цвет(getComputedStyle(у).backgroundColor);
+      if (ц.length >= 3 && (ц.length < 4 || ц[3] > 0.5)) return ц;
+    }
+    return null;
+  }
+  что.текст.forEach(function (с) {
+    document.querySelectorAll(с).forEach(function (блок) {
+      var обход = document.createTreeWalker(блок, NodeFilter.SHOW_TEXT), узел;
+      while ((узел = обход.nextNode())) {
+        var надпись = узел.textContent.trim();
+        if (!надпись) continue;
+        var э = узел.parentElement, б = фон_под(э), т = цвет(getComputedStyle(э).color);
+        if (б && т.length >= 3 &&
+            Math.abs(т[0] - б[0]) + Math.abs(т[1] - б[1]) + Math.abs(т[2] - б[2]) < 60)
+          итог.невидимо.push(надпись);
+        var ре = /[А-Яа-яЁёA-Za-z0-9]{2,}/g, м;
+        while ((м = ре.exec(узел.textContent))) {
+          var д = document.createRange();
+          д.setStart(узел, м.index);
+          д.setEnd(узел, м.index + м[0].length);
+          var верхи = {};
+          Array.prototype.forEach.call(д.getClientRects(), function (к) {
+            if (к.width > 0.5) верхи[Math.round(к.top)] = 1;
+          });
+          if (Object.keys(верхи).length > 1) итог.порвано.push(м[0]);
+        }
+      }
+    });
+  });
   document.body.setAttribute('data-замер', JSON.stringify(итог));
 }
 
@@ -2405,7 +2461,33 @@ window.addEventListener('load', function () {
 """
 
 
+_ЗАМЕРЫ: "OrderedDict[tuple, dict]" = OrderedDict()
+_ЗАМЕРЫ_ЗАМОК = threading.Lock()
+_ЗАМЕРОВ_В_ПАМЯТИ = 64
+
+
 def _замерить(страница: str, ширина: int = 1080, высота: int = 1440) -> dict:
+    """Замер страницы; одну и ту же страницу второй раз не меряем.
+
+    Цикл ужатия в слайд_вида меряет страницу, пересобирает её на ступень
+    мельче и меряет снова, а следующий проход начинает с замера той же самой
+    страницы. На посте 96 так выходило 13 лишних запусков Chrome из 59.
+    """
+    ключ = (hashlib.sha1(страница.encode("utf-8")).hexdigest(), ширина, высота)
+    with _ЗАМЕРЫ_ЗАМОК:
+        if ключ in _ЗАМЕРЫ:
+            _ЗАМЕРЫ.move_to_end(ключ)
+            return copy.deepcopy(_ЗАМЕРЫ[ключ])
+    итог = _замерить_заново(страница, ширина, высота)
+    if итог:
+        with _ЗАМЕРЫ_ЗАМОК:
+            _ЗАМЕРЫ[ключ] = copy.deepcopy(итог)
+            while len(_ЗАМЕРЫ) > _ЗАМЕРОВ_В_ПАМЯТИ:
+                _ЗАМЕРЫ.popitem(last=False)
+    return итог
+
+
+def _замерить_заново(страница: str, ширина: int = 1080, высота: int = 1440) -> dict:
     """Координаты блоков со страницы. Пусто, если браузер не ответил.
 
     Размер окна задаём явно: без него браузер берёт свои 800x600, и любой блок
@@ -2415,6 +2497,15 @@ def _замерить(страница: str, ширина: int = 1080, высо�
     хром = config.хром()
     if not хром:
         return {}
+    # Сначала живой браузер: он в разы быстрее запуска на каждый замер. Нет
+    # модуля (облачная копия) или он не справился — меряем по-старому.
+    try:
+        import браузер
+        готово = браузер.замерить(страница + ЗАМЕР, ширина, высота)
+        if готово:
+            return готово
+    except ImportError:
+        pass
     config.ВЫВОД.mkdir(parents=True, exist_ok=True)
     файл = config.ВЫВОД / f"замер_{secrets.token_hex(4)}.html"
     файл.write_text(страница + ЗАМЕР, encoding="utf-8")
@@ -2547,5 +2638,12 @@ def проверить_композицию(замер: dict, формат: str 
     # края, и ни одного предупреждения при этом не было.
     if замер.get("перелив"):
         беды.append("слово шире колонки")
+
+    # Слово цвета своего фона (98/07) и слово, порванное посреди строки без
+    # дефиса («стрелка»): коробки у них в порядке, видно только по буквам.
+    if замер.get("невидимо"):
+        беды.append("текст сливается с фоном: " + ", ".join(замер["невидимо"][:3]))
+    if замер.get("порвано"):
+        беды.append("слово порвано посреди: " + ", ".join(замер["порвано"][:3]))
 
     return sorted(set(беды))

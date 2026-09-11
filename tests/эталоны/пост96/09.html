@@ -1,0 +1,333 @@
+<meta charset="utf-8"><style>
+/* Шрифты лежат в проекте, а не тянутся из интернета: на сервере каждая
+   загрузка это секунды, а без сети карточка вообще осталась бы без шрифта.
+   Заголовочный Onest выбран за кириллицу: у прежнего Bricolage её нет, и
+   русские заголовки рисовались чем придётся, по-разному на разных машинах. */
+@font-face{font-family:Onest;font-weight:800;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/onest-800-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Onest;font-weight:800;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/onest-800-latin.woff2') format('woff2')}
+@font-face{font-family:Plex;font-weight:400;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-400-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Plex;font-weight:400;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-400-latin.woff2') format('woff2')}
+@font-face{font-family:Plex;font-weight:600;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-600-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Plex;font-weight:600;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-600-latin.woff2') format('woff2')}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1440px;overflow:hidden}
+body{background:#F1F3EA;color:#12130F;font-family:Plex,-apple-system,sans-serif;
+  position:relative;display:flex;flex-direction:column;
+  padding:150px 80px 320px}
+.grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.03) 1px,transparent 1px);
+  background-size:54px 54px}
+/* Счётчика слайдов нет намеренно: TikTok, телеграм и остальные рисуют свой
+   поверх картинки, и два счётчика рядом выглядят как ошибка вёрстки. */
+.полоса{position:absolute;left:0;bottom:176px;height:6px;background:#C7E24B;
+  box-shadow:0 0 26px rgba(199,226,75,.45)}
+.знак{position:absolute;left:80px;bottom:205px;height:44px;
+  filter:brightness(.5) saturate(1.4) drop-shadow(0 4px 14px rgba(0,0,0,.28))}
+
+.шапка{font-family:Onest,sans-serif;font-weight:800;font-size:130px;
+  line-height:1.08;letter-spacing:-.02em;color:#12130F;max-width:920px}
+.мысль{font-size:55px;line-height:1.38;color:#3C4235;max-width:28ch}
+/* Плашка-маркер. Раньше жила только в вёрстке «выделение», и на всей
+   карусели акцент занимал около процента площади при норме 4-6. Тонкая
+   цветная надпись площади не даёт: с расстояния ленты её не видно.
+   Заливка видна. */
+.свет{color:#12130F;background:#C7E24B;padding:.04em .18em;border-radius:3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;font-weight:800}
+.черта{width:240px;height:4px;background:#C7E24B;margin:38px 0 30px}
+/* Правило одно на весь файл. Второе такое же жило в другом блоке CSS, и
+   правки в одном месте молча не работали: слайды с котом слушались одного
+   определения, без кота другого, и текст при листании прыгал. */
+.стек{margin:0 0 auto;position:relative;padding-top:170px}
+
+.огонь{font-family:Onest,sans-serif;font-weight:800;font-size:598px;
+  line-height:.9;color:#C7E24B;letter-spacing:-.04em;
+  text-shadow:0 0 90px rgba(199,226,75,.32)}
+
+.пара{display:flex;flex-direction:column;gap:26px}
+.полка{border-left:5px solid #CBCFBE;padding-left:26px}
+.полка.в{border-left-color:#C7E24B}
+.полка .к{font-size:34px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:#6A7060;margin-bottom:10px}
+.полка.в .к{color:#C7E24B}
+.полка .з{font-family:Onest,sans-serif;font-weight:800;
+  font-size:144px;line-height:1.14;color:#12130F}
+.полка.б .з{color:#6A7060}
+
+ul.пункты{list-style:none;display:flex;flex-direction:column;gap:24px}
+ul.пункты li{display:flex;gap:20px;align-items:flex-start;
+  font-size:58px;line-height:1.32;color:#12130F}
+ul.пункты b{color:#C7E24B;font-weight:800;flex:0 0 auto;line-height:1}
+
+.реплика{font-family:Onest,sans-serif;font-weight:800;font-size:162px;
+  line-height:1.16;color:#12130F;position:relative;padding-left:.62em}
+/* Кавычка стоит слева в поле, а не над первой буквой: наезжая на неё, она
+   читалась как часть слова. */
+.лапки{position:absolute;left:-.08em;top:-.16em;
+  color:#C7E24B;opacity:.3;line-height:1}
+
+.кружок{width:334px;height:334px;border-radius:50%;border:5px solid #C7E24B;
+  display:grid;place-items:center;font-family:Onest,sans-serif;font-weight:800;
+  font-size:167px;color:#C7E24B;margin-bottom:34px}
+
+.слово{font-family:Onest,sans-serif;font-weight:800;font-size:202px;
+  line-height:1;color:#C7E24B;letter-spacing:-.03em}
+.произн{font-size:34px;color:#6A7060;margin:14px 0 26px;font-style:italic}
+
+.зачерк{font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1.12;color:#8a5b52;text-decoration:line-through;
+  text-decoration-color:#E2703A;text-decoration-thickness:5px}
+.верно{font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1.12;color:#12130F;margin-top:30px}
+.верно span{color:#C7E24B}
+/* Там, где под выделением лаймовая плашка, буквы обязаны быть
+   тёмными: иначе лайм по лайму и строка исчезает. Правило идёт
+   после общего и весит больше — так и задумано. */
+.верно span.свет{color:#12130F}
+
+.бары{display:flex;flex-direction:column;gap:22px}
+.бары{gap:30px}
+.бар .п{font-size:58px;color:#12130F;margin-bottom:12px;
+  display:flex;justify-content:space-between;align-items:baseline}
+.бар .п span:last-child{color:#6A7060}
+.бар .л{height:30px;border-radius:6px;background:#CBCFBE}
+.бар .л i{display:block;height:100%;border-radius:4px;background:#C7E24B;
+  box-shadow:0 0 24px rgba(199,226,75,.35)}
+
+.окно{background:#1B1E17;border:1px solid #CBCFBE;border-radius:16px;
+  overflow:hidden;font-family:Plex,ui-monospace,monospace}
+.окно .верх{display:flex;gap:9px;padding:16px 20px;
+  border-bottom:1px solid #CBCFBE}
+.окно .верх i{width:12px;height:12px;border-radius:50%;background:#CBCFBE}
+.окно pre{padding:24px 24px 28px;font-size:48px;line-height:1.6;
+  color:#3C4235;white-space:pre-wrap}
+.окно pre b{color:#C7E24B;font-weight:400}
+
+.вопзнак{font-family:Onest,sans-serif;font-weight:800;font-size:598px;
+  line-height:.8;color:#C7E24B;opacity:.9;margin-bottom:.05em;
+  text-shadow:0 0 90px rgba(199,226,75,.3)}
+
+.бой{display:flex;flex-direction:column;gap:18px}
+.бой .сторона{font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1.1;color:#12130F}
+.бой .против{font-size:34px;font-weight:600;letter-spacing:.22em;
+  text-transform:uppercase;color:#C7E24B}
+
+.лента-время{position:relative;padding-left:38px}
+.лента-время:before{content:"";position:absolute;left:8px;top:10px;bottom:10px;
+  width:3px;background:#CBCFBE}
+.лента-время .точка{position:relative;margin-bottom:30px}
+.лента-время .точка:last-child{margin-bottom:0}
+.лента-время .точка:before{content:"";position:absolute;left:-38px;top:.35em;
+  width:19px;height:19px;border-radius:50%;background:#C7E24B;
+  box-shadow:0 0 20px rgba(199,226,75,.5)}
+.лента-время .к{font-size:34px;letter-spacing:.16em;text-transform:uppercase;
+  color:#6A7060;margin-bottom:6px}
+.лента-время .з{font-size:58px;line-height:1.28;color:#12130F}
+
+ol.места{list-style:none;display:flex;flex-direction:column;gap:22px}
+ol.места li{display:flex;gap:22px;align-items:baseline;
+  font-size:58px;line-height:1.28;color:#12130F}
+ol.места b{font-family:Onest,sans-serif;font-weight:800;color:#C7E24B;line-height:1;flex:0 0 auto;min-width:1.2em}
+
+.сетка4{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.сетка4 div{background:#1B1E17;border:1px solid #CBCFBE;border-radius:14px;
+  padding:24px 22px;font-family:Onest,sans-serif;font-weight:800;
+  font-size:144px;line-height:1.12;color:#12130F}
+.сетка4 div:nth-child(4n+1){color:#C7E24B}
+
+.формула{display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1.1;color:#12130F}
+.формула i{color:#C7E24B;font-style:normal}
+.формула .итог{color:#C7E24B}
+
+.плашка{display:inline-block;background:#C7E24B;color:#12130F;
+  font-weight:700;font-size:34px;letter-spacing:.18em;text-transform:uppercase;
+  padding:9px 18px;border-radius:8px;margin-bottom:26px}
+.плашка.ржавая{background:#E2703A;color:#12130F}
+
+.вопрос-стр{font-size:58px;line-height:1.3;color:#6A7060;
+  border-left:5px solid #CBCFBE;padding-left:22px;margin-bottom:28px}
+.ответ-стр{font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1.14;color:#12130F;border-left:5px solid #C7E24B;padding-left:22px}
+
+.подчерк u{text-decoration:none;color:#C7E24B;
+  box-shadow:inset 0 -.18em 0 rgba(199,226,75,.28)}
+
+.ступени{display:flex;align-items:flex-end;gap:14px;margin-top:20px}
+.ступени div{flex:1;background:#1B1E17;border:1px solid #CBCFBE;
+  border-top:4px solid #C7E24B;border-radius:12px 12px 0 0;padding:20px 16px;
+  font-family:Onest,sans-serif;font-weight:800;font-size:34px;
+  line-height:1.2;color:#12130F}
+.ступени div:nth-child(1){min-height:120px}
+.ступени div:nth-child(2){min-height:190px}
+.ступени div:nth-child(3){min-height:260px;color:#C7E24B}
+
+.кольцо{display:flex;align-items:center;gap:34px}
+.кольцо .круг{width:546px;height:546px;border-radius:50%;flex:0 0 auto;
+  display:grid;place-items:center;
+  background:conic-gradient(#C7E24B var(--д), #CBCFBE 0)}
+.кольцо .круг span{width:72%;height:72%;border-radius:50%;background:#F1F3EA;
+  display:grid;place-items:center;font-family:Onest,sans-serif;font-weight:800;
+  font-size:167px;color:#C7E24B}
+
+.буквица p{font-size:58px;line-height:1.36;color:#3C4235}
+.буквица p:first-letter{font-family:Onest,sans-serif;font-weight:800;
+  font-size:598px;line-height:.78;float:left;margin:.06em .12em 0 0;
+  color:#C7E24B}
+
+.чипы{display:flex;flex-wrap:wrap;gap:14px}
+.чипы span{background:#1B1E17;border:1px solid #CBCFBE;border-radius:999px;
+  padding:14px 24px;font-size:34px;color:#12130F}
+.чипы span.я{background:#C7E24B;color:#12130F;border-color:#C7E24B;font-weight:700}
+
+.двацифры{display:flex;gap:28px}
+.двацифры div{flex:1}
+.двацифры .ч{font-family:Onest,sans-serif;font-weight:800;
+  font-size:334px;line-height:.95;letter-spacing:-.03em;color:#6A7060}
+.двацифры div:last-child .ч{color:#C7E24B;
+  text-shadow:0 0 70px rgba(199,226,75,.3)}
+.двацифры .п{font-size:34px;color:#6A7060;margin-top:12px;
+  letter-spacing:.14em;text-transform:uppercase}
+
+.слои{position:relative;padding-left:18px}
+.слои div{background:#1B1E17;border:1px solid #CBCFBE;border-radius:14px;
+  padding:22px 24px;font-size:58px;line-height:1.26;color:#12130F;
+  margin-bottom:-10px;position:relative}
+.слои div:nth-child(1){transform:translateX(-18px);opacity:.55}
+.слои div:nth-child(2){transform:translateX(-9px);opacity:.78}
+.слои div:nth-child(3){border-color:#C7E24B;color:#12130F}
+
+.междулиний{border-top:4px solid #C7E24B;border-bottom:4px solid #C7E24B;
+  padding:34px 0;font-family:Onest,sans-serif;font-weight:800;
+  font-size:162px;line-height:1.14;color:#12130F}
+
+ul.галочки{list-style:none;display:flex;flex-direction:column;gap:22px}
+ul.галочки li{display:flex;gap:18px;align-items:flex-start;
+  font-size:58px;line-height:1.3;color:#12130F}
+ul.галочки li.нет{color:#6A7060}
+ul.галочки b{flex:0 0 auto;width:1.1em;height:1.1em;border-radius:5px;
+  border:3px solid #CBCFBE;display:grid;place-items:center;
+  color:transparent;line-height:1}
+ul.галочки li.да b{background:#C7E24B;border-color:#C7E24B;color:#12130F}
+
+.записка{background:#1B1E17;border:1px solid #CBCFBE;
+  border-left:6px solid #C7E24B;border-radius:0 16px 16px 0;padding:30px 32px;
+  box-shadow:0 26px 60px rgba(0,0,0,.55);font-size:58px;line-height:1.34;
+  color:#12130F}
+.записка .к{font-size:34px;letter-spacing:.18em;text-transform:uppercase;
+  color:#C7E24B;margin-bottom:14px}
+
+.разрыв{font-family:Onest,sans-serif;font-weight:800;font-size:238px;
+  line-height:.92;letter-spacing:-.04em;color:#12130F;text-transform:uppercase}
+.разрыв i{color:#C7E24B;font-style:normal;display:block}
+
+.разбивка{font-family:Onest,sans-serif;font-weight:800;font-size:739px;
+  line-height:.82;color:#CBCFBE;letter-spacing:-.05em}
+.разбивка+.шапка{margin-top:-.12em}
+
+.пузыри{display:flex;flex-direction:column;gap:18px}
+.пузыри div{max-width:82%;padding:22px 26px;border-radius:22px;
+  font-size:58px;line-height:1.3}
+.пузыри .он{background:#1B1E17;border:1px solid #CBCFBE;color:#12130F;
+  border-bottom-left-radius:6px;align-self:flex-start}
+.пузыри .я{background:#C7E24B;color:#12130F;font-weight:600;
+  border-bottom-right-radius:6px;align-self:flex-end}
+
+.телефон{border:5px solid #CBCFBE;border-radius:34px;padding:30px 26px;
+  background:#1B1E17;position:relative}
+.телефон:before{content:"";position:absolute;left:50%;top:12px;
+  transform:translateX(-50%);width:78px;height:7px;border-radius:99px;
+  background:#CBCFBE}
+.телефон .з{font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1.12;color:#12130F;margin:14px 0 12px}
+.телефон .т{font-size:55px;line-height:1.36;color:#3C4235}
+
+.стрелка{display:flex;align-items:center;gap:22px}
+/* min-width:0 обязателен: без него колонка не даёт себя сжать, и длинное
+   слово вылезает за край холста вместо переноса. */
+/* Кегль здесь меньше базового, а перенос только для слов, которые совсем не
+   влезают: колонки узкие, и «расшифровывает» иначе рвётся посередине. */
+.стрелка .бок{flex:1 1 0;min-width:0;overflow-wrap:break-word;
+  font-family:Onest,sans-serif;font-weight:800;
+  font-size:81px;line-height:1.14;color:#12130F}
+.стрелка .бок.тускло{color:#6A7060}
+.стрелка .знак{position:static;height:auto;flex:0 0 auto;color:#C7E24B;
+  font-size:246px;line-height:1;filter:none}
+
+.штамп{display:inline-block;border:5px solid #E2703A;color:#E2703A;
+  border-radius:14px;padding:14px 24px;font-family:Onest,sans-serif;
+  font-weight:800;font-size:34px;letter-spacing:.16em;text-transform:uppercase;
+  transform:rotate(-9deg);opacity:.92;margin-bottom:26px}
+
+/* Числа убывают по размеру и светлеют к последнему: так читается обратный
+   отсчёт, а не случайная разница кеглей. */
+.отсчёт{display:flex;gap:22px;align-items:baseline;margin-bottom:30px}
+.отсчёт span{font-family:Onest,sans-serif;font-weight:800;line-height:1;
+  color:#6A7060;opacity:.5;font-size:141px}
+.отсчёт span:nth-child(2){opacity:.75;font-size:211px}
+.отсчёт span:last-child{color:#C7E24B;opacity:1;font-size:387px;
+  text-shadow:0 0 60px rgba(199,226,75,.3)}
+
+.опрос{display:flex;flex-direction:column;gap:20px}
+.опрос .строка{position:relative;border:1px solid #CBCFBE;border-radius:14px;
+  overflow:hidden;background:#1B1E17}
+.опрос .залив{position:absolute;inset:0;background:rgba(199,226,75,.16)}
+.опрос .верх{position:relative;display:flex;justify-content:space-between;
+  padding:20px 24px;font-size:58px;color:#12130F}
+.опрос .строка.лидер{border-color:#C7E24B}
+.опрос .строка.лидер .залив{background:rgba(199,226,75,.3)}
+
+.узлы{display:flex;align-items:center;gap:0}
+.узлы .у{flex:0 0 auto;width:202px;height:202px;border-radius:50%;
+  border:4px solid #C7E24B;display:grid;place-items:center;color:#C7E24B;
+  font-family:Onest,sans-serif;font-weight:800;font-size:34px}
+.узлы .у.тускло{border-color:#CBCFBE;color:#6A7060}
+.узлы .н{flex:1;height:4px;background:#CBCFBE}
+.подузлы{display:flex;margin-top:16px}
+.подузлы span{flex:1;font-size:34px;color:#6A7060;text-align:center}
+.подузлы span:first-child{text-align:left}
+.подузлы span:last-child{text-align:right}
+
+.тройка{display:flex;gap:18px}
+.тройка div{flex:1;border-top:4px solid #C7E24B;padding-top:20px}
+.тройка .ч{font-family:Onest,sans-serif;font-weight:800;font-size:144px;
+  line-height:1;color:#C7E24B}
+.тройка .п{font-size:34px;color:#6A7060;margin-top:12px;line-height:1.3}
+
+.выделение p{font-size:58px;line-height:1.5;color:#3C4235;margin:0}
+.выделение p.свет{color:#12130F;background:#C7E24B;display:inline;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  padding:.12em .2em;font-weight:600}
+
+.ярлык{display:inline-block;background:#C7E24B;color:#F1F3EA;border-radius:16px;
+  padding:26px 34px;font-family:Onest,sans-serif;font-weight:800;
+  font-size:264px;line-height:1;position:relative}
+.ярлык:after{content:"";position:absolute;right:22px;top:-11px;width:16px;
+  height:16px;border-radius:50%;background:#F1F3EA}
+
+.шкала{position:relative;margin:34px 0 12px}
+.шкала .л{height:14px;border-radius:99px;
+  background:linear-gradient(90deg,#CBCFBE,#C7E24B)}
+.шкала .м{position:absolute;top:-14px;width:6px;height:42px;border-radius:99px;
+  background:#12130F}
+.шкала-п{display:flex;justify-content:space-between;font-size:58px;
+  color:#6A7060;margin-top:18px}
+.шкала-п span:last-child{color:#C7E24B}
+
+</style>
+<div class="grid"></div>
+<div class="стек"><div class="шапка">Не сошлось? Строку в чат</div><div class="черта"></div><div class="мысль">Дай ИИ строку с неверным ответом и <span class="свет">сверь заново</span>.</div></div>
+<img class="знак" src="file://{{АССЕТЫ}}/logo-dark.png">
+<div class="полоса" style="width:90%"></div>

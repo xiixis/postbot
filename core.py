@@ -265,7 +265,7 @@ def дорисовать(ид: int, ход: Ход = None) -> int:
     поля["pose_file"] = _сохранить_позу(поза)
     формат = поля.get("формат") or "квадрат"
     файлы = carousel.нарисовать(к, формат, поза, ход=ход)
-    ссылки = [storage.положить(ф) or str(ф) for ф in файлы if ф]
+    ссылки = storage.положить_все(файлы)
     поля.pop("стадия", None)
     db.правка(ид, card=json.dumps(поля, ensure_ascii=False),
               images=json.dumps(ссылки, ensure_ascii=False),
@@ -402,7 +402,7 @@ def _перерисовать_карусель(ид: int, поля: dict) -> int
     поля["pose_file"] = _сохранить_позу(поза)
     формат = поля.get("формат") or "квадрат"
     файлы = carousel.нарисовать(к, формат, поза)
-    ссылки = [storage.положить(ф) or str(ф) for ф in файлы if ф]
+    ссылки = storage.положить_все(файлы)
     db.правка(ид, card=json.dumps(поля, ensure_ascii=False),
               images=json.dumps(ссылки, ensure_ascii=False),
               image_path=ссылки[0] if ссылки else None)

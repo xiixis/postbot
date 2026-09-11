@@ -1,0 +1,61 @@
+<meta charset="utf-8"><style>
+/* Шрифты лежат в проекте, а не тянутся из интернета: на сервере каждая
+   загрузка это секунды, а без сети карточка вообще осталась бы без шрифта.
+   Заголовочный Onest выбран за кириллицу: у прежнего Bricolage её нет, и
+   русские заголовки рисовались чем придётся, по-разному на разных машинах. */
+@font-face{font-family:Onest;font-weight:800;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/onest-800-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Onest;font-weight:800;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/onest-800-latin.woff2') format('woff2')}
+@font-face{font-family:Plex;font-weight:400;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-400-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Plex;font-weight:400;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-400-latin.woff2') format('woff2')}
+@font-face{font-family:Plex;font-weight:600;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-600-cyrillic.woff2') format('woff2');
+  unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:Plex;font-weight:600;font-display:block;
+  src:url('file://{{АССЕТЫ}}/fonts/plex-600-latin.woff2') format('woff2')}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1440px;overflow:hidden}
+body{background:#12130F;color:#F1F3EA;font-family:Plex,-apple-system,sans-serif;
+  position:relative;display:flex;flex-direction:column;
+  padding:150px 80px 320px}
+.grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(199,226,75,.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(199,226,75,.03) 1px,transparent 1px);
+  background-size:54px 54px}
+/* Счётчика слайдов нет намеренно: TikTok, телеграм и остальные рисуют свой
+   поверх картинки, и два счётчика рядом выглядят как ошибка вёрстки. */
+.полоса{position:absolute;left:0;bottom:176px;height:6px;background:#C7E24B;
+  box-shadow:0 0 26px rgba(199,226,75,.45)}
+.знак{position:absolute;left:80px;bottom:205px;height:44px;
+  filter:none drop-shadow(0 4px 14px rgba(0,0,0,.28))}
+
+.вывод{font-family:Onest,sans-serif;font-weight:800;font-size:141px;line-height:1.1;
+  letter-spacing:-.02em;color:#F1F3EA;max-width:920px;position:relative;
+  margin-top:auto;margin-bottom:auto}
+.точка{position:absolute;left:80px;top:150px;font-size:34px;
+  font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#C7E24B}
+/* Призыв живёт под выводом и спорить с ним не должен: вывод это мысль, ради
+   которой листали, а призыв — то, что делать дальше. Отсюда кегль поменьше,
+   лаймовая полоска слева вместо кнопки и место над логотипом. */
+/* Плашка стоит В ПОТОКЕ, а не absolute. Абсолютной она лежала поверх вывода
+   и места под себя не резервировала: длинная мысль заезжала под лайм и
+   теряла последнюю строку. Замер этого не ловил — он проверяет выход за
+   кромку кадра, а тут текст оставался внутри, просто закрытый плашкой.
+   В потоке наложение невозможно устройством: вывод с margin-bottom:auto и
+   призыв с margin-top:auto делят между собой то, что осталось. */
+.призыв{margin-top:auto;margin-bottom:0px;
+  max-width:920px;font-family:Plex,sans-serif;font-weight:700;
+  font-size:53px;line-height:1.25;color:#12130F;background:#C7E24B;
+  padding:8px 13px;border-radius:6px;align-self:flex-start}
+.вывод{margin-top:116px;margin-bottom:auto}
+</style>
+<div class="grid"></div>
+<div class="точка">Итог</div><div class="вывод">ИИ пишет формулу, а верить ей можно после трёх строк</div><div class="призыв">Забери в закладки. Подпишись: один приём за пост</div>
+<img class="знак" src="file://{{АССЕТЫ}}/logo-dark.png">
+<div class="полоса" style="width:100%"></div>
