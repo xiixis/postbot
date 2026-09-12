@@ -645,9 +645,20 @@ def слайд_обложка(надпись: str, заголовок: str, по
         # Подсветка *звёздочками* разбирается и здесь. Раньше обложка шла мимо
         # неё: слово в звёздочках так и уезжало в кадр вместе со звёздочками —
         # модель ставит их по привычке, взятой из вёрсток слайдов.
-        нутро = (f'<div class="над">{html.escape(_обрезать(надпись, 40))}</div>'
-                 f'<h1>{_подсветить(_текст(заголовок, 60), блоком=True)}</h1>'
-                 f'<div class="листай">Листайте →</div>{кот}')
+        над_html = html.escape(_обрезать(надпись, 40))
+        загол_html = _подсветить(_текст(заголовок, 60), блоком=True)
+        # Своя вёрстка обложки, если дизайн её несёт. Без этого все дизайны
+        # выходили одной и той же обложкой в разных шрифтах: надбровие,
+        # заголовок, «листайте» — и владелец справедливо сказал, что это
+        # вариации, а не новые дизайны.
+        своя = (ДИЗАЙНЫ.get(дизайн) or {}).get("обложка")
+        if своя:
+            нутро = своя.format(над=над_html, заголовок=загол_html,
+                                номер=номер, всего=всего) + кот
+        else:
+            нутро = (f'<div class="над">{над_html}</div>'
+                     f'<h1>{загол_html}</h1>'
+                     f'<div class="листай">Листайте →</div>{кот}')
         return СЛАЙД.format(**д, ещё=ОБЛОЖКА_ЕЩЁ.format(**д, кегль=кегль) + свой_вид,
                             нутро=панель + нутро)
 
@@ -1213,6 +1224,13 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
 .шпаргалка .плашка-зн{{width:1.35em;height:1.35em;border-radius:.3em}}
 .шпаргалка .пусто{{width:1.35em;height:1.35em;flex:0 0 auto;text-align:center;
   color:{лайм};font-weight:700}}
+.метка{{font-style:normal;font-size:.66em;font-weight:700;padding:.22em .6em;
+  border-radius:999px;white-space:nowrap;flex:0 0 auto}}
+.метка.чаще{{background:rgba(199,226,75,.16);color:{лайм}}}
+.метка.новичку{{background:rgba(226,112,58,.18);color:{ржавый}}}
+.легенда{{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;
+  margin-top:18px;font-size:{шпаргалка_пункт}px;color:{приглуш}}}
+.легенда span{{display:inline-flex;align-items:center;gap:8px}}
 
 /* Облако: кегль слова и есть его вес. Приём подсмотрен у поста, где вокруг
    человека висели названия моделей разного размера — и было сразу видно, чего
@@ -1553,8 +1571,12 @@ def _нутро(вид: str, д: dict, з: dict) -> str:
         return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
                 f'<div class="черта"></div><div class="бары">{бары}</div></div>')
     if вид == "консоль":
+        # Подсветка *звёздочками* работает и здесь: в окне запроса ею
+        # помечают место, куда зритель подставит своё. Раньше строки шли через
+        # голое экранирование, и звёздочки уезжали в кадр как есть.
         строки = "\n".join(
-            (f"<b>{html.escape(с[1:])}</b>" if с.startswith(">") else html.escape(с))
+            (f"<b>{_подсветить(html.escape(с[1:]))}</b>" if с.startswith(">")
+             else _подсветить(html.escape(с)))
             for с in (з.get("строки") or []))
         return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
                 f'<div class="черта"></div><div class="окно">'
@@ -1643,17 +1665,35 @@ def _нутро(вид: str, д: dict, з: dict) -> str:
         for р in _срез("разделы", вид, з.get("разделы"), 6):
             пункты = ""
             for п in (р.get("пункты") or [])[:4]:
-                маска, имя, остаток = _знак_инструмента(п)
+                # Метка после «|»: «чаще» или «новичку». У образцов
+                # (@maryanndollars, @ksafaraliev_ai) это главное, что отличает
+                # шпаргалку от простого списка: она говорит, что брать первым,
+                # а с чего проще начать.
+                тело, _, метка = str(п).partition("|")
+                метка = метка.strip().lower()
+                маска, имя, остаток = _знак_инструмента(тело.strip())
                 слева = (f'<span class="плашка-зн"><i style="{маска}"></i></span>'
                          if маска else '<span class="пусто">·</span>')
                 видно = (имя + (" " + остаток if остаток.strip() else "")
-                         ) if маска else п
-                пункты += f"<li>{слева}<span>{_текст(видно, 42)}</span></li>"
+                         ) if маска else тело.strip()
+                ярлык = ""
+                if метка.startswith("чаще"):
+                    ярлык = '<i class="метка чаще">чаще всего</i>'
+                elif метка.startswith("новичк"):
+                    ярлык = '<i class="метка новичку">новичку</i>'
+                пункты += (f'<li>{слева}<span>{_текст(видно, 42)}</span>'
+                           f'{ярлык}</li>')
             разделы += (f'<div class="раздел"><h3>{_текст(р.get("имя", ""), 24)}'
                         f'<i></i></h3><ul>{пункты}</ul></div>')
+        # Легенда внизу: без неё метки просто цветные слова. У образцов она
+        # стоит всегда и объясняет, что значит каждая.
+        легенда = ('<div class="легенда">'
+                   '<span><i class="метка чаще">чаще всего</i> берём сами</span>'
+                   '<span><i class="метка новичку">новичку</i> проще начать</span>'
+                   '</div>') if "метка" in разделы else ""
         return (f'<div class="стек"><div class="шапка">{т("заголовок", 60)}</div>'
                 f'<div class="черта"></div>'
-                f'<div class="шпаргалка">{разделы}</div></div>')
+                f'<div class="шпаргалка">{разделы}</div>{легенда}</div>')
     if вид == "поток":
         шаги = _срез("шаги", вид, з.get("шаги"), 4)
         тело = ""
@@ -1988,6 +2028,10 @@ h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.�
         "масштаб": {"заголовок": 1.18, "мысль": .92, "над": .9},
         "о": "узкие заглавные во всю ширину, линейка слева, без акцента",
         "фейсы": [("oswald-600", "Oswald", 600), ("golos-400", "Golos", 400)],
+        "обложка": """
+<h1>{заголовок}</h1>
+<div class="манифест-под">{над}</div>
+""",
         "css": """
 body{{font-family:Golos,sans-serif}}
 .grid{{display:none}}
@@ -2001,7 +2045,23 @@ h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.�
    ним. Черту оставляем, но тонкой и короткой, чтобы не спорили. */
 .шапка,h1{{padding-left:26px;border-left:5px solid {лайм}}}
 .черта{{height:1px;width:28%;background:{рамка}}}
-.реплика{{padding-left:26px}}
+/* Цитата в рамке с огромными кавычками — то, ради чего этот жанр и выбирали.
+   Кавычки лежат по углам рамки, а не перед первой буквой: наезжая на текст,
+   они читались как часть слова. */
+.реплика{{border:1px solid {рамка};border-radius:4px;padding:56px 64px 52px;
+  position:relative;text-transform:none;letter-spacing:-.01em;line-height:1.2}}
+.реплика .лапки{{display:none}}
+.реплика:before,.реплика:after{{position:absolute;font-family:Golos,serif;
+  font-size:{кавычка}px;line-height:.7;color:{рамка}}}
+.реплика:before{{content:"«";left:18px;top:14px}}
+.реплика:after{{content:"»";right:18px;bottom:-6px}}
+/* Обложка жанра: заголовок занимает кадр целиком, подпись под ним мелкая и
+   спокойная. Ни «листайте», ни надбровия сверху — у образца их нет, и кадр
+   от этого только сильнее. */
+body:has(.манифест-под){{justify-content:center}}
+.манифест-под{{font-family:Golos,sans-serif;font-size:{мысль}px;line-height:1.45;
+  color:{приглуш};max-width:{мера}ch;margin-top:30px;padding-left:26px;
+  text-transform:none;letter-spacing:0}}
 """},
 
     # Списан с ty.prompts.ai и AA Studio: свечение сверху, пустота, текст
@@ -2012,6 +2072,12 @@ h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.�
         "о": "свечение сверху, пустота, заголовок прижат к низу",
         "фейсы": [("unbounded-800", "Unbounded", 800), ("golos-400", "Golos", 400),
                   ("jetbrains-400", "JB", 400)],
+        "обложка": """
+<div class="воздух"></div>
+<div class="над">{над}</div>
+<h1>{заголовок}</h1>
+<div class="листай">листайте →</div>
+""",
         "css": """
 body{{font-family:Golos,sans-serif}}
 .grid{{display:none}}
@@ -2034,10 +2100,10 @@ body:before{{content:"";position:absolute;left:50%;top:-18%;width:150%;
 body:after{{content:"{номер:02d} / {всего:02d}";position:absolute;
   right:{поле_бок}px;top:{поле_верх}px;font-family:JB,monospace;
   font-size:{над}px;letter-spacing:.16em;color:{приглуш};opacity:.8}}
-/* У образца текст прижат к низу кадра, у нас так нельзя: низ занят логотипом
-   и полосой прогресса, и прижатый стек заходил в нижнее поле — замер честно
-   ругался «двигать тут нечего». Пустоту даёт свечение сверху, и этого
-   довольно: кадр всё равно читается как воздух с одной фразой. */
+/* Пустоту на обложке даёт не прижатие к низу (там логотип и полоса, и замер
+   честно ругался), а блок воздуха сверху: треть кадра нарочно пустая, и
+   заголовок начинается ниже середины. */
+.воздух{{height:38%}}
 """},
 
     # Списан с @emirailab, 466 тысяч просмотров. Единственный светлый дизайн в
@@ -2050,9 +2116,17 @@ body:after{{content:"{номер:02d} / {всего:02d}";position:absolute;
     # не как абзац.
     "каталог": {
         "масштаб": {"заголовок": 1.22, "мысль": .94, "над": .9},
-        "о": "светлый кадр, мягкие пятна и белые карточки с тенью",
+        "о": "светлый кадр, пилюли-теги и карточки с номером и долей",
         "фейсы": [("manrope-800", "Manrope", 800), ("manrope-400", "Manrope", 400),
                   ("onest-800", "Onest", 800)],
+        "обложка": """
+<div class="надбровие">{над}</div>
+<div class="линейка"></div>
+<h1>{заголовок}</h1>
+<div class="пилюли"><span>тексты</span><span>картинки</span><span>озвучка</span>
+  <span>сборка</span></div>
+<div class="листай">листайте →</div>
+""",
         "css": """
 body{{font-family:Manrope,sans-serif;background:{светлый_грунт};color:{светлые_чернила}}}
 /* Пятна рисуем слоем сетки, а НЕ body:before. Сперва они и были на body, и
@@ -2098,6 +2172,25 @@ ul.пункты .имя-и,ol.места .имя-и{{color:{светлые_че�
    белом он почти не виден. */
 .сетка4 .плитка-п,.замена .цена,.столбики .подпись-в{{color:{светлый_мягкий}}}
 .плашка,.метка-з,.сохрани,.призыв{{background:{светлый_акцент};color:#FFFFFF}}
+/* Обложка жанра: всё по центру, надбровие с линейкой, пилюли-теги внизу. */
+body:has(.надбровие){{align-items:center;text-align:center;justify-content:center}}
+.надбровие{{font-size:{над}px;font-weight:800;letter-spacing:.22em;
+  text-transform:uppercase;color:{светлый_акцент}}}
+.линейка{{width:64px;height:2px;margin:14px auto 34px;background:{светлый_акцент};
+  opacity:.45}}
+.пилюли{{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  margin-top:38px}}
+.пилюли span{{font-size:{над}px;padding:12px 22px;border-radius:999px;
+  background:#FFFFFF;color:{светлый_мягкий};
+  box-shadow:0 10px 26px rgba(18,19,15,.07)}}
+body:has(.надбровие) .листай{{margin-top:30px;color:{светлый_акцент}}}
+/* Строка каталога: кружок с номером слева, имя с пояснением, доля справа —
+   ровно как в пробе. Номер берётся из нумерации списка, доля из текста после
+   разделителя «—». */
+ol.места li{{gap:24px;align-items:center}}
+ol.места b{{width:76px;height:76px;border-radius:50%;background:#EDF1DC;
+  color:{светлый_акцент};display:grid;place-items:center;font-size:{над}px;
+  flex:0 0 auto;min-width:0}}
 .свет{{background:{светлый_акцент};color:#FFFFFF}}
 .знак{{filter:brightness(.45) saturate(1.4)}}
 .полоса{{background:{светлый_акцент};box-shadow:none}}
@@ -2119,6 +2212,11 @@ ul.пункты .имя-и,ol.места .имя-и{{color:{светлые_че�
         "о": "курсивный засечный акцент и призрачный номер в углу",
         "фейсы": [("onest-800", "Onest", 800), ("golos-400", "Golos", 400),
                   ("playfair-700-italic", "PlayfairIt", 700)],
+        "обложка": """
+<div class="ярлык-шага">{над}</div>
+<h1>{заголовок}</h1>
+<div class="полоска-шагов"><i></i><i></i><i></i><i></i><i></i></div>
+""",
         "css": """
 body{{font-family:Golos,sans-serif}}
 .grid{{display:none}}
@@ -2142,39 +2240,133 @@ body:after{{content:"{номер:02d}";position:absolute;right:{поле_бок}
   font-size:{призрак}px;line-height:.8;color:{текст};opacity:.07;
   pointer-events:none;z-index:0}}
 .стек{{position:relative;z-index:1}}
+/* Обложка: плашка-ярлык сверху, заголовок, а под ним полоска из сегментов —
+   у образца она показывает, сколько шагов впереди. Это не счётчик площадки:
+   она не считает кадры, а обещает путь. */
+.ярлык-шага{{display:inline-block;font-family:Golos,sans-serif;font-size:{над}px;
+  font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:{по_лайму};background:{лайм};padding:9px 18px;border-radius:6px;
+  margin-bottom:28px;position:relative;z-index:1}}
+.полоска-шагов{{display:flex;gap:8px;margin-top:34px;position:relative;z-index:1}}
+.полоска-шагов i{{height:4px;width:52px;background:{рамка};border-radius:2px;
+  display:block}}
+.полоска-шагов i:first-child{{background:{лайм};width:78px}}
 """},
 
+    # Переписан 12 сентября 2026 по пробе с листа жанров. Прежний
+    # «редакционный» был засечным шрифтом поверх общей вёрстки; от образца
+    # @neuro.ks в нём не было ни центрированной колонки, ни надбровия с
+    # линейкой, ни карточки под текстом, ни пилюль-меток.
+    #
+    # Всё это здесь есть, и кадр собран иначе: содержимое стоит по центру
+    # колонки, а не прижато влево, и каждая мысль живёт в карточке. Курсивная
+    # строка заголовка — второй строкой, как у образца.
     "редакционный": {
-        "масштаб": {"заголовок": 1.12, "мысль": .96},
-        "о": "Playfair и Golos, засечки, узкая колонка, тонкие правила",
-        "фейсы": [("playfair-800", "Playfair", 800), ("golos-400", "Golos", 400)],
+        "масштаб": {"заголовок": 1.1, "мысль": .98, "над": .92},
+        "о": "центрированная колонка, линейка, карточка и пилюли-метки",
+        "фейсы": [("playfair-800", "Playfair", 800), ("golos-400", "Golos", 400),
+                  ("playfair-700-italic", "PlayfairIt", 700)],
+        "обложка": """
+<div class="надбровие">{над}</div>
+<div class="линейка"></div>
+<h1>{заголовок}</h1>
+<div class="пилюли"><span><i></i>приёмы</span><span><i></i>запросы</span>
+  <span><i></i>по шагам</span></div>
+<div class="листай">листайте →</div>
+""",
         "css": """
-body{{font-family:Golos,serif}}
+body{{font-family:Golos,serif;align-items:center;text-align:center;
+  justify-content:center}}
 .grid{{display:none}}
 h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
-  font-family:Playfair,serif;font-weight:800;letter-spacing:-.01em;
-  line-height:1.06}}
+  font-family:Playfair,serif;font-weight:800;letter-spacing:-.015em;
+  line-height:1.07}}
 .огонь,.слово{{font-family:Playfair,serif}}
+/* Курсивная строка заголовка: у образца ею идёт вторая половина фразы.
+   Подсветку *звёздочками* используем как метку этой строки. */
+h1 .свет{{font-family:PlayfairIt,Playfair,serif;font-style:normal;
+  font-weight:700;display:block;background:none;color:{лайм};padding:0}}
+.надбровие{{font-family:Golos,sans-serif;font-size:{над}px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:{лайм}}}
+.линейка{{width:360px;height:1px;margin:26px auto 46px;background:{рамка}}}
+.пилюли{{display:flex;gap:14px;justify-content:center;margin-top:34px;
+  flex-wrap:wrap}}
+.пилюли span{{font-family:Golos,sans-serif;font-size:{над}px;padding:13px 24px;
+  border-radius:999px;display:inline-flex;align-items:center;gap:11px;
+  background:{поверхность};color:{мягкий}}}
+.пилюли i{{width:9px;height:9px;border-radius:50%;background:{лайм};display:block}}
 .над,.точка,.листай{{font-family:Golos,sans-serif;letter-spacing:.28em}}
-.мысль{{max-width:{мера}ch;line-height:1.5}}
-.черта{{height:1px;width:64%;background:{приглуш};opacity:.6}}
-body:after{{content:"";position:absolute;left:{поле_бок}px;
-  top:{поле_верх}px;bottom:{поле_низ}px;width:1px;background:{рамка};opacity:.7}}
+.листай{{margin-top:38px}}
+/* Кадры середины: текст в колонке по центру, а сама мысль — в карточке.
+   Карточка и есть главное отличие жанра от нашей обычной вёрстки. */
+.стек{{align-items:center;text-align:center;width:100%}}
+.мысль,.окно,.пункты,.места,.сетка4,.поток,.бары{{text-align:left}}
+.мысль{{max-width:100%;width:100%;line-height:1.55;margin-top:12px;
+  background:{поверхность};border:1px solid {рамка};border-radius:24px;
+  padding:44px 48px}}
+/* Списки, окна и сетки тоже живут в карточке: у образца в неё убрано всё
+   содержание кадра, а не только абзац. */
+ul.пункты,ol.места,.сетка4,.поток,.бары,.шпаргалка{{width:100%;
+  background:{поверхность};border:1px solid {рамка};border-radius:24px;
+  padding:40px 44px;margin-top:12px}}
+ul.пункты li,ol.места li{{background:none;padding:0;box-shadow:none}}
+.черта{{height:1px;width:360px;background:{рамка};opacity:.8;margin:26px auto}}
 """},
 
+    # Переписан 12 сентября 2026 по пробе, которую владелец одобрил на листе
+    # жанров. Прежний «терминал» был просто моноширинным шрифтом поверх общей
+    # вёрстки — то есть вариацией нашего же кадра, а не отдельным жанром.
+    #
+    # Здесь у дизайна появляется СВОЯ вёрстка обложки: строка команды, галочка
+    # загрузки, заголовок заглавными и счётчик кадров внизу справа. Дальше по
+    # тому же пути пойдут остальные жанры.
     "терминал": {
-        "масштаб": {"заголовок": .82, "мысль": .9, "огонь": .8},
-        "о": "всё моноширинным, скобки, полоски развёртки",
+        "масштаб": {"заголовок": .82, "мысль": .92, "огонь": .8},
+        "о": "консоль: строка команды, окно запроса, подсветка подстановок",
         "фейсы": [("jetbrains-700", "JB", 700), ("jetbrains-400", "JB", 400)],
+        "обложка": """
+<div class="команда">$ claude <b>--соберём-карусель</b></div>
+<div class="команда готово">✓ {над}</div>
+<h1>{заголовок}</h1>
+<div class="листай">скопируйте и вставьте →</div>
+<div class="счёт">{номер:02d} / {всего:02d}</div>
+""",
         "css": """
-body{{font-family:JB,monospace}}
+body{{font-family:JB,monospace;background:#0A0B08;justify-content:center}}
 .grid{{display:none}}
 h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.огонь,.слово{{
-  font-family:JB,monospace;font-weight:700;letter-spacing:-.02em;line-height:1.12}}
-.мысль,.над,.точка{{font-family:JB,monospace}}
-.шапка:before{{content:"// "; color:{лайм}}}
-.черта{{height:2px;width:38%;background:{лайм}}}
-body:after{{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  font-family:JB,monospace;font-weight:700;letter-spacing:-.03em;line-height:1.08;
+  text-transform:uppercase;color:#F1F3EA}}
+.мысль,.над,.точка,.листай,.команда{{font-family:JB,monospace;text-transform:none}}
+.мысль{{line-height:1.5;max-width:{мера}ch;color:#A6AC97}}
+/* Строка команды: то, с чего начинается кадр у образца. */
+.команда{{font-size:{над}px;color:#7E8570;line-height:1.7}}
+.команда b{{color:{лайм};font-weight:400}}
+.команда.готово{{margin-bottom:22px}}
+h1{{margin-bottom:26px}}
+.листай{{color:#7E8570;letter-spacing:.04em;text-transform:none}}
+.счёт{{position:absolute;right:{поле_бок}px;bottom:{поле_низ}px;
+  font-size:{над}px;color:#565C4B;letter-spacing:.12em}}
+.над{{color:#7E8570;letter-spacing:.04em;font-weight:400;text-transform:none}}
+.над:before{{content:"$ ";color:{лайм}}}
+.шапка:before{{content:none}}
+.черта{{height:1px;width:34%;background:#262A1E}}
+/* Окно запроса с шапкой «запрос / копировать»: у образца так оформлен любой
+   кусок, который зритель уносит себе. */
+.окно{{border:1px solid #262A1E;border-radius:14px;overflow:hidden;
+  background:#0E100B}}
+.окно .верх{{background:#12140E;border-bottom:1px solid #262A1E;padding:14px 22px;
+  display:flex;justify-content:space-between;align-items:center}}
+.окно .верх i{{display:none}}
+.окно .верх:before{{content:"запрос";font-size:{над}px;color:#7E8570}}
+.окно .верх:after{{content:"копировать";font-size:{над}px;color:{лайм}}}
+.окно pre{{padding:28px 24px;line-height:1.5;color:#E3E8D6}}
+/* Подстановка — не плашка, а лаймовые буквы в скобках: так место для своего
+   значения выглядит в настоящей консоли. */
+.свет{{background:none;color:{лайм};padding:0}}
+.свет:before{{content:"["}}
+.свет:after{{content:"]"}}
+body:after{{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;
   background:repeating-linear-gradient(180deg,rgba(199,226,75,.05) 0 1px,
              transparent 1px 5px)}}
 """},
@@ -2340,7 +2532,16 @@ def _дизайн(имя: str, д: dict) -> str:
         светлое = {"светлый_грунт": config.ТЕКСТ, "светлые_чернила": config.ФОН,
                    "светлый_акцент": "#56690C", "светлый_мягкий": "#5C6253",
                    "светлое_пятно": "#DCE5B4", "светлое_пятно2": "#E7EADD"}
-        css = css.format(**{**д, **светлое, "минполе": round(д["поле_бок"] * 2.1),
+        # Поверхность и мягкий цвет приходят из размеров вида, а дизайн зовут
+        # и с обложки, и с финала, где этих размеров нет. Без подстановки по
+        # умолчанию дизайн падал на KeyError ровно так же, как когда-то фон
+        # «карточка» — та же ошибка, второй раз.
+        запас = {"поверхность": config.ПОВЕРХНОСТЬ, "мягкий": "#B9BFAE",
+                 # Кегль кавычек у «манифеста»: считается от заголовка, чтобы
+                 # они не съезжали, когда дизайн меняет масштаб.
+                 "кавычка": round(д["шапка_кегли"][0] * 1.6)}
+        css = css.format(**{**запас, **д, **светлое,
+                            "минполе": round(д["поле_бок"] * 2.1),
                             "призрак": призрак})
     return _фейсы(з["фейсы"]) + css
 
