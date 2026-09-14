@@ -23,7 +23,7 @@ import config
           "crosspost.py", "db.py", "facts.py", "icons.py", "ideas.py", "jobs.py", "markup.py", "publish.py", "repeats.py",
           "storage.py", "stream.py", "telegram.py", "threads.py", "tiktok.py",
           "times.py", "варианты.py", "x.py", "замер.py", "конвейер.py", "площадки.py",
-          "подпись.py",
+          "подпись.py", "приёмка.py",
           "уборка.py"]
 
 ТРЕБОВАНИЯ = """\
