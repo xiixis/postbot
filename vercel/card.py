@@ -22,6 +22,7 @@ from pathlib import Path
 
 import config
 import замер
+import приёмка
 
 ШРИФТЫ = """
 /* Шрифты лежат в проекте, а не тянутся из интернета: на сервере каждая
@@ -52,8 +53,8 @@ html,body{{width:1280px;height:720px;overflow:hidden}}
 body{{background:{фон};color:#C6CBB6;font-family:Plex,-apple-system,"Segoe UI",sans-serif;
   display:flex;flex-direction:column;justify-content:center;padding:60px 68px;position:relative}}
 body::before{{content:'';position:absolute;inset:0;
-  background-image:linear-gradient(rgba(199,226,75,.028) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.028) 1px,transparent 1px);
+  background-image:linear-gradient(rgba({лайм_rgb},.028) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.028) 1px,transparent 1px);
   background-size:40px 40px;pointer-events:none}}
 .eyebrow{{font-size:15px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
   color:{приглуш};margin-bottom:16px}}
@@ -63,7 +64,7 @@ h1{{font-family:Onest,-apple-system,"Segoe UI",sans-serif;font-weight:800;font-s
 .nb{{white-space:nowrap}}
 .line{{display:flex;gap:12px;align-items:baseline;margin-bottom:14px}}
 .dot{{width:8px;height:8px;border-radius:50%;background:{лайм};flex:0 0 auto;
-  box-shadow:0 0 12px rgba(199,226,75,.5);transform:translateY(-4px);
+  box-shadow:0 0 12px rgba({лайм_rgb},.5);transform:translateY(-4px);
   margin:0 8px}}
 /* Значок занимает то же место, что и точка, поэтому текст всех строк
    начинается на одной вертикали независимо от того, есть значок или нет. */
@@ -170,7 +171,7 @@ def нарисовать(надпись: str, заголовок: str, пунк�
     страница = ШАБЛОН.format(
         шрифты=_шрифты(),
         фон=config.ФОН, текст=config.ТЕКСТ, приглуш=config.ПРИГЛУШ,
-        лайм=config.ЛАЙМ, рамка=config.РАМКА,
+        лайм=config.ЛАЙМ, лайм_rgb=config.ЛАЙМ_RGB, рамка=config.РАМКА,
         надпись=html.escape(_обрезать(надпись, 28)),
         заголовок=_текст(заголовок, 70),
         кегль=_кегль(заголовок) + (0 if есть_кот else 6),
@@ -181,6 +182,54 @@ def нарисовать(надпись: str, заголовок: str, пунк�
     )
 
     return _снять(страница)
+
+
+МАСШТАБ_СНИМКА = 1.5      # тот же, что у командной строки и живого браузера
+
+
+def _размер_png(путь) -> tuple[int, int] | None:
+    """Ширина и высота из заголовка PNG, без Pillow: card едет в облако."""
+    try:
+        with open(путь, "rb") as f:
+            голова = f.read(24)
+    except OSError:
+        return None
+    if len(голова) < 24 or голова[1:4] != b"PNG":
+        return None
+    return int.from_bytes(голова[16:20], "big"), int.from_bytes(голова[20:24], "big")
+
+
+def _формат_по_размеру(ширина: int, высота: int) -> str:
+    for имя, д in ФОРМАТЫ.items():
+        if (д["ширина"], д["высота"]) == (ширина, высота):
+            return имя
+    return "квадрат"
+
+
+def _принять(путь: Path, страница: str, ширина: int, высота: int,
+             ошибки=()) -> Path:
+    """Приёмка готового кадра: то, что на нём осталось, когда рисовальщик закончил.
+
+    Одна точка на все кадры. Обложка, середина и финал идут разными дорогами, и
+    у каждой свои уступки: ужать кегль, убрать реплику, убрать кота. Проверять
+    итог в каждой значило бы трижды написать одно и то же и однажды забыть —
+    так и было: после «рисую без кота» кадр больше не проверялся вовсе.
+    Замер здесь почти всегда из кэша: ту же страницу только что мерили.
+    """
+    if not приёмка.идёт():
+        return путь
+    замер = _замерить(страница, ширина, высота)
+    приёмка.брак(*проверить_композицию(замер, _формат_по_размеру(ширина, высота)),
+                 *проверить_страницу(замер),
+                 *(приёмка.СТРАНИЦА + "ошибка в браузере: " + е for е in ошибки))
+    ждали = (round(ширина * МАСШТАБ_СНИМКА), round(высота * МАСШТАБ_СНИМКА))
+    размер = _размер_png(путь)
+    if размер is None:
+        приёмка.брак(приёмка.СТРАНИЦА + "снимок не читается как PNG")
+    elif размер != ждали:
+        приёмка.брак(f"{приёмка.СТРАНИЦА}кадр {размер[0]}×{размер[1]} "
+                     f"вместо {ждали[0]}×{ждали[1]}")
+    return путь
 
 
 def _снять(страница: str, ширина: int = 1280, высота: int = 720) -> Path | None:
@@ -196,10 +245,11 @@ def _снять(страница: str, ширина: int = 1280, высота: i
     итог = config.ВЫВОД / f"card_{int(time.time())}_{secrets.token_hex(3)}.png"
     # Сначала живой браузер: запуск Chrome на каждый кадр стоил секунду с
     # лишним. Нет модуля (облачная копия) или он не справился — старым путём.
+    ошибки: list[str] = []
     try:
         import браузер
-        if браузер.снять(страница, ширина, высота, итог):
-            return итог
+        if браузер.снять(страница, ширина, высота, итог, ошибки):
+            return _принять(итог, страница, ширина, высота, ошибки)
     except ImportError:
         pass
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False,
@@ -217,14 +267,15 @@ def _снять(страница: str, ширина: int = 1280, высота: i
              "--no-first-run", "--disable-extensions", "--disable-sync",
              "--disable-default-apps", "--mute-audio",
              f"--screenshot={итог}", f"--window-size={ширина},{высота}",
-             "--default-background-color=12130Fff", "--force-device-scale-factor=1.5",
+             "--default-background-color=12130Fff",
+             f"--force-device-scale-factor={МАСШТАБ_СНИМКА}",
              f"file://{путь}"],
             capture_output=True, timeout=180)
     except Exception:                                        # noqa: BLE001
         return None
     finally:
         Path(путь).unlink(missing_ok=True)
-    return итог if итог.exists() else None
+    return _принять(итог, страница, ширина, высота) if итог.exists() else None
 
 АФИША = """<meta charset="utf-8"><style>{шрифты}
 *{{box-sizing:border-box;margin:0;padding:0}}
@@ -233,13 +284,13 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,"Seg
   position:relative;display:flex;flex-direction:column;align-items:center}}
 /* сетка как на обычных карточках, чтобы афиша осталась из той же семьи */
 .grid{{position:absolute;inset:0;
-  background-image:linear-gradient(rgba(199,226,75,.03) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.03) 1px,transparent 1px);
+  background-image:linear-gradient(rgba({лайм_rgb},.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.03) 1px,transparent 1px);
   background-size:40px 40px}}
 /* свет за котом: он поднимает взгляд к надписи, и свет ведёт туда же */
 .glow{{position:absolute;left:50%;top:56%;width:900px;height:900px;
   transform:translate(-50%,-50%);border-radius:50%;
-  background:radial-gradient(circle,rgba(199,226,75,.26) 0%,rgba(199,226,75,.08) 38%,transparent 66%)}}
+  background:radial-gradient(circle,rgba({лайм_rgb},.26) 0%,rgba({лайм_rgb},.08) 38%,transparent 66%)}}
 .eyebrow{{position:relative;margin-top:44px;display:flex;align-items:center;gap:10px;
   font-size:15px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
   color:{приглуш}}}
@@ -247,7 +298,7 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,"Seg
   box-shadow:0 0 14px rgba(255,75,62,.9)}}
 h1{{position:relative;margin-top:10px;font-family:Onest,-apple-system,"Segoe UI",sans-serif;
   font-weight:800;font-size:104px;line-height:.98;letter-spacing:.01em;
-  color:{лайм};text-shadow:0 0 60px rgba(199,226,75,.35);white-space:nowrap}}
+  color:{лайм};text-shadow:0 0 60px rgba({лайм_rgb},.35);white-space:nowrap}}
 .sub{{position:relative;margin-top:8px;font-size:20px;letter-spacing:.02em;color:{приглуш}}}
 .hero{{position:absolute;left:50%;bottom:74px;transform:translateX(-50%)}}
 .hero img{{height:400px;display:block;filter:drop-shadow(0 24px 50px rgba(0,0,0,.65))}}
@@ -293,6 +344,7 @@ def афиша(надпись: str, заголовок: str, подзаголо�
     страница = АФИША.format(
         шрифты=_шрифты(),
         фон=config.ФОН, текст=config.ТЕКСТ, приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ,
+        лайм_rgb=config.ЛАЙМ_RGB,
         надпись=html.escape(надпись), заголовок=html.escape(заголовок),
         подзаголовок=html.escape(подзаголовок), площадки=ряд,
         герой=герой, знак=знак)
@@ -311,13 +363,13 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans
   position:relative;display:flex;flex-direction:column;
   padding:{поле_верх}px {поле_бок}px {поле_низ}px}}
 .grid{{position:absolute;inset:0;
-  background-image:linear-gradient(rgba(199,226,75,.03) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.03) 1px,transparent 1px);
+  background-image:linear-gradient(rgba({лайм_rgb},.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.03) 1px,transparent 1px);
   background-size:54px 54px}}
 /* Счётчика слайдов нет намеренно: TikTok, телеграм и остальные рисуют свой
    поверх картинки, и два счётчика рядом выглядят как ошибка вёрстки. */
 .полоса{{position:absolute;left:0;bottom:{низ_полосы}px;height:6px;background:{лайм};
-  box-shadow:0 0 26px rgba(199,226,75,.45)}}
+  box-shadow:0 0 26px rgba({лайм_rgb},.45)}}
 .знак{{position:absolute;left:{поле_бок}px;bottom:{низ_знака}px;height:44px;
   filter:{фильтр_лого} drop-shadow(0 4px 14px rgba(0,0,0,.28))}}
 {ещё}
@@ -359,7 +411,7 @@ h1{{font-family:Onest,sans-serif;font-weight:800;font-size:{кегль}px;line-h
   line-height:1.08;letter-spacing:-.02em;color:{текст};max-width:{мера_вывода}px}}
 .цифра{{font-family:Onest,sans-serif;font-weight:800;font-size:{цифра}px;line-height:1;
   color:{лайм};letter-spacing:-.03em;margin:30px 0 20px;
-  text-shadow:0 0 60px rgba(199,226,75,.28)}}
+  text-shadow:0 0 60px rgba({лайм_rgb},.28)}}
 .мысль{{font-size:{мысль}px;line-height:1.38;color:{мягкий};max-width:{мера}ch}}
 /* Плашка-маркер. Раньше жила только в вёрстке «выделение», и на всей
    карусели акцент занимал около процента площади при норме 4-6. Тонкая
@@ -523,6 +575,9 @@ def _общее(номер: int, всего: int, формат: str = "квад�
         **ФОРМАТЫ.get(формат, ФОРМАТЫ["квадрат"]),
         "шрифты": _шрифты(), "фон": config.ФОН, "текст": config.ТЕКСТ,
         "приглуш": config.ПРИГЛУШ, "лайм": config.ЛАЙМ, "рамка": config.РАМКА,
+        # Полупрозрачный лайм сеток и свечений берётся из config и в палитре
+        # кадра не меняется: инверсия перекрашивает «лайм», но не его.
+        "лайм_rgb": config.ЛАЙМ_RGB,
         # Знак инструмента красится отдельно от лайма: лайм на кремовом кадре
         # даёт контраст 1,3 к 1 — на просвет знак пропадает. На тёмном кадре
         # он остаётся лаймовым, на светлом уходит в тёмную оливу, и в обоих
@@ -749,6 +804,7 @@ def _кегль_обложки(надпись: str, заголовок: str, н�
     # мельчить ради того же хвоста незачем, лечится это текстом.
     if улеглось:
         print(f"обложка: «{заголовок}» — последняя строка коротка на всех кеглях")
+        приёмка.замечание("последняя строка заголовка коротка на всех кеглях")
     return улеглось or кегли[-1]
 
 
@@ -784,6 +840,7 @@ def слайд_обложка(надпись: str, заголовок: str, по
                                     формат)
         if беды:
             print(f"обложка: {'; '.join(беды)} — рисую без кота")
+            приёмка.замечание("кот убран: " + "; ".join(беды))
             страница = собрать(False)
     return _снять(страница, д["ширина"], д["высота"])
 
@@ -873,6 +930,7 @@ def слайд_финал(вывод: str, номер: int, всего: int,
                                         формат):
                 return _снять(страница, д["ширина"], д["высота"])
         print("композиция «финал»: кот с призывом не поместился, оставляю строку")
+        приёмка.замечание("кот с призывом не поместился, призыв строкой")
 
     нутро = панель + точка_и_вывод + (f'<div class="призыв">{_текст(зов, 90)}</div>'
                                       if зов else "")
@@ -917,12 +975,15 @@ def слайд_финал(вывод: str, номер: int, всего: int,
             continue
         if доля < 1.0:
             print(f"композиция «финал»: вывод уменьшен до {round(доля * 100)}%")
+            приёмка.ужато(доля)
         return _снять(страница, д["ширина"], д["высота"])
     if запасная is not None:
         print("композиция «финал»: строки ложатся рвано на всех кеглях — "
               "сократите вывод")
+        приёмка.замечание("строки вывода ложатся рвано на всех кеглях")
         return _снять(запасная, д["ширина"], д["высота"])
     print(f"композиция «финал»: {'; '.join(беды)} — не сошлось и на 64%")
+    приёмка.ужато(0.64)
     return _снять(страница, д["ширина"], д["высота"])
 
 
@@ -939,14 +1000,14 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans
   position:relative;display:flex;flex-direction:column;align-items:center;
   padding:290px 60px 480px}}
 .grid{{position:absolute;inset:0;
-  background-image:linear-gradient(rgba(199,226,75,.035) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.035) 1px,transparent 1px);
+  background-image:linear-gradient(rgba({лайм_rgb},.035) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.035) 1px,transparent 1px);
   background-size:60px 60px}}
 /* свет за котом ведёт взгляд от надписи вниз, к нему */
 .glow{{position:absolute;left:50%;top:62%;width:1100px;height:1100px;
   transform:translate(-50%,-50%);border-radius:50%;
-  background:radial-gradient(circle,rgba(199,226,75,.24) 0%,
-             rgba(199,226,75,.07) 40%,transparent 68%)}}
+  background:radial-gradient(circle,rgba({лайм_rgb},.24) 0%,
+             rgba({лайм_rgb},.07) 40%,transparent 68%)}}
 .eyebrow{{position:relative;display:flex;align-items:center;gap:14px;
   font-size:24px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
   color:{приглуш}}}
@@ -954,7 +1015,7 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans
   box-shadow:0 0 22px rgba(255,75,62,.9)}}
 h1{{position:relative;margin-top:26px;font-family:Onest,sans-serif;font-weight:800;
   font-size:{кегль}px;line-height:.96;letter-spacing:-.01em;text-align:center;
-  color:{лайм};text-shadow:0 0 80px rgba(199,226,75,.4);white-space:nowrap}}
+  color:{лайм};text-shadow:0 0 80px rgba({лайм_rgb},.4);white-space:nowrap}}
 .sub{{position:relative;margin-top:22px;font-size:38px;letter-spacing:.01em;
   color:{текст};opacity:.82;text-align:center}}
 .hero{{position:relative;margin-top:auto}}
@@ -990,20 +1051,20 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans
   position:relative;display:flex;flex-direction:column;align-items:center;
   padding:330px 70px 430px}}
 .grid{{position:absolute;inset:0;
-  background-image:linear-gradient(rgba(199,226,75,.04) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.04) 1px,transparent 1px);
+  background-image:linear-gradient(rgba({лайм_rgb},.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.04) 1px,transparent 1px);
   background-size:60px 60px}}
 /* Свет смещён вверх, к заголовку: он тут главный, а не кот. */
 .glow{{position:absolute;left:50%;top:40%;width:1200px;height:1200px;
   transform:translate(-50%,-50%);border-radius:50%;
-  background:radial-gradient(circle,rgba(199,226,75,.20) 0%,
-             rgba(199,226,75,.06) 42%,transparent 70%)}}
+  background:radial-gradient(circle,rgba({лайм_rgb},.20) 0%,
+             rgba({лайм_rgb},.06) 42%,transparent 70%)}}
 .eyebrow{{position:relative;font-size:26px;font-weight:600;letter-spacing:.32em;
   text-transform:uppercase;color:{приглуш}}}
 h1{{position:relative;margin-top:34px;font-family:Onest,sans-serif;font-weight:800;
   font-size:{кегль}px;line-height:1.02;letter-spacing:-.015em;text-align:center;
   color:{текст}}}
-h1 span{{color:{лайм};text-shadow:0 0 70px rgba(199,226,75,.45)}}
+h1 span{{color:{лайм};text-shadow:0 0 70px rgba({лайм_rgb},.45)}}
 .sub{{position:relative;margin-top:28px;font-size:40px;line-height:1.3;
   color:{текст};opacity:.78;text-align:center;max-width:820px}}
 .hero{{position:relative;margin-top:auto}}
@@ -1012,7 +1073,7 @@ h1 span{{color:{лайм};text-shadow:0 0 70px rgba(199,226,75,.45)}}
 /* Призыв плашкой: лайм по тёмному даёт и акцент, и точку входа для тапа. */
 .cta{{position:relative;margin-top:34px;background:{лайм};color:{по_лайму};
   font-weight:700;font-size:42px;letter-spacing:.01em;
-  padding:26px 44px;border-radius:14px;box-shadow:0 0 60px rgba(199,226,75,.25)}}
+  padding:26px 44px;border-radius:14px;box-shadow:0 0 60px rgba({лайм_rgb},.25)}}
 .foot{{position:relative;margin-top:26px;display:flex;align-items:center;gap:16px}}
 .foot img{{height:42px}}
 .foot span{{font-size:28px;font-weight:600;letter-spacing:.1em;color:{приглуш}}}
@@ -1050,6 +1111,7 @@ def сторис(надпись: str, заголовок: str, подзагол�
     страница = СТОРИС.format(
         шрифты=_шрифты(), фон=config.ФОН, текст=config.ТЕКСТ,
         приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ, по_лайму=config.ФОН,
+        лайм_rgb=config.ЛАЙМ_RGB,
         кегль=кегль, рост=рост,
         надпись=html.escape(надпись),
         заголовок=_подсветить(html.escape(чистый)),
@@ -1077,7 +1139,7 @@ def обложка_эфира(надпись: str, заголовок: str, по
              if файл_позы and Path(файл_позы).exists() else "")
     страница = ОБЛОЖКА.format(
         шрифты=_шрифты(), фон=config.ФОН, текст=config.ТЕКСТ,
-        приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ, кегль=кегль,
+        приглуш=config.ПРИГЛУШ, лайм=config.ЛАЙМ, лайм_rgb=config.ЛАЙМ_RGB, кегль=кегль,
         надпись=html.escape(надпись), заголовок=html.escape(заголовок),
         подзаголовок=html.escape(подзаголовок), ник=html.escape(ник),
         герой=герой, лого=config.АССЕТЫ / "logo-dark.png")
@@ -1202,7 +1264,7 @@ def пережать(путь, вид: str = "jpeg", ширина: int = 0):
 
 .огонь{{font-family:Onest,sans-serif;font-weight:800;font-size:{огонь}px;
   line-height:.9;color:{лайм};letter-spacing:-.04em;
-  text-shadow:0 0 90px rgba(199,226,75,.32)}}
+  text-shadow:0 0 90px rgba({лайм_rgb},.32)}}
 
 .пара{{display:flex;flex-direction:column;gap:26px}}
 .полка{{border-left:5px solid {рамка};padding-left:26px}}
@@ -1269,7 +1331,7 @@ ul.пункты .имя-и,ol.места .имя-и{{font-weight:700;color:{те
 .бар .п span:last-child{{color:{приглуш}}}
 .бар .л{{height:30px;border-radius:6px;background:{рамка}}}
 .бар .л i{{display:block;height:100%;border-radius:4px;background:{лайм};
-  box-shadow:0 0 24px rgba(199,226,75,.35)}}
+  box-shadow:0 0 24px rgba({лайм_rgb},.35)}}
 
 .окно{{background:{поверхность};border:1px solid {рамка};border-radius:16px;
   overflow:hidden;font-family:Plex,ui-monospace,monospace}}
@@ -1282,7 +1344,7 @@ ul.пункты .имя-и,ol.места .имя-и{{font-weight:700;color:{те
 
 .вопзнак{{font-family:Onest,sans-serif;font-weight:800;font-size:{огонь}px;
   line-height:.8;color:{лайм};opacity:.9;margin-bottom:.05em;
-  text-shadow:0 0 90px rgba(199,226,75,.3)}}
+  text-shadow:0 0 90px rgba({лайм_rgb},.3)}}
 
 .бой{{display:flex;flex-direction:column;gap:18px}}
 .бой .сторона{{font-family:Onest,sans-serif;font-weight:800;font-size:{полка}px;
@@ -1297,7 +1359,7 @@ ul.пункты .имя-и,ol.места .имя-и{{font-weight:700;color:{те
 .лента-время .точка:last-child{{margin-bottom:0}}
 .лента-время .точка:before{{content:"";position:absolute;left:-38px;top:.35em;
   width:19px;height:19px;border-radius:50%;background:{лайм};
-  box-shadow:0 0 20px rgba(199,226,75,.5)}}
+  box-shadow:0 0 20px rgba({лайм_rgb},.5)}}
 .лента-время .к{{font-size:{над}px;letter-spacing:.16em;text-transform:uppercase;
   color:{приглуш};margin-bottom:6px}}
 .лента-время .з{{font-size:{пункт}px;line-height:1.28;color:{текст}}}
@@ -1375,7 +1437,7 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
   color:{лайм};font-weight:700}}
 .метка{{font-style:normal;font-size:.66em;font-weight:700;padding:.22em .6em;
   border-radius:999px;white-space:nowrap;flex:0 0 auto}}
-.метка.чаще{{background:rgba(199,226,75,.16);color:{лайм}}}
+.метка.чаще{{background:rgba({лайм_rgb},.16);color:{лайм}}}
 .метка.новичку{{background:rgba(226,112,58,.18);color:{ржавый}}}
 .легенда{{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;
   margin-top:18px;font-size:{шпаргалка_пункт}px;color:{приглуш}}}
@@ -1422,7 +1484,7 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
   line-height:1.14;color:{текст};border-left:5px solid {лайм};padding-left:22px}}
 
 .подчерк u{{text-decoration:none;color:{лайм};
-  box-shadow:inset 0 -.18em 0 rgba(199,226,75,.28)}}
+  box-shadow:inset 0 -.18em 0 rgba({лайм_rgb},.28)}}
 
 .ступени{{display:flex;align-items:flex-end;gap:14px;margin-top:20px}}
 .ступени div{{flex:1;background:{поверхность};border:1px solid {рамка};
@@ -1459,7 +1521,7 @@ ol.места b{{font-family:Onest,sans-serif;font-weight:800;color:{лайм};l
 .двацифры .ч{{font-family:Onest,sans-serif;font-weight:800;
   font-size:{двацифры}px;line-height:.95;letter-spacing:-.03em;color:{приглуш}}}
 .двацифры div:last-child .ч{{color:{лайм};
-  text-shadow:0 0 70px rgba(199,226,75,.3)}}
+  text-shadow:0 0 70px rgba({лайм_rgb},.3)}}
 .двацифры .п{{font-size:{над}px;color:{приглуш};margin-top:12px;
   letter-spacing:.14em;text-transform:uppercase}}
 
@@ -1540,16 +1602,16 @@ ul.галочки li.да b{{background:{лайм};border-color:{лайм};color
   color:{приглуш};opacity:.5;font-size:{отсчёт1}px}}
 .отсчёт span:nth-child(2){{opacity:.75;font-size:{отсчёт2}px}}
 .отсчёт span:last-child{{color:{лайм};opacity:1;font-size:{отсчёт3}px;
-  text-shadow:0 0 60px rgba(199,226,75,.3)}}
+  text-shadow:0 0 60px rgba({лайм_rgb},.3)}}
 
 .опрос{{display:flex;flex-direction:column;gap:20px}}
 .опрос .строка{{position:relative;border:1px solid {рамка};border-radius:14px;
   overflow:hidden;background:{поверхность}}}
-.опрос .залив{{position:absolute;inset:0;background:rgba(199,226,75,.16)}}
+.опрос .залив{{position:absolute;inset:0;background:rgba({лайм_rgb},.16)}}
 .опрос .верх{{position:relative;display:flex;justify-content:space-between;
   padding:20px 24px;font-size:{пункт}px;color:{текст}}}
 .опрос .строка.лидер{{border-color:{лайм}}}
-.опрос .строка.лидер .залив{{background:rgba(199,226,75,.3)}}
+.опрос .строка.лидер .залив{{background:rgba({лайм_rgb},.3)}}
 
 .узлы{{display:flex;align-items:center;gap:0}}
 .узлы .у{{flex:0 0 auto;width:{узел}px;height:{узел}px;border-radius:50%;
@@ -2251,7 +2313,7 @@ h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.�
    везти в сборку и держать в двух палитрах. */
 body:before{{content:"";position:absolute;left:50%;top:-18%;width:150%;
   height:70%;transform:translateX(-50%);pointer-events:none;
-  background:radial-gradient(ellipse at center,rgba(199,226,75,.14),transparent 62%)}}
+  background:radial-gradient(ellipse at center,rgba({лайм_rgb},.14),transparent 62%)}}
 /* Счётчик кадров. В общей обвязке его нет намеренно: TikTok и телеграм рисуют
    свой поверх картинки, и два счётчика рядом читаются как ошибка вёрстки. Но
    в этом дизайне он не украшение, а часть языка — у ty.prompts.ai он стоит в
@@ -2572,7 +2634,7 @@ h1{{margin-bottom:26px}}
 .свет:before{{content:"["}}
 .свет:after{{content:"]"}}
 body:after{{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;
-  background:repeating-linear-gradient(180deg,rgba(199,226,75,.05) 0 1px,
+  background:repeating-linear-gradient(180deg,rgba({лайм_rgb},.05) 0 1px,
              transparent 1px 5px)}}
 /* Текстура кода на фоне. У образца весь кадр лежит поверх призрачных строк
    вывода — без них чёрный кадр выглядит просто чёрным, а с ними читается как
@@ -2582,7 +2644,7 @@ body:after{{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45
   background-image:
     linear-gradient(180deg,rgba(216,221,203,.13) 0 8px,transparent 8px),
     linear-gradient(180deg,rgba(216,221,203,.10) 0 8px,transparent 8px),
-    linear-gradient(180deg,rgba(199,226,75,.10) 0 8px,transparent 8px),
+    linear-gradient(180deg,rgba({лайм_rgb},.10) 0 8px,transparent 8px),
     linear-gradient(180deg,rgba(216,221,203,.11) 0 8px,transparent 8px),
     linear-gradient(180deg,rgba(216,221,203,.07) 0 8px,transparent 8px),
     linear-gradient(180deg,rgba(216,221,203,.09) 0 8px,transparent 8px);
@@ -2610,7 +2672,7 @@ h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.�
   letter-spacing:.2em}}
 .черта{{height:14px;width:52%;background:{лайм};border-radius:2px}}
 body:before{{content:"";position:absolute;left:0;bottom:0;width:100%;
-  height:26%;background:linear-gradient(0deg,rgba(199,226,75,.1),transparent)}}
+  height:26%;background:linear-gradient(0deg,rgba({лайм_rgb},.1),transparent)}}
 """},
 
     "журнал": {
@@ -2639,8 +2701,8 @@ body{{font-family:Manrope,sans-serif}}
         "css": """
 body{{font-family:Manrope,sans-serif}}
 .grid{{background-size:40px 40px;
-  background-image:linear-gradient(rgba(199,226,75,.08) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.08) 1px,transparent 1px)}}
+  background-image:linear-gradient(rgba({лайм_rgb},.08) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.08) 1px,transparent 1px)}}
 h1,.шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона,.огонь,.слово{{
   font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.03em}}
 .над,.точка,.номер,.листай{{font-family:JB,monospace;letter-spacing:.16em}}
@@ -2660,7 +2722,7 @@ body:after{{content:"";position:absolute;right:{поле_бок}px;bottom:{по�
         "css": """
 body{{font-family:Golos,sans-serif}}
 .grid{{background-size:100% 54px;
-  background-image:linear-gradient(rgba(199,226,75,.05) 1px,transparent 1px)}}
+  background-image:linear-gradient(rgba({лайм_rgb},.05) 1px,transparent 1px)}}
 .шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
   font-family:Caveat,cursive;font-weight:700;line-height:.98;
   letter-spacing:0;color:{текст}}}
@@ -2698,16 +2760,16 @@ body{{font-family:Manrope,sans-serif}}
 .grid{{opacity:.3}}
 .шапка,.вывод,.реплика,.з,.верно,.ответ-стр,.разрыв,.сторона{{
   font-family:Rubik,sans-serif;font-weight:800;letter-spacing:-.025em;
-  text-shadow:0 0 42px rgba(199,226,75,.22)}}
+  text-shadow:0 0 42px rgba({лайм_rgb},.22)}}
 .огонь,.слово{{font-family:Rubik,sans-serif;font-weight:800;
-  text-shadow:0 0 120px rgba(199,226,75,.55)}}
+  text-shadow:0 0 120px rgba({лайм_rgb},.55)}}
 .над,.точка,.листай{{letter-spacing:.24em}}
 .черта{{height:6px;width:44%;background:{лайм};border-radius:99px;
-  box-shadow:0 0 30px rgba(199,226,75,.7)}}
+  box-shadow:0 0 30px rgba({лайм_rgb},.7)}}
 body:before{{content:"";position:absolute;left:50%;top:38%;width:130%;height:80%;
   transform:translate(-50%,-50%);pointer-events:none;
-  background:radial-gradient(ellipse at center,rgba(199,226,75,.16) 0%,
-             rgba(199,226,75,.04) 45%,transparent 72%)}}
+  background:radial-gradient(ellipse at center,rgba({лайм_rgb},.16) 0%,
+             rgba({лайм_rgb},.04) 45%,transparent 72%)}}
 """},
 }
 
@@ -2766,6 +2828,7 @@ def _дизайн(имя: str, д: dict) -> str:
         # KeyError. Это уже третий такой случай, поэтому запас общий, а не по
         # ключу за раз.
         запас = {"поверхность": config.ПОВЕРХНОСТЬ, "мягкий": "#B9BFAE",
+                 "лайм_rgb": config.ЛАЙМ_RGB,
                  "ржавый": config.РЖАВЫЙ, "по_лайму": config.ФОН,
                  # Отступы строк фоновой текстуры «терминала»: часть строк с
                  # табуляцией, как в настоящем редакторе.
@@ -2814,8 +2877,8 @@ def _дизайн(имя: str, д: dict) -> str:
 .grid{opacity:.4}
 body:before{content:"";position:absolute;left:50%;top:-38%;width:150%;
   height:95%;transform:translateX(-50%);pointer-events:none;
-  background:radial-gradient(ellipse at center,rgba(199,226,75,.18) 0%,
-             rgba(199,226,75,.05) 42%,transparent 70%)}
+  background:radial-gradient(ellipse at center,rgba({лайм_rgb},.18) 0%,
+             rgba({лайм_rgb},.05) 42%,transparent 70%)}
 """,
     # Здесь и в других оформлениях со скобками они удвоены: строка проходит
     # через format, и одинарная скобка в CSS была бы принята за подстановку.
@@ -2834,7 +2897,7 @@ body:before{{content:"";position:absolute;inset:34px;border:3px solid {лайм}
     "полоса": """
 body:before{content:"";position:absolute;left:-25%;top:-30%;width:150%;
   height:70%;transform:rotate(-18deg);pointer-events:none;
-  background:linear-gradient(180deg,rgba(199,226,75,.12),transparent)}
+  background:linear-gradient(180deg,rgba({лайм_rgb},.12),transparent)}
 """,
     "карточка": """
 body{{padding:0}}
@@ -2850,16 +2913,16 @@ body:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
     "линии": """
 body:before{content:"";position:absolute;right:-10%;top:-10%;width:70%;height:70%;
   pointer-events:none;opacity:.5;transform:rotate(-30deg);
-  background:repeating-linear-gradient(90deg,rgba(199,226,75,.16) 0 3px,
+  background:repeating-linear-gradient(90deg,rgba({лайм_rgb},.16) 0 3px,
              transparent 3px 26px)}
 """,
     "контур": """
 .grid{background-size:36px 36px;
-  background-image:linear-gradient(rgba(199,226,75,.07) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.07) 1px,transparent 1px)}
+  background-image:linear-gradient(rgba({лайм_rgb},.07) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.07) 1px,transparent 1px)}
 body:before{content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:linear-gradient(rgba(199,226,75,.14) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(199,226,75,.14) 1px,transparent 1px);
+  background-image:linear-gradient(rgba({лайм_rgb},.14) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba({лайм_rgb},.14) 1px,transparent 1px);
   background-size:180px 180px}
 """,
 }
@@ -2867,7 +2930,9 @@ body:before{content:"";position:absolute;inset:0;pointer-events:none;
 
 def _оформление(имя: str, д: dict) -> tuple[str, str]:
     """Стили холста и, если нужно, дополнительный слой."""
-    css = ОФОРМЛЕНИЯ_CSS.get(имя, "")
+    # Лайм подставляется заменой, а не форматом: большинство фонов не
+    # форматируются вовсе, и фигурные скобки CSS в них не удвоены.
+    css = ОФОРМЛЕНИЯ_CSS.get(имя, "").replace("{лайм_rgb}", config.ЛАЙМ_RGB)
     if "{лайм}" in css or "{панель}" in css:
         # Цвет панели здесь свой, а не из размеров: у обложки и финала их
         # считает _общее, где поверхности нет, и «карточка» падала с KeyError.
@@ -3096,6 +3161,7 @@ def _плотность(путь, вид: str, дизайн: str):
     замечания = замер.проверить_снимок(путь, дизайн)
     if замечания:
         print(f"плотность «{вид}» ({дизайн}): {'; '.join(замечания)}")
+        приёмка.замечание("плотность: " + "; ".join(замечания))
     return путь
 
 
@@ -3184,6 +3250,8 @@ def слайд_вида(вид: str, содержимое: dict, номер: int
             if not проверить_композицию(_замерить(страница, ш, в), формат):
                 print(f"композиция «{вид}»: текст ужат до {round(доля * 100)}%")
                 break
+    if ужато < 1.0:
+        приёмка.ужато(ужато)
 
     if проверять and кот not in ("", "нет", None):
         # Место коту считаем от настоящего низа текста, а не от края холста.
@@ -3255,8 +3323,10 @@ def слайд_вида(вид: str, содержимое: dict, номер: int
             беды = проверить_композицию(_замерить(страница, ш, в), формат)
             if not беды:
                 print(f"композиция «{вид}»: реплика не помещалась, убрал её")
+                приёмка.замечание("реплика кота не помещалась, убрана")
         if беды:
             print(f"композиция «{вид}»: {'; '.join(беды)} — рисую без кота")
+            приёмка.замечание("кот убран: " + "; ".join(беды))
             страница, ш, в = _страница_вида(вид, содержимое, номер, всего,
                                             формат, None, "нет", оформление,
                                             дизайн, крупность, "")
@@ -3484,6 +3554,31 @@ function замерить_всё() {
       }
     });
   });
+  // Обрезка по высоте. «Перелив» выше смотрит только вширь, а блок с
+  // overflow:hidden срезает нижние строки молча: коробка в границах, буквы под
+  // ней. Так ловит обрезку html-instagram-carousel, у нас этого не было.
+  итог.обрезано = [];
+  что.текст.forEach(function (с) {
+    document.querySelectorAll(с).forEach(function (э) {
+      var режет = ['hidden', 'clip'].indexOf(getComputedStyle(э).overflowY) >= 0;
+      if (режет && э.scrollHeight > э.clientHeight + 1)
+        итог.обрезано.push((э.textContent || '').trim().slice(0, 40));
+    });
+  });
+  // Ресурсы. Картинка и шрифт по file:// пропадают без единой ошибки: вместо
+  // кота пустое место, вместо гарнитуры запасной шрифт другой ширины.
+  итог.битые_картинки = [];
+  Array.prototype.forEach.call(document.images, function (к) {
+    if (!(к.complete && к.naturalWidth > 0))
+      итог.битые_картинки.push((к.getAttribute('src') || '').slice(-60));
+  });
+  итог.битые_шрифты = [];
+  if (document.fonts && document.fonts.forEach)
+    document.fonts.forEach(function (ш) {
+      var имя = ш.family.replace(/["']/g, '');
+      if (ш.status === 'error' && итог.битые_шрифты.indexOf(имя) < 0)
+        итог.битые_шрифты.push(имя);
+    });
   document.body.setAttribute('data-замер', JSON.stringify(итог));
 }
 
@@ -3685,4 +3780,25 @@ def проверить_композицию(замер: dict, формат: str 
     if замер.get("порвано"):
         беды.append("слово порвано посреди: " + ", ".join(замер["порвано"][:3]))
 
+    # Нижние строки, срезанные блоком с overflow:hidden. Коробка в границах, и
+    # всё, что выше, считает кадр чистым.
+    if замер.get("обрезано"):
+        беды.append("текст обрезан снизу: " + ", ".join(замер["обрезано"][:2]))
+
     return sorted(set(беды))
+
+
+def проверить_страницу(замер: dict) -> list[str]:
+    """Беды окружения, а не раскладки: не загрузилась картинка или шрифт.
+
+    Отдельно от композиции нарочно. Цикл ужатия лечит композицию кеглем, а
+    битый файл кеглем не лечится, и ужимать ради него текст бессмысленно.
+    """
+    беды = []
+    if замер.get("битые_картинки"):
+        беды.append(приёмка.СТРАНИЦА + "картинка не загрузилась: "
+                    + ", ".join(замер["битые_картинки"][:2]))
+    if замер.get("битые_шрифты"):
+        беды.append(приёмка.СТРАНИЦА + "шрифт не загрузился: "
+                    + ", ".join(замер["битые_шрифты"][:3]))
+    return беды
