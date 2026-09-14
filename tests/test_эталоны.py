@@ -44,5 +44,7 @@ class Эталон(unittest.TestCase):
                 з = card._замерить(страница(к["файл"]), к["ширина"], к["высота"])
                 self.assertEqual(з.get("порвано", []), [])
                 self.assertEqual(з.get("невидимо", []), [])
+                self.assertEqual(з.get("обрезано", []), [])
+                self.assertEqual(card.проверить_страницу(з), [])
                 self.assertEqual(card.проверить_композицию(з, формат),
                                  card.проверить_композицию(к["замер"], формат))

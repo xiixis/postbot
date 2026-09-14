@@ -16,6 +16,15 @@ import config    # noqa: E402
         '<div class="мысль" style="font-size:60px;color:#F1F3EA">'
         '<span style="background:#C7E24B;color:#C7E24B">пропало</span> видно</div></body>')
 СТРЕЛКА = {"от": "Сплошной текст", "к": "Переформатирование", "текст": "Одна мысль на слайд"}
+ОБРЕЗ = ('<meta charset="utf-8"><body style="margin:0">'
+         '<div class="мысль" style="font-size:60px;width:600px;height:80px;'
+         'overflow:hidden">Первая строка и вторая строка и третья строка</div></body>')
+БЕЗ_КОТА = ('<meta charset="utf-8"><body style="margin:0">'
+            '<img src="file:///нет/такого/кота.png"><div class="мысль">Текст</div></body>')
+БЕЗ_ШРИФТА = ('<meta charset="utf-8"><style>@font-face{font-family:Пропавший;'
+              'src:url(file:///нет/шрифта.woff2) format("woff2");font-display:block}'
+              '.мысль{font-family:Пропавший,sans-serif;font-size:40px}</style>'
+              '<body><div class="мысль">Текст</div></body>')
 
 
 class Беды(unittest.TestCase):
@@ -31,9 +40,32 @@ class Беды(unittest.TestCase):
         self.assertEqual(card.проверить_композицию(
             {**ХОЛСТ, "невидимо": [], "порвано": []}, "3к4"), [])
 
+    def test_обрезанный_снизу_текст_это_беда(self):
+        беды = card.проверить_композицию({**ХОЛСТ, "обрезано": ["Первая строка"]}, "3к4")
+        self.assertIn("текст обрезан снизу: Первая строка", беды)
+
+    def test_битые_ресурсы_это_беда_страницы(self):
+        беды = card.проверить_страницу({**ХОЛСТ, "битые_картинки": ["кота.png"],
+                                        "битые_шрифты": ["Onest"]})
+        self.assertEqual(беды, ["страница: картинка не загрузилась: кота.png",
+                                "страница: шрифт не загрузился: Onest"])
+        self.assertEqual(card.проверить_страницу(ХОЛСТ), [])
+
 
 @unittest.skipUnless(config.хром(), "нужен Chrome")
 class ВБраузере(unittest.TestCase):
+    def test_замер_видит_обрезку_по_высоте(self):
+        з = card._замерить(ОБРЕЗ, 1080, 1440)
+        self.assertTrue(з["обрезано"], з)
+
+    def test_замер_видит_битую_картинку(self):
+        з = card._замерить(БЕЗ_КОТА, 1080, 1440)
+        self.assertTrue(any("кота.png" in к for к in з["битые_картинки"]), з)
+
+    def test_замер_видит_битый_шрифт(self):
+        з = card._замерить(БЕЗ_ШРИФТА, 1080, 1440)
+        self.assertEqual(з["битые_шрифты"], ["Пропавший"])
+
     def test_замер_видит_слово_цвета_фона(self):
         з = card._замерить(СЛИВ, 1080, 1440)
         self.assertIn("пропало", з["невидимо"])
@@ -61,3 +93,5 @@ class ВБраузере(unittest.TestCase):
                     з = card._замерить(стр, ш, в)
                     self.assertEqual(з.get("невидимо"), [], вид)
                     self.assertEqual(з.get("порвано"), [], вид)
+                    self.assertEqual(з.get("обрезано"), [], вид)
+                    self.assertEqual(card.проверить_страницу(з), [], вид)
