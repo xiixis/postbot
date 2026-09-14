@@ -110,7 +110,12 @@ class _Вкладка:
             данные = json.load(ответ)
         self.связь = connect(данные["webSocketDebuggerUrl"], max_size=None, open_timeout=10)
         self.н, self.события = 0, []
+        self.ошибки: list[str] = []
         self.позвать("Page.enable")
+        # Ошибки страницы: исключения, console.error и сообщения движка вроде
+        # «файл не найден». Без этих подписок они проходили мимо протокола.
+        self.позвать("Runtime.enable")
+        self.позвать("Log.enable")
         self.позвать("Emulation.setDefaultBackgroundColorOverride",
                      {"color": {"r": 0x12, "g": 0x13, "b": 0x0F, "a": 1}})
 
@@ -129,15 +134,31 @@ class _Вкладка:
                     raise RuntimeError(f"{метод}: {м['error']}")
                 return м.get("result", {})
             if "method" in м:
-                self.события.append(м["method"])
+                self._событие(м)
 
     def ждать(self, событие: str) -> None:
         срок = time.time() + ОЖИДАНИЕ
         while событие not in self.события:
             м = self._прочесть(срок)
             if "method" in м:
-                self.события.append(м["method"])
+                self._событие(м)
         self.события.clear()
+
+    def _событие(self, м: dict) -> None:
+        self.события.append(м["method"])
+        п = м.get("params") or {}
+        if м["method"] == "Runtime.exceptionThrown":
+            подробно = п.get("exceptionDetails") or {}
+            текст = ((подробно.get("exception") or {}).get("description")
+                     or подробно.get("text") or "исключение")
+        elif м["method"] == "Log.entryAdded" and (п.get("entry") or {}).get("level") == "error":
+            текст = п["entry"].get("text") or "ошибка движка"
+        elif м["method"] == "Runtime.consoleAPICalled" and п.get("type") == "error":
+            текст = " ".join(str(а.get("value", а.get("description", "")))
+                             for а in п.get("args", [])) or "console.error"
+        else:
+            return
+        self.ошибки.append((текст.splitlines() or [""])[0][:160])
 
     def открыть(self, путь: Path, ширина: int, высота: int, масштаб: float) -> None:
         self.позвать("Emulation.setDeviceMetricsOverride",
@@ -146,6 +167,7 @@ class _Вкладка:
         # Командная строка прячет полосы прокрутки только у снимка.
         self.позвать("Emulation.setScrollbarsHidden", {"hidden": масштаб != 1})
         self.события.clear()
+        self.ошибки = []
         self.позвать("Page.navigate", {"url": f"file://{путь}"})
         self.ждать("Page.loadEventFired")
         self.позвать("Runtime.evaluate", {"expression": "document.fonts.ready.then(() => 1)",
@@ -212,13 +234,19 @@ def замерить(страница_с_замером: str, ширина: int,
     return _работа(дело)
 
 
-def снять(страница: str, ширина: int, высота: int, куда: Path) -> bool:
-    """Снимок в полуторном масштабе, как у командной строки. False — снять старым путём."""
+def снять(страница: str, ширина: int, высота: int, куда: Path,
+          ошибки: list | None = None) -> bool:
+    """Снимок в полуторном масштабе, как у командной строки. False — снять старым путём.
+
+    В «ошибки» дописываются ошибки страницы, пойманные за время снимка.
+    """
     def дело(вкладка):
         путь = _в_файл(страница)
         try:
             вкладка.открыть(путь, ширина, высота, 1.5)
             вкладка.снимок(куда)
+            if ошибки is not None:
+                ошибки.extend(вкладка.ошибки)
             return True
         finally:
             путь.unlink(missing_ok=True)

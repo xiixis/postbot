@@ -107,3 +107,33 @@ class Тёплый(unittest.TestCase):
         браузер._браузер["процесс"].wait(10)
         self.assertEqual(браузер.замерить(стр, к["ширина"], к["высота"])["холст"],
                          к["замер"]["холст"])
+
+
+@unittest.skipUnless(браузер.включён(), "нужен Chrome")
+class ОшибкиСтраницы(unittest.TestCase):
+    """Ошибки страницы доходят до снимка, а не теряются в протоколе."""
+
+    def test_снимок_сообщает_об_ошибке_страницы(self):
+        ошибки = []
+        with tempfile.TemporaryDirectory() as папка:
+            куда = Path(папка) / "к.png"
+            self.assertTrue(браузер.снять(
+                '<meta charset="utf-8"><script>нет_такого()</script><p>x</p>',
+                400, 300, куда, ошибки))
+        self.assertTrue(any("нет_такого" in е for е in ошибки), ошибки)
+
+    def test_чистая_страница_без_ошибок(self):
+        ошибки = []
+        with tempfile.TemporaryDirectory() as папка:
+            куда = Path(папка) / "к.png"
+            self.assertTrue(браузер.снять('<meta charset="utf-8"><p>чисто</p>',
+                                          400, 300, куда, ошибки))
+        self.assertEqual(ошибки, [])
+
+    def test_эталонный_кадр_без_ошибок(self):
+        к = ОПИСЬ["кадры"][0]
+        ошибки = []
+        with tempfile.TemporaryDirectory() as папка:
+            self.assertTrue(браузер.снять(эталон(к["файл"]), к["ширина"], к["высота"],
+                                          Path(папка) / "к.png", ошибки))
+        self.assertEqual(ошибки, [])
