@@ -15,6 +15,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+# Дублёры берутся у соседнего теста; из корня (-t .) папка tests не в пути.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from test_эскиз import _Дублёры  # noqa: E402
 
