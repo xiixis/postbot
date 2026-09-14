@@ -46,6 +46,29 @@ class Конвейер(unittest.TestCase):
         self.assertEqual((план, доклады), ([], [("телеграм", 7)]))
 
 
+class Доклад(unittest.TestCase):
+    def test_доклад_шлёт_текст_и_лист_с_обведённым_браком(self):
+        import config
+        import db
+        import storage
+        import telegram as tg
+        import конвейер
+        import лист
+        написано, фото, обведено = [], [], []
+        ряд = {"id": 7, "images": json.dumps(["/tmp/1.png", "/tmp/4.png"]), "card": None}
+        with _Подмена(config, АДМИН=1), \
+             _Подмена(tg, написать=lambda чат, текст, **к: написано.append(текст),
+                      фото=lambda чат, картинка, подпись, **к: фото.append(картинка)), \
+             _Подмена(db, взять=lambda ид: ряд), \
+             _Подмена(storage, во_временный=lambda с: Path(с)), \
+             _Подмена(лист, собрать=lambda файлы, куда=None, брак=():
+                      обведено.append(list(брак)) or Path("/tmp/лист.jpg")):
+            конвейер._доложить_брак("tiktok", 7, БРАК)
+        self.assertIn("№4: текст обрезан снизу: Мысль", написано[0])
+        self.assertEqual(обведено, [[4]])
+        self.assertEqual(фото, [Path("/tmp/лист.jpg")])
+
+
 class Придирки(unittest.TestCase):
     def test_брак_первой_строкой(self):
         import придирки
