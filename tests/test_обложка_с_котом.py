@@ -14,8 +14,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import браузер  # noqa: E402
 import card    # noqa: E402
 import config  # noqa: E402
+import форматы  # noqa: E402
 
 
 class РостКотаОбложки(unittest.TestCase):
@@ -96,6 +98,46 @@ class ОбложкаВБраузере(unittest.TestCase):
         беды = card.проверить_композицию(card._замерить(страница, ш, в), "3к4")
         плохие = [б for б in беды if "кот" in б or "впритык" in б]
         self.assertEqual(плохие, [], f"беды: {беды}")
+
+    def test_кот_не_садится_на_пилюли_и_подписи(self):
+        """Обложки 98 и 101 после первой правки Д-17: заголовок кот обходил, а садился
+        на пилюли и «Листайте →» — замер обложки этих элементов не видел вовсе."""
+        поза = config.АССЕТЫ / "mascot" / "позы" / "noutbuk.png"
+        метки = ["Чем это делать", "Скопируй запрос", "Прочти вслух"]
+        for дизайн in форматы.ДИЗАЙНЫ_ОК:
+            with self.subTest(дизайн=дизайн):
+                снято = []
+                было = card._снять
+                card._снять = lambda стр, ш=1280, в=720: снято.append((стр, ш, в))
+                try:
+                    card.слайд_обложка("Презентация", "Твой текст станет слайдами", поза,
+                                       1, 10, "3к4", дизайн=дизайн,
+                                       оформление=форматы.СВОЙ_ФОН.get(дизайн, "сетка"),
+                                       метки=метки)
+                finally:
+                    card._снять = было
+                страница, ш, в = снято[-1]
+                if 'class="кот"' not in страница:
+                    continue
+                рамки = браузер.замерить(страница + РАМКИ_ОБЛОЖКИ, ш, в)
+                запас = card._запас_px(ш)
+                for кот in рамки["кот"]:
+                    for имя, р in рамки["подписи"]:
+                        self.assertGreaterEqual(card._зазор(кот, р), запас, f"кот на «{имя}»")
+
+
+# Рамки кота и подписей обложки своим скриптом, мимо card.ЗАМЕР: тест не должен
+# зависеть от того, что замер рисовальщика видит, — ровно это он и проверяет.
+РАМКИ_ОБЛОЖКИ = """<script>document.fonts.ready.then(() => {
+  // Подписи — блоки во всю ширину: рамка самих букв, иначе кот «на надписи» за полями.
+  const р = э => { const д = document.createRange(); д.selectNodeContents(э);
+    const б = э.tagName === 'IMG' ? э.getBoundingClientRect() : д.getBoundingClientRect();
+    return [б.left, б.top, б.right, б.bottom].map(Math.round); };
+  document.body.setAttribute('data-замер', JSON.stringify({
+    кот: [...document.querySelectorAll('.кот img')].map(р),
+    подписи: [...document.querySelectorAll('.листай,.пилюли span,.счёт,.команда,.надбровие,.ярлык-шага,.манифест-под')]
+      .filter(э => э.getBoundingClientRect().width > 1).map(э => [э.textContent.trim(), р(э)])}));
+})</script>"""
 
 
 if __name__ == "__main__":
