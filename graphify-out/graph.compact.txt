@@ -110,13 +110,13 @@ n facts_rationale_93 UNKNOWN Схема_ответа._Pydantic_ввозится_
 n facts_rationale_134 UNKNOWN Достаёт_из_заметки_постоянные_показатели._Пусто,_если_их_нет.
 n facts_rationale_149 UNKNOWN Выделяет_показатели_из_заметки_и_сразу_их_записывает.
 n tools FUNCTION _пост()
-n tools_rationale_164 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
-n tools_rationale_209 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
-n tools_rationale_252 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
-n tools_rationale_303 UNKNOWN Наш_фирменный:_чужого_источника_нет,_кадры_рисует_сам_бот.______Он_здесь_не_как
-n tools_rationale_370 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
-n tools_rationale_384 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
-n tools_rationale_480 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
+n tools_rationale_174 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
+n tools_rationale_219 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
+n tools_rationale_262 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
+n tools_rationale_313 UNKNOWN Наш_фирменный:_чужого_источника_нет,_кадры_рисует_сам_бот.______Он_здесь_не_как
+n tools_rationale_380 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
+n tools_rationale_394 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
+n tools_rationale_490 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
 n basemodel UNKNOWN BaseModel
 n rationale_30 UNKNOWN Папка_«Посты»_на_рабочем_столе,_а_если_его_нет_—_внутри_проекта.______Забирают_ф
 n rationale_85 UNKNOWN Что_уже_стоит_в_плане_для_этой_площадки.
@@ -126,9 +126,9 @@ n rationale_134 UNKNOWN Claude_Code_на_месте_и_понимает_то,_ч
 n rationale_139 UNKNOWN Готовый_разбор_—_в_указания_генератору.______Отделено_от_`указания`,_потому_что
 n users_xiix_4xsoft_postbot_config_py FUNCTION config.py
 n config FUNCTION хром()
-n config_rationale_48 UNKNOWN Путь_к_безголовому_Chrome._Им_рисуются_карточки.______На_сервере_обычно_chromium
-n config_rationale_68 UNKNOWN Есть_ли_claude,_которым_бот_сочиняет._Ввозим_внутри:_config_читается_____первым,
+n config_rationale_58 UNKNOWN Путь_к_безголовому_Chrome._Им_рисуются_карточки.______На_сервере_обычно_chromium
 n config_rationale_78 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
+n config_rationale_88 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
 n runtimeerror UNKNOWN RuntimeError
 n rationale_44 UNKNOWN Агент_не_ответил._Это_не_отказ_модели,_а_сбой_запуска_или_входа.
 n rationale_68 UNKNOWN Кладёт_механику_в_свайп-файл._Возвращает,_сколько_их_стало.
@@ -163,6 +163,7 @@ n rationale_61 UNKNOWN Что_предполёт_поменял_до_отрис�
 n rationale_126 UNKNOWN Готовое_содержимое_для_площадки:_картинки_и_текст.______Считается_один_раз_и_жив
 n rationale_190 UNKNOWN Придирки_к_самим_слайдам:_длина,_однообразие,_количество.
 n rationale_224 UNKNOWN Собрать_папку,_открыть_её_и_—_если_попросили_—_прислать_файлы_в_чат.______Отправ
+n rationale_39 UNKNOWN Складывает_слайды_и_подпись_в_папку._Возвращает_путь_и_список_файлов.
 n rationale_59 UNKNOWN Нарисовать_экран:_поправить_нынешнее_сообщение_или_послать_новое.
 n rationale_159 UNKNOWN Где_лежала_бы_папка_этого_поста._Существует_она_или_нет_—_не_проверяем.______Имя
 n rationale_172 UNKNOWN Открыть_рабочую_папку_поста,_а_если_её_удалили_—_собрать_заново.______Пересобрат
@@ -605,6 +606,8 @@ n users_xiix_4xsoft_postbot_vercel_py FUNCTION варианты.py
 n users_xiix_4xsoft_postbot_vercel_db_py FUNCTION db.py
 n users_xiix_4xsoft_postbot_vercel_facts_py FUNCTION facts.py
 n users_xiix_4xsoft_postbot_vercel_config_py FUNCTION config.py
+n config_rationale_48 UNKNOWN Путь_к_безголовому_Chrome._Им_рисуются_карточки.______На_сервере_обычно_chromium
+n config_rationale_68 UNKNOWN Есть_ли_claude,_которым_бот_сочиняет._Ввозим_внутри:_config_читается_____первым,
 n users_xiix_4xsoft_postbot_vercel_repeats_py FUNCTION repeats.py
 n users_xiix_4xsoft_postbot_vercel_icons_py FUNCTION icons.py
 n users_xiix_4xsoft_postbot_vercel_telegram_py FUNCTION telegram.py
@@ -790,6 +793,13 @@ n test_rationale_29 UNKNOWN Подменяет_путь_к_базе_на_пус�
 n test_call FUNCTION .__call__()
 n test_rationale_80 UNKNOWN Звёздочки_автора_обязаны_стать_жирным_и_в_правке_тоже.
 n users_xiix_4xsoft_postbot_tests_py FUNCTION собрать.py
+n tools_rationale_164 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
+n tools_rationale_209 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
+n tools_rationale_252 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
+n tools_rationale_303 UNKNOWN Наш_фирменный:_чужого_источника_нет,_кадры_рисует_сам_бот.______Он_здесь_не_как
+n tools_rationale_370 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
+n tools_rationale_384 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
+n tools_rationale_480 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
 n tools_rationale_154 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
 n tools_rationale_199 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
 n tools_rationale_242 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
@@ -841,7 +851,6 @@ n rationale_261 UNKNOWN Ответ_с_русскими_именами._Обхо�
 n rationale_272 UNKNOWN Ответ_простым_текстом._С_картинками_агент_откроет_их_сам_и_посмотрит.
 n rationale_37 UNKNOWN Все_замечания_к_одному_черновику._Пустой_список_значит_«придраться_не_к_чему».
 n rationale_99 UNKNOWN Другие_заголовки_к_тому_же_посту,_если_модель_их_принесла.______Заголовок_решает
-n rationale_39 UNKNOWN Складывает_слайды_и_подпись_в_папку._Возвращает_путь_и_список_файлов.
 n rationale_102 UNKNOWN Всё_вместе:_собрать,_открыть_папку,_прислать_в_чат.
 n telegram_rationale_199 UNKNOWN Гасит_«часики»_на_кнопке._Без_этого_клиент_висит_и_кажется,_что_сломалось.
 n telegram_rationale_207 UNKNOWN Меняет_кнопки_под_уже_отправленным_сообщением.______Нужно_для_переключателей:_че
@@ -1489,6 +1498,7 @@ e  rationale_93 rationale_for
 e  rationale_112 rationale_for
 e  rationale_134 rationale_for
 e  rationale_139 rationale_for
+e  users_xiix_4xsoft_postbot_config_py imports_from
 e  runtimeerror inherits
 e  rationale_44 rationale_for
 e  rationale_68 rationale_for
@@ -1513,6 +1523,7 @@ e  rationale_61 rationale_for
 e  rationale_126 rationale_for
 e  rationale_190 rationale_for
 e  rationale_224 rationale_for
+e  rationale_39 rationale_for
 e  rationale_59 rationale_for
 e  rationale_159 rationale_for
 e  rationale_172 rationale_for
@@ -1708,13 +1719,13 @@ e facts facts_rationale_93 rationale_for
 e facts facts_rationale_134 rationale_for
 e facts facts_rationale_149 rationale_for
 e facts users_xiix_4xsoft_postbot_vercel_facts_py contains
-e tools tools_rationale_164 rationale_for
-e tools tools_rationale_209 rationale_for
-e tools tools_rationale_252 rationale_for
-e tools tools_rationale_303 rationale_for
-e tools tools_rationale_370 rationale_for
-e tools tools_rationale_384 rationale_for
-e tools tools_rationale_480 rationale_for
+e tools tools_rationale_174 rationale_for
+e tools tools_rationale_219 rationale_for
+e tools tools_rationale_262 rationale_for
+e tools tools_rationale_313 rationale_for
+e tools tools_rationale_380 rationale_for
+e tools tools_rationale_394 rationale_for
+e tools tools_rationale_490 rationale_for
 e tools tools_init method
 e tools tools_log_message method
 e tools tools_json calls
@@ -1732,9 +1743,9 @@ e tools test_test calls
 e basemodel carousel inherits
 e basemodel writer inherits
 e users_xiix_4xsoft_postbot_config_py config contains
-e config config_rationale_48 rationale_for
-e config config_rationale_68 rationale_for
+e config config_rationale_58 rationale_for
 e config config_rationale_78 rationale_for
+e config config_rationale_88 rationale_for
 e config users_xiix_4xsoft_postbot_mascot_py imports
 e config users_xiix_4xsoft_postbot_telegram_py imports
 e config users_xiix_4xsoft_postbot_webapp_py imports
@@ -1757,6 +1768,8 @@ e config users_xiix_4xsoft_postbot_vercel_py imports
 e config users_xiix_4xsoft_postbot_vercel_db_py imports
 e config users_xiix_4xsoft_postbot_vercel_facts_py imports
 e config users_xiix_4xsoft_postbot_vercel_config_py contains
+e config config_rationale_48 rationale_for
+e config config_rationale_68 rationale_for
 e config users_xiix_4xsoft_postbot_vercel_telegram_py imports
 e config users_xiix_4xsoft_postbot_vercel_access_py imports
 e config users_xiix_4xsoft_postbot_vercel_stream_py imports
