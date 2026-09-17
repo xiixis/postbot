@@ -194,6 +194,25 @@ def охват(канал: str, номера: list[int]) -> dict:
     return asyncio.run(_охват(канал, номера))
 
 
+async def _сообщения_темы(группа: int, тема: int, после: int) -> list[dict]:
+    async with _клиент() as клиент:
+        итог = []
+        async for м in клиент.iter_messages(группа, reply_to=тема, min_id=после, reverse=True):
+            адреса = [getattr(с, "url", None) or т
+                      for с, т in (м.get_entities_text() or [])
+                      if getattr(с, "url", None) or type(с).__name__ == "MessageEntityUrl"]
+            итог.append({"id": м.id, "дата": м.date.isoformat(timespec="seconds"),
+                         "текст": м.text or "", "адреса": адреса})
+        return итог
+
+
+def сообщения_темы(группа: int, тема: int, после: int) -> list[dict]:
+    """Сообщения одной темы группы новее номера `после`, старые первыми.
+
+    Только чтение. Боту Telegram историю группы не отдаёт, аккаунт видит её как человек.
+    """
+    return asyncio.run(_сообщения_темы(группа, тема, после))
+
 async def _список(канал: str) -> list:
     from telethon.tl.functions.messages import GetScheduledHistoryRequest
     async with _клиент() as клиент:
