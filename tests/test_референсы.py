@@ -78,5 +78,64 @@ class База(unittest.TestCase):
                 db.отметить_референс(db.референсы()[0]["id"], "готово")
 
 
+class Ссылки(unittest.TestCase):
+    def test_instagram_без_параметров(self):
+        import референсы as р
+        self.assertEqual(р.привести("https://www.instagram.com/p/Dc8GZlYgB6b/?img_index=4&stkn=Nnps"),
+                         "https://www.instagram.com/p/Dc8GZlYgB6b/")
+        self.assertEqual(р.привести("https://www.instagram.com/p/Dc8GZlYgB6b/"),
+                         "https://www.instagram.com/p/Dc8GZlYgB6b/")
+
+    def test_короткая_tiktok_как_есть(self):
+        import референсы as р
+        self.assertEqual(р.привести("https://vt.tiktok.com/ZSqbckB6R/"), "https://vt.tiktok.com/ZSqbckB6R/")
+        self.assertEqual(р.площадка("https://vt.tiktok.com/ZSqbckB6R/"), "tiktok")
+        self.assertEqual(р.площадка("https://www.instagram.com/p/A/"), "instagram")
+        self.assertEqual(р.площадка("https://example.com/"), "другое")
+
+    def test_несколько_ссылок_в_сообщении(self):
+        import референсы as р
+        текст = "глянь https://www.instagram.com/p/A/?x=1 и https://vt.tiktok.com/B/"
+        self.assertEqual(р.ссылки(текст, ["https://www.instagram.com/p/A/?x=1"]),
+                         ["https://www.instagram.com/p/A/?x=1", "https://vt.tiktok.com/B/"])
+
+
+class Сбор(unittest.TestCase):
+    def test_курсор_двигается_и_без_ссылок(self):
+        import db
+        import референсы as р
+        with _ВременнаяБаза():
+            новых = р.записать([
+                {"id": 15, "дата": "2026-09-16", "текст": "https://www.instagram.com/p/A/?img_index=1", "адреса": []},
+                {"id": 16, "дата": "2026-09-16", "текст": "просто текст", "адреса": []}])
+            self.assertEqual(новых, 1)
+            self.assertEqual(db.настройка(р.КУРСОР), 16)
+
+    def test_курсор_стоит_при_ошибке_чтения(self):
+        import db
+        import референсы as р
+        with _ВременнаяБаза():
+            db.запомнить(р.КУРСОР, 10)
+
+            def сломано(после):
+                raise ConnectionError("сеть")
+            with self.assertRaises(ConnectionError):
+                р.сверить(сломано)
+            self.assertEqual(db.настройка(р.КУРСОР), 10)
+
+    def test_сверить_читает_после_курсора_и_повтор_ноль(self):
+        import db
+        import референсы as р
+        with _ВременнаяБаза():
+            db.запомнить(р.КУРСОР, 14)
+            спросили = []
+
+            def читать(после):
+                спросили.append(после)
+                return [{"id": 20, "дата": "2026-09-17", "текст": "", "адреса": ["https://www.instagram.com/p/A/"]}]
+            self.assertEqual(р.сверить(читать), 1)
+            self.assertEqual(р.сверить(читать), 0)
+            self.assertEqual(спросили, [14, 20])
+
 if __name__ == "__main__":
     unittest.main()
