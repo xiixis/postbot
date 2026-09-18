@@ -35,7 +35,8 @@ def снять(папка: Path, куда: Path) -> None:
     sys.path.insert(0, str(стиль.ПОСТБОТ))
     import браузер
     куда.mkdir(parents=True, exist_ok=True)
-    доски = [а for а in json.loads((папка / "canvas.json").read_text())["artboards"] if (папка / а["file"]).exists()]
+    доски = [а for а in json.loads((папка / "canvas.json").read_text())["artboards"]
+             if (папка / а["file"]).exists() and not а["file"].startswith("Oblozhka")]
     for н, а in enumerate(sorted(доски, key=lambda а: (а["y"], а["x"])), 1):
         html = (папка / а["file"]).read_text().replace('<script src="./support.js"></script>', "")
         html = html.replace("<body>", "<body style='margin:0'>", 1)
