@@ -89,8 +89,7 @@ def кегль(слово: str, предел: int = 230) -> int:
 
 
 def кот(к: dict) -> str:
-    где = {ключ: к[ключ] for ключ in ("left", "top", "right", "bottom") if ключ in к}
-    return стиль.кот(к["поза"], к["высота"], класс="кот", **где)
+    return стиль.кот_файлом(к)
 
 
 def обложка(о: dict, доля: float) -> str:
@@ -100,6 +99,34 @@ def обложка(о: dict, доля: float) -> str:
         text-wrap:balance">{о['заголовок']}</div>
     <div style="{Т};font-size:48px;line-height:1.3;margin-top:44px;max-width:620px;
         color:{СВЕТЛЫЙ};text-wrap:pretty">{о['под']}</div>
+  </div>
+  {кот(о['кот'])}
+  {знак_и_полоса(доля, тёмный=True)}
+</div>""" + ХВОСТ
+
+
+def обложка_число(о: dict, доля: float) -> str:
+    """Б — число: гигант лаймом на тёмном, строка под ним."""
+    return голова() + f"""<div class=кадр style="background:{ТЁМНЫЙ};color:{СВЕТЛЫЙ}">
+  <div style="position:absolute;left:{ПОЛЕ}px;right:{ПОЛЕ}px;top:230px">
+    <div style="{К};font-size:360px;line-height:.9;letter-spacing:-.05em;color:{ЛАЙМ}">{о['число']}</div>
+    <div style="{К};font-size:84px;line-height:1.04;margin-top:30px">{о['строка']}</div>
+    <div style="{Т};font-size:44px;margin-top:26px;color:{СВЕТЛЫЙ};opacity:.75">{о['под']}</div>
+  </div>
+  {кот(о['кот'])}
+  {знак_и_полоса(доля, тёмный=True)}
+</div>""" + ХВОСТ
+
+
+def обложка_допосле(о: dict, доля: float) -> str:
+    """В — до/после: строка старая зачёркнута, новая на лаймовой плашке."""
+    строка = "font-size:50px;line-height:1.3;padding:24px 30px;border-radius:26px"
+    return голова() + f"""<div class=кадр style="background:{ТЁМНЫЙ};color:{СВЕТЛЫЙ}">
+  <div style="position:absolute;left:{ПОЛЕ}px;right:{ПОЛЕ}px;top:250px">
+    <div style="{К};font-size:96px;line-height:1.02;letter-spacing:-.03em">{о['заголовок']}</div>
+    <div style="{Т};{строка};margin-top:60px;background:rgba(255,255,255,.08);
+        color:#B8BAB0;text-decoration:line-through">{о['было']}</div>
+    <div style="{Т};{строка};margin-top:26px;background:{ЛАЙМ};color:#1A2006;font-weight:700">{о['стало']}</div>
   </div>
   {кот(о['кот'])}
   {знак_и_полоса(доля, тёмный=True)}
@@ -143,6 +170,7 @@ def финал(ф: dict) -> str:
 
 
 def картинки(пост: dict, папка: Path) -> list[Path]:
+    файлы_котов = стиль.коты_в_файлы(пост, папка)
     """Значки сервисов и снимки их страниц. Снимок обрезается по верхней части: ниже первого
     экрана начинается текст сайта, который в кадре всё равно не прочесть."""
     файлы = []
@@ -179,7 +207,7 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
         и = и.convert("RGBA")
         и.thumbnail((240, 88), Image.LANCZOS)
         и.save(папка / "logo.png", optimize=True)
-    return файлы + [папка / "logo.png"]
+    return файлы + файлы_котов + [папка / "logo.png"]
 
 
 ЛАТ = dict(zip("абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
@@ -211,11 +239,21 @@ def main():
 
     всего = len(пост["кадры"]) + 2
     рисовать_обложку = чужая_обложка(пост["обложка_из"]) if пост.get("обложка_из") else обложка
-    доски = [("Main.dc.html", "01 · Обложка", рисовать_обложку(пост["обложка"], 1 / всего))]
+    # ⛔️ Три обложки обязательны: холст без них не выкладывается.
+    обложки = {"сцена": lambda: рисовать_обложку(пост["обложка"], 1 / всего),
+               "число": lambda: обложка_число(пост["обложка_число"], 1 / всего),
+               "до-после": lambda: обложка_допосле(пост["обложка_допосле"], 1 / всего)}
+    главная = пост.get("главная", "сцена")
+    запасные = [и for и in обложки if и != главная]
+    доски = [("Main.dc.html", f"01 · Обложка · {главная}", обложки[главная]())]
     for н, к in enumerate(пост["кадры"], 1):
         доски.append((f"Kadr{н + 1:02d}.dc.html", f"{н + 1:02d} · {к['имя']}",
                       сервис(н + 1, всего, к, (н + 1) / всего)))
     доски.append((f"Kadr{всего:02d}.dc.html", f"{всего:02d} · Финал", финал(пост["финал"])))
+    for н, и in enumerate(запасные, 2):
+        доски.append((f"Oblozhka{н}.dc.html", f"Обложка {н} · {и}", обложки[и]()))
+    assert len([д for д in доски if д[0].startswith(("Main", "Oblozhka"))]) == 3, \
+        "холст без трёх обложек не выкладывается"
     for имя, _, html in доски:
         (папка / имя).write_text(html)
 
@@ -233,7 +271,7 @@ def main():
                "--canvas", str(папка / "canvas.json")]
     for имя, _, _ in доски:
         команда += ["--artboard", str(папка / имя)]
-    for к in картинки(пост, папка):
+    for к in dict.fromkeys(картинки(пост, папка)):   # один значок на шесть кадров — без повторов
         команда += ["--image", str(к)]
     р = subprocess.run(команда, capture_output=True, text=True)
     проверка = subprocess.run(["node", str(п), "--check", str(страница)],
