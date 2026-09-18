@@ -44,7 +44,7 @@ def знак_и_полоса(доля: float, тёмный: bool = False) -> str
 
 def кот(к: dict) -> str:
     где = "; ".join(f"{ключ}: {к[ключ]}px" for ключ in ("left", "top", "right", "bottom") if ключ in к)
-    return f'<img src="kot-{к["поза"]}.webp" style="position: absolute; height: {к["высота"]}px; {где};">'
+    return f'<img src="kot-{латиницей(к["поза"])}.webp" style="position: absolute; height: {к["высота"]}px; {где};">'
 
 
 def обложка(о: dict, доля: float) -> str:
@@ -53,6 +53,31 @@ def обложка(о: dict, доля: float) -> str:
     <div style="{Т}; font-weight: 700; font-size: 34px; letter-spacing: 0.12em; text-transform: uppercase; color: {ОЛИВА};">{о['над']}</div>
     <div style="{К}; font-size: 104px; line-height: 1.02; letter-spacing: -0.03em; text-wrap: balance;">{о['заголовок']}</div>
     <div style="{Т}; font-size: 46px; line-height: 1.3; color: {МЯГКИЙ}; text-wrap: pretty; max-width: 760px;">{о['под']}</div>
+  </div>
+  {кот(о['кот'])}
+  {знак_и_полоса(доля)}
+</div>""" + ХВОСТ
+
+
+def обложка_число(о: dict, доля: float) -> str:
+    """Б — число: гигант оливой, под ним строка и кот. Обложек в холсте всегда три."""
+    return голова() + f"""<div style="position: relative; width: 1080px; height: 1440px; overflow: hidden; background: {КРЕМ}; color: {ЧЕРНИЛА};">
+  <div style="position: absolute; left: 70px; right: 70px; top: 180px; text-align: center; {К}; font-size: 380px; line-height: .88; color: {ОЛИВА};">{о['число']}</div>
+  <div style="position: absolute; left: 80px; right: 80px; top: 640px; text-align: center; {К}; font-size: 88px; line-height: 1.04;">{о['строка']}</div>
+  <div style="position: absolute; left: 90px; right: 90px; top: 830px; text-align: center; {Т}; font-size: 44px; color: {МЯГКИЙ};">{о['под']}</div>
+  {кот(о['кот'])}
+  {знак_и_полоса(доля)}
+</div>""" + ХВОСТ
+
+
+def обложка_допосле(о: dict, доля: float) -> str:
+    """В — до/после: зачёркнутая строка и лаймовая плашка со второй."""
+    строка = f"{Т}; font-size: 52px; line-height: 1.3; padding: 26px 32px; border-radius: 28px;"
+    return голова() + f"""<div style="position: relative; width: 1080px; height: 1440px; overflow: hidden; background: {КРЕМ}; color: {ЧЕРНИЛА};">
+  <div style="position: absolute; left: 80px; right: 80px; top: 200px; {К}; font-size: 92px; line-height: 1.04;">{о['заголовок']}</div>
+  <div style="position: absolute; left: 80px; right: 80px; top: 520px; display: flex; flex-direction: column; gap: 28px;">
+    <div style="{строка} background: #FFFFFF; color: {МЯГКИЙ}; text-decoration: line-through; box-shadow: 0 10px 26px rgba(18,19,14,.07);">{о['было']}</div>
+    <div style="{строка} background: {ЛАЙМ}; color: #1A2006; font-weight: 700; box-shadow: 0 10px 26px rgba(18,19,14,.10);">{о['стало']}</div>
   </div>
   {кот(о['кот'])}
   {знак_и_полоса(доля)}
@@ -142,7 +167,7 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
             и.save(цель, quality=78, optimize=True)
         файлы.append(цель)
     for к in (пост["обложка"]["кот"], пост["финал"]["кот"]):
-        цель = папка / f"kot-{к['поза']}.webp"
+        цель = папка / f"kot-{латиницей(к['поза'])}.webp"
         with Image.open(стиль.ПОЗЫ / f"{к['поза']}.png") as и:
             и = и.convert("RGBA"); и.thumbnail((1000, round(к["высота"] * 1.5)), Image.LANCZOS); и.save(цель, quality=86)
         файлы.append(цель)
@@ -183,10 +208,20 @@ def main():
         import список
         доски = список.доски(пост)
     else:
-        доски = [("Main.dc.html", "01 · Обложка", обложка(пост["обложка"], 1 / всего))]
+        # ⛔️ Три обложки обязательны: холст без них не выкладывается.
+        обложки = {"сцена": lambda: обложка(пост["обложка"], 1 / всего),
+                   "число": lambda: обложка_число(пост["обложка_число"], 1 / всего),
+                   "до-после": lambda: обложка_допосле(пост["обложка_допосле"], 1 / всего)}
+        главная = пост.get("главная", "сцена")
+        запасные = [и for и in обложки if и != главная]
+        доски = [("Main.dc.html", f"01 · Обложка · {главная}", обложки[главная]())]
         for н, к in enumerate(пост["кадры"], 1):
             доски.append((f"Kadr{н + 1:02d}.dc.html", f"{н + 1:02d} · {к['заголовок']}", кадр(н, к, (н + 1) / всего)))
         доски.append((f"Kadr{всего:02d}.dc.html", f"{всего:02d} · Финал", финал(пост["финал"])))
+        for н, и in enumerate(запасные, 2):
+            доски.append((f"Oblozhka{н}.dc.html", f"Обложка {н} · {и}", обложки[и]()))
+        assert len([д for д in доски if д[0].startswith(("Main", "Oblozhka"))]) == 3, \
+            "холст без трёх обложек не выкладывается"
     for имя, _, html in доски:
         (папка / имя).write_text(html)
     раскладка = {"artboards": [{"file": имя, "title": з, "x": i % 5 * 1180, "y": i // 5 * 1600, "w": 1080, "h": 1440}
