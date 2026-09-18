@@ -18,7 +18,9 @@ sys.path.insert(0, str(стиль.ПОСТБОТ))
 import браузер  # noqa: E402
 
 ЦЕЛЬ = ТУТ.parent / "подборка-сайтов" / "сайты"
-Ш, В = 1200, 820
+# Окно рисуется ровно в пропорции рамки кадра (820×500): иначе `object-fit:cover`
+# режет его по бокам и первая буква каждой строки уходит за край.
+Ш, В = 1230, 750
 
 КАДРЫ = {
     "wispr-speed": ("Письмо клиенту", "", "Добрый день! Отправляю смету на сентябрь: "
@@ -42,11 +44,11 @@ html,body{{width:{Ш}px;height:{В}px;background:#EFEDE7;
 .верх{{display:flex;align-items:center;gap:14px;height:84px;padding:0 30px;background:#F7F6F2;
   box-shadow:inset 0 -1px 0 rgba(0,0,0,.08)}}
 .точка{{width:18px;height:18px;border-radius:50%}}
-.имя{{margin-left:14px;font-size:36px;color:#4A4842;font-weight:600}}
+.имя{{margin-left:14px;font-size:42px;color:#4A4842;font-weight:600}}
 .тело{{padding:44px 44px}}
-.сказано{{font-size:42px;line-height:1.35;color:#8C8A82;margin-bottom:26px}}
+.сказано{{font-size:50px;line-height:1.35;color:#8C8A82;margin-bottom:26px}}
 .сказано b{{color:#B4B1A6;font-weight:600}}
-.готово{{font-size:52px;line-height:1.4;color:#1F1E1A}}
+.готово{{font-size:62px;line-height:1.4;color:#1F1E1A}}
 .поле{{position:absolute;left:44px;right:44px;bottom:40px;height:150px;border-radius:26px;
   background:#F2F1EC;box-shadow:inset 0 0 0 2px rgba(0,0,0,.06);display:flex;align-items:center;
   gap:26px;padding:0 30px}}

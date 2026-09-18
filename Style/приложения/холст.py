@@ -32,6 +32,16 @@ import стиль  # noqa: E402
 
 ПОЛЕ = 60                                     # 5,6% ширины холста — единое для всех блоков
 
+# Высоты кадра одним местом: текст сразу под именем, заметка начинается там, где он кончается.
+# Рамка заметки выросла с 720×374: пустоту между именем и текстом отдали ей, чтобы содержимое
+# окна читалось с телефона, а не сжималось в серую полоску.
+ТЕЛО = 560
+# Потолок кегля имени: при 230 короткое «НА ХОДУ» опускалось до 565 и садилось
+# на текст. 180 держит низ имени на 516 — те самые 40 px запаса до текста.
+ИМЯ_ПРЕДЕЛ = 180
+СНИМОК = 740
+РАМКА_Ш, РАМКА_В = 820, 500
+
 
 def голова() -> str:
     return ("<!doctype html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n"
@@ -41,13 +51,15 @@ def голова() -> str:
             + f"""
     body {{ margin:0 }}
     .кадр {{ position:relative;width:1080px;height:1440px;overflow:hidden;background:{КРЕМ};color:{ЧЕРНИЛА} }}
-    .карточка {{ position:absolute;left:{ПОЛЕ}px;top:130px;background:#FFFFFF;border-radius:20px;
+    .карточка {{ position:absolute;left:{ПОЛЕ}px;top:104px;background:#FFFFFF;border-radius:20px;
         padding:26px;box-shadow:0 14px 40px rgba(18,19,14,.08);display:flex;align-items:center }}
     .карточка img {{ width:112px;height:112px;object-fit:contain;display:block }}
-    .номер {{ position:absolute;left:{ПОЛЕ}px;top:330px;{Т};font-weight:700;font-size:44px;
+    .номер {{ position:absolute;left:{ПОЛЕ}px;top:280px;{Т};font-weight:700;font-size:44px;
         letter-spacing:.12em;color:{АКЦЕНТ} }}
-    .имя {{ position:absolute;left:{ПОЛЕ}px;top:390px;{К};line-height:.98;letter-spacing:-.04em }}
-    .тело {{ position:absolute;left:{ПОЛЕ}px;top:610px;width:880px;{Т};font-size:44px;line-height:1.3 }}
+    .имя {{ position:absolute;left:{ПОЛЕ}px;top:340px;{К};line-height:.98;letter-spacing:-.04em }}
+    /* Текст идёт сразу за именем: прежние 610 оставляли между ними пустую полосу в 130 px,
+       из-за которой заметка внизу сжималась до нечитаемой (слово владельца 18.09). */
+    .тело {{ position:absolute;left:{ПОЛЕ}px;top:{ТЕЛО}px;width:880px;{Т};font-size:44px;line-height:1.3 }}
     .тело p {{ margin:0 }}
     .тело .первая {{ font-weight:700 }}
     /* Снимок уходит за нижний край — приём источника: он добирает чернила без слов.
@@ -57,8 +69,8 @@ def голова() -> str:
     /* Снимок по центру и на одной высоте во всех кадрах — так владелец поставил его руками
        на кадрах 2 и 3 (верх ≈ 820, ширина 590–720). Рамка и отступ заданы числом, а не краем:
        иначе положение снимка начинает зависеть от пропорций файла и кадры расходятся. */
-    .снимок {{ position:absolute;left:50%;transform:translateX(-50%);top:790px;
-        width:720px;height:374px;
+    .снимок {{ position:absolute;left:50%;transform:translateX(-50%);top:{СНИМОК}px;
+        width:{РАМКА_Ш}px;height:{РАМКА_В}px;
         object-fit:cover;object-position:top center;border-radius:18px;
         box-shadow:0 26px 70px rgba(18,19,14,.18) }}
     .счёт {{ position:absolute;left:{ПОЛЕ}px;bottom:96px;{Т};font-weight:700;font-size:38px;color:{АКЦЕНТ} }}
@@ -231,10 +243,10 @@ def низ_текста(абзацы: list[str], ширина: int = 880, кег
     в_строке = max(1, int(ширина / (кегль * 0.58)))
     строк = sum(max(1, -(-len(а) // в_строке)) for а in абзацы)
     # Отступа между абзацами нет (`.тело p {{ margin:0 }}`), считаем только строки.
-    return 610 + int(строк * кегль * 1.3)
+    return ТЕЛО + int(строк * кегль * 1.3)
 
 
-ПОД_ТЕКСТ = 790        # низ текстового блока: ровно там начинается снимок
+ПОД_ТЕКСТ = СНИМОК     # низ текстового блока: ровно там начинается заметка
 
 
 def сервис(номер: int, всего: int, к: dict, доля: float) -> str:
@@ -249,7 +261,7 @@ def сервис(номер: int, всего: int, к: dict, доля: float) ->
     return голова() + f"""<div class=кадр>
   {f'<div class=карточка><img src="{к["значок"]}.png"></div>' if к.get("значок") else ""}
   <div class=номер>{к['номер']}</div>
-  <div class=имя style="font-size:{кегль(к['имя'])}px">{к['имя']}</div>
+  <div class=имя style="font-size:{кегль(к['имя'], ИМЯ_ПРЕДЕЛ)}px">{к['имя']}</div>
   <div class=тело>
 {строки}
   </div>
@@ -324,9 +336,10 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
         with Image.open(ТУТ.parent / "подборка-сайтов/сайты" / f"{к['снимок']}.png") as и:
             и = и.convert("RGB")
             ширина, высота = и.size
-            # Верхние 80% первого экрана: ниже живут cookie-плашки и начало подвала.
+            # Свои окна нарисованы под рамку целиком, поэтому по умолчанию берём их
+            # полностью; у чужого сайта поле «верх» отрезает cookie-плашку и подвал.
             # Если после этого снимок всё ещё выше рамки, режем до её пропорции.
-            нужная = min(int(высота * к.get("верх", 0.8)), int(ширина / (720 / 380)))
+            нужная = min(int(высота * к.get("верх", 1.0)), int(ширина / (РАМКА_Ш / РАМКА_В)))
             и = и.crop((0, 0, ширина, нужная))
             и.thumbnail((1000, 1000), Image.LANCZOS)
             и.save(снимок, quality=76, optimize=True)
