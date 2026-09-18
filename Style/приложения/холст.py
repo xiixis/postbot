@@ -296,8 +296,8 @@ def финал(ф: dict) -> str:
         padding:14px 28px;border-radius:999px;box-shadow:inset 0 0 0 3px rgba(255,255,255,.22);
         color:#C9CCC0">{ф.get('метка', 'ЧТО ДАЛЬШЕ')}</div>
     <div style="{К};letter-spacing:-.035em;margin-top:38px">{наклейки}</div>
-    <div style="{Т};font-weight:700;font-size:48px;line-height:1.24;margin-top:30px;
-        max-width:700px">{ф['текст']}</div>
+    <div style="{Т};font-weight:700;font-size:42px;line-height:1.26;margin-top:28px;
+        max-width:640px">{ф['текст']}</div>
     <div style="display:flex;align-items:center;gap:24px;width:620px;margin-top:44px;
         padding:28px 34px;border-radius:34px;background:{СВЕТЛЫЙ};color:{ТЁМНЫЙ};
         box-shadow:0 22px 50px rgba(0,0,0,.45)">
