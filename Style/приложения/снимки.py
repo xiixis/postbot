@@ -39,14 +39,14 @@ html,body{{width:{Ш}px;height:{В}px;background:#EFEDE7;
   font-family:-apple-system,"Helvetica Neue",Arial}}
 .окно{{position:absolute;inset:28px;border-radius:26px;overflow:hidden;background:#FFFFFF;
   box-shadow:0 18px 50px rgba(30,28,24,.18)}}
-.верх{{display:flex;align-items:center;gap:14px;height:76px;padding:0 30px;background:#F7F6F2;
+.верх{{display:flex;align-items:center;gap:14px;height:84px;padding:0 30px;background:#F7F6F2;
   box-shadow:inset 0 -1px 0 rgba(0,0,0,.08)}}
 .точка{{width:18px;height:18px;border-radius:50%}}
-.имя{{margin-left:14px;font-size:30px;color:#4A4842;font-weight:600}}
-.тело{{padding:40px 44px}}
-.сказано{{font-size:34px;line-height:1.35;color:#8C8A82;margin-bottom:26px}}
+.имя{{margin-left:14px;font-size:36px;color:#4A4842;font-weight:600}}
+.тело{{padding:44px 44px}}
+.сказано{{font-size:42px;line-height:1.35;color:#8C8A82;margin-bottom:26px}}
 .сказано b{{color:#B4B1A6;font-weight:600}}
-.готово{{font-size:40px;line-height:1.4;color:#1F1E1A}}
+.готово{{font-size:52px;line-height:1.4;color:#1F1E1A}}
 .поле{{position:absolute;left:44px;right:44px;bottom:40px;height:150px;border-radius:26px;
   background:#F2F1EC;box-shadow:inset 0 0 0 2px rgba(0,0,0,.06);display:flex;align-items:center;
   gap:26px;padding:0 30px}}
