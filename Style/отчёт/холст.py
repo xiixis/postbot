@@ -1,0 +1,200 @@
+# -*- coding: utf-8 -*-
+"""Холст стиля «отчёт»: python3 холст.py посты/<пост>.json
+
+Стиль вырос из темы, а не из вкусовых предпочтений: речь о китайской лаборатории,
+открытых весах и таблицах бенчмарков — значит и кадр устроен как страница технического
+отчёта. Отсюда всё остальное.
+
+**Бумага холодная, серо-голубая** (#E8EAED), а не наш кремовый: крем — бумага статьи о
+сервисах, а здесь отчёт о результатах. **Акцент — киноварь** (#C1272D), цвет китайского
+оттиска-печати; номер кадра и стоит красным квадратом-печатью, а не пилюлей.
+**Число — герой кадра:** в разобранном ролике счёт всё время шёл деньгами и временем
+(2,8 триллиона, ×3, 20 часов, 10 часов против 7 лет), поэтому кадр строится вокруг одного
+числа, набранного антиквой Cormorant, а поясняет его гротеск Golos. Контраст антиквы и
+гротеска — то, чего нет ни в одном другом нашем стиле.
+
+Ноль скруглений, ноль теней, тонкие линии как в таблице результатов. Фирменный лайм
+остаётся только в полосе со знаком — это подпись канала, а не часть стиля.
+"""
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+from PIL import Image
+
+ТУТ = Path(__file__).parent
+sys.path.insert(0, str(ТУТ.parent))
+import стиль  # noqa: E402
+
+БУМАГА, ГРАФИТ = "#E8EAED", "#15181C"
+КИНОВАРЬ = "#C1272D"                     # к бумаге 5,6:1 — только для крупного и для печати
+ЛИНИЯ = "#C3C8CE"
+ТЁМНЫЙ, ЛАЙМ, СВЕТЛЫЙ = стиль.ТЁМНЫЙ, стиль.ЛАЙМ, стиль.СВЕТЛЫЙ
+А = "font-family:Cormorant,Georgia,serif;font-weight:700"     # антиква — числа и заголовки
+Г = "font-family:Golos,'Helvetica Neue',Arial,sans-serif"      # гротеск — пояснения
+
+ПОЛЕ, ВЕРХ = 84, 120
+НИЗ_КОНТЕНТА = 1164                      # ниже начинается служебная зона знака и полосы
+
+
+def голова() -> str:
+    return ("<!doctype html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n"
+            "  <script src=\"./support.js\"></script>\n</head>\n<body>\n<x-dc>\n<helmet>\n  <style>\n"
+            + стиль.фейсы(("Cormorant", "cormorant-700", 700), ("Golos", "golos-400", 400),
+                          ("Golos", "golos-700", 700))
+            + f"""
+    body {{ margin:0 }}
+    .кадр {{ position:relative;width:1080px;height:1440px;overflow:hidden;
+        background:{БУМАГА};color:{ГРАФИТ} }}
+    /* Печать с номером: оттиск, а не пилюля — номер кадра как штамп в углу документа. */
+    .печать {{ position:absolute;right:{ПОЛЕ}px;top:{ВЕРХ}px;width:76px;height:76px;
+        background:{КИНОВАРЬ};color:{БУМАГА};{А};font-size:46px;
+        display:flex;align-items:center;justify-content:center }}
+    .число {{ position:absolute;left:{ПОЛЕ}px;{А};font-size:300px;
+        line-height:.9;letter-spacing:-.02em;color:{ГРАФИТ} }}
+    .единица {{ position:absolute;left:{ПОЛЕ}px;{Г};font-weight:700;font-size:38px;
+        color:{КИНОВАРЬ} }}
+    .заголовок {{ position:absolute;left:{ПОЛЕ}px;right:{ПОЛЕ}px;{А};font-size:104px;
+        line-height:1.0;letter-spacing:-.01em }}
+    .текст {{ position:absolute;left:{ПОЛЕ}px;width:820px;{Г};font-size:44px;line-height:1.34 }}
+    .текст p {{ margin:0 0 28px }}
+    .черта {{ position:absolute;left:{ПОЛЕ}px;right:{ПОЛЕ}px;height:1px;background:{ЛИНИЯ} }}
+    /* Снимок в рамке в одну линию: так выглядит иллюстрация в отчёте, без теней и скруглений. */
+    .снимок {{ position:absolute;left:{ПОЛЕ}px;width:912px;height:250px;object-fit:cover;
+        object-position:top center;border:1px solid {ЛИНИЯ} }}
+    .кот {{ position:absolute;z-index:3 }}
+    .знак {{ position:absolute;left:80px;bottom:205px;height:44px;z-index:4 }}
+    .полоса {{ position:absolute;left:0;bottom:176px;height:6px;z-index:4;
+        box-shadow:0 1px 0 rgba(18,19,14,.30) }}
+  </style>\n</helmet>\n""")
+
+
+ХВОСТ = "\n</x-dc>\n</body>\n</html>\n"
+
+
+def знак_и_полоса(доля: float, тёмный: bool = False) -> str:
+    подкраска = "" if тёмный else "filter:brightness(.45) saturate(1.4);"
+    return (f'<img class=знак style="{подкраска}" src="logo.png">'
+            f'<div class=полоса style="width:{доля * 100:.1f}%;background:{ЛАЙМ}"></div>')
+
+
+def кегль_числа(текст: str) -> int:
+    """Число-герой занимает строку целиком: короткое ставится крупнее длинного."""
+    знаков = len(текст)
+    return 300 if знаков <= 3 else 210 if знаков <= 6 else 140 if знаков <= 10 else 104
+
+
+def кот(к: dict) -> str:
+    где = {ключ: к[ключ] for ключ in ("left", "top", "right", "bottom") if ключ in к}
+    return стиль.кот(к["поза"], к["высота"], класс="кот", **где)
+
+
+def обложка(о: dict, доля: float) -> str:
+    return голова() + f"""<div class=кадр>
+  <div class=черта style="top:{ВЕРХ + 110}px"></div>
+  <div class=заголовок style="top:{ВЕРХ + 170}px;font-size:132px">{о['заголовок']}</div>
+  <div class=текст style="top:{ВЕРХ + 560}px;width:640px;font-size:46px"><p>{о['под']}</p></div>
+  {кот(о['кот'])}
+  {знак_и_полоса(доля)}
+</div>""" + ХВОСТ
+
+
+def страница(номер: int, к: dict, доля: float) -> str:
+    """Кадр-страница отчёта. Зоны заданы числами и не зависят от величины числа-героя:
+    иначе короткое «K3» и длинное «10 часов» двигают заголовок и текст по-разному, и
+    соседние страницы перестают совпадать — а отчёт держится именно на одинаковой сетке."""
+    размер = кегль_числа(к["число"])
+    со_снимком = bool(к.get("снимок"))
+    текст = "\n".join(f"    <p>{а}</p>" for а in к["текст"])
+    знаков = sum(len(а) for а in к["текст"])
+    кегль = 40 if со_снимком or знаков > 180 else 46
+    снимок = (f'<img class=снимок src="{к["снимок"]}.jpg" style="top:964px">'
+              if со_снимком else "")
+    return голова() + f"""<div class=кадр>
+  <div class=печать>{номер:02d}</div>
+  <div class=число style="font-size:{размер}px;top:auto;bottom:1085px">{к['число']}</div>
+  <div class=единица style="top:378px">{к['единица']}</div>
+  <div class=черта style="top:448px"></div>
+  <div class=заголовок style="top:486px;font-size:84px">{к['заголовок']}</div>
+  <div class=текст style="top:700px;font-size:{кегль}px">
+{текст}
+  </div>
+  {снимок}
+  {знак_и_полоса(доля)}
+</div>""" + ХВОСТ
+
+
+def финал(ф: dict) -> str:
+    return голова() + f"""<div class=кадр style="background:{ТЁМНЫЙ};color:{СВЕТЛЫЙ}">
+  <div class=черта style="top:230px;background:rgba(255,255,255,.22)"></div>
+  <div class=заголовок style="top:290px;font-size:128px;color:{ЛАЙМ}">{ф['крупно']}</div>
+  <div class=текст style="top:640px;width:620px;color:{СВЕТЛЫЙ};font-weight:700">
+    <p>{ф['текст']}</p>
+    <p style="font-weight:400;font-size:38px">{ф['под']}</p>
+  </div>
+  {кот(ф['кот'])}
+  {знак_и_полоса(1.0, тёмный=True)}
+</div>""" + ХВОСТ
+
+
+def картинки(пост: dict, папка: Path) -> list[Path]:
+    файлы = []
+    for к in пост["кадры"]:
+        if not к.get("снимок"):
+            continue
+        цель = папка / f'{к["снимок"]}.jpg'
+        with Image.open(ТУТ.parent / "подборка-сайтов/сайты" / f'{к["снимок"]}.png') as и:
+            и = и.convert("RGB")
+            ширина, высота = и.size
+            и = и.crop((0, 0, ширина, min(int(высота * 0.8), int(ширина / (912 / 250)))))
+            и.thumbnail((1100, 1100), Image.LANCZOS)
+            и.save(цель, quality=78, optimize=True)
+        файлы.append(цель)
+    with Image.open(стиль.ПОСТБОТ / "assets/logo-dark.png") as и:
+        и = и.convert("RGBA")
+        и.thumbnail((240, 88), Image.LANCZOS)
+        и.save(папка / "logo.png", optimize=True)
+    return файлы + [папка / "logo.png"]
+
+
+def main():
+    файл = Path(sys.argv[1]).resolve()
+    пост = json.loads(файл.read_text())
+    папка = ТУТ / "холсты" / файл.stem
+    папка.mkdir(parents=True, exist_ok=True)
+
+    всего = len(пост["кадры"]) + 2
+    доски = [("Main.dc.html", "01 · Обложка", обложка(пост["обложка"], 1 / всего))]
+    for н, к in enumerate(пост["кадры"], 1):
+        доски.append((f"Kadr{н + 1:02d}.dc.html", f"{н + 1:02d} · {к['заголовок']}",
+                      страница(н, к, (н + 1) / всего)))
+    доски.append((f"Kadr{всего:02d}.dc.html", f"{всего:02d} · Финал", финал(пост["финал"])))
+    for имя, _, html in доски:
+        (папка / имя).write_text(html)
+
+    раскладка = {"artboards": [{"file": имя, "title": з, "x": i % 5 * 1180, "y": i // 5 * 1600,
+                                "w": 1080, "h": 1440}
+                               for i, (имя, з, _) in enumerate(доски)],
+                 "launch": {"view": "canvas"}}
+    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
+
+    п = sorted(Path("/private/tmp/claude-501/bundled-skills").glob("*/*/design/seed-canvas.mjs"),
+               key=lambda п: п.stat().st_mtime)[-1]
+    страница_файл = папка / "otchet.html"
+    команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"),
+               "--out", str(страница_файл), "--title", пост.get("название", "Холст"),
+               "--canvas", str(папка / "canvas.json")]
+    for имя, _, _ in доски:
+        команда += ["--artboard", str(папка / имя)]
+    for к in картинки(пост, папка):
+        команда += ["--image", str(к)]
+    р = subprocess.run(команда, capture_output=True, text=True)
+    проверка = subprocess.run(["node", str(п), "--check", str(страница_файл)],
+                              capture_output=True, text=True)
+    print((р.stderr.strip() + "\n" if р.stderr.strip() else "") + проверка.stdout.strip()[:200])
+    print("страница холста:", страница_файл)
+
+
+if __name__ == "__main__":
+    main()
