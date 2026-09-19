@@ -48,3 +48,7 @@ Style/*/сайты/
 Style/*/repo/
 Style/*/значки/*.png
 Style/*/значки/3d/
+
+# Служебное графа: лог догонялки и её замок — у каждой машины свои.
+graphify-out/.refresh.log
+graphify-out/.refreshing
