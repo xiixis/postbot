@@ -2,11 +2,37 @@
 // node снять.mjs <имя> <адрес> [ширина высота]  → сайты/<имя>.png
 import { createRequire } from "module";
 import { fileURLToPath } from "url";
-const require = createRequire("/Users/xiix/4xSoft/html-instagram-carousel/package.json");
+import { existsSync, readdirSync } from "fs";
+import { join, dirname } from "path";
+import { homedir } from "os";
+
+// Базу для playwright-core и сам Chrome ищем перебором, а не жёстким путём.
+// Раньше здесь стояла ссылка на `~/4xSoft/html-instagram-carousel/package.json`;
+// эта папка уехала в корзину, и снимальщик падал на первой же строке (19.09.2026).
+// Версия Chrome в пути тоже меняется с каждым обновлением — тот же приём, что у
+// помощника холста в `до-после/холст.py`: берём самую свежую из найденных.
+function _найти(корень, годится) {
+  if (!existsSync(корень)) return null;
+  return readdirSync(корень).sort().reverse().map(и => join(корень, и)).find(годится) ?? null;
+}
+
+const _база = _найти(join(homedir(), ".npm/_npx"),
+                     п => existsSync(join(п, "node_modules/playwright-core")));
+if (!_база) {
+  console.error("нет playwright-core: поставить `npx playwright --version` и повторить");
+  process.exit(1);
+}
+const require = createRequire(join(_база, "package.json"));
 const { chromium } = require("playwright-core");
 
 const [имя, адрес, ш = "1440", в = "900"] = process.argv.slice(2);
-const CHROME = "/Users/xiix/.cache/chrome-headless-shell/chrome-headless-shell/mac_arm-153.0.8010.36/chrome-headless-shell-mac-arm64/chrome-headless-shell";
+const _версия = _найти(join(homedir(), ".cache/chrome-headless-shell/chrome-headless-shell"),
+                       п => existsSync(join(п, "chrome-headless-shell-mac-arm64/chrome-headless-shell")));
+if (!_версия) {
+  console.error("нет chrome-headless-shell: поставить `npx playwright install chromium-headless-shell`");
+  process.exit(1);
+}
+const CHROME = join(_версия, "chrome-headless-shell-mac-arm64/chrome-headless-shell");
 
 const браузер = await chromium.launch({ executablePath: CHROME, headless: true });
 try {
