@@ -4,7 +4,7 @@
 > This is a token-optimized summary. For deep logic, see GRAPH_REPORT.md.
 
 ## Core Abstractions (God Nodes)
-1. `голова()` (229 edges)
+1. `голова()` (254 edges)
 2. `_Связь` (114 edges)
 3. `кадр_с_текстом()` (81 edges)
 4. `_пункт()` (67 edges)
