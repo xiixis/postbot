@@ -414,12 +414,17 @@ def обложка_обещание(о: dict, доля: float) -> str:
                 части += слово + " "
         строки += (f'<div style="{К}; font-size: {кегль}px; line-height: 1.02; white-space: nowrap;'
                    f' color: #FFFFFF;">{части.strip()}</div>')
+    # Надстрочника-визитки здесь больше нет: по замеру OpusClip (34 635 клипов)
+    # представление и «а вы задумывались» — стабильные аутсайдеры среди крючков,
+    # а медиана прорывных обложек — пять слов на всю обложку (vidIQ, 500 штук).
+    # Имя инструмента ушло внутрь карусели, на обложке стоит результат.
+    # Кот поднят с 700 до 880 px: в нише, забитой скриншотами интерфейсов, он и
+    # есть то, чего нет у соседей по ленте — актив, а не украшение в углу.
     return голова() + f"""<div style="position: relative; width: 1080px; height: 1440px; overflow: hidden; background: {ГРАФИТ};">
   {ПОДЛОЖКА}
-  <img src="kot-{стиль.латиницей(о['кот'])}.webp" style="position: absolute; right: -30px; bottom: 0; height: 700px;">
-  <div style="position: absolute; left: 72px; top: 150px; {К}; font-size: 40px; letter-spacing: .18em; color: {ЛАЙМ};">{о['надстрочник']}</div>
-  <div style="position: absolute; left: 72px; top: 232px;">{строки}</div>
-  <div style="position: absolute; left: 72px; top: {232 + len(о['крупно']) * int(кегль * 1.02) + 46}px; {Т}; font-weight: 700; font-size: 40px; color: #C3C7B8;">{о['под']}</div>
+  <img src="kot-{стиль.латиницей(о['кот'])}.webp" style="position: absolute; right: -60px; bottom: 0; height: 880px;">
+  <div style="position: absolute; left: 72px; top: 190px;">{строки}</div>
+  <div style="position: absolute; left: 72px; right: 430px; top: {190 + len(о['крупно']) * int(кегль * 1.02) + 46}px; {Т}; font-weight: 700; font-size: 40px; line-height: 1.25; color: #C3C7B8;">{о['под']}</div>
 {знак_слева()}
 {полоса(доля)}
 </div>""" + ХВОСТ
@@ -428,15 +433,22 @@ def обложка_обещание(о: dict, доля: float) -> str:
 def обложка_окно(о: dict, доля: float) -> str:
     """B — «Окно вместо рассказа»: обложка сделана из самого продукта, кота нет.
     Окно тёмное и почти во весь кадр, внутри одна набранная строка очень крупным моношрифтом."""
-    # Моношрифт ровно 0,6 em на знак (замерено), плюс приглашение «$ » и курсор.
+    # Моношрифт ровно 0,6 em на знак (замерено). Показываем пару «попросил →
+    # сделано»: одна команда в окне была подводкой, а обложка должна нести
+    # результат (OpusClip, 34 635 клипов: показ результата — лучший из пяти
+    # замеренных крючков). Просьба набрана мелко и приглушённо, результат —
+    # крупно и лаймом: в ленте из двух строк читается именно вторая.
     ширина_строки = 1000 - 2 * ВНУТР
     кегль = int(ширина_строки * 0.95 / ((len(о["строка"]) + 3) * 0.6))
-    нутро = (f'<div style="position: absolute; left: {ВНУТР}px; right: {ВНУТР}px; top: 430px; {М};'
-             f' font-size: {кегль}px; line-height: 1.34; color: {НОЧЬ_ТЕКСТ};">'
-             f'<div><span style="color: {ЛАЙМ};">$ </span>{о["строка"]}</div>'
-             # Курсор строкой ниже, как в настоящем терминале после ввода команды.
-             f'<div><span style="display: inline-block; width: {int(кегль * .55)}px;'
-             f' height: {int(кегль * .95)}px; background: {ЛАЙМ}; vertical-align: -14%;"></span></div></div>'
+    просьба = о.get("просьба", "")
+    кегль_просьбы = min(52, int(ширина_строки * 0.95 / ((len(просьба) + 3) * 0.6))) if просьба else 0
+    нутро = (
+        (f'<div style="position: absolute; left: {ВНУТР}px; right: {ВНУТР}px; top: 330px; {М};'
+         f' font-size: {кегль_просьбы}px; line-height: 1.34; color: #7F857A;">'
+         f'<span style="color: #7F857A;">$ </span>{просьба}</div>' if просьба else "")
+        + f'<div style="position: absolute; left: {ВНУТР}px; right: {ВНУТР}px; top: 470px; {М};'
+          f' font-size: {кегль}px; line-height: 1.24; color: {ЛАЙМ};">'
+          f'<span style="color: {НОЧЬ_ТЕКСТ};">✓ </span>{о["строка"]}</div>'
              f'<div style="position: absolute; left: {ВНУТР}px; right: {ВНУТР}px; bottom: 330px; {Т};'
              f' font-weight: 700; font-size: 52px; line-height: 1.24; color: #FFFFFF;">{о["внизу"]}</div>'
              f'<img src="logo.png" style="position: absolute; left: {ВНУТР}px; bottom: 70px; height: 44px;">')
@@ -461,8 +473,7 @@ def обложка_оглавление(о: dict, доля: float) -> str:
     return голова() + f"""<div style="position: relative; width: 1080px; height: 1440px; overflow: hidden; background: {ГРАФИТ};">
   {ПОДЛОЖКА}
   <img src="kot-{стиль.латиницей(о['кот'])}.webp" style="position: absolute; right: -40px; bottom: 0; height: 400px; z-index: 0;">
-  <div style="position: absolute; left: 0; right: 0; top: 130px; text-align: center; {К}; font-size: 38px; letter-spacing: .18em; color: {ЛАЙМ};">{о['надстрочник']}</div>
-  <div style="position: absolute; left: 0; right: 0; top: 210px; text-align: center; {К}; font-size: {кегль_в_строку(о['крупно'], 900, 140)}px; line-height: 1.0; color: #FFFFFF;">{о['крупно']}</div>
+  <div style="position: absolute; left: 0; right: 0; top: 170px; text-align: center; {К}; font-size: {кегль_в_строку(о['крупно'], 900, 140)}px; line-height: 1.0; color: #FFFFFF;">{о['крупно']}</div>
   <div style="position: absolute; left: 90px; right: 90px; top: 430px; display: flex; flex-direction: column; align-items: center; gap: 28px; z-index: 1;">{пилюли}</div>
 {знак_слева()}
 {полоса(доля)}
