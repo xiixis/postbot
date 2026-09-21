@@ -254,13 +254,29 @@ def обложка_кот(о: dict) -> str:
     """А — «кот в темноте»: плита с обещанием через чужую боль + графитовое поле с котом,
     чей собственный тёмный корпус сливается с полем, как студийный фон у автора."""
     шов = о.get("шов", 648)
+    # «Герой — число»: вариант того же макета, где первым читается цифра во всю
+    # ширину, а не заголовок в три строки. Заведён 21.09.2026, когда обложка поста
+    # про фразы вышла неотличимой от поста про 80 команд: те же плиты, тот же
+    # стикер на шве, разница только в словах. Число даёт другой первый взгляд.
+    герой = о.get("герой_число")
+    if герой:
+        шапка = (f'<div data-блок style="position:absolute;left:{КРАЙ}px;top:120px;'
+                 f'{ГЛАВНЫЙ};font-size:420px;line-height:.82;letter-spacing:-.05em;'
+                 f'color:{ГРАФИТ}">{герой}</div>'
+                 f'<div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:470px;'
+                 f'{ГЛАВНЫЙ};font-size:76px;line-height:1.04;letter-spacing:-.03em;'
+                 f'text-transform:uppercase;color:{ГРАФИТ}">{"<br>".join(о["заголовок"])}</div>')
+        стикер = ""
+    else:
+        шапка = (f'<div class=шапка style="top:84px;font-size:110px">{"<br>".join(о["заголовок"])}</div>'
+                 f'<div class=подзаг style="top:424px;font-size:41px">{"<br>".join(о["под"])}</div>')
+        стикер = стикер_шва(шов - 63, знак=о.get("знак", "/"))
     return голова(тёмный=True) + f"""<div class=кадр>
   <div class=плита style="height:{шов}px"></div>
   <div class=поле style="top:{шов}px"></div>
   {стиль.кот_файлом(о["кот"])}
-  <div class=шапка style="top:84px;font-size:110px">{"<br>".join(о["заголовок"])}</div>
-  <div class=подзаг style="top:424px;font-size:41px">{"<br>".join(о["под"])}</div>
-{стикер_шва(шов - 63, знак=о.get("знак", "/"))}
+  {шапка}
+{стикер}
   <div data-блок style="position:absolute;left:300px;top:1074px;width:200px;height:64px;
       border-radius:32px;border:2px solid {ЛАЙМ};display:flex;align-items:center;
       justify-content:center;{ГЛАВНЫЙ};font-size:34px;color:{ЛАЙМ}">&#8594;</div>
@@ -271,6 +287,11 @@ def обложка_кот(о: dict) -> str:
 def обложка_поле(о: dict) -> str:
     """Б — «поле ввода»: показать сам механизм, а не рассказать о нём. Плит нет вовсе,
     весь кадр графитовый, герой — раскрытое меню команд."""
+    # Строки растягиваются под число пунктов: меню — герой кадра, и при шести
+    # коротких фразах прежние 58 px оставляли снизу пустую треть (21.09.2026).
+    сколько = len(о["список"])
+    шаг = max(58, min(104, round((1245 - 700) / max(сколько, 1)) - 6))
+    кегль = 32 if шаг < 70 else 40
     строки = ""
     for н, с in enumerate(о["список"]):
         выбрана = н == о.get("выбрана", len(о["список"]) - 1)
@@ -280,8 +301,8 @@ def обложка_поле(о: dict) -> str:
         # «/без предисловий» читается как несуществующая команда и обманывает.
         слеш = (f'<span style="color:{ЛАЙМ if выбрана else ГЛУШЕ}">/</span>'
                 if о.get("слеш", True) else "")
-        строки += (f'<div style="display:flex;align-items:center;height:58px;padding:0 26px;'
-                   f'border-radius:14px;{фон}{ГЛАВНЫЙ};font-size:32px;color:{цвет}">'
+        строки += (f'<div style="display:flex;align-items:center;height:{шаг}px;padding:0 30px;'
+                   f'border-radius:16px;{фон}{ГЛАВНЫЙ};font-size:{кегль}px;color:{цвет}">'
                    f'{слеш}{с}</div>')
     return голова(тёмный=True) + f"""<div class=кадр>
   <div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:150px;{ГЛАВНЫЙ};
@@ -302,20 +323,28 @@ def обложка_поле(о: dict) -> str:
 def обложка_полка(о: dict) -> str:
     """В — «полка рубрик»: обещание через объём и порядок, а не через боль. Инфографика-
     оглавление: ни картинки, ни тёмного поля, зато сразу видно, сколько всего внутри."""
+    # Число справа — сколько пунктов в рубрике, из данных поста. Раньше здесь стояла
+    # зашитая восьмёрка от поста про 80 команд, и полка обещала по восемь фраз там,
+    # где их четыре (21.09.2026).
+    сколько = о.get("по_сколько") or []
+    высота = 78 if len(о["рубрики"]) > 5 else 104
     корешки = ""
     for н, р in enumerate(о["рубрики"]):
+        число = сколько[н] if н < len(сколько) else ""
         корешки += (f'<div style="display:flex;align-items:center;justify-content:space-between;'
-                    f'height:78px;padding:0 34px;border-radius:16px;background:{ОЛИВА};'
-                    f'{ГЛАВНЫЙ};font-size:30px;color:#FFFFFF">'
-                    f'<span>{р}</span><span>8</span></div>')
+                    f'height:{высота}px;padding:0 34px;border-radius:16px;background:{ОЛИВА};'
+                    f'{ГЛАВНЫЙ};font-size:{30 if высота == 78 else 36}px;color:#FFFFFF">'
+                    f'<span>{р}</span><span>{число}</span></div>')
+    рейка = ("" if len(о["рубрики"]) < 6 else
+             f'<div data-блок style="position:absolute;left:860px;top:360px;width:46px;'
+             f'height:{min(884, 140 + len(о["рубрики"]) * (высота + 12))}px;background:{ЛАЙМ};'
+             f'z-index:4;clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%)"></div>')
     return голова() + f"""<div class=кадр style="background:{КРЕМ}">
   <div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:90px;{ГЛАВНЫЙ};
       font-size:46px;color:{ГРАФИТ}">{о["заголовок"]}</div>
   <div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:180px;display:flex;
       flex-direction:column;gap:12px">{корешки}</div>
-  <div data-блок style="position:absolute;left:860px;top:360px;width:46px;height:884px;
-      background:{ЛАЙМ};z-index:4;
-      clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%)"></div>
+  {рейка}
   {знак(0.52)}
 </div>""" + ХВОСТ
 
@@ -325,7 +354,15 @@ def финал(ф: dict) -> str:
     """Та же двухполосная схема, что у обложки, но пропорция и мысль другие: обложка
     обещает «одно слово вместо абзаца», финал говорит «их 80, сохрани»."""
     шов = ф.get("шов", 835)
-    оглавление = "".join(f'<div style="margin-bottom:9px">{р}</div>' for р in ф["оглавление"])
+    # Оглавление рубрик — строкой пилюль, а не коробкой с кеглем 13. Прежняя коробка
+    # 210×250 была рассчитана на десять рубрик прошлого поста; при четырёх она
+    # превращалась в нечитаемую марку (21.09.2026, претензия владельца).
+    пилюли = "".join(
+        f'<span style="display:inline-block;border:2px solid {ОЛИВА};border-radius:999px;'
+        f'padding:10px 22px;margin:0 10px 12px 0;{ГЛАВНЫЙ};font-size:26px;color:{ЛАЙМ}">{р}</span>'
+        for р in ф.get("оглавление") or [])
+    оглавление = (f'<div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;'
+                  f'top:{шов + 60}px">{пилюли}</div>' if пилюли else "")
     иконки = ("M12 20.5l-1.5-1.4C5.4 14.5 2.5 11.9 2.5 8.7 2.5 6.1 4.5 4 7.2 4c1.5 0 3 .7 3.8 1.9"
               "h2C13.8 4.7 15.3 4 16.8 4c2.7 0 4.7 2.1 4.7 4.7 0 3.2-2.9 5.8-8 10.4z")
     return голова(знак_на_тёмном=True) + f"""<div class=кадр>
@@ -334,11 +371,16 @@ def финал(ф: dict) -> str:
   <div class=шапка style="top:96px;font-size:100px">{"<br>".join(ф["заголовок"])}</div>
   <div class=подзаг style="top:520px;font-size:35px">{"<br>".join(ф["под"])}</div>
   {стиль.кот_файлом(ф["кот"])}
-  <div data-блок style="position:absolute;left:720px;top:910px;width:210px;height:250px;
-      border-radius:26px;background:#1E211B;border:3px solid {ОЛИВА};padding:18px 14px;
-      box-sizing:border-box;{ОБЫЧНЫЙ};font-size:13px;line-height:1.1;color:{ЛАЙМ}">{оглавление}</div>
-  <div data-блок style="position:absolute;left:640px;top:1180px;width:370px;text-align:center;
-      {ГЛАВНЫЙ};font-size:26px;color:{ЛАЙМ}">{ф["ссылка"]}</div>
+  {оглавление}
+  <div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:1040px;height:140px;
+      border-radius:32px;background:{ОЛИВА};display:flex;align-items:center;gap:26px;
+      padding:0 38px;box-sizing:border-box">
+    <svg viewBox="0 0 24 24" width="62" height="62" fill="{ЛАЙМ}"><path d="M21.6 3.2 2.9 10.4c-1.3.5-1.3
+        1.2-.2 1.6l4.8 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.7
+        c.3-1.3-.5-1.9-1.4-1.1zM8.9 13.1l9.6-6c.5-.3.9-.1.5.2l-8.2 7.4-.3 3.4-1.6-5z"/></svg>
+    <div><div style="{ГЛАВНЫЙ};font-size:46px;color:#FFFFFF;line-height:1.1">{ф["ссылка"]}</div>
+    <div style="{ОБЫЧНЫЙ};font-size:26px;color:#D8E0C8;margin-top:6px">{ф.get("под_ссылкой", "")}</div></div>
+  </div>
   <div data-блок style="position:absolute;left:390px;top:{шов - 21}px;width:300px;height:84px;
       border-radius:42px;background:{ОЛИВА};box-shadow:0 0 0 9px #FFFFFF;display:flex;
       align-items:center;justify-content:center;gap:34px">
