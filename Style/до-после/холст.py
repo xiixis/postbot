@@ -12,6 +12,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from помощник_холста import помощник as найти_помощника     # noqa: E402
+
 ТУТ = Path(__file__).parent
 sys.path.insert(0, str(ТУТ))
 import рисовать as р  # noqa: E402
@@ -28,11 +31,7 @@ def латиницей(имя: str) -> str:
 
 def помощник() -> Path:
     """Помощник холста из распакованного скила design; путь меняется с версией Claude Code."""
-    найдено = sorted(Path("/private/tmp/claude-501/bundled-skills").glob("*/*/design/seed-canvas.mjs"),
-                     key=lambda п: п.stat().st_mtime)
-    if not найдено:
-        raise SystemExit("нет помощника холста: в сессии Claude Code вызвать /design, он распакуется")
-    return найдено[-1]
+    return найти_помощника()
 
 
 def доска(html: str) -> str:

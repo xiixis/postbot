@@ -194,11 +194,20 @@ def открыть(ид: int, куда: str = "tiktok", чат: int | None = Non
 
 
 def открыть_папку(папка: Path) -> bool:
-    """Показывает папку в Finder. На чужой системе молча ничего не делает."""
-    if platform.system() != "Darwin":
-        return False
+    """Показывает папку в проводнике системы.
+
+    Раньше умела только мак и на всём остальном молча отвечала «нет». Команды
+    `open` нет ни на Windows, ни на линуксе, поэтому каждая система зовётся
+    своим способом: os.startfile на Windows, xdg-open на линуксе.
+    """
+    система = platform.system()
     try:
-        subprocess.run(["open", str(папка)], check=False, timeout=10)
+        if система == "Darwin":
+            subprocess.run(["open", str(папка)], check=False, timeout=10)
+        elif система == "Windows":
+            os.startfile(str(папка))                         # noqa: S606
+        else:
+            subprocess.run(["xdg-open", str(папка)], check=False, timeout=10)
         return True
     except Exception:                                        # noqa: BLE001
         return False

@@ -18,6 +18,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from помощник_холста import помощник as найти_помощника     # noqa: E402
+
 from PIL import Image
 
 ТУТ = Path(__file__).parent
@@ -177,11 +180,7 @@ def латиницей(имя: str) -> str:
 
 
 def помощник() -> Path:
-    найдено = sorted(Path("/private/tmp/claude-501/bundled-skills").glob("*/*/design/seed-canvas.mjs"),
-                     key=lambda п: п.stat().st_mtime)
-    if not найдено:
-        raise SystemExit("нет помощника холста: в сессии Claude Code вызвать /design")
-    return найдено[-1]
+    return найти_помощника()
 
 
 def main():

@@ -14,7 +14,7 @@ import sys
 from io import BytesIO
 from pathlib import Path
 
-ПОСТБОТ = Path("/Users/xiix/4xSoft/postbot")
+ПОСТБОТ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ПОСТБОТ))
 import config  # noqa: E402
 from PIL import Image  # noqa: E402

@@ -18,6 +18,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from помощник_холста import помощник as найти_помощника     # noqa: E402
+
 from PIL import Image
 
 ТУТ = Path(__file__).parent
@@ -415,8 +418,7 @@ def main():
                  "launch": {"view": "canvas"}}
     (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
 
-    п = sorted(Path("/private/tmp/claude-501/bundled-skills").glob("*/*/design/seed-canvas.mjs"),
-               key=lambda п: п.stat().st_mtime)[-1]
+    п = найти_помощника()
     страница = папка / f"{латиницей(файл.stem)}.html"   # имя страницы — по имени поста
     команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"),
                "--out", str(страница), "--title", пост.get("название", "Холст"),

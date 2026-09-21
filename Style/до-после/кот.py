@@ -10,7 +10,6 @@ import time
 from pathlib import Path
 
 ТУТ = Path(__file__).parent
-sys.path.insert(0, "/Users/xiix/4xSoft/postbot")
 sys.path.insert(0, str(ТУТ.parent.parent))
 import config  # noqa: E402
 import mascot  # noqa: E402

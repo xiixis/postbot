@@ -54,8 +54,14 @@ def хром() -> str:
     if явный:
         return явный
     кандидаты = [
+        # мак
         "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-        "chromium", "chromium-browser", "google-chrome", "google-chrome-stable",
+        # Windows: обычная установка, 32-битная и «только для этого пользователя»
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+        # сервер и всё, что нашлось в PATH
+        "chrome", "chromium", "chromium-browser", "google-chrome", "google-chrome-stable",
     ]
     for к in кандидаты:
         найден = к if os.path.isfile(к) else shutil.which(к)

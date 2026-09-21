@@ -23,7 +23,7 @@ from pathlib import Path
 
 ПРОЕКТ = os.getenv("GCP_PROJECT", "xtube-4x-covers")
 РЕГИОН = os.getenv("GCP_REGION", "us-central1")
-ПОИСКОВИК = Path("/Users/xiix/4xSoft/yt-searcher")
+ПОИСКОВИК = Path(__file__).resolve().parent.parent.parent / "yt-searcher"
 
 _временный: Path | None = None
 _учётки = None

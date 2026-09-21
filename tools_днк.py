@@ -32,10 +32,13 @@ from pathlib import Path
 
 КОРЕНЬ = Path(__file__).resolve().parent
 ПАПКА = КОРЕНЬ / "Style"
-СТИЛИ_ПАПКА = Path("/Users/xiix/4xSoft/postbot/Style")   # код, посты, референсы и ДНК — в одном месте
+СТИЛИ_ПАПКА = ПАПКА          # код, посты, референсы и ДНК — в одном месте
 ШАБЛОНЫ = СТИЛИ_ПАПКА
 ЗАМЕР = ШАБЛОНЫ / "замер.py"
-ПИТОН = str(КОРЕНЬ / ".venv" / "bin" / "python")
+# Внутри окружения питон лежит по-разному: bin/python на маке и линуксе,
+# Scripts/python.exe на Windows.
+ПИТОН = str(КОРЕНЬ / ".venv" / ("Scripts" if sys.platform == "win32" else "bin")
+            / ("python.exe" if sys.platform == "win32" else "python"))
 
 # Каждый стиль: откуда списан, чем подтверждается, где чужие кадры, где наши.
 # Адреса и числа отдачи взяты из `пост.json` рядом с кадрами и из разборов,

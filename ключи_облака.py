@@ -19,7 +19,9 @@ import os
 import sys
 from pathlib import Path
 
-ПОИСКОВИК = Path("/Users/xiix/4xSoft/yt-searcher")
+# Поисковик лежит соседней папкой рядом с postbot, а не по жёсткому адресу:
+# иначе код работает только на одной машине.
+ПОИСКОВИК = Path(__file__).resolve().parent.parent / "yt-searcher"
 
 # Какой сервис в облаке какой переменной окружения соответствует. Имена взяты из
 # `app/keys.py`, чтобы у нас и у 4xTube ключ назывался одинаково.

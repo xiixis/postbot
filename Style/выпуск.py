@@ -14,14 +14,11 @@ from PIL import Image
 ТУТ = Path(__file__).parent
 sys.path.insert(0, str(ТУТ))
 import стиль  # noqa: E402
+from помощник_холста import помощник as найти_помощника     # noqa: E402
 
 
 def помощник() -> Path:
-    найдено = sorted(Path("/private/tmp/claude-501/bundled-skills").glob("*/*/design/seed-canvas.mjs"),
-                     key=lambda п: п.stat().st_mtime)
-    if not найдено:
-        raise SystemExit("нет помощника холста: в сессии Claude Code вызвать /design, он распакуется")
-    return найдено[-1]
+    return найти_помощника()
 
 
 def снять(папка: Path, куда: Path) -> None:

@@ -14,7 +14,7 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/Users/xiix/4xSoft/postbot")
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config  # noqa: E402
 import requests  # noqa: E402
 

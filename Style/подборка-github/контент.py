@@ -4,8 +4,9 @@
 Данные и проверка. Ничего не рисует и не публикует.
 """
 import json, re, sys
+from pathlib import Path
 
-sys.path.insert(0, "/Users/xiix/4xSoft/postbot")
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 
 def С(вид, заголовок="", текст="", значение="", строки=None, реплика=""):

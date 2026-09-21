@@ -10,6 +10,7 @@
 пересоздавать, пока вы ищете телефон.
 """
 import asyncio
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -40,7 +41,13 @@ async def main():
 
     вход = await клиент.qr_login()
     нарисовать(вход.url)
-    subprocess.run(["open", str(КАРТИНКА)], check=False)
+    # Команды open нет ни на Windows, ни на линуксе: каждая система своим способом.
+    if sys.platform == "darwin":
+        subprocess.run(["open", str(КАРТИНКА)], check=False)
+    elif sys.platform == "win32":
+        os.startfile(str(КАРТИНКА))                          # noqa: S606
+    else:
+        subprocess.run(["xdg-open", str(КАРТИНКА)], check=False)
     print("Картинка открылась. В телефоне: Настройки → Устройства →")
     print("Подключить устройство, и наведите камеру на неё.")
     print("Жду до двух минут, картинка обновляется сама…")

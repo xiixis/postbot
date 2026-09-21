@@ -107,8 +107,11 @@ def _окружение() -> dict:
     for ключ in КЛЮЧИ_API:
         среда.pop(ключ, None)
     путь = бинарь()
-    добавка = [os.path.expanduser("~/.claude/local"), "/opt/homebrew/bin",
-               "/usr/local/bin", os.path.expanduser("~/.local/bin")]
+    добавка = [os.path.expanduser("~/.claude/local"),
+               os.path.expanduser("~/.local/bin")]
+    if sys.platform != "win32":
+        # На Windows этих папок нет вовсе, и дописывать их в PATH — сорить.
+        добавка += ["/opt/homebrew/bin", "/usr/local/bin"]
     if путь:
         добавка.insert(0, str(Path(путь).parent))
     среда["PATH"] = os.pathsep.join(добавка + [среда.get("PATH", "")])
