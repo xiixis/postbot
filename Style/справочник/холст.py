@@ -182,10 +182,14 @@ def строка(п: dict, верх: int, метка: str, цвета: dict) -> 
     Перенос описания идёт под себя, по левому краю колонки текста, а не под иконку:
     иконка стоит своей колонкой и в поток строки не входит.
     """
+    # Слеш ставится только настоящим командам. Справочник годится и для шпаргалки
+    # без команд — тогда в пункте нет ключа «слеш», и строка начинается прямо с
+    # имени приёма. Вариация записана в ВАРИАЦИИ.md (21.09.2026).
+    слеш = (f'<span class=слеш style="color:{цвета["слеш"]}">/</span>'
+            if п.get("слеш", True) else "")
     return (f'  <div class=строка data-блок style="top:{верх}px">'
             f'{значок(метка, цвета["значок"], подложка=цвета.get("значок_фон", "transparent"))}'
-            f'<div class=текст style="color:{цвета["что"]}">'
-            f'<span class=слеш style="color:{цвета["слеш"]}">/</span>'
+            f'<div class=текст style="color:{цвета["что"]}">{слеш}'
             f'<span class=имя style="color:{цвета["имя"]}">{п["имя"]}</span>'
             f'<span class=тире> - </span>{п["что"]}</div></div>')
 
@@ -233,13 +237,17 @@ def кадр(к: dict) -> str:
 
 
 # ── Обложки ─────────────────────────────────────────────────────────────────
-def стикер_шва(верх: int, сторона: int = 253) -> str:
+def стикер_шва(верх: int, сторона: int = 253, знак: str = "/") -> str:
     """Единственный источник глубины в плоской вёрстке: ровно один элемент пересекает
-    строго прямую границу плит, с белой обводкой. Скругление 28% стороны — авторское."""
+    строго прямую границу плит, с белой обводкой. Скругление 28% стороны — авторское.
+
+    `знак` меняется вместе с темой: слеш честен для справочника команд, а на
+    шпаргалке из фраз он обещает команды, которых в посте нет.
+    """
     return (f'  <div data-блок style="position:absolute;left:96px;top:{верх}px;width:{сторона}px;'
             f'height:{сторона}px;border-radius:{round(сторона * .28)}px;background:{ОЛИВА};'
             f'box-shadow:0 0 0 9px #FFFFFF;display:flex;align-items:center;justify-content:center;'
-            f'{ГЛАВНЫЙ};font-size:150px;line-height:1;color:{ЛАЙМ}">/</div>')
+            f'{ГЛАВНЫЙ};font-size:150px;line-height:1;color:{ЛАЙМ}">{знак}</div>')
 
 
 def обложка_кот(о: dict) -> str:
@@ -252,7 +260,7 @@ def обложка_кот(о: dict) -> str:
   {стиль.кот_файлом(о["кот"])}
   <div class=шапка style="top:84px;font-size:110px">{"<br>".join(о["заголовок"])}</div>
   <div class=подзаг style="top:424px;font-size:41px">{"<br>".join(о["под"])}</div>
-{стикер_шва(шов - 63)}
+{стикер_шва(шов - 63, знак=о.get("знак", "/"))}
   <div data-блок style="position:absolute;left:300px;top:1074px;width:200px;height:64px;
       border-radius:32px;border:2px solid {ЛАЙМ};display:flex;align-items:center;
       justify-content:center;{ГЛАВНЫЙ};font-size:34px;color:{ЛАЙМ}">&#8594;</div>
@@ -268,16 +276,20 @@ def обложка_поле(о: dict) -> str:
         выбрана = н == о.get("выбрана", len(о["список"]) - 1)
         фон = f"background:{ОЛИВА};" if выбрана else ""
         цвет = "#FFFFFF" if выбрана else ГЛУШЕ
+        # Слеш в подсказке поля — примета команд. У шпаргалки из фраз его нет:
+        # «/без предисловий» читается как несуществующая команда и обманывает.
+        слеш = (f'<span style="color:{ЛАЙМ if выбрана else ГЛУШЕ}">/</span>'
+                if о.get("слеш", True) else "")
         строки += (f'<div style="display:flex;align-items:center;height:58px;padding:0 26px;'
                    f'border-radius:14px;{фон}{ГЛАВНЫЙ};font-size:32px;color:{цвет}">'
-                   f'<span style="color:{ЛАЙМ if выбрана else ГЛУШЕ}">/</span>{с}</div>')
+                   f'{слеш}{с}</div>')
     return голова(тёмный=True) + f"""<div class=кадр>
   <div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:150px;{ГЛАВНЫЙ};
       font-size:70px;line-height:1.02;letter-spacing:-.03em;text-transform:uppercase;
       color:#FFFFFF">{"<br>".join(о["заголовок"])}</div>
   <div data-блок style="position:absolute;left:{КРАЙ}px;right:{КРАЙ}px;top:470px;height:130px;
       border-radius:28px;background:#1E211B;border:2px solid #3A3F36;display:flex;
-      align-items:center;padding:0 36px;{ГЛАВНЫЙ};font-size:54px;color:{ЛАЙМ}">/
+      align-items:center;padding:0 36px;{ГЛАВНЫЙ};font-size:54px;color:{ЛАЙМ}">{"/" if о.get("слеш", True) else "+"}
     <span style="{ОБЫЧНЫЙ};font-size:40px;color:{ГЛУШЕ};margin-left:8px">{о["подсказка"]}</span>
     <span style="width:5px;height:56px;background:{ЛАЙМ};margin-left:10px"></span>
   </div>
@@ -400,13 +412,18 @@ def main():
         "Двигайте и правьте прямо здесь, потом Save и напишите «готово»."}]
     (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
 
+    # Коты и логотип кладутся рядом с досками ДО помощника: доски ссылаются на них
+    # по имени файла, и без них кадр снимается с дырами вместо кота. Раньше вызов
+    # стоял ниже, и когда помощника на диске нет, падение уносило с собой картинки.
+    рядом = картинки(пост, папка)
+
     п = дп.помощник()
     страница = папка / f"{дп.латиницей(файл.stem)}.html"
     команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"),
                "--out", str(страница), "--title", пост["название"], "--canvas", str(папка / "canvas.json")]
     for имя, _, _ in доски:
         команда += ["--artboard", str(папка / имя)]
-    for к in картинки(пост, папка):
+    for к in рядом:
         команда += ["--image", str(к)]
     вывод = subprocess.run(команда, capture_output=True, text=True)
     проверка = subprocess.run(["node", str(п), "--check", str(страница)], capture_output=True, text=True)

@@ -554,13 +554,18 @@ def main():
         "Двигайте и правьте прямо здесь, потом Save и напишите «готово»."}]
     (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
 
+    # Картинки кладутся рядом с досками ДО помощника: доски ссылаются на них по
+    # имени файла, и если помощника на диске нет, падение уносило их с собой —
+    # доски оставались со ссылками в пустоту (та же правка сделана в «справочнике»).
+    рядом = картинки(пост, папка)
+
     п = дп.помощник()
     страница = папка / f"{дп.латиницей(файл.stem)}.html"
     команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"), "--out", str(страница),
                "--title", пост["название"], "--canvas", str(папка / "canvas.json")]
     for имя, _, _ in доски:
         команда += ["--artboard", str(папка / имя)]
-    for к in картинки(пост, папка):
+    for к in рядом:
         команда += ["--image", str(к)]
     вывод = subprocess.run(команда, capture_output=True, text=True)
     проверка = subprocess.run(["node", str(п), "--check", str(страница)], capture_output=True, text=True)
