@@ -41,7 +41,7 @@ from PIL import Image  # noqa: E402
 ШИРИНА_ТЕКСТА = W - СЛЕВА * 2
 
 
-def картинка(путь: str, ширина: int = ШИРИНА_ТЕКСТА) -> tuple[str, float]:
+def картинка(путь: str, кроп: list | None = None, ширина: int = ШИРИНА_ТЕКСТА) -> tuple[str, float]:
     """Снимок данными и его отношение высоты к ширине.
 
     По `file://` Chrome снимок молча не рисует, поэтому только данными. Отношение
@@ -53,6 +53,13 @@ def картинка(путь: str, ширина: int = ШИРИНА_ТЕКСТ�
         ф = ТУТ / путь
     with Image.open(ф) as и:
         и = и.convert("RGB")
+        if кроп:
+            # Доли, а не пиксели: снимки приходят разного размера. Нужно, чтобы
+            # у страницы издания не занимала полкадра пустая шапка с меню, а у
+            # GitHub читалось имя репозитория, а не мелочь по всей странице.
+            л, в_, п, н = кроп
+            и = и.crop((round(и.width * л), round(и.height * в_),
+                        round(и.width * п), round(и.height * н)))
         if и.width > ширина:
             и = и.resize((ширина, round(и.height * ширина / и.width)), Image.LANCZOS)
         доля = и.height / и.width
@@ -61,12 +68,16 @@ def картинка(путь: str, ширина: int = ШИРИНА_ТЕКСТ�
     return "data:image/jpeg;base64," + base64.b64encode(буф.getvalue()).decode(), доля
 
 
-def рамка(путь: str, верх: int, доступно: int) -> str:
-    """Снимок в скруглённой рамке: вписан по ширине, при нехватке места обрезан снизу."""
-    данные_, доля = картинка(путь)
-    высота = min(доступно, round(ШИРИНА_ТЕКСТА * доля))
-    сдвиг = верх + (доступно - высота if высота < доступно else 0)
-    return (f"<div class=снимок style='top:{сдвиг}px;height:{высота}px'>"
+def рамка(путь: str, предел: int, кроп: list | None = None) -> str:
+    """Снимок в скруглённой рамке: вписан по ширине, высокий обрезается снизу.
+
+    `предел` — сколько высоты стиль готов отдать снимку. Рамка прижата к низу
+    колонки (`margin-top:auto`), поэтому воздух при коротком тексте остаётся
+    между текстом и снимком, а не под ним.
+    """
+    данные_, доля = картинка(путь, кроп)
+    высота = min(предел, round(ШИРИНА_ТЕКСТА * доля))
+    return (f"<div class=снимок style='height:{высота}px'>"
             f"<img src='{данные_}'></div>")
 
 
@@ -84,28 +95,32 @@ body{{background:{ГРУНТ};color:{ЧЕРНИЛА};font-family:Golos,sans-seri
 .карточка{{position:absolute;left:{ПОЛЕ}px;top:{ПОЛЕ}px;width:{W - ПОЛЕ * 2}px;
   height:{НИЗ_КАРТОЧКИ - ПОЛЕ}px;background:{КАРТОЧКА};border-radius:{РАДИУС}px;
   box-shadow:0 24px 70px rgba(17,17,17,.10)}}
-.рубрика{{position:absolute;left:{СЛЕВА}px;top:{ПОЛЕ + ВНУТРИ}px;background:{ПЛАШКА};
-  color:{НА_ПЛАШКЕ};font-family:Onest,sans-serif;font-weight:800;font-size:40px;
+/* Блоки идут потоком в колонке, а не по вычисленным координатам. Считать высоту
+   заголовка формулой по длине строки нельзя: на кадре 07 «Учителям дарят год
+   Claude» перенеслось на вторую строку, которой формула не ждала, и пояснение
+   налезло сверху на 61 px. Поток такую ошибку исключает как класс. */
+.содержимое{{position:absolute;left:{СЛЕВА}px;top:{ПОЛЕ + ВНУТРИ}px;width:{ШИРИНА_ТЕКСТА}px;
+  height:{НИЗ_КАРТОЧКИ - ПОЛЕ - ВНУТРИ * 2}px;display:flex;flex-direction:column;gap:44px}}
+.рубрика{{align-self:flex-start;background:{ПЛАШКА};color:{НА_ПЛАШКЕ};
+  font-family:Onest,sans-serif;font-weight:800;font-size:40px;
   letter-spacing:.02em;padding:18px 34px 22px;border-radius:999px;
   box-shadow:0 10px 26px rgba(17,17,17,.18)}}
-.заголовок{{position:absolute;left:{СЛЕВА}px;width:{ШИРИНА_ТЕКСТА}px;
-  font-family:Onest,sans-serif;font-weight:800;letter-spacing:-.025em;line-height:1.06;
-  color:{ЧЕРНИЛА}}}
-.пояснение{{position:absolute;left:{СЛЕВА}px;width:{ШИРИНА_ТЕКСТА}px;font-size:48px;
-  line-height:1.32;color:{СЕРЫЙ}}}
+.заголовок{{font-family:Onest,sans-serif;font-weight:800;letter-spacing:-.025em;
+  line-height:1.06;color:{ЧЕРНИЛА}}}
+.пояснение{{font-size:48px;line-height:1.32;color:{СЕРЫЙ}}}
 .пояснение b{{font-weight:700;color:{ЧЕРНИЛА}}}
-.снимок{{position:absolute;left:{СЛЕВА}px;width:{ШИРИНА_ТЕКСТА}px;border-radius:18px;
-  overflow:hidden;background:{ГРУНТ};box-shadow:0 18px 48px rgba(17,17,17,.16)}}
+.снимок{{margin-top:auto;width:100%;border-radius:18px;overflow:hidden;min-height:0;
+  background:{ГРУНТ};box-shadow:0 18px 48px rgba(17,17,17,.16)}}
 /* Снимок вписывается по ШИРИНЕ и обрезается снизу, а не по сторонам: сайт, у
    которого срезаны поля, читается как чужой мусор — на пробе у worklouder от
    «More Talking» осталось «re Talking». */
 .снимок img{{width:100%;height:auto;display:block}}
-.призыв{{position:absolute;left:{СЛЕВА}px;background:{ПЛАШКА};color:{НА_ПЛАШКЕ};
+/* Финал: вывод занимает середину колонки, призыв прижат к низу карточки. */
+.вывод{{margin:auto 0;display:flex;flex-direction:column;gap:44px}}
+.призыв{{align-self:flex-start;background:{ПЛАШКА};color:{НА_ПЛАШКЕ};
   font-family:Onest,sans-serif;font-weight:800;font-size:44px;line-height:1.25;
   padding:26px 38px 30px;border-radius:26px;max-width:{ШИРИНА_ТЕКСТА}px;
   box-shadow:0 14px 34px rgba(17,17,17,.20)}}
-.число{{position:absolute;left:{СЛЕВА}px;font-family:Onest,sans-serif;font-weight:800;
-  font-size:300px;line-height:.9;letter-spacing:-.04em;color:{ЧЕРНИЛА}}}
 """
 
 
@@ -114,8 +129,8 @@ def страница(тело: str, доля: float) -> str:
             f"<body><div class=карточка></div>{тело}{стиль.знак_и_полоса(доля)}</body></html>")
 
 
-def _строк(текст: str, на_строку: int) -> int:
-    return max(1, -(-len(текст) // на_строку))
+def _колонка(куски: str) -> str:
+    return f"<div class=содержимое>{куски}</div>"
 
 
 def кадр(с: dict, доля: float) -> str:
@@ -124,24 +139,11 @@ def кадр(с: dict, доля: float) -> str:
         raise ValueError("кадру нужен снимок: стиль «сводка» держится на нём")
 
     кегль = 108 if len(с["заголовок"]) <= 46 else 92
-    строк_з = _строк(с["заголовок"], 26 if кегль == 108 else 31)
-    # 64, а не 52: на пробе замер считал рубрику и заголовок тесными при 40 px просвета.
-    верх_з = ПОЛЕ + ВНУТРИ + 78 + 64
-    высота_з = round(кегль * 1.06 * строк_з)
-
-    верх_п = верх_з + высота_з + 40
-    строк_п = _строк(с.get("текст", ""), 52)
-    высота_п = round(48 * 1.32 * строк_п)
-
-    верх_с = верх_п + высота_п + 52
-    низ_с = НИЗ_КАРТОЧКИ - ВНУТРИ
-    высота_с = низ_с - верх_с
-
-    return страница(
+    return страница(_колонка(
         f"<div class=рубрика>{с['рубрика']}</div>"
-        f"<div class=заголовок style='top:{верх_з}px;font-size:{кегль}px'>{с['заголовок']}</div>"
-        f"<div class=пояснение style='top:{верх_п}px'>{с.get('текст', '')}</div>"
-        f"{рамка(с['снимок'], верх_с, высота_с)}", доля)
+        f"<div class=заголовок style='font-size:{кегль}px'>{с['заголовок']}</div>"
+        f"<div class=пояснение>{с.get('текст', '')}</div>"
+        f"{рамка(с['снимок'], 900, с.get('кроп'))}"), доля)
 
 
 def обложка(доля: float) -> str:
@@ -151,23 +153,12 @@ def обложка(доля: float) -> str:
         raise ValueError("обложке нужен снимок: стиль «сводка» держится на нём")
 
     кегль = 132 if len(о["заголовок"]) <= 40 else 112
-    строк = _строк(о["заголовок"], 21 if кегль == 132 else 25)
-    верх_з = ПОЛЕ + ВНУТРИ + 78 + 64
-    высота_з = round(кегль * 1.04 * строк)
-
-    верх_п = верх_з + высота_з + 36
-    высота_п = round(48 * 1.32 * _строк(о.get("текст", ""), 52)) if о.get("текст") else 0
-
-    верх_с = верх_п + высота_п + (52 if высота_п else 20)
-    высота_с = (НИЗ_КАРТОЧКИ - ВНУТРИ) - верх_с
-
-    пояснение = (f"<div class=пояснение style='top:{верх_п}px'>{о['текст']}</div>"
-                 if о.get("текст") else "")
-    return страница(
+    пояснение = f"<div class=пояснение>{о['текст']}</div>" if о.get("текст") else ""
+    return страница(_колонка(
         f"<div class=рубрика>{о['рубрика']}</div>"
-        f"<div class=заголовок style='top:{верх_з}px;font-size:{кегль}px'>{о['заголовок']}</div>"
+        f"<div class=заголовок style='font-size:{кегль}px'>{о['заголовок']}</div>"
         f"{пояснение}"
-        f"{рамка(о['снимок'], верх_с, высота_с)}", доля)
+        f"{рамка(о['снимок'], 1000, о.get('кроп'))}"), доля)
 
 
 def финал(доля: float) -> str:
@@ -178,19 +169,13 @@ def финал(доля: float) -> str:
     """
     ф = П["финал"]
     кегль = 120 if len(ф["заголовок"]) <= 40 else 100
-    строк = _строк(ф["заголовок"], 23 if кегль == 120 else 27)
-    высота_з = round(кегль * 1.06 * строк)
-    высота_т = round(48 * 1.32 * _строк(ф.get("текст", ""), 52)) if ф.get("текст") else 0
-    блок = высота_з + (52 + высота_т if высота_т else 0)
-    верх_з = ПОЛЕ + round((НИЗ_КАРТОЧКИ - ПОЛЕ - блок) / 2) - 80
-
     призыв = ф.get("призыв") or "Сохрани, чтобы вернуться"
-    return страница(
+    текст = f"<div class=пояснение>{ф['текст']}</div>" if ф.get("текст") else ""
+    return страница(_колонка(
         f"<div class=рубрика>Итог</div>"
-        f"<div class=заголовок style='top:{верх_з}px;font-size:{кегль}px'>{ф['заголовок']}</div>"
-        f"<div class=пояснение style='top:{верх_з + высота_з + 52}px'>{ф.get('текст', '')}</div>"
-        f"<div class=призыв style='top:{НИЗ_КАРТОЧКИ - ВНУТРИ - 130}px'>{призыв}</div>",
-        доля)
+        f"<div class=вывод><div class=заголовок style='font-size:{кегль}px'>{ф['заголовок']}</div>"
+        f"{текст}</div>"
+        f"<div class=призыв>{призыв}</div>"), доля)
 
 
 ЗАМЕР = """document.fonts.ready.then(() => {
