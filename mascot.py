@@ -11,8 +11,10 @@
 """
 
 import base64
+import os
 import re
 import shutil
+import sys
 import time
 from pathlib import Path
 
@@ -52,6 +54,26 @@ the card, because the card already carries its own text.
 POSE: """
 
 
+def _канал() -> tuple[str, dict]:
+    """Куда стучаться за картинкой: сперва Vertex, и только потом ключ AI Studio.
+
+    Предоплата AI Studio у проекта кончилась («prepayment credits are depleted»),
+    и все позы молча переставали рисоваться: `поза()` ловит исключение и отдаёт
+    None, а карусель просто уходила с заготовкой из комплекта. Бесплатные кредиты
+    Google Cloud списываются только через Vertex — тот же путь, которым уже ходит
+    `Style/картинка.py`.
+    """
+    if os.getenv("КОТ_БЕЗ_VERTEX", "") == "":
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent / "Style"))
+            import вертекс
+            return вертекс.адрес(config.МОДЕЛЬ_КАРТИНОК), вертекс.заголовки()
+        except Exception as п:                               # noqa: BLE001
+            print(f"кот: Vertex недоступен ({п}), иду по ключу AI Studio")
+    return (API.format(модель=config.МОДЕЛЬ_КАРТИНОК),
+            {"x-goog-api-key": config.КЛЮЧ_GEMINI, "Content-Type": "application/json"})
+
+
 def _запросить(описание: str) -> bytes:
     эталон = config.МАСКОТ / "reference.png"
     части = [{"text": ЭТАЛОН + описание}]
@@ -63,10 +85,8 @@ def _запросить(описание: str) -> bytes:
     тело = {"contents": [{"role": "user", "parts": части}],
             "generationConfig": {"responseModalities": ["TEXT", "IMAGE"],
                                  "imageConfig": {"aspectRatio": "1:1"}}}
-    r = requests.post(API.format(модель=config.МОДЕЛЬ_КАРТИНОК),
-                      headers={"x-goog-api-key": config.КЛЮЧ_GEMINI,
-                               "Content-Type": "application/json"},
-                      json=тело, timeout=180)
+    адрес, заголовки = _канал()
+    r = requests.post(адрес, headers=заголовки, json=тело, timeout=180)
     r.raise_for_status()
     for ч in r.json()["candidates"][0]["content"]["parts"]:
         д = ч.get("inlineData") or ч.get("inline_data")
