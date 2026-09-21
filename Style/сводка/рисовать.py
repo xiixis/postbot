@@ -28,9 +28,15 @@ from PIL import Image  # noqa: E402
 
 П: dict = {}
 
-ГРУНТ, КАРТОЧКА = "#E7E7E7", "#FFFFFF"
-ПЛАШКА, НА_ПЛАШКЕ = "#363636", "#FFFFFF"
-ЧЕРНИЛА, СЕРЫЙ = "#111111", "#5C6152"
+# Палитра наша, а не авторская. У @whygolding кадр нейтрально-серый с чёрными
+# плашками; фирменные цвета канала — крем, графит, олива и лайм, и кадр должен
+# читаться нашим ещё до того, как зритель дочитает текст.
+ГРУНТ, КАРТОЧКА = стиль.КРЕМ, "#FFFFFF"
+ПЛАШКА, НА_ПЛАШКЕ = стиль.ТЁМНЫЙ, стиль.СВЕТЛЫЙ
+ЧЕРНИЛА, СЕРЫЙ = стиль.ТЁМНЫЙ, "#5C6152"
+# Лайм заливкой под графитовый текст, а не текстом по светлому: по кремовому он
+# даёт около 2:1 и пропадает (правило бренда, проверено на кадрах).
+АКЦЕНТ, НА_АКЦЕНТЕ = стиль.ЛАЙМ, стиль.ТЁМНЫЙ
 
 # Раскладка кадра 1620×2160. Низ отдан знаку и полосе (они сидят на bottom 264–308),
 # поэтому карточка заканчивается на 1800, а не у края кадра.
@@ -101,10 +107,18 @@ body{{background:{ГРУНТ};color:{ЧЕРНИЛА};font-family:Golos,sans-seri
    налезло сверху на 61 px. Поток такую ошибку исключает как класс. */
 .содержимое{{position:absolute;left:{СЛЕВА}px;top:{ПОЛЕ + ВНУТРИ}px;width:{ШИРИНА_ТЕКСТА}px;
   height:{НИЗ_КАРТОЧКИ - ПОЛЕ - ВНУТРИ * 2}px;display:flex;flex-direction:column;gap:44px}}
-.рубрика{{align-self:flex-start;background:{ПЛАШКА};color:{НА_ПЛАШКЕ};
+.рубрика{{align-self:flex-start;background:{АКЦЕНТ};color:{НА_АКЦЕНТЕ};
   font-family:Onest,sans-serif;font-weight:800;font-size:40px;
   letter-spacing:.02em;padding:18px 34px 22px;border-radius:999px;
-  box-shadow:0 10px 26px rgba(17,17,17,.18)}}
+  box-shadow:0 10px 26px rgba(18,19,15,.16)}}
+/* Логотип стоит там, где у автора был его ник: место в кадре то же, подпись наша.
+   Нижний знак при этом гасим, иначе логотип в кадре удвоится, а полоса остаётся —
+   она показывает, сколько карусели прочитано. */
+.шапка{{display:flex;align-items:center;gap:18px;margin-bottom:8px}}
+.шапка img{{height:60px;display:block;filter:brightness(.35) saturate(1.5)}}
+.шапка span{{font-family:Onest,sans-serif;font-weight:800;font-size:30px;
+  letter-spacing:.14em;text-transform:uppercase;color:{СЕРЫЙ}}}
+.знак{{display:none}}
 .заголовок{{font-family:Onest,sans-serif;font-weight:800;letter-spacing:-.025em;
   line-height:1.06;color:{ЧЕРНИЛА}}}
 .пояснение{{font-size:48px;line-height:1.32;color:{СЕРЫЙ}}}
@@ -129,8 +143,11 @@ def страница(тело: str, доля: float) -> str:
             f"<body><div class=карточка></div>{тело}{стиль.знак_и_полоса(доля)}</body></html>")
 
 
+ШАПКА = f"<div class=шапка><img src='{стиль.ЛОГО}'><span>4xSoft</span></div>"
+
+
 def _колонка(куски: str) -> str:
-    return f"<div class=содержимое>{куски}</div>"
+    return f"<div class=содержимое>{ШАПКА}{куски}</div>"
 
 
 def кадр(с: dict, доля: float) -> str:
