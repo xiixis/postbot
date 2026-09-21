@@ -38,17 +38,6 @@ def _заголовки(тип: str | None = None) -> dict:
     return ш
 
 
-def завести_ведро() -> str:
-    """Создаёт ведро, если его ещё нет. Публичное: карточки не секрет."""
-    о = requests.post(f"{АДРЕС}/storage/v1/bucket", headers=_заголовки("application/json"),
-                      json={"id": ВЕДРО, "name": ВЕДРО, "public": True}, timeout=30)
-    if о.status_code in (200, 201):
-        return "создано"
-    if о.status_code == 409 or "already exists" in о.text:
-        return "уже было"
-    return f"не вышло: {о.status_code} {о.text[:120]}"
-
-
 def положить(файл: Path) -> str | None:
     """Заливает карточку и возвращает постоянную ссылку на неё."""
     if not включено() or not Path(файл).exists():

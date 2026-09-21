@@ -231,7 +231,3 @@ def подтянуть(куда: str, ход=None) -> list[int]:
     return сделаны
 
 
-def подтянуть_всё(ход=None) -> dict[str, list[int]]:
-    итог = {к: подтянуть(к, ход) for к in включённые()}
-    db.запомнить(КОГДА, time.time())
-    return итог
