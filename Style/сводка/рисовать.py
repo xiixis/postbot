@@ -131,6 +131,16 @@ body{{background:{ГРУНТ};color:{ЧЕРНИЛА};font-family:Golos,sans-seri
 .снимок img{{width:100%;height:auto;display:block}}
 /* Финал: вывод занимает середину колонки, призыв прижат к низу карточки. */
 .вывод{{margin:auto 0;display:flex;flex-direction:column;gap:44px}}
+/* Телеграм на финале: значок, ник крупно, строка-обещание. Это наша воронка,
+   а не перенесённая чужая: у автора на этом месте был снимок его канала. */
+.телеграм{{display:flex;align-items:center;gap:30px;background:{ПЛАШКА};
+  border-radius:30px;padding:34px 40px;box-shadow:0 16px 40px rgba(18,19,15,.20)}}
+.телеграм .значок{{width:96px;height:96px;border-radius:26px;background:{АКЦЕНТ};
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto}}
+.телеграм .значок svg{{width:56px;height:56px;fill:{НА_АКЦЕНТЕ}}}
+.телеграм .ник{{font-family:Onest,sans-serif;font-weight:800;font-size:64px;
+  letter-spacing:-.02em;color:{НА_ПЛАШКЕ};line-height:1.05}}
+.телеграм .под{{font-size:34px;line-height:1.3;color:#A9AF9C;margin-top:8px}}
 .призыв{{align-self:flex-start;background:{ПЛАШКА};color:{НА_ПЛАШКЕ};
   font-family:Onest,sans-serif;font-weight:800;font-size:44px;line-height:1.25;
   padding:26px 38px 30px;border-radius:26px;max-width:{ШИРИНА_ТЕКСТА}px;
@@ -144,6 +154,15 @@ def страница(тело: str, доля: float) -> str:
 
 
 ШАПКА = f"<div class=шапка><img src='{стиль.ЛОГО}'><span>4xSoft</span></div>"
+
+САМОЛЁТ = ("<svg viewBox='0 0 24 24'><path d='M21.6 3.2 2.9 10.4c-1.3.5-1.3 1.2-.2 1.6l4.8 1.5 "
+           "1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.4-1.1z"
+           "M8.9 13.1l9.6-6c.5-.3.9-.1.5.2l-8.2 7.4-.3 3.4-1.6-5z'/></svg>")
+
+
+def телеграм(ник: str, под: str) -> str:
+    return (f"<div class=телеграм><div class=значок>{САМОЛЁТ}</div>"
+            f"<div><div class=ник>{ник}</div><div class=под>{под}</div></div></div>")
 
 
 def _колонка(куски: str) -> str:
@@ -190,13 +209,14 @@ def финал(доля: float) -> str:
     """
     ф = П["финал"]
     кегль = 120 if len(ф["заголовок"]) <= 40 else 100
-    призыв = ф.get("призыв") or "Сохрани, чтобы вернуться"
     текст = f"<div class=пояснение>{ф['текст']}</div>" if ф.get("текст") else ""
+    низ = (телеграм(ф["телеграм"]["ник"], ф["телеграм"].get("под", ""))
+           if ф.get("телеграм")
+           else f"<div class=призыв>{ф.get('призыв') or 'Сохрани, чтобы вернуться'}</div>")
     return страница(_колонка(
         f"<div class=рубрика>Итог</div>"
         f"<div class=вывод><div class=заголовок style='font-size:{кегль}px'>{ф['заголовок']}</div>"
-        f"{текст}</div>"
-        f"<div class=призыв>{призыв}</div>"), доля)
+        f"{текст}</div>{низ}"), доля)
 
 
 ЗАМЕР = """document.fonts.ready.then(() => {
