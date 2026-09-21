@@ -75,6 +75,19 @@ _КЛЮЧ = "SERIAL PRIMARY KEY" if ПОСТГРЕС else "INTEGER PRIMARY KEY A
         вовлечение REAL
     )""",
     "CREATE INDEX IF NOT EXISTS idx_usage_theme ON theme_usage(theme_id)",
+    # Референсы под рерайт: ссылки из темы «Под рерайт» группы «Полезное».
+    # url уже приведён (референсы.привести), UNIQUE отсекает повтор той же ссылки.
+    f"""CREATE TABLE IF NOT EXISTS "references" (
+        id            {_КЛЮЧ},
+        url           TEXT    NOT NULL UNIQUE,
+        площадка      TEXT    NOT NULL,
+        tg_message_id INTEGER NOT NULL,
+        добавлена     TEXT    NOT NULL,
+        статус        TEXT    NOT NULL DEFAULT 'новая',
+        post_id       INTEGER,
+        заметка       TEXT
+    )""",
+    'CREATE INDEX IF NOT EXISTS idx_references_status ON "references"(статус)',
 ]
 
 # Колонки, добавленные после первого выпуска. База у владельца уже живёт,
@@ -526,6 +539,54 @@ def запомнить(ключ: str, значение) -> None:
                   " ON CONFLICT(key) DO UPDATE SET value=excluded.value",
                   (ключ, json.dumps(значение, ensure_ascii=False)))
     забыть_кэш()
+
+
+СТАТУСЫ_РЕФЕРЕНСА = ("новая", "в работе", "использована", "отброшена")
+
+
+def добавить_референс(url: str, площадка: str, tg_message_id: int, добавлена: str) -> bool:
+    """Кладёт ссылку в очередь. False — такая уже есть: повтор молча пропускается."""
+    подготовить()
+    with соединение() as c:
+        было = c.execute('SELECT 1 FROM "references" WHERE url=?', (url,)).fetchone()
+        if было:
+            return False
+        c.execute('INSERT INTO "references" (url, площадка, tg_message_id, добавлена)'
+                  " VALUES (?,?,?,?) ON CONFLICT(url) DO NOTHING",
+                  (url, площадка, tg_message_id, добавлена))
+    return True
+
+
+def референсы(статус: str | None = "новая") -> list:
+    """Очередь референсов, старые сверху. `None` — все статусы."""
+    подготовить()
+    with соединение() as c:
+        if статус is None:
+            return c.execute('SELECT * FROM "references" ORDER BY tg_message_id, id').fetchall()
+        return c.execute('SELECT * FROM "references" WHERE статус=? ORDER BY tg_message_id, id',
+                         (статус,)).fetchall()
+
+
+def отметить_референс(ид: int, статус: str, post_id: int | None = None,
+                      заметка: str | None = None) -> None:
+    if статус not in СТАТУСЫ_РЕФЕРЕНСА:
+        raise ValueError(f"статус «{статус}» не из {СТАТУСЫ_РЕФЕРЕНСА}")
+    подготовить()
+    with соединение() as c:
+        c.execute('UPDATE "references" SET статус=?, post_id=COALESCE(?, post_id),'
+                  " заметка=COALESCE(?, заметка) WHERE id=?", (статус, post_id, заметка, ид))
+
+
+def взять_референс(ид: int | None = None):
+    """Референс в работу: названный номер или самая старая новая. None — брать нечего."""
+    if ид is None:
+        очередь = референсы("новая")
+        if not очередь:
+            return None
+        ид = очередь[0]["id"]
+    отметить_референс(ид, "в работе")
+    with соединение() as c:
+        return c.execute('SELECT * FROM "references" WHERE id=?', (ид,)).fetchone()
 
 
 def записать_охват(ид: int, просмотры: int, реакции: int) -> None:

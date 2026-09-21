@@ -10,6 +10,16 @@ from dotenv import load_dotenv
 КОРЕНЬ = Path(__file__).resolve().parent
 load_dotenv(КОРЕНЬ / ".env")
 
+# Ключи команды живут в общем облаке и приезжают в память процесса — порядок заведён
+# партнёром в 4xTube: ключ, лежащий копией в `.env`, работает даже у того, кому доступ
+# уже сняли. Облако главнее файла; нет связи — работаем тем, что в `.env`.
+try:
+    from ключи_облака import подтянуть as _подтянуть_ключи
+
+    _подтянуть_ключи()
+except Exception:                                    # noqa: BLE001
+    pass                                             # без облака живём на своём .env
+
 ТОКЕН = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 КАНАЛ = os.getenv("TELEGRAM_CHANNEL", "").strip()
 АДМИН = int(os.getenv("TELEGRAM_ADMIN_ID", "0") or 0)
