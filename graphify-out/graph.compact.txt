@@ -113,13 +113,13 @@ n facts_rationale_73 UNKNOWN Факты_для_задания_писателю._
 n facts_rationale_93 UNKNOWN Схема_ответа._Pydantic_ввозится_здесь,_а_не_сверху:_на_Vercel_этого_____модуля_н
 n facts_rationale_134 UNKNOWN Достаёт_из_заметки_постоянные_показатели._Пусто,_если_их_нет.
 n facts_rationale_149 UNKNOWN Выделяет_показатели_из_заметки_и_сразу_их_записывает.
-n tools_rationale_235 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
-n tools_rationale_280 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
-n tools_rationale_323 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
-n tools_rationale_376 UNKNOWN Наш_фирменный:_чужого_источника_нет,_кадры_рисует_сам_бот.______Он_здесь_не_как
-n tools_rationale_443 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
-n tools_rationale_457 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
-n tools_rationale_553 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
+n tools_rationale_238 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
+n tools_rationale_283 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
+n tools_rationale_326 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
+n tools_rationale_379 UNKNOWN Наш_фирменный:_чужого_источника_нет,_кадры_рисует_сам_бот.______Он_здесь_не_как
+n tools_rationale_446 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
+n tools_rationale_460 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
+n tools_rationale_556 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
 n basemodel UNKNOWN BaseModel
 n rationale_30 UNKNOWN Папка_«Посты»_на_рабочем_столе,_а_если_его_нет_—_внутри_проекта.______Забирают_ф
 n rationale_85 UNKNOWN Что_уже_стоит_в_плане_для_этой_площадки.
@@ -130,19 +130,18 @@ n rationale_139 UNKNOWN Готовый_разбор_—_в_указания_ге
 n users_xiix_4xsoft_postbot_config_py FUNCTION config.py
 n config FUNCTION хром()
 n config_rationale_58 UNKNOWN Путь_к_безголовому_Chrome._Им_рисуются_карточки.______На_сервере_обычно_chromium
-n config_rationale_78 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
-n config_rationale_88 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
+n config_rationale_84 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
+n config_rationale_94 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
 n runtimeerror UNKNOWN RuntimeError
 n rationale_44 UNKNOWN Агент_не_ответил._Это_не_отказ_модели,_а_сбой_запуска_или_входа.
 n rationale_68 UNKNOWN Кладёт_механику_в_свайп-файл._Возвращает,_сколько_их_стало.
 n rationale_100 UNKNOWN Есть_ли_чем_сочинять._Без_этого_половина_бота_не_работает.
-n rationale_122 UNKNOWN Складывает_слайды_и_подпись_в_папку._Возвращает_путь_и_список_файлов.
-n rationale_160 UNKNOWN Один_разговор_с_CLI._Возвращает_разобранный_ответ_целиком.
-n rationale_231 UNKNOWN Русское_имя_поля_латиницей._Перевод_один_и_тот_же_при_каждом_вызове.
-n rationale_245 UNKNOWN Схема_с_латинскими_именами._Карта_заполняется_по_дороге:_латинское_→_своё.
-n rationale_271 UNKNOWN Ответ_с_русскими_именами._Обход_тот_же,_только_в_другую_сторону.
-n rationale_282 UNKNOWN Ответ_простым_текстом._С_картинками_агент_откроет_их_сам_и_посмотрит.
-n rationale_289 UNKNOWN Ответ,_разобранный_в_модель_pydantic.______Схему_CLI_проверяет_сам_и_без_годного
+n rationale_125 UNKNOWN «№2:_беда;_№7:_замечание»._Пусто,_если_сказать_нечего.
+n rationale_234 UNKNOWN Кадр_03:_вопрос_обычными_словами_и_найденный_файл_с_подсветкой_одной_строки.
+n rationale_248 UNKNOWN Схема_с_латинскими_именами._Карта_заполняется_по_дороге:_латинское_→_своё.
+n rationale_274 UNKNOWN Отвечать_не_на_что._Проверки_идут_до_модели_и_стоят_ноль.______Живой_чат_на_три
+n rationale_285 UNKNOWN Ответ_простым_текстом._С_картинками_агент_откроет_их_сам_и_посмотрит.
+n rationale_292 UNKNOWN Ответ,_разобранный_в_модель_pydantic.______Схему_CLI_проверяет_сам_и_без_годного
 n rationale_27 UNKNOWN Один_пост_—_одна_строка:_у_Instagram_и_TikTok_отрезаются_параметры.______Один_и
 n rationale_51 UNKNOWN На_каком_экране_человек_сейчас._None,_если_экрана_ещё_нет.
 n rationale_61 UNKNOWN Что_предполёт_поменял_до_отрисовки_и_на_что_просит_взглянуть.______Поправленное
@@ -169,24 +168,25 @@ n rationale_52 UNKNOWN Имя,_по_которому_папку_узнают_в_
 n rationale_126 UNKNOWN Готовое_содержимое_для_площадки:_картинки_и_текст.______Считается_один_раз_и_жив
 n rationale_190 UNKNOWN Придирки_к_самим_слайдам:_длина,_однообразие,_количество.
 n rationale_224 UNKNOWN Собрать_папку,_открыть_её_и_—_если_попросили_—_прислать_файлы_в_чат.______Отправ
-n rationale_39 UNKNOWN Складывает_слайды_и_подпись_в_папку._Возвращает_путь_и_список_файлов.
 n rationale_59 UNKNOWN Нарисовать_экран:_поправить_нынешнее_сообщение_или_послать_новое.
+n rationale_122 UNKNOWN Складывает_слайды_и_подпись_в_папку._Возвращает_путь_и_список_файлов.
 n rationale_159 UNKNOWN Где_лежала_бы_папка_этого_поста._Существует_она_или_нет_—_не_проверяем.______Имя
 n rationale_172 UNKNOWN Открыть_рабочую_папку_поста,_а_если_её_удалили_—_собрать_заново.______Пересобрат
 n rationale_197 UNKNOWN Показывает_папку_в_Finder._На_чужой_системе_молча_ничего_не_делает.
-n rationale_208 UNKNOWN Присылает_файлы_и_подпись_отдельными_сообщениями.______Подпись_идёт_своим_сообще
+n rationale_217 UNKNOWN Присылает_файлы_и_подпись_отдельными_сообщениями.______Подпись_идёт_своим_сообще
+n rationale_233 UNKNOWN Собрать_папку,_открыть_её_и_—_если_попросили_—_прислать_файлы_в_чат.______Отправ
 n users_xiix_4xsoft_postbot_mascot_py FUNCTION mascot.py
 n mascot FUNCTION _запросить()
-n mascot_rationale_79 UNKNOWN Хромакей._Три_шага,_и_каждый_нужен.______Порог_по_расстоянию_до_ключа_убирает_ос
-n mascot_rationale_110 UNKNOWN Углы_должны_быть_тем_самым_синим.______Модель_иногда_игнорирует_требование_фона
-n mascot_rationale_123 UNKNOWN Новая_поза_под_конкретный_пост._None,_если_не_вышло.
-n mascot_rationale_141 UNKNOWN Рисует_новую_позу_и_кладёт_её_в_библиотеку_насовсем.______До_сих_пор_библиотека
-n mascot_rationale_171 UNKNOWN Не_обрезан_ли_персонаж_рамкой_самой_картинки.______Фон_снимается_по_силуэту,_поэ
-n mascot_rationale_199 UNKNOWN Позы,_которые_владелец_отверг_вручную.______Автоматика_ловит_обрезанных_котов,_н
-n mascot_rationale_210 UNKNOWN Больше_эту_позу_не_берём.
-n mascot_rationale_227 UNKNOWN {ключ:_путь}_по_тому,_что_реально_лежит_на_диске.______По_умолчанию_отдаёт_тольк
-n mascot_rationale_244 UNKNOWN Поза_из_библиотеки._Незнакомый_ключ_отдаёт_приветствие,_а_не_пустоту.
-n mascot_rationale_254 UNKNOWN Готовая_поза_из_комплекта_—_на_случай,_если_генерация_не_удалась.______Пост_без
+n mascot_rationale_77 UNKNOWN Хромакей._Три_шага,_и_каждый_нужен.______Порог_по_расстоянию_до_ключа_убирает_ос
+n mascot_rationale_108 UNKNOWN Углы_должны_быть_тем_самым_синим.______Модель_иногда_игнорирует_требование_фона
+n mascot_rationale_121 UNKNOWN Новая_поза_под_конкретный_пост._None,_если_не_вышло.
+n mascot_rationale_139 UNKNOWN Рисует_новую_позу_и_кладёт_её_в_библиотеку_насовсем.______До_сих_пор_библиотека
+n mascot_rationale_169 UNKNOWN Не_обрезан_ли_персонаж_рамкой_самой_картинки.______Фон_снимается_по_силуэту,_поэ
+n mascot_rationale_197 UNKNOWN Позы,_которые_владелец_отверг_вручную.______Автоматика_ловит_обрезанных_котов,_н
+n mascot_rationale_208 UNKNOWN Больше_эту_позу_не_берём.
+n mascot_rationale_225 UNKNOWN {ключ:_путь}_по_тому,_что_реально_лежит_на_диске.______По_умолчанию_отдаёт_тольк
+n mascot_rationale_242 UNKNOWN Поза_из_библиотеки._Незнакомый_ключ_отдаёт_приветствие,_а_не_пустоту.
+n mascot_rationale_252 UNKNOWN Готовая_поза_из_комплекта_—_на_случай,_если_генерация_не_удалась.______Пост_без
 n users_xiix_4xsoft_postbot_icons_py FUNCTION icons.py
 n icons FUNCTION _свежая_таблица()
 n icons_rationale_29 UNKNOWN Спрашивает_состав_набора_у_Телеграма.
@@ -220,7 +220,6 @@ n webapp_api FUNCTION ._api()
 n threadinghttpserver UNKNOWN ThreadingHTTPServer
 n webapp_rationale_80 UNKNOWN Картинка_поста._Тоже_за_подписью:_по_ссылке_её_не_подсмотреть.
 n rationale_80 UNKNOWN Каждый_модуль_должен_подниматься_сам_по_себе.
-n rationale_125 UNKNOWN «№2:_беда;_№7:_замечание»._Пусто,_если_сказать_нечего.
 n rationale_136 UNKNOWN Слайд_из_сломанной_связки_в_надёжный_вид,_не_теряя_слов.______Пункты_переезжают
 n rationale_153 UNKNOWN Чинит_беды_предполёта_без_модели._Новая_карусель_и_что_сделано.______Слова_не_вы
 n rationale_183 UNKNOWN Проверяет_и_чинит_до_отрисовки._Модель_—_не_больше_одного_прохода.______Модель_р
@@ -272,7 +271,6 @@ n rationale_175 UNKNOWN Как_окно_называется_владельцу.
 n rationale_189 UNKNOWN Больше_не_предлагать_то,_что_владелец_уже_видел.______Без_этого_повторное_нажати
 n rationale_244 UNKNOWN Папки_чатов,_как_их_видит_сам_Telegram.
 n rationale_269 UNKNOWN Огрублённый_текст_для_поиска_повторов:_регистр_и_знаки_не_в_счёт.
-n rationale_274 UNKNOWN Отвечать_не_на_что._Проверки_идут_до_модели_и_стоят_ноль.______Живой_чат_на_три
 n rationale_323 UNKNOWN Один_чат_за_окно.______Возвращаем_и_все_сообщения,_и_отобранных_кандидатов._Все
 n rationale_409 UNKNOWN Переписка_простынёй_+_карта_«номер_в_списке_→_сообщение».______В_ленту_идёт_НЕ_в
 n rationale_475 UNKNOWN Сообщение_с_соседями:_без_них_не_видно,_о_чём_вообще_речь.
@@ -648,7 +646,7 @@ n db_rationale_805 UNKNOWN Окна_выпуска_и_охваты_одним_з
 n users_xiix_4xsoft_postbot_vercel_facts_py FUNCTION facts.py
 n users_xiix_4xsoft_postbot_vercel_config_py FUNCTION config.py
 n config_rationale_48 UNKNOWN Путь_к_безголовому_Chrome._Им_рисуются_карточки.______На_сервере_обычно_chromium
-n config_rationale_68 UNKNOWN Есть_ли_claude,_которым_бот_сочиняет._Ввозим_внутри:_config_читается_____первым,
+n config_rationale_74 UNKNOWN Есть_ли_claude,_которым_бот_сочиняет._Ввозим_внутри:_config_читается_____первым,
 n users_xiix_4xsoft_postbot_vercel_repeats_py FUNCTION repeats.py
 n users_xiix_4xsoft_postbot_vercel_icons_py FUNCTION icons.py
 n users_xiix_4xsoft_postbot_vercel_telegram_py FUNCTION telegram.py
@@ -843,8 +841,11 @@ n rationale_171 UNKNOWN Картинки_холста:_настоящие_зна
 n rationale_210 UNKNOWN Своя_подложка,_оливковая_рамка_2_px,_прижат_к_низу_окна._Текст_кадра_сюда_не_зах
 n css FUNCTION знак_css()
 n rationale_196 UNKNOWN Две_колонки_по_рядам:_у_каждой_пары_одна_высота,_даже_если_справа_три_строки,_а
-n rationale_28 UNKNOWN Снимки_досок_1620×2160_рисовальщиком_постбота,_по_раскладке_холста_строка_за_стр
-n rationale_74 UNKNOWN В_—_до/после:_зачёркнутая_строка_и_лаймовая_плашка_со_второй.
+n rationale_25 UNKNOWN Снимки_досок_1620×2160_рисовальщиком_постбота,_по_раскладке_холста_строка_за_стр
+n rationale_71 UNKNOWN Длина_подписи_и_названия_—_по_правилам_из_`carousel.py`.______Проверка_заведена
+n rationale_24 UNKNOWN Папки,_где_могут_лежать_распакованные_скилы,_без_повторов.______На_маке_`tempfil
+n rationale_45 UNKNOWN Светлая_и_тёмная_огибающие_кадра_—_то,_что_лежит_ВОКРУГ_буквы.______Простое_разм
+n rationale_63 UNKNOWN Б_—_число:_гигант_оливой,_под_ним_строка_и_кот._Обложек_в_холсте_всегда_три.
 n rationale_104 UNKNOWN Гигантская_цифра_кадра_фоном:_ориентир_в_ленте,_виден_даже_в_превью.
 n rationale_110 UNKNOWN Ключевые_слова_—_оранжевым:_заголовок_перестаёт_быть_сплошной_чёрной_плитой.
 n rationale_129 UNKNOWN В_—_до/после:_две_строки_отчёта,_старая_зачёркнута.
@@ -863,7 +864,6 @@ n rationale_170 UNKNOWN Лаймовая_полоса_по_нижнему_кра
 n rationale_177 UNKNOWN Логотип_обложек:_у_них_нет_колонтитула,_знак_встаёт_внизу_слева.
 n rationale_195 UNKNOWN Ровно_одна_смысловая_фраза_на_кадр._На_светлом_—_олива_буквами_с_лаймовой_подчёр
 n rationale_219 UNKNOWN Кадр_02:_просьба_человеческим_языком_и_ответ._Реплики_—_пузырями,_как_в_переписк
-n rationale_234 UNKNOWN Кадр_03:_вопрос_обычными_словами_и_найденный_файл_с_подсветкой_одной_строки.
 n rationale_255 UNKNOWN Кадр_04:_список_готовых_проверок_с_галочками._По-русски,_крупно,_читаемо_в_ленте
 n rationale_287 UNKNOWN Аватар_(морда_кота_кружком),_кот_обложки_и_финала,_логотип_—_файлами_до_70_КБ.
 n rationale_336 UNKNOWN Финал:_телефон_под_наклоном_с_экраном_нашего_канала_—_нарисован_вёрсткой,_как_и
@@ -879,16 +879,15 @@ n ua FUNCTION UA
 n cx FUNCTION cx
 n cy FUNCTION cy
 n clip FUNCTION clip
-n rationale_79 UNKNOWN Б_—_«сетка»:_имя_поста_узким_синим,_веер_пяти_значков,_кот_с_табличкой_«$0».
-n rationale_90 UNKNOWN Скруглённый_прямоугольник,_нарисованный_от_руки:_каждая_сторона_слегка_гуляет.
-n rationale_150 UNKNOWN Одно_крупное_слово_вверху_плюс_подзаголовок-критерий_мелким.______Кегль_подбирае
-n rationale_168 UNKNOWN Одна_полоса-регистр:_оценка_→_шеврон_→_ответ,_слева_направо.
-n rationale_184 UNKNOWN Своё_CSS_поверх_стилевого,_плюс_JetBrains_—_им_набран_промпт_в_стеклянном_окне.
-n rationale_215 UNKNOWN 1_«Красная_строка»_—_главная._Провокация_известным_именем:_приём_автора_(самое
-n rationale_260 UNKNOWN 3_«Сетка_15»_—_количество_как_довод:_мозаика_из_пятнадцати_снимков_во_весь_кадр,
-n rationale_290 UNKNOWN Не_шестая_категория,_а_сводка:_полос-регистров_здесь_нет_вовсе,_раскладка_другая
-n rationale_326 UNKNOWN Снимки,_кот_и_знак_—_отдельными_файлами_рядом_с_доской.______Кот_именно_файлом,
-n rationale_364 UNKNOWN Помощник_холста_из_распакованного_скила_design;_путь_меняется_с_версией_Claude_C
+n rationale_77 UNKNOWN По_самой_длинной_строке:_у_Onest_800_знак_занимает_около_0,63_кегля.
+n rationale_109 UNKNOWN Готовое_содержимое_для_площадки:_картинки_и_текст.______Считается_один_раз_и_жив
+n rationale_132 UNKNOWN Дуотон_поверх_выреза:_цвет_меняется,_прозрачность_остаётся._Без_сохранения_альфы
+n rationale_218 UNKNOWN 1_«Красная_строка»_—_главная._Провокация_известным_именем:_приём_автора_(самое
+n rationale_243 UNKNOWN 2_«Светофор_без_слов»_—_чистый_цветовой_код,_читается_вообще_без_чтения._____Сни
+n rationale_263 UNKNOWN 3_«Сетка_15»_—_количество_как_довод:_мозаика_из_пятнадцати_снимков_во_весь_кадр,
+n rationale_293 UNKNOWN Не_шестая_категория,_а_сводка:_полос-регистров_здесь_нет_вовсе,_раскладка_другая
+n rationale_329 UNKNOWN Снимки,_кот_и_знак_—_отдельными_файлами_рядом_с_доской.______Кот_именно_файлом,
+n rationale_367 UNKNOWN Помощник_холста_из_распакованного_скила_design;_путь_меняется_с_версией_Claude_C
 n users_xiix_4xsoft_postbot_style_tests_test_py FUNCTION test_замер.py
 n test_19 CLASS Д19ПерепадНаПлотномСписке
 n test_19_test FUNCTION .test_заголовок_отличим_от_строк_списка()
@@ -897,35 +896,34 @@ n test_20_test FUNCTION .test_обе_полосы_читаются()
 n test_rationale_47 UNKNOWN Приглушённый_серый_по_светлому_—_ровно_то,_ради_чего_порог_8:1.
 n test_rationale_94 UNKNOWN Т-С-С-С-Т:_чередование_есть,_про_ритм_отчёт_молчит.
 n rationale_62 UNKNOWN Строка_состояния:_время_и_значки._Кадр_должен_читаться_как_экран_телефона,_а_не
+n rationale_231 UNKNOWN Русское_имя_поля_латиницей._Перевод_один_и_тот_же_при_каждом_вызове.
 n rationale_247 UNKNOWN В_—_до/после:_зачёркнутая_клавиатура_сверху,_голос_снизу.
 n rationale_264 UNKNOWN Единственный_светлый_кадр_карусели:_восемь_тёмных_подряд_сливаются_в_сетке_профи
+n rationale_33 UNKNOWN Помощник_холста_из_распакованного_скила_design;_путь_меняется_с_версией_Claude_C
 n rationale_117 UNKNOWN Б_—_сцена:_число_и_тема_крупно,_кот-монтажёр_за_ноутбуком.
 n rationale_130 UNKNOWN Один_разговор_с_CLI._Возвращает_разобранный_ответ_целиком.
-n rationale_63 UNKNOWN Б_—_число:_гигант_оливой,_под_ним_строка_и_кот._Обложек_в_холсте_всегда_три.
-n rationale_88 UNKNOWN Полоса_—_фирменный_лайм_на_всех_кадрах,_светлых_и_тёмных:_это_знак_бренда,_и_он
-n rationale_146 UNKNOWN Картинки_холста:_значки_до_256_px,_коты_webp,_логотип._Каждая_заметно_меньше_70
+n rationale_160 UNKNOWN Один_разговор_с_CLI._Возвращает_разобранный_ответ_целиком.
+n rationale_39 UNKNOWN Складывает_слайды_и_подпись_в_папку._Возвращает_путь_и_список_файлов.
+n rationale_66 UNKNOWN Числа_одного_кадра._Текстом_считается_то,_что_заметно_отличается_от_своей_подлож
+n rationale_99 UNKNOWN Другие_заголовки_к_тому_же_посту,_если_модель_их_принесла.______Заголовок_решает
+n rationale_149 UNKNOWN Картинки_холста:_значки_до_256_px,_коты_webp,_логотип._Каждая_заметно_меньше_70
+n rationale_79 UNKNOWN Б_—_«сетка»:_имя_поста_узким_синим,_веер_пяти_значков,_кот_с_табличкой_«$0».
 n rationale_92 UNKNOWN В_—_«маркер»:_тёмный_кадр,_гигантская_цифра,_строка_и_маркер_«без_оплаты»,_кот_с
 n rationale_140 UNKNOWN (файл,_подпись,_тело)_по_порядку_карусели;_запасные_обложки_—_в_конце,_выпуск_их
 n px FUNCTION px()
 n rationale_1 UNKNOWN Лист_кадров_для_глаз:_python3_лист.py_кадры/<пост>_[куда.png]
-n rationale_70 UNKNOWN Полоса_—_фирменный_лайм_на_всех_кадрах:_это_знак_бренда,_он_один_во_всей_карусел
-n rationale_77 UNKNOWN По_самой_длинной_строке:_у_Onest_800_знак_занимает_около_0,63_кегля.
-n rationale_99 UNKNOWN Другие_заголовки_к_тому_же_посту,_если_модель_их_принесла.______Заголовок_решает
-n rationale_37 UNKNOWN Все_замечания_к_одному_черновику._Пустой_список_значит_«придраться_не_к_чему».
-n rationale_173 UNKNOWN А++_—_тот_же_текст_в_«окне_приложения»:_светлая_карточка_с_шапкой_и_точками,_вну
-n rationale_132 UNKNOWN Дуотон_поверх_выреза:_цвет_меняется,_прозрачность_остаётся._Без_сохранения_альфы
-n rationale_123 UNKNOWN Строка_заголовка_на_своей_подложке._Подложка_облегает_строку_(`display:inline-bl
-n rationale_133 UNKNOWN Кегль,_при_котором_самая_длинная_строка_вместе_с_полями_подложки_влезает_в_кадр.
-n rationale_221 UNKNOWN Русское_имя_поля_латиницей._Перевод_один_и_тот_же_при_каждом_вызове.
-n rationale_236 UNKNOWN Имя_файла_визуала_кадра:_снимок_сайта_или_нарисованная_сцена.
-n rationale_241 UNKNOWN Где_кончается_текст_кадра._У_Golos_знак_занимает_около_половины_кегля_—_отсюда_с
-n rationale_109 UNKNOWN Готовое_содержимое_для_площадки:_картинки_и_текст.______Считается_один_раз_и_жив
+n rationale_83 UNKNOWN Число-герой_занимает_строку_целиком:_короткое_ставится_крупнее_длинного.
+n rationale_102 UNKNOWN Всё_вместе:_собрать,_открыть_папку,_прислать_в_чат.
+n rationale_182 UNKNOWN В_—_до/после:_зачёркнутое_«печатать»_и_слово_в_рамке_«говорить».
+n rationale_145 UNKNOWN Кадр-страница_отчёта._Зоны_заданы_числами_и_не_зависят_от_величины_числа-героя:
+n rationale_211 UNKNOWN Б_—_число:_гигант_лаймом_на_тёмном,_строка_под_ним.
+n rationale_289 UNKNOWN Ответ,_разобранный_в_модель_pydantic.______Схему_CLI_проверяет_сам_и_без_годного
+n rationale_373 UNKNOWN Обложку_можно_взять_у_другого_стиля:_владелец_выбрал_кадры_отсюда,_а_обложку_—
 n rationale_115 UNKNOWN Путь_SVG_«мазок_кистью»_в_поле_100×12:_лента_переменной_толщины,_а_не_ровная_лин
+n rationale_184 UNKNOWN Своё_CSS_поверх_стилевого,_плюс_JetBrains_—_им_набран_промпт_в_стеклянном_окне.
 n 64 FUNCTION [тип,_б64]
 n rationale_29 UNKNOWN Узкий_Oswald_под_слово-акцент,_Manrope_под_тонкую_строку_и_имена,_Golos_под_текс
-n rationale_83 UNKNOWN Число-герой_занимает_строку_целиком:_короткое_ставится_крупнее_длинного.
-n rationale_95 UNKNOWN Помощник_холста_берёт_имена_картинок_только_латиницей.
-n rationale_116 UNKNOWN Б_—_число-герой_прямо_на_обложке:_стиль_и_так_держится_на_числах.
+n rationale_86 UNKNOWN Число-герой_занимает_строку_целиком:_короткое_ставится_крупнее_длинного.
 n users_xiix_4xsoft_postbot_style_github_github_py FUNCTION github.py
 n github FUNCTION фейсы()
 n github_main FUNCTION main()
@@ -933,7 +931,9 @@ n github_rationale_29 UNKNOWN Узкий_Oswald_под_огромную_цифр
 n github_rationale_183 UNKNOWN Приглашение_«$»_и_галочка_«✓»_фирменным_лаймом.
 n github_rationale_225 UNKNOWN Картинка_проекта:_первый_кадр_GIF,_обрезка_по_полю_«обрезка»,_JPEG_шириной_1400.
 n users_xiix_4xsoft_postbot_style_github_py FUNCTION контент.py
+n rationale_90 UNKNOWN Скруглённый_прямоугольник,_нарисованный_от_руки:_каждая_сторона_слегка_гуляет.
 n rationale_107 UNKNOWN Знак_и_полоса_берутся_из_общего_`стиль.py`,_но_их_места_сняты_с_кадра_1620×2160.
+n rationale_116 UNKNOWN Б_—_число-герой_прямо_на_обложке:_стиль_и_так_держится_на_числах.
 n rationale_194 UNKNOWN Призыв_сохранить_—_на_каждом_кадре,_а_не_только_в_финале:_на_этом_и_держатся
 n rationale_203 UNKNOWN Плашка_заголовка_и_подложка_значка_—_два_носителя_цвета_в_кадре.______На_инверсн
 n rationale_237 UNKNOWN Единственный_источник_глубины_в_плоской_вёрстке:_ровно_один_элемент_пересекает
@@ -944,6 +944,51 @@ n rationale_356 UNKNOWN Помощник_холста_и_транслитера�
 n 1440_900 FUNCTION [имя,_адрес,_ш_=_"1440",_в_=_"900"]
 n c FUNCTION проcогласие
 n a FUNCTION коты_постa()
+n rationale_133 UNKNOWN Кегль,_при_котором_самая_длинная_строка_вместе_с_полями_подложки_влезает_в_кадр.
+n rationale_252 UNKNOWN Снимки_для_макета_телефона:_вертикальная_обрезка_под_экран_330×380.
+n tools_rationale_235 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
+n tools_rationale_280 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
+n tools_rationale_323 UNKNOWN Папка_стиля:_чужие_кадры,_наши_кадры,_разбор,_числа.
+n tools_rationale_376 UNKNOWN Наш_фирменный:_чужого_источника_нет,_кадры_рисует_сам_бот.______Он_здесь_не_как
+n tools_rationale_443 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
+n tools_rationale_457 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
+n tools_rationale_553 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
+n config_rationale_78 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
+n config_rationale_88 UNKNOWN Чего_не_хватает_для_запуска._Пусто_—_можно_стартовать.
+n rationale_245 UNKNOWN Схема_с_латинскими_именами._Карта_заполняется_по_дороге:_латинское_→_своё.
+n rationale_271 UNKNOWN Ответ_с_русскими_именами._Обход_тот_же,_только_в_другую_сторону.
+n rationale_282 UNKNOWN Ответ_простым_текстом._С_картинками_агент_откроет_их_сам_и_посмотрит.
+n rationale_208 UNKNOWN Присылает_файлы_и_подпись_отдельными_сообщениями.______Подпись_идёт_своим_сообще
+n mascot_rationale_79 UNKNOWN Хромакей._Три_шага,_и_каждый_нужен.______Порог_по_расстоянию_до_ключа_убирает_ос
+n mascot_rationale_110 UNKNOWN Углы_должны_быть_тем_самым_синим.______Модель_иногда_игнорирует_требование_фона
+n mascot_rationale_123 UNKNOWN Новая_поза_под_конкретный_пост._None,_если_не_вышло.
+n mascot_rationale_141 UNKNOWN Рисует_новую_позу_и_кладёт_её_в_библиотеку_насовсем.______До_сих_пор_библиотека
+n mascot_rationale_171 UNKNOWN Не_обрезан_ли_персонаж_рамкой_самой_картинки.______Фон_снимается_по_силуэту,_поэ
+n mascot_rationale_199 UNKNOWN Позы,_которые_владелец_отверг_вручную.______Автоматика_ловит_обрезанных_котов,_н
+n mascot_rationale_210 UNKNOWN Больше_эту_позу_не_берём.
+n mascot_rationale_227 UNKNOWN {ключ:_путь}_по_тому,_что_реально_лежит_на_диске.______По_умолчанию_отдаёт_тольк
+n mascot_rationale_244 UNKNOWN Поза_из_библиотеки._Незнакомый_ключ_отдаёт_приветствие,_а_не_пустоту.
+n mascot_rationale_254 UNKNOWN Готовая_поза_из_комплекта_—_на_случай,_если_генерация_не_удалась.______Пост_без
+n config_rationale_68 UNKNOWN Есть_ли_claude,_которым_бот_сочиняет._Ввозим_внутри:_config_читается_____первым,
+n rationale_28 UNKNOWN Снимки_досок_1620×2160_рисовальщиком_постбота,_по_раскладке_холста_строка_за_стр
+n rationale_74 UNKNOWN В_—_до/после:_зачёркнутая_строка_и_лаймовая_плашка_со_второй.
+n rationale_150 UNKNOWN Одно_крупное_слово_вверху_плюс_подзаголовок-критерий_мелким.______Кегль_подбирае
+n rationale_168 UNKNOWN Одна_полоса-регистр:_оценка_→_шеврон_→_ответ,_слева_направо.
+n rationale_215 UNKNOWN 1_«Красная_строка»_—_главная._Провокация_известным_именем:_приём_автора_(самое
+n rationale_260 UNKNOWN 3_«Сетка_15»_—_количество_как_довод:_мозаика_из_пятнадцати_снимков_во_весь_кадр,
+n rationale_290 UNKNOWN Не_шестая_категория,_а_сводка:_полос-регистров_здесь_нет_вовсе,_раскладка_другая
+n rationale_326 UNKNOWN Снимки,_кот_и_знак_—_отдельными_файлами_рядом_с_доской.______Кот_именно_файлом,
+n rationale_364 UNKNOWN Помощник_холста_из_распакованного_скила_design;_путь_меняется_с_версией_Claude_C
+n rationale_88 UNKNOWN Полоса_—_фирменный_лайм_на_всех_кадрах,_светлых_и_тёмных:_это_знак_бренда,_и_он
+n rationale_146 UNKNOWN Картинки_холста:_значки_до_256_px,_коты_webp,_логотип._Каждая_заметно_меньше_70
+n rationale_70 UNKNOWN Полоса_—_фирменный_лайм_на_всех_кадрах:_это_знак_бренда,_он_один_во_всей_карусел
+n rationale_37 UNKNOWN Все_замечания_к_одному_черновику._Пустой_список_значит_«придраться_не_к_чему».
+n rationale_173 UNKNOWN А++_—_тот_же_текст_в_«окне_приложения»:_светлая_карточка_с_шапкой_и_точками,_вну
+n rationale_123 UNKNOWN Строка_заголовка_на_своей_подложке._Подложка_облегает_строку_(`display:inline-bl
+n rationale_221 UNKNOWN Русское_имя_поля_латиницей._Перевод_один_и_тот_же_при_каждом_вызове.
+n rationale_236 UNKNOWN Имя_файла_визуала_кадра:_снимок_сайта_или_нарисованная_сцена.
+n rationale_241 UNKNOWN Где_кончается_текст_кадра._У_Golos_знак_занимает_около_половины_кегля_—_отсюда_с
+n rationale_95 UNKNOWN Помощник_холста_берёт_имена_картинок_только_латиницей.
 n rationale_121 UNKNOWN Фразы_в_двойных_звёздочках_—_под_маркер._Так_автор_выделяет_главное_в_абзаце.
 n rationale_137 UNKNOWN Выбрасывает_посчитанные_варианты:_пост_изменился,_и_они_устарели.______Вариант_ж
 n rationale_157 UNKNOWN Б_—_число:_гигант_лаймом_во_весь_верх,_строка_под_ним._Цифра_и_так_герой_стиля,
@@ -956,8 +1001,6 @@ n tools_rationale_344 UNKNOWN Наш_фирменный:_чужого_источ
 n tools_rationale_411 UNKNOWN Чужие_числа_против_наших_порогов._Без_вердикта_«плохо»:_чужой_кадр_не_____обязан
 n tools_rationale_425 UNKNOWN Паспорт_ДНК:_откуда_взято,_что_снято_с_кадров,_что_перенесено.
 n tools_rationale_521 UNKNOWN README:_чем_ДНК_стилей_отличаются_друг_от_друга.
-n rationale_45 UNKNOWN Светлая_и_тёмная_огибающие_кадра_—_то,_что_лежит_ВОКРУГ_буквы.______Простое_разм
-n rationale_66 UNKNOWN Числа_одного_кадра._Текстом_считается_то,_что_заметно_отличается_от_своей_подлож
 n rationale_147 UNKNOWN Заливки:_белая_карточка,_круглый_значок,_плашка._Всё,_что_переживает_эрозию_и
 n tools_rationale_174 UNKNOWN Гоняет_шаблонный_`замер.py`_по_кадрам_и_разбирает_его_вывод_в_числа.
 n tools_rationale_219 UNKNOWN Достаёт_из_разбора_то,_что_решает:_что_перенесено_и_что_нет.______Разборы_написа
@@ -1022,7 +1065,6 @@ n rationale_113 UNKNOWN Окружение_для_CLI:_с_полным_PATH_и_�
 n rationale_235 UNKNOWN Схема_с_латинскими_именами._Карта_заполняется_по_дороге:_латинское_→_своё.
 n rationale_261 UNKNOWN Ответ_с_русскими_именами._Обход_тот_же,_только_в_другую_сторону.
 n rationale_272 UNKNOWN Ответ_простым_текстом._С_картинками_агент_откроет_их_сам_и_посмотрит.
-n rationale_102 UNKNOWN Всё_вместе:_собрать,_открыть_папку,_прислать_в_чат.
 n telegram_rationale_199 UNKNOWN Гасит_«часики»_на_кнопке._Без_этого_клиент_висит_и_кажется,_что_сломалось.
 n telegram_rationale_207 UNKNOWN Меняет_кнопки_под_уже_отправленным_сообщением.______Нужно_для_переключателей:_че
 n telegram_rationale_229 UNKNOWN Кнопка_слева_от_поля_ввода,_открывающая_мини-приложение.
@@ -1607,13 +1649,13 @@ e users_xiix_4xsoft_postbot_tools_py storage imports
 e users_xiix_4xsoft_postbot_tools_py config imports
 e users_xiix_4xsoft_postbot_tools_py card imports
 e tools tools_main calls
-e tools tools_rationale_235 rationale_for
-e tools tools_rationale_280 rationale_for
-e tools tools_rationale_323 rationale_for
-e tools tools_rationale_376 rationale_for
-e tools tools_rationale_443 rationale_for
-e tools tools_rationale_457 rationale_for
-e tools tools_rationale_553 rationale_for
+e tools tools_rationale_238 rationale_for
+e tools tools_rationale_283 rationale_for
+e tools tools_rationale_326 rationale_for
+e tools tools_rationale_379 rationale_for
+e tools tools_rationale_446 rationale_for
+e tools tools_rationale_460 rationale_for
+e tools tools_rationale_556 rationale_for
 e tools tools_init method
 e tools tools_log_message method
 e tools tools_json calls
@@ -1704,13 +1746,12 @@ e  runtimeerror inherits
 e  rationale_44 rationale_for
 e  rationale_68 rationale_for
 e  rationale_100 rationale_for
-e  rationale_122 rationale_for
-e  rationale_160 rationale_for
-e  rationale_231 rationale_for
-e  rationale_245 rationale_for
-e  rationale_271 rationale_for
-e  rationale_282 rationale_for
-e  rationale_289 rationale_for
+e  rationale_125 rationale_for
+e  rationale_234 rationale_for
+e  rationale_248 rationale_for
+e  rationale_274 rationale_for
+e  rationale_285 rationale_for
+e  rationale_292 rationale_for
 e  rationale_27 rationale_for
 e  rationale_51 rationale_for
 e  rationale_61 rationale_for
@@ -1727,15 +1768,15 @@ e  rationale_52 rationale_for
 e  rationale_126 rationale_for
 e  rationale_190 rationale_for
 e  rationale_224 rationale_for
-e  rationale_39 rationale_for
 e  rationale_59 rationale_for
+e  rationale_122 rationale_for
 e  rationale_159 rationale_for
 e  rationale_172 rationale_for
 e  rationale_197 rationale_for
-e  rationale_208 rationale_for
+e  rationale_217 rationale_for
+e  rationale_233 rationale_for
 e  users_xiix_4xsoft_postbot_webapp_py imports_from
 e  rationale_80 rationale_for
-e  rationale_125 rationale_for
 e  rationale_136 rationale_for
 e  rationale_153 rationale_for
 e  rationale_183 rationale_for
@@ -1747,7 +1788,6 @@ e  rationale_175 rationale_for
 e  rationale_189 rationale_for
 e  rationale_244 rationale_for
 e  rationale_269 rationale_for
-e  rationale_274 rationale_for
 e  rationale_323 rationale_for
 e  rationale_409 rationale_for
 e  rationale_475 rationale_for
@@ -1789,8 +1829,11 @@ e  rationale_82 rationale_for
 e  rationale_171 rationale_for
 e  rationale_210 rationale_for
 e  rationale_196 rationale_for
-e  rationale_28 rationale_for
-e  rationale_74 rationale_for
+e  rationale_25 rationale_for
+e  rationale_71 rationale_for
+e  rationale_24 rationale_for
+e  rationale_45 rationale_for
+e  rationale_63 rationale_for
 e  rationale_104 rationale_for
 e  rationale_110 rationale_for
 e  rationale_129 rationale_for
@@ -1809,7 +1852,6 @@ e  rationale_170 rationale_for
 e  rationale_177 rationale_for
 e  rationale_195 rationale_for
 e  rationale_219 rationale_for
-e  rationale_234 rationale_for
 e  rationale_255 rationale_for
 e  rationale_287 rationale_for
 e  rationale_336 rationale_for
@@ -1818,48 +1860,48 @@ e  rationale_403 rationale_for
 e  rationale_478 rationale_for
 e  rationale_495 rationale_for
 e  users_xiix_4xsoft_postbot_style_mjs contains
-e  rationale_79 rationale_for
-e  rationale_90 rationale_for
-e  rationale_150 rationale_for
-e  rationale_168 rationale_for
-e  rationale_184 rationale_for
-e  rationale_215 rationale_for
-e  rationale_260 rationale_for
-e  rationale_290 rationale_for
-e  rationale_326 rationale_for
-e  rationale_364 rationale_for
+e  rationale_77 rationale_for
+e  rationale_109 rationale_for
+e  rationale_132 rationale_for
+e  rationale_218 rationale_for
+e  rationale_243 rationale_for
+e  rationale_263 rationale_for
+e  rationale_293 rationale_for
+e  rationale_329 rationale_for
+e  rationale_367 rationale_for
 e  users_xiix_4xsoft_postbot_style_tests_test_py imports
 e  rationale_62 rationale_for
+e  rationale_231 rationale_for
 e  rationale_247 rationale_for
 e  rationale_264 rationale_for
+e  rationale_33 rationale_for
 e  css calls
 e  rationale_117 rationale_for
 e  rationale_130 rationale_for
-e  rationale_63 rationale_for
-e  rationale_88 rationale_for
-e  rationale_146 rationale_for
+e  rationale_160 rationale_for
+e  rationale_39 rationale_for
+e  rationale_66 rationale_for
+e  rationale_99 rationale_for
+e  rationale_149 rationale_for
+e  rationale_79 rationale_for
 e  rationale_92 rationale_for
 e  rationale_140 rationale_for
 e  px calls
-e  rationale_70 rationale_for
-e  rationale_77 rationale_for
-e  rationale_99 rationale_for
-e  rationale_37 rationale_for
-e  rationale_173 rationale_for
-e  rationale_132 rationale_for
-e  rationale_123 rationale_for
-e  rationale_133 rationale_for
-e  rationale_221 rationale_for
-e  rationale_236 rationale_for
-e  rationale_241 rationale_for
-e  rationale_109 rationale_for
-e  rationale_115 rationale_for
-e  rationale_29 rationale_for
 e  rationale_83 rationale_for
-e  rationale_95 rationale_for
-e  rationale_116 rationale_for
+e  rationale_102 rationale_for
+e  rationale_182 rationale_for
+e  rationale_145 rationale_for
+e  rationale_211 rationale_for
+e  rationale_289 rationale_for
+e  rationale_373 rationale_for
+e  rationale_115 rationale_for
+e  rationale_184 rationale_for
+e  rationale_29 rationale_for
+e  rationale_86 rationale_for
 e  users_xiix_4xsoft_postbot_style_github_github_py imports
 e  users_xiix_4xsoft_postbot_style_github_py contains
+e  rationale_90 rationale_for
+e  rationale_116 rationale_for
 e  rationale_194 rationale_for
 e  rationale_203 rationale_for
 e  rationale_237 rationale_for
@@ -1868,10 +1910,8 @@ e  rationale_313 rationale_for
 e  rationale_346 rationale_for
 e  rationale_356 rationale_for
 e  a calls
-e  rationale_121 rationale_for
-e  rationale_157 rationale_for
-e  rationale_186 rationale_for
-e  rationale_249 rationale_for
+e  rationale_133 rationale_for
+e  rationale_252 rationale_for
 e  dict calls
 e  publish calls
 e  ideas calls
@@ -2044,8 +2084,8 @@ e basemodel carousel inherits
 e basemodel writer inherits
 e users_xiix_4xsoft_postbot_config_py config contains
 e config config_rationale_58 rationale_for
-e config config_rationale_78 rationale_for
-e config config_rationale_88 rationale_for
+e config config_rationale_84 rationale_for
+e config config_rationale_94 rationale_for
 e config users_xiix_4xsoft_postbot_mascot_py imports
 e config users_xiix_4xsoft_postbot_telegram_py imports
 e config users_xiix_4xsoft_postbot_webapp_py imports
@@ -2069,7 +2109,7 @@ e config users_xiix_4xsoft_postbot_vercel_db_py imports
 e config users_xiix_4xsoft_postbot_vercel_facts_py imports
 e config users_xiix_4xsoft_postbot_vercel_config_py contains
 e config config_rationale_48 rationale_for
-e config config_rationale_68 rationale_for
+e config config_rationale_74 rationale_for
 e config users_xiix_4xsoft_postbot_vercel_telegram_py imports
 e config users_xiix_4xsoft_postbot_vercel_access_py imports
 e config users_xiix_4xsoft_postbot_vercel_stream_py imports
@@ -2105,16 +2145,16 @@ e tools_json test_send_header calls
 e tools_json test_end_headers calls
 e tools_json test_write calls
 e users_xiix_4xsoft_postbot_mascot_py mascot contains
-e mascot mascot_rationale_79 rationale_for
-e mascot mascot_rationale_110 rationale_for
-e mascot mascot_rationale_123 rationale_for
-e mascot mascot_rationale_141 rationale_for
-e mascot mascot_rationale_171 rationale_for
-e mascot mascot_rationale_199 rationale_for
-e mascot mascot_rationale_210 rationale_for
-e mascot mascot_rationale_227 rationale_for
-e mascot mascot_rationale_244 rationale_for
-e mascot mascot_rationale_254 rationale_for
+e mascot mascot_rationale_77 rationale_for
+e mascot mascot_rationale_108 rationale_for
+e mascot mascot_rationale_121 rationale_for
+e mascot mascot_rationale_139 rationale_for
+e mascot mascot_rationale_169 rationale_for
+e mascot mascot_rationale_197 rationale_for
+e mascot mascot_rationale_208 rationale_for
+e mascot mascot_rationale_225 rationale_for
+e mascot mascot_rationale_242 rationale_for
+e mascot mascot_rationale_252 rationale_for
 e mascot users_xiix_4xsoft_postbot_core_py imports
 e mascot users_xiix_4xsoft_postbot_tests_test_py imports
 e mascot users_xiix_4xsoft_postbot_tests_py imports
@@ -2890,12 +2930,12 @@ e users_xiix_4xsoft_postbot_style_tests_test_py test_19 contains
 e users_xiix_4xsoft_postbot_style_tests_test_py test_20 contains
 e test_19 test_19_test method
 e test_20 test_20_test method
+e rationale_140 a rationale_for
 e users_xiix_4xsoft_postbot_style_github_github_py github contains
 e users_xiix_4xsoft_postbot_style_github_github_py github_main contains
 e github github_rationale_29 rationale_for
 e github github_rationale_183 rationale_for
 e github github_rationale_225 rationale_for
-e a rationale_137 rationale_for
 e index_ekran_stanok index_sostoyanie_s shares_data_with
 e index_ekran_stanok index_smena calls
 e index_ekran_stanok index_prilozhenie references

@@ -1,2124 +1,1861 @@
-# Graph Report -   (2026-09-19)
+# Graph Report - postbot  (2026-09-21)
 
 ## Corpus Check
-- 219 files · ~12,711,257 words
+- 411 files · ~3,597,083 words
 - Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 22 file(s) not represented in the graph (top: (none) 7, .log 6, .woff2 4)
 
 ## Summary
-- 1601 nodes · 1871 edges · 263 communities detected
-- Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 222 edges (avg confidence: 0.8)
+- 5982 nodes · 9531 edges · 441 communities (334 shown, 107 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 170 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
+## Graph Freshness
+- Built from commit: `77b7c6ad`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Community 0|Community 0]]
-- [[_COMMUNITY_Community 1|Community 1]]
-- [[_COMMUNITY_Community 2|Community 2]]
-- [[_COMMUNITY_Community 3|Community 3]]
-- [[_COMMUNITY_Community 4|Community 4]]
-- [[_COMMUNITY_Community 5|Community 5]]
-- [[_COMMUNITY_Community 6|Community 6]]
-- [[_COMMUNITY_Community 7|Community 7]]
-- [[_COMMUNITY_Community 8|Community 8]]
-- [[_COMMUNITY_Community 9|Community 9]]
-- [[_COMMUNITY_Community 10|Community 10]]
-- [[_COMMUNITY_Community 11|Community 11]]
-- [[_COMMUNITY_Community 12|Community 12]]
-- [[_COMMUNITY_Community 13|Community 13]]
-- [[_COMMUNITY_Community 14|Community 14]]
-- [[_COMMUNITY_Community 15|Community 15]]
-- [[_COMMUNITY_Community 16|Community 16]]
-- [[_COMMUNITY_Community 17|Community 17]]
-- [[_COMMUNITY_Community 18|Community 18]]
-- [[_COMMUNITY_Community 19|Community 19]]
-- [[_COMMUNITY_Community 20|Community 20]]
-- [[_COMMUNITY_Community 21|Community 21]]
-- [[_COMMUNITY_Community 22|Community 22]]
-- [[_COMMUNITY_Community 23|Community 23]]
-- [[_COMMUNITY_Community 24|Community 24]]
-- [[_COMMUNITY_Community 25|Community 25]]
-- [[_COMMUNITY_Community 26|Community 26]]
-- [[_COMMUNITY_Community 27|Community 27]]
-- [[_COMMUNITY_Community 28|Community 28]]
-- [[_COMMUNITY_Community 29|Community 29]]
-- [[_COMMUNITY_Community 30|Community 30]]
-- [[_COMMUNITY_Community 31|Community 31]]
-- [[_COMMUNITY_Community 32|Community 32]]
-- [[_COMMUNITY_Community 33|Community 33]]
-- [[_COMMUNITY_Community 34|Community 34]]
-- [[_COMMUNITY_Community 35|Community 35]]
-- [[_COMMUNITY_Community 36|Community 36]]
-- [[_COMMUNITY_Community 37|Community 37]]
-- [[_COMMUNITY_Community 38|Community 38]]
-- [[_COMMUNITY_Community 39|Community 39]]
-- [[_COMMUNITY_Community 40|Community 40]]
-- [[_COMMUNITY_Community 41|Community 41]]
-- [[_COMMUNITY_Community 42|Community 42]]
-- [[_COMMUNITY_Community 43|Community 43]]
-- [[_COMMUNITY_Community 44|Community 44]]
-- [[_COMMUNITY_Community 45|Community 45]]
-- [[_COMMUNITY_Community 46|Community 46]]
-- [[_COMMUNITY_Community 47|Community 47]]
-- [[_COMMUNITY_Community 48|Community 48]]
-- [[_COMMUNITY_Community 49|Community 49]]
-- [[_COMMUNITY_Community 50|Community 50]]
-- [[_COMMUNITY_Community 51|Community 51]]
-- [[_COMMUNITY_Community 52|Community 52]]
-- [[_COMMUNITY_Community 53|Community 53]]
-- [[_COMMUNITY_Community 54|Community 54]]
-- [[_COMMUNITY_Community 55|Community 55]]
-- [[_COMMUNITY_Community 56|Community 56]]
-- [[_COMMUNITY_Community 57|Community 57]]
-- [[_COMMUNITY_Community 58|Community 58]]
-- [[_COMMUNITY_Community 59|Community 59]]
-- [[_COMMUNITY_Community 60|Community 60]]
-- [[_COMMUNITY_Community 61|Community 61]]
-- [[_COMMUNITY_Community 62|Community 62]]
-- [[_COMMUNITY_Community 63|Community 63]]
-- [[_COMMUNITY_Community 64|Community 64]]
-- [[_COMMUNITY_Community 65|Community 65]]
-- [[_COMMUNITY_Community 66|Community 66]]
-- [[_COMMUNITY_Community 67|Community 67]]
-- [[_COMMUNITY_Community 68|Community 68]]
-- [[_COMMUNITY_Community 69|Community 69]]
-- [[_COMMUNITY_Community 70|Community 70]]
-- [[_COMMUNITY_Community 71|Community 71]]
-- [[_COMMUNITY_Community 72|Community 72]]
-- [[_COMMUNITY_Community 73|Community 73]]
-- [[_COMMUNITY_Community 74|Community 74]]
-- [[_COMMUNITY_Community 75|Community 75]]
-- [[_COMMUNITY_Community 76|Community 76]]
-- [[_COMMUNITY_Community 77|Community 77]]
-- [[_COMMUNITY_Community 78|Community 78]]
-- [[_COMMUNITY_Community 79|Community 79]]
-- [[_COMMUNITY_Community 80|Community 80]]
-- [[_COMMUNITY_Community 81|Community 81]]
-- [[_COMMUNITY_Community 82|Community 82]]
-- [[_COMMUNITY_Community 83|Community 83]]
-- [[_COMMUNITY_Community 84|Community 84]]
-- [[_COMMUNITY_Community 85|Community 85]]
-- [[_COMMUNITY_Community 86|Community 86]]
-- [[_COMMUNITY_Community 87|Community 87]]
-- [[_COMMUNITY_Community 88|Community 88]]
-- [[_COMMUNITY_Community 89|Community 89]]
-- [[_COMMUNITY_Community 90|Community 90]]
-- [[_COMMUNITY_Community 91|Community 91]]
-- [[_COMMUNITY_Community 92|Community 92]]
-- [[_COMMUNITY_Community 93|Community 93]]
-- [[_COMMUNITY_Community 94|Community 94]]
-- [[_COMMUNITY_Community 95|Community 95]]
-- [[_COMMUNITY_Community 96|Community 96]]
-- [[_COMMUNITY_Community 97|Community 97]]
-- [[_COMMUNITY_Community 98|Community 98]]
-- [[_COMMUNITY_Community 99|Community 99]]
-- [[_COMMUNITY_Community 100|Community 100]]
-- [[_COMMUNITY_Community 101|Community 101]]
-- [[_COMMUNITY_Community 102|Community 102]]
-- [[_COMMUNITY_Community 103|Community 103]]
-- [[_COMMUNITY_Community 104|Community 104]]
-- [[_COMMUNITY_Community 105|Community 105]]
-- [[_COMMUNITY_Community 106|Community 106]]
-- [[_COMMUNITY_Community 107|Community 107]]
-- [[_COMMUNITY_Community 108|Community 108]]
-- [[_COMMUNITY_Community 109|Community 109]]
-- [[_COMMUNITY_Community 110|Community 110]]
-- [[_COMMUNITY_Community 111|Community 111]]
-- [[_COMMUNITY_Community 112|Community 112]]
-- [[_COMMUNITY_Community 113|Community 113]]
-- [[_COMMUNITY_Community 114|Community 114]]
-- [[_COMMUNITY_Community 115|Community 115]]
-- [[_COMMUNITY_Community 116|Community 116]]
-- [[_COMMUNITY_Community 117|Community 117]]
-- [[_COMMUNITY_Community 118|Community 118]]
-- [[_COMMUNITY_Community 119|Community 119]]
-- [[_COMMUNITY_Community 120|Community 120]]
-- [[_COMMUNITY_Community 121|Community 121]]
-- [[_COMMUNITY_Community 122|Community 122]]
-- [[_COMMUNITY_Community 123|Community 123]]
-- [[_COMMUNITY_Community 124|Community 124]]
-- [[_COMMUNITY_Community 125|Community 125]]
-- [[_COMMUNITY_Community 126|Community 126]]
-- [[_COMMUNITY_Community 127|Community 127]]
-- [[_COMMUNITY_Community 128|Community 128]]
-- [[_COMMUNITY_Community 129|Community 129]]
-- [[_COMMUNITY_Community 130|Community 130]]
-- [[_COMMUNITY_Community 131|Community 131]]
-- [[_COMMUNITY_Community 132|Community 132]]
-- [[_COMMUNITY_Community 133|Community 133]]
-- [[_COMMUNITY_Community 134|Community 134]]
-- [[_COMMUNITY_Community 135|Community 135]]
-- [[_COMMUNITY_Community 136|Community 136]]
-- [[_COMMUNITY_Community 137|Community 137]]
-- [[_COMMUNITY_Community 138|Community 138]]
-- [[_COMMUNITY_Community 139|Community 139]]
-- [[_COMMUNITY_Community 140|Community 140]]
-- [[_COMMUNITY_Community 141|Community 141]]
-- [[_COMMUNITY_Community 142|Community 142]]
-- [[_COMMUNITY_Community 143|Community 143]]
-- [[_COMMUNITY_Community 144|Community 144]]
-- [[_COMMUNITY_Community 145|Community 145]]
-- [[_COMMUNITY_Community 146|Community 146]]
-- [[_COMMUNITY_Community 147|Community 147]]
-- [[_COMMUNITY_Community 148|Community 148]]
-- [[_COMMUNITY_Community 149|Community 149]]
-- [[_COMMUNITY_Community 150|Community 150]]
-- [[_COMMUNITY_Community 151|Community 151]]
-- [[_COMMUNITY_Community 152|Community 152]]
-- [[_COMMUNITY_Community 153|Community 153]]
-- [[_COMMUNITY_Community 154|Community 154]]
-- [[_COMMUNITY_Community 155|Community 155]]
-- [[_COMMUNITY_Community 156|Community 156]]
-- [[_COMMUNITY_Community 157|Community 157]]
-- [[_COMMUNITY_Community 158|Community 158]]
-- [[_COMMUNITY_Community 159|Community 159]]
-- [[_COMMUNITY_Community 160|Community 160]]
-- [[_COMMUNITY_Community 161|Community 161]]
-- [[_COMMUNITY_Community 162|Community 162]]
-- [[_COMMUNITY_Community 163|Community 163]]
-- [[_COMMUNITY_Community 164|Community 164]]
-- [[_COMMUNITY_Community 165|Community 165]]
-- [[_COMMUNITY_Community 166|Community 166]]
-- [[_COMMUNITY_Community 167|Community 167]]
-- [[_COMMUNITY_Community 168|Community 168]]
-- [[_COMMUNITY_Community 169|Community 169]]
-- [[_COMMUNITY_Community 170|Community 170]]
-- [[_COMMUNITY_Community 171|Community 171]]
-- [[_COMMUNITY_Community 172|Community 172]]
-- [[_COMMUNITY_Community 173|Community 173]]
-- [[_COMMUNITY_Community 174|Community 174]]
-- [[_COMMUNITY_Community 175|Community 175]]
-- [[_COMMUNITY_Community 176|Community 176]]
-- [[_COMMUNITY_Community 177|Community 177]]
-- [[_COMMUNITY_Community 178|Community 178]]
-- [[_COMMUNITY_Community 179|Community 179]]
-- [[_COMMUNITY_Community 180|Community 180]]
-- [[_COMMUNITY_Community 181|Community 181]]
-- [[_COMMUNITY_Community 182|Community 182]]
-- [[_COMMUNITY_Community 183|Community 183]]
-- [[_COMMUNITY_Community 184|Community 184]]
-- [[_COMMUNITY_Community 185|Community 185]]
-- [[_COMMUNITY_Community 186|Community 186]]
-- [[_COMMUNITY_Community 187|Community 187]]
-- [[_COMMUNITY_Community 188|Community 188]]
-- [[_COMMUNITY_Community 189|Community 189]]
-- [[_COMMUNITY_Community 190|Community 190]]
-- [[_COMMUNITY_Community 191|Community 191]]
-- [[_COMMUNITY_Community 192|Community 192]]
-- [[_COMMUNITY_Community 193|Community 193]]
-- [[_COMMUNITY_Community 194|Community 194]]
-- [[_COMMUNITY_Community 195|Community 195]]
-- [[_COMMUNITY_Community 196|Community 196]]
-- [[_COMMUNITY_Community 197|Community 197]]
-- [[_COMMUNITY_Community 198|Community 198]]
-- [[_COMMUNITY_Community 199|Community 199]]
-- [[_COMMUNITY_Community 200|Community 200]]
-- [[_COMMUNITY_Community 201|Community 201]]
-- [[_COMMUNITY_Community 202|Community 202]]
-- [[_COMMUNITY_Community 203|Community 203]]
-- [[_COMMUNITY_Community 204|Community 204]]
-- [[_COMMUNITY_Community 205|Community 205]]
-- [[_COMMUNITY_Community 206|Community 206]]
-- [[_COMMUNITY_Community 207|Community 207]]
-- [[_COMMUNITY_Community 208|Community 208]]
-- [[_COMMUNITY_Community 209|Community 209]]
-- [[_COMMUNITY_Community 210|Community 210]]
-- [[_COMMUNITY_Community 211|Community 211]]
-- [[_COMMUNITY_Community 212|Community 212]]
-- [[_COMMUNITY_Community 213|Community 213]]
-- [[_COMMUNITY_Community 214|Community 214]]
-- [[_COMMUNITY_Community 215|Community 215]]
-- [[_COMMUNITY_Community 216|Community 216]]
-- [[_COMMUNITY_Community 217|Community 217]]
-- [[_COMMUNITY_Community 218|Community 218]]
-- [[_COMMUNITY_Community 219|Community 219]]
-- [[_COMMUNITY_Community 220|Community 220]]
-- [[_COMMUNITY_Community 221|Community 221]]
-- [[_COMMUNITY_Community 222|Community 222]]
-- [[_COMMUNITY_Community 223|Community 223]]
-- [[_COMMUNITY_Community 224|Community 224]]
-- [[_COMMUNITY_Community 225|Community 225]]
-- [[_COMMUNITY_Community 226|Community 226]]
-- [[_COMMUNITY_Community 227|Community 227]]
-- [[_COMMUNITY_Community 228|Community 228]]
-- [[_COMMUNITY_Community 229|Community 229]]
-- [[_COMMUNITY_Community 230|Community 230]]
-- [[_COMMUNITY_Community 231|Community 231]]
-- [[_COMMUNITY_Community 232|Community 232]]
-- [[_COMMUNITY_Community 233|Community 233]]
-- [[_COMMUNITY_Community 234|Community 234]]
-- [[_COMMUNITY_Community 235|Community 235]]
-- [[_COMMUNITY_Community 236|Community 236]]
-- [[_COMMUNITY_Community 237|Community 237]]
-- [[_COMMUNITY_Community 238|Community 238]]
-- [[_COMMUNITY_Community 239|Community 239]]
-- [[_COMMUNITY_Community 240|Community 240]]
-- [[_COMMUNITY_Community 241|Community 241]]
-- [[_COMMUNITY_Community 242|Community 242]]
-- [[_COMMUNITY_Community 243|Community 243]]
-- [[_COMMUNITY_Community 244|Community 244]]
-- [[_COMMUNITY_Community 245|Community 245]]
-- [[_COMMUNITY_Community 246|Community 246]]
-- [[_COMMUNITY_Community 247|Community 247]]
-- [[_COMMUNITY_Community 248|Community 248]]
-- [[_COMMUNITY_Community 249|Community 249]]
-- [[_COMMUNITY_Community 250|Community 250]]
-- [[_COMMUNITY_Community 251|Community 251]]
-- [[_COMMUNITY_Community 252|Community 252]]
-- [[_COMMUNITY_Community 253|Community 253]]
-- [[_COMMUNITY_Community 254|Community 254]]
-- [[_COMMUNITY_Community 255|Community 255]]
-- [[_COMMUNITY_Community 256|Community 256]]
-- [[_COMMUNITY_Community 257|Community 257]]
-- [[_COMMUNITY_Community 258|Community 258]]
-- [[_COMMUNITY_Community 259|Community 259]]
-- [[_COMMUNITY_Community 260|Community 260]]
-- [[_COMMUNITY_Community 261|Community 261]]
-- [[_COMMUNITY_Community 262|Community 262]]
+- Exception
+- подвязать() — навешивание обработчиков
+- telegram.py
+- pathlib
+- db.py
+- список.py
+- writer.py
+- Настройка .env и переменные окружения
+- card.py
+- действие
+- x.py
+- tiktok.py
+- переписать
+- Лист доступа — кто может пользоваться
+- mascot.py
+- Мини-приложение Telegram
+- Фирменный знак 4xTube (логотип для тёмных подложек)
+- Правила постбота: почему сделано именно так
+- соединение
+- справочник/холст.py
+- Почему у анонса стримов своя вёрстка
+- карусель
+- навигация.py
+- окно/холст.py
+- userbot.py
+- _Настройки
+- Style/замер.py
+- форматы.py
+- подборка-сайтов/снять.mjs
+- vercel/tiktok.py
+- test_очередь.py
+- graph-update.py
+- агент.py
+- 1. Семейства постов
+- помощник
+- _Вкладка
+- _прогнать
+- светофор/холст.py
+- приложения/холст.py
+- Паспорт по схеме
+- Паспорт по схеме
+- _База
+- светлый-разбор/холст.py
+- _Состояние
+- Слайд
+- vercel/telegram.py
+- браузер.py
+- Антидетектор — полная версия
+- С — общее состояние приложения
+- publish.py
+- Паспорт: одиннадцать пунктов
+- Паспорт: одиннадцать пунктов
+- нативный-экран/холст.py
+- public/sheets.js
+- webapp/sheets.js
+- vercel/конвейер.py
+- access.py
+- маркер/холст.py
+- Паспорт референса №12 — @mike.mozg, «Агент HERMES: 5 идей для вайбкодинга»
+- Паспорт референса №12 — @mike.mozg, «Агент HERMES: 5 идей для вайбкодинга»
+- vercel/access.py
+- проверка.py
+- Паспорт стиля: bezikovkirill / DcqI7Zhjt0m
+- Паспорт стиля: bezikovkirill / DcqI7Zhjt0m
+- сервисы/холст.py
+- приёмка.py
+- handler
+- конвейер.py
+- _Подмена
+- Зазоры
+- главный_цикл
+- test_темы.py
+- _снять
+- vercel/card.py
+- tools_днк.py
+- config.py
+- Паспорт стиля: ythemark, пост DdEJxI-mfRT
+- Паспорт стиля: ythemark, пост DdEJxI-mfRT
+- vercel/x.py
+- public/core.js
+- public/screens.js
+- vercel/приёмка.py
+- webapp/core.js
+- webapp/screens.js
+- придирки.py
+- Реестр дефектов кадров
+- api.py
+- _снять
+- предполёт.py
+- фразы.py
+- Паспорт стиля: maysoulme, пост Dcqzh6ICOvz
+- Паспорт стиля: maysoulme, пост Dcqzh6ICOvz
+- threads.py
+- vercel/api.py
+- _обложка_страница
+- source.py
+- до-после/рисовать.py
+- дуотон/холст.py
+- отчёт/холст.py
+- ПравкаТекста
+- _Цех
+- экраны.py
+- Разметка
+- замер.py
+- _Подмена
+- _Подмена
+- worker.py
+- коллаж.py
+- кадр_с_текстом
+- сетка/холст.py
+- Внешняя доказательная база: как устроены карусели, которые дочитывают
+- промпты/холст.py
+- слайд_финал
+- bot.py
+- _поле
+- PostBot как дизайн-студия
+- _коротко
+- вдохновение.py
+- Архитектура: Vercel, мак, Telegram, Supabase
+- github.py
+- Принять
+- vercel/jobs.py
+- vercel/markup.py
+- json
+- Экран
+- слайд_финал
+- Экран цеха (экранЦех)
+- Редактор 4xTube — мини-приложение
+- jobs.py
+- tools_дизайны.py
+- Подмены
+- Недели
+- test_значки.py
+- Стиль «дуотон»
+- Стиль «дуотон»
+- Стиль «маркер»
+- Стиль «маркер»
+- закрыть
+- Тёплый
+- ПриёмыЖанров
+- Сразу
+- _Дублёры
+- vercel/уборка.py
+- vercel/варианты.py
+- POST /api/approve
+- _текст
+- Ручка
+- _картинка
+- Сторителлинг-корректор
+- bot.py — цикл опроса, меню, кнопки, расписание
+- вертекс.py
+- facts.py
+- данные
+- db.py — посты, расписание, настройки
+- ВБраузере
+- разбор/холст.py
+- test_заголовки.py
+- ПилюлиИзДанных
+- ЗапаснаяВетка
+- vercel/facts.py
+- public/app.js
+- vercel/storage.py
+- vercel/times.py
+- webapp/app.js
+- отклики.py
+- уборка.py
+- показать
+- carousel.py
+- channels.py
+- дорисовать
+- _Связь
+- icons.py
+- Карусели TikTok и Instagram: что работает по свежим данным
+- подборка-сайтов/рисовать.py
+- Стиль «светофор» — паспорт и порядок сборки
+- Стиль «справочник»
+- times.py
+- _ВременнаяБаза
+- Сократить
+- слайд_обложка
+- vercel/channels.py
+- _Связь
+- vercel/icons.py
+- vercel/publish.py
+- слайд_вида
+- core.py
+- crosspost.py
+- Разнообразие каруселей: паспорт формата
+- рисовать() — перерисовка экрана
+- Лист поста (открыть)
+- card.py — карточка и афиша через Chrome
+- Отдача слайдов через /api/slide
+- Supabase — база и хранилище карточек
+- Style/README.md
+- Паспорт стиля: @whygolding, карточки новостей со снимком
+- _спокойно
+- vercel/crosspost.py
+- вход.py
+- ответить_словами
+- _обложка_страница
+- разметить
+- voice.py
+- Конвейер карусели без перерисовок
+- Текст переписывается под площадку, а не режется
+- stream.py
+- сводка/рисовать.py
+- Пороги
+- _Тихая
+- Журнал
+- Навигация
+- _кегль_обложки
+- vercel/stream.py
+- обернуть
+- base64
+- markup.py
+- референсы.py
+- ПравилоПяти
+- пары/рисовать.py
+- Файлы
+- _Текст
+- ходРабот() — полоска хода работ
+- Расписание: UTC в базе, имя зоны для показа
+- сервисы/рисовать.py
+- Паспорт стиля «нативный экран» — @promptdrill
+- Паспорт стиля «нативный экран» — @promptdrill
+- Стиль «окно» — белое окно приложения на тёмном фоне
+- vercel/threads.py
+- ДНК
+- test_кот_под_карточками.py
+- re
+- vercel/замер.py
+- datetime
+- в_площадку
+- подготовить
+- темы.py
+- ideas.py
+- Переезд на сервер
+- в_html
+- ДНК стиля «до-после»
+- ДНК стиля «дуотон»
+- ДНК стиля «маркер»
+- ДНК стиля «нативный-экран»
+- ДНК стиля «окно»
+- ДНК стиля «приложения»
+- ДНК стиля «промпты»
+- ДНК стиля «разбор»
+- Стиль «светлый разбор» (рерайт 1в1 кадров 2–8 поста Instagram Dc_JBG4D3Oq)
+- Стиль «светлый разбор» (рерайт 1в1 кадров 2–8 поста Instagram Dc_JBG4D3Oq)
+- ДНК стиля «светофор»
+- ДНК стиля «скетч»
+- ДНК стиля «справочник»
+- ОдинПроход
+- ДизайнВНаборе
+- ЗнакПослеПлашки
+- Дизайн
+- Ссылки
+- Ротация
+- vercel/ideas.py
+- стиль.py
+- secrets
+- подготовить
+- кар() — адрес карточки с подписью
+- Выбор канала: тестовый или основной
+- writer.py — голос канала и сочинение текста
+- ДНК стиля «отчёт»
+- ДНК стиля «пары»
+- ДНК стиля «подборка-github»
+- ДНК стиля «подборка-сайтов»
+- ДНК стиля «светлый-разбор»
+- ДНК стиля «сводка»
+- ДНК стиля «сервисы»
+- ДНК стиля «сетка»
+- Огрызок
+- Матрица
+- картинка-телеграм.py
+- .test_папка_складывается_когда_кадры_уже_в_базе
+- БезИнлайна
+- vercel/repeats.py
+- футер
+- кадры
+- созревшие
+- бракованные
+- лист() — нижний лист (bottom sheet)
+- Переверстать
+- test_сводка.py
+- Паспорт стиля «до-после» — @skilzhub, «Viral Prompt Codes Part 2»
+- Паспорт стиля «до-после» — @skilzhub, «Viral Prompt Codes Part 2»
+- Стиль «сводка»
+- Стиль «сводка»
+- Стиль «скетч»
+- Стиль «скетч»
+- РостКотаОбложки
+- Три места: Vercel, мак, Telegram, Supabase
+- Очередь заданий связывает приложение и мак
+- Углы контента: закрытый список, идут по кругу
+- X и Threads: текст переписывается под площадку
+- TikTok берёт картинки только с подтверждённого домена
+- Почему разметка переводится в HTML
+- Почему карточку рисует браузер, а не нейросеть
+- Почему не выдумываются цифры
+- Почему публикуем от аккаунта, а не от бота
+- Опоздание больше трёх часов: пост в черновики
+- Время в UTC, зона именем, а не смещением
+- Второй проход по голосу: как это звучит
+- Копилка идей: материал днём, пишут вечером
+- Коды приглашений вместо зашитых id
+- Тестовый и основной канал, проверка прав на месте
+- Ничего не уходит в канал само
+- светлый-разбор/снимки.py
+- Запреты
+- Ручка
+- _рамка.js
+- ЗамерВидитКарточки
+- опубликовать
+- до-после/холст.py
+- опубликовать
+- Рерайт @zawetwarpp «Сайты, которые обязан знать каждый вайбкодер» — НАРИСОВАН, лежит в tiktok-14-09-Сайты-о-которых-молчит-каждый-вайбкодер
+- Рерайт @zawetwarpp «Сайты, которые обязан знать каждый вайбкодер» — НАРИСОВАН, лежит в tiktok-14-09-Сайты-о-которых-молчит-каждый-вайбкодер
+- МеткиШпаргалки
+- СвояВёрстка
+- ЗнакПоИмени
+- Кэш
+- test_эталоны.py
+- ЖурналКарусели
+- Родители
+- МеткиКарусели
+- снимки-файлов.py
+- .test_карточка_перечитывается_перед_записью
+- дизайны/README.md
+- storage.py
+- Фото-Карусель, стиль «до-после» (промпт и результат на товаре)
+- Фото-Карусель, стиль «пары» (платный сервис и бесплатный двойник)
+- Фото-Карусель, стиль «пары» (платный сервис и бесплатный двойник)
+- БезОбвеса
+- ВБраузере
+- Подсказки
+- Запреты
+- РотацияПодСветлыйДизайн
+- ПаспортТипа
+- Довести
+- УжатиеБезКота
+- ПравкаОбновляетПапку
+- ЧасыСловами
+- Разом
+- убрать_идею
+- _иконки
+- правило-пяти/README.md
+- кнопка_приложения
+- Фото-Карусель, стиль «подборка сервисов»
+- Фото-Карусель, стиль «подборка сервисов»
+- Конвейер
+- ПосадкаКота
+- Паспорт
+- ПодсветкаНаОбложке
+- ИмяПапки
+- кнопки
+- Контекст проекта (для Claude Code)
+- сводка/холст.py
+- запомнить
+- Дизайн «атмосфера»
+- Дизайн «брутальный»
+- Дизайн «журнал»
+- Дизайн «заметка»
+- Дизайн «манифест»
+- Дизайн «минимал»
+- Дизайн «неон»
+- Дизайн «плакат»
+- Дизайн «пособие»
+- Дизайн «редакционный»
+- Дизайн «терминал»
+- Дизайн «фирменный»
+- Дизайн «чертёж»
+- Дизайн «швейцарский»
+- Фото-Карусель, стиль «подборка GitHub» (терминал с $)
+- Фото-Карусель, стиль «подборка GitHub» (терминал с $)
+- Беды
+- ДругойВариант
+- в_площадку
+- vercel/db.py
+- запомнить
+- vercel.json
+- футер
+- по_неделям
+- Лайм
+- картинки.sh
+- коты.sh
+- сцены.sh
+- ОблачнаяКопия
+- главный
+- test_инверсия.py
+- запомнить_ссылку
+- уже_писали
+- о_чём_писали
+- справочник_тем
+- Ссылки
+- graph-refresh.sh
+- установка.sh
+- последние_беды
+- мак_жив
+- вернуть_брошенные
+- подготовить
+- взять_работу
+- шаг
+- до-после/ВАРИАЦИИ.md
+- симба.sh
+- финал.sh
+- дуотон/ВАРИАЦИИ.md
+- маркер/ВАРИАЦИИ.md
+- нативный-экран/ВАРИАЦИИ.md
+- окно/ВАРИАЦИИ.md
+- отчёт/ВАРИАЦИИ.md
+- пары/ВАРИАЦИИ.md
+- подборка-github/ВАРИАЦИИ.md
+- подборка-сайтов/ВАРИАЦИИ.md
+- приложения/ВАРИАЦИИ.md
+- промпты/ВАРИАЦИИ.md
+- разбор/ВАРИАЦИИ.md
+- светлый-разбор/ВАРИАЦИИ.md
+- светофор/ВАРИАЦИИ.md
+- сводка/ВАРИАЦИИ.md
+- сервисы/ВАРИАЦИИ.md
+- значки-3d.sh
+- сетка/ВАРИАЦИИ.md
+- скетч/ВАРИАЦИИ.md
+- справочник/ВАРИАЦИИ.md
+- последние_беды
+- мак_жив
+- вернуть_брошенные
+- вернуть_зависшие
+- прибрать
+- BaseHTTPRequestHandler
+- BaseModel
+- RuntimeError
+- Придирки
+- Пределы
+- Придирки
+- tools_стенд.py
+- Плотность
+- Рубрики
 
 ## God Nodes (most connected - your core abstractions)
-1. `голова()` - 254 edges
-2. `_Связь` - 114 edges
-3. `кадр_с_текстом()` - 81 edges
-4. `_пункт()` - 67 edges
-5. `_стоп()` - 61 edges
-6. `хром()` - 49 edges
-7. `ТГ` - 37 edges
-8. `Слайд` - 37 edges
-9. `звук_выключен()` - 32 edges
-10. `_вызвать()` - 31 edges
+1. `соединение()` - 39 edges
+2. `соединение()` - 39 edges
+3. `_База` - 30 edges
+4. `С — общее состояние приложения` - 27 edges
+5. `помощник()` - 26 edges
+6. `Реестр дефектов кадров` - 24 edges
+7. `_Подмена` - 23 edges
+8. `Экран` - 23 edges
+9. `Экран цеха (экранЦех)` - 22 edges
+10. `_Настройки` - 21 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Форма поста: список, разбор, схема, история` --semantically_similar_to--> `Явный выбор каркаса карусели`  [INFERRED] [semantically similar]
-  README.md → ПЛАН.md
-- `card.py — карточка и афиша через Chrome` --shares_data_with--> `Базовые пакеты: requests, python-dotenv, pydantic, pillow, numpy`  [INFERRED]
-  README.md → requirements.txt
-- `Карточка — другой угол той же темы` --semantically_similar_to--> `Обложка как половина работы`  [INFERRED] [semantically similar]
-  README.md → ПЛАН.md
-- `Копилка идей` --semantically_similar_to--> `Свой свайп-файл механик`  [INFERRED] [semantically similar]
-  README.md → ПЛАН.md
-- `Логотип веб-приложения / фавикон 4xTube` --semantically_similar_to--> `Мини-знак 4x в левом нижнем углу карточки`  [INFERRED] [semantically similar]
-  webapp/logo.png → assets/stream_card.png
+- `Д-20. Замер занижает контраст на двухполосных кадрах` --references--> `_низкие()`  [INFERRED]
+  docs/дефекты-кадров.md → Style/замер.py
+- `Д-11. Автореплика кота не к месту` --references--> `_хотя_бы_одна_реплика()`  [INFERRED]
+  docs/дефекты-кадров.md → carousel.py
+- `3. Сценарий и ворота В1, В2` --references--> `_переписать_карусель()`  [INFERRED]
+  docs/superpowers/specs/2026-09-15-конвейер-карусели-design.md → core.py
+- `3. Сценарий и ворота В1, В2` --references--> `_подогнать_вид()`  [INFERRED]
+  docs/superpowers/specs/2026-09-15-конвейер-карусели-design.md → carousel.py
+- `рисовать()` --indirect_call--> `формат()`  [INFERRED]
+  carousel.py → площадки.py
+
+## Import Cycles
+- None detected.
 
 ## Hyperedges (group relationships)
 - **Конвейер: угол по кругу превращается в карусель и встаёт в план** — readme_konveyer, readme_ugly_po_krugu, readme_karusel, readme_karusel_tiktok_otlichiya, readme_raspisanie_utc, readme_worker_py [EXTRACTED 1.00]
 - **Путь заметки: голосовое или сообщение раздваивается в копилку идей и в факты, и уходит в задание писателю** — readme_zametka_tri_sposoba, readme_voice_py, readme_whisper_na_make, readme_ideas_py, readme_facts_py, readme_writer_py [EXTRACTED 1.00]
 - **Разделение труда: приложение на Vercel кладёт задание, мак делает тяжёлое, пост уходит в отложенные Telegram, всё через Supabase** — readme_vercel, readme_mak, readme_ochered_zadanij, readme_telegram_otlozhennye, readme_supabase, readme_userbot_py [EXTRACTED 1.00]
-- **Одобрение черновика: карточка ждёт, выбор часа, /api/approve, отметка card.ячейка, смена показывает ячейку занятой** — index_ekran_stanok, index_pochemu_kartochka_zhdet, index_api_approve, index_pochemu_odobrit, index_pole_card_yacheyka, index_pochemu_otmetka_na_poste, index_smena, index_pole_drafts [EXTRACTED 1.00]
-- **Заказ станку: лист заказа, /api/order, ключ задания, опрос /api/job по ШАГИ_ЗАКАЗ, /api/state, полоска хода** — index_list_zakaza, index_api_order, index_rabota, index_shagi, index_api_job, index_api_state, index_hod_rabot, index_pole_raboty [EXTRACTED 1.00]
-- **Ручная выкладка: смена даёт готовые посты, /api/take по одному, ШАГИ_ФАЙЛЫ, файлы в чате и папка на маке** — index_smena, index_pochemu_zabrat_iz_ceha, index_api_take, index_pochemu_zabrat_faylami, index_rabota, index_pole_mac, index_ekran_ceh [EXTRACTED 1.00]
+- **Одобрение черновика: карточка ждёт, выбор часа, /api/approve, отметка card.ячейка, смена показывает ячейку занятой** — index_ekran_stanok, index_pochemu_kartochka_zhdet, index_api_approve, index_pochemu_odobrit, index_pole_card_yacheyka, index_pochemu_otmetka_na_poste, index_smena, webapp_index_pole_drafts [EXTRACTED 1.00]
+- **Ручная выкладка: смена даёт готовые посты, /api/take по одному, ШАГИ_ФАЙЛЫ, файлы в чате и папка на маке** — index_smena, index_pochemu_zabrat_iz_ceha, webapp_index_api_take, index_pochemu_zabrat_faylami, index_rabota, webapp_index_pole_mac, index_ekran_ceh [EXTRACTED 1.00]
+- **Заказ станку: лист заказа, /api/order, ключ задания, опрос /api/job по ШАГИ_ЗАКАЗ, /api/state, полоска хода** — index_list_zakaza, webapp_index_api_order, index_rabota, index_shagi, webapp_index_api_job, webapp_index_api_state, index_hod_rabot, webapp_index_pole_raboty [EXTRACTED 1.00]
 
-## Communities
+## Communities (441 total, 107 thin omitted)
 
-### Community 0 - "Community 0"
-
-Cohesion: 0.01
-Nodes (210): голова(), знак_css(), Exception, Есть ли чем сочинять. Без этого половина бота не работает., Правка на месте, если нажали с самого экрана; иначе новое сообщение., А — как у автора: бордовый кадр, узкие белые прописные, курсив с засечками ниже., Гигантская цифра кадра фоном: ориентир в ленте, виден даже в превью., Нет отчёта — пост рисован до приёмки, судить его нечем. (+202 more)
-
-### Community 1 - "Community 1"
-
-Cohesion: 0.02
-Nodes (167): АДРЕСА и хеш-адреса (#shop, #stock, #m-код), POST /api/access/code, POST /api/drop, POST /api/facts/drop, POST /api/facts/save, POST /api/generate, POST /api/ideas/add, POST /api/ideas/drop (+159 more)
-
-### Community 2 - "Community 2"
-
-Cohesion: 0.02
-Nodes (109): свои(), Одноразовый код на сутки. Дольше он и не нужен, а лежать вечно опасно., Гасит код и впускает человека. Код одноразовый: второй раз не сработает., Ключ личной ссылки. Заводится сам при первом обращении., Кто пришёл по личной ссылке. Ноль, если ключ не тот.      Сравнение постоянное п, {id: {'имя': …, 'когда': …}}. Владельца в списке нет, он есть всегда., Сколько часов осталось. Ноль означает «закрыто»., Что человеку позволено. У владельца всегда полный доступ. (+101 more)
-
-### Community 3 - "Community 3"
-
-Cohesion: 0.02
-Nodes (119): кадр_с_текстом(), Д19ПерепадНаПлотномСписке, Д20КонтрастНаДвухполосном, Что приходит от модели: пять слотов и вид., Группа из одной картинки телеграму не годится: он требует от двух., Пустой экран «заберите файлы» обещает то, чего нет., Папка на столе — это «готово к выкладке». Брак готовым не бывает., Папка есть, а файлов в ней нет — открывать нечего, это то же         самое, что (+111 more)
-
-### Community 4 - "Community 4"
-
-Cohesion: 0.02
-Nodes (95): _Связь, Тонкая обёртка: прячет разницу между «?» и «%s» в подстановках.      Она же держ, Учит sqlite опускать регистр по-русски.      Встроенный `LOWER` в sqlite трогает, Ошибки, после которых соединение годится только выбросить., Учит sqlite опускать регистр по-русски.      Встроенный `LOWER` в sqlite трогает, Ошибки, после которых соединение годится только выбросить., Отпускает соединение этой нити. Нужно только при остановке., Отпускает соединение этой нити. Нужно только при остановке. (+87 more)
-
-### Community 5 - "Community 5"
-
-Cohesion: 0.03
-Nodes (89): Аудит качества каруселей 06.09.2026, Чему научились у чужих каруселей, Creator Search Insights и вкладка «пробелы», Длина работает на нас, пока каждый слайд что-то добавляет, Досвайп: уход с первого слайда на второй, Откуда берём материал, Явный выбор каркаса карусели, Обложка как половина работы (+81 more)
-
-### Community 6 - "Community 6"
-
-Cohesion: 0.03
-Nodes (65): _стоп(), m_видео(), main(), Голосовая заметка: расшифровываем и дальше как обычный текст.      Идея приходит, Кружок тоже несёт голос., Раздел «что ответить»: повторный проход и настройки., Читает чаты из папки за заданное окно и предлагает, что ответить.      Работа до, Значение колонки, которой у старых постов может не быть вовсе.      База пережив (+57 more)
-
-### Community 7 - "Community 7"
-
-Cohesion: 0.04
-Nodes (62): api.py — маршруты приложения для Vercel и мака, Отдача слайдов через /api/slide, Архитектура: Vercel, мак, Telegram, Supabase, Цех: верхний экран со станками, core.py — общее для чата и приложения, DATABASE_URL и перенос накопленного, Dockerfile — питон и Chromium, Файл сессии в deploy/ключи (+54 more)
-
-### Community 8 - "Community 8"
-
-Cohesion: 0.04
-Nodes (53): _пункт(), _размер_png(), _запас_px(), Кегль заголовка под его длину.      Раньше длинное просто обрезалось многоточием, Вертикальный кадр 1080x1920 для сторис: зовёт в профиль.      Ключевое слово заг, Вертикальная обложка эфира. Читается с ленты, а не с монитора., Готовит отрисованный слайд под требования площадки.      Рисуем мы в полуторном, Экранирует и запрещает перенос внутри слов с дефисом.      Без этого «ИИ-ролика» (+45 more)
-
-### Community 9 - "Community 9"
-
-Cohesion: 0.06
-Nodes (28): BaseHTTPRequestHandler, dict, фейсы(), main(), Приглашение «$» и галочка «✓» фирменным лаймом., Картинка проекта: первый кадр GIF, обрезка по полю «обрезка», JPEG шириной 1400., Узкий Oswald под огромную цифру и широкий Manrope под заголовок — только обложке, handler (+20 more)
-
-### Community 10 - "Community 10"
-
-Cohesion: 0.05
-Nodes (38): [имя, адрес, ш = "1440", в = "900"], [тип, б64], коты_постa(), проcогласие, CHROME, { chromium }, clip, cx (+30 more)
-
-### Community 11 - "Community 11"
-
-Cohesion: 0.05
-Nodes (41): BaseModel, Слайд, mascot_склад(), Есть ли на слайде что рисовать.      Схема разрешает всем полям быть пустыми, и, Правит вёрстку под то, что на слайде на самом деле заполнено.      Вёрстку модел, Пять слотов модели раскладываем в поля, которые ждёт рисовалка.      Раскладка ж, Один слайд.      Полей нарочно мало и они общие для всех вёрсток. Схема из двадц, Слова для пилюль обложки: что встретится в карусели дальше.      Свои метки из д (+33 more)
-
-### Community 12 - "Community 12"
-
-Cohesion: 0.05
-Nodes (36): _модель(), Версии поста для площадок. Считаются один раз и остаются в карточке., Схема ответа. Заводится по требованию: pydantic есть только на маке, а     включ, Где вообще заданы ключи. Кнопку без ключей показывать незачем., нарисовать(), main(), настроен(), Свежий токен доступа. Обновляется сам, когда протух. (+28 more)
-
-### Community 13 - "Community 13"
-
-Cohesion: 0.06
-Nodes (34): access.py — доступ, коды приглашений, роли, bot.py — цикл опроса, меню, кнопки, расписание, Редактор 4xTube: бот для постов в канал, Что проверено, а что нет, Claude Code по подписке вместо ANTHROPIC_API_KEY, Длинный опрос вместо вебхука, Дублирование постов в X и Threads, humanizer.py — второй проход по голосу (+26 more)
-
-### Community 14 - "Community 14"
-
-Cohesion: 0.07
-Nodes (26): ТГ, AUTH, Пост-листалка: несколько слайдов в одном стиле под общей подписью.      Хранится, Только текст карусели, без единого кадра.      Пост кладётся обычным черновиком,, Рисует кадры по уже одобренному тексту и снимает пометку эскиза.      Ничего не, Правит существующий пост по указанию владельца. Номер остаётся тем же.      Номе, Всё, что нужно, чтобы потом перерисовать карточку без новой генерации., Правка карусели словами: тот же текст с правкой, та же форма.      До 14 сентябр (+18 more)
-
-### Community 15 - "Community 15"
-
+### Community 1 - "подвязать() — навешивание обработчиков"
 Cohesion: 0.08
-Nodes (25): POST /api/access, POST /api/access/remove, POST /api/access/role, POST /api/approve, POST /api/channel/check, POST /api/channel/pick, POST /api/channel/set, POST /api/cleanup (+17 more)
+Nodes (36): действия() — кнопки листа поста, довести() — дожидание задания на маке, Лист нового факта, Лист плана вперёд (планЛист), Лист создания (листСоздания), Лист правки словами (спросить), рубрика и тема — черновой ввод заказа, Почему ответ приходит ключом задания — сессия аккаунта только на маке (+28 more)
 
-### Community 16 - "Community 16"
+### Community 2 - "telegram.py"
+Cohesion: 0.12
+Nodes (28): RuntimeError, Файлы как файлы, а не как снимки. Снимки телеграм пережимает по-своему, а…, Карусель: несколько снимков одним сообщением, подпись у первого. Телеграм…, Тонкий клиент Bot API: только то, что нужно этому боту. Длинный опрос, а не…, Гасит «часики» на кнопке. Без этого клиент висит и кажется, что сломалось., Переписывает уже отправленное сообщение целиком: и текст, и кнопки. Ради этого…, Меняет кнопки под уже отправленным сообщением. Нужно для переключателей:…, Кнопка слева от поля ввода, открывающая мини-приложение. (+20 more)
 
-Cohesion: 0.16
-Nodes (20): Глиф: стилизованная цифра 4 / четырёхлучевая вертушка, Светло-серая грань верхнего луча (объём знака), Риск: серая грань почти пропадает на светлом фоне, Лаймовая заливка знака (#C7E24B, бренд-акцент), Фирменный знак 4xTube (логотип для тёмных подложек), Прозрачный фон 512×512 RGBA, рассчитан на тёмную подложку, 3D-маскот: чёрный кот с лаймовыми глазами и швами, Мини-знак 4x в левом нижнем углу карточки (+12 more)
+### Community 3 - "pathlib"
+Cohesion: 0.04
+Nodes (51): Разовый вход в TikTok. python3 deploy/тикток_вход.py покажет ссылку, по которой…, inspect, pathlib, sqlite3, Измеритель кадров: контраст считается по буквам, а ритм — по всей карусели.…, Свои снимки-макеты интерфейса: `python3 макеты.py` → снимки/память.png и…, sys, tempfile (+43 more)
 
-### Community 17 - "Community 17"
+### Community 4 - "db.py"
+Cohesion: 0.05
+Nodes (59): База постов. SQLite на ноутбуке, Postgres в Supabase на сервере. Почему две.…, Кладёт черновик. `картинки` это карусель: несколько снимков под один текст.…, Одна строка владельцу: появился черновик. Раньше о готовом посте узнавали…, Меняет отдельные поля поста. Пустой вызов ничего не делает., Владелец выложил пост руками — бот об этом иначе не узнает. В TikTok мы не…, Ссылка приходит вторым шагом: сперва отметка, потом адрес. Отдельно, потому что…, `у_телеграма` это номер поста в отложенных Telegram, если отдали ему., Обратно в черновики. Пост остаётся, уходит только время. Уже опубликованный… (+51 more)
 
+### Community 5 - "список.py"
+Cohesion: 0.18
+Nodes (22): Path, А — как у автора: бордовый кадр, узкие белые прописные, курсив с засечками ниже., Б — сцена: число и тема крупно, кот-монтажёр за ноутбуком., В — маркер: гигантское число оливой, строка темы, лаймовый маркер и ряд значков., Поза бота или кот, нарисованный под пост в `до-после/коты/` (имя там…, Картинки холста: настоящие значки до 256 px, коты webp, логотип — каждая меньше…, Вариация «сервисов»: раздел со списком сервисов (пост с `"вид": "список"`).…, Самый частый насыщенный цвет мелкого favicon — фон буквы; нет значка — олива. (+14 more)
+
+### Community 6 - "writer.py"
+Cohesion: 0.11
+Nodes (26): pydantic, BaseModel, Сочиняет пост. Голос канала задан здесь, а не в промпте на каждый вызов.…, Куда ведёт этот пост. Пусто, если владелец ссылки не давал. Обычно адрес…, Отрезает от поста строки-адреса. Возвращает текст без них и адрес. Нужно в двух…, Ставит адрес последней строкой, отделив пустой. Приписывает код, а не модель, и…, Задание по присланному материалу. Два режима, и они разные по сути. Со ссылкой…, Форма, которой давно не было. Иначе лента станет однообразной. (+18 more)
+
+### Community 7 - "Настройка .env и переменные окружения"
+Cohesion: 0.17
+Nodes (12): access.py — доступ, коды приглашений, роли, Claude Code по подписке вместо ANTHROPIC_API_KEY, Дублирование постов в X и Threads, Коды приглашений на сутки, Настройка .env и переменные окружения, Обоснование: бота можно найти по имени, без проверки публиковать сможет любой, Обоснование: канал общий, но отвечает за него владелец, Обоснование: кнопка, всегда отвечающая «не настроено», хуже её отсутствия (+4 more)
+
+### Community 8 - "card.py"
+Cohesion: 0.19
+Nodes (14): Готовит отрисованный слайд под требования площадки. Рисуем мы в полуторном…, Рисует карточку поста: вёрстка → снимок безголовым Chrome. Почему браузер, а не…, Какого роста кот встанет сбоку от текста, никого не задев. Вертикальный формат…, Какого роста кот встанет на обложке, не задев заголовок (Д-17). Обложка сажала…, Сколько пустого между прямоугольниками; отрицательное — наложение., Важные блоки ближе запаса друг к другу. Текст меряется строками, а не…, _впритык(), _зазор() (+6 more)
+
+### Community 9 - "действие"
+Cohesion: 0.09
+Nodes (37): Спрашивает тему словами. Без вопроса тема попала бы в копилку: любое сообщение…, Переключатель на месте: экран перерисуется тот, с которого нажали. Раньше на…, Переключение канала. Промах здесь стоит поста не в том месте., Замена текста поста целиком. Нынешний присылается следом — копировать., Ссылку можно донести и позже, с карточки вышедшего поста., «Публикует сам» ↔ «готовит, публикуете вы»., На сколько дней вперёд держать план. По кругу: 1, 2, 3, 7., Задание маку: собрать папку, открыть её и прислать файлы в чат. Через задание,… (+29 more)
+
+### Community 10 - "x.py"
+Cohesion: 0.19
+Nodes (18): mimetypes, RuntimeError, Кладёт снимок в X и возвращает его номер для твита., Отправляет пост в X. Возвращает адрес первого твита. Карусель из шести слайдов…, Проверка ключей: чей аккаунт за ними стоит., Публикация в X (бывший твиттер). Здесь нет ни одной библиотеки поверх сети: X…, Процентное кодирование по RFC 3986: у OAuth свой набор безопасных букв., Заголовок Authorization для одного запроса. В подпись входят только параметры… (+10 more)
+
+### Community 11 - "tiktok.py"
+Cohesion: 0.06
+Nodes (43): Возврат из TikTok: страницу видит браузер на нашем домене. Адрес /api/tiktok…, _не_ставить(), СтраницаВозврата, ЦелаяСтраница, RuntimeError, Свежий токен доступа. Обновляется сам, когда протух., Кто мы в TikTok и какая видимость нам разрешена. TikTok требует спрашивать это…, Кто подключён и что нам разрешено. Ответ живёт десять минут. Спрашивать TikTok… (+35 more)
+
+### Community 12 - "переписать"
+Cohesion: 0.21
+Nodes (14): Правит существующий пост по указанию владельца. Номер остаётся тем же. Номер…, После правки посчитанные варианты площадок становятся ложью. Вариант считается…, Складывает готовый пост в папку на рабочем столе, если его выкладывают руками.…, Новая поза кота под тот же текст. Модель каждый раз рисует иначе., Пересобирает слайды по сохранённому тексту, ничего не сочиняя заново. Нужно…, Одну картинку заново, другой позой кота. У кота бывает пять лап или лишний…, Кот тоже уезжает в хранилище: без него карточку не перерисовать., _в_папку() (+6 more)
+
+### Community 13 - "Лист доступа — кто может пользоваться"
+Cohesion: 0.10
+Nodes (21): Лист доступа — кто может пользоваться, Лист «Куда публикуем» (каналы), Лист настроек, Лист анонса стрима (настройкиСтрима), новый_вопрос() — подтверждение, Почему вне телеграма обычный confirm, Почему обслуживание в настройках — вкладка «Ещё» чуть не потеряла эти кнопки, Почему основной канал подсвечен — это канал на десять тысяч человек (+13 more)
+
+### Community 14 - "mascot.py"
+Cohesion: 0.15
+Nodes (22): Д-23. Новая поза кота приходит с фоном: хромакей снимает его наполовину, Path, Углы должны быть тем самым синим. Модель иногда игнорирует требование фона и…, Новая поза под конкретный пост. None, если не вышло., Рисует новую позу и кладёт её в библиотеку насовсем. До сих пор библиотека была…, Не обрезан ли персонаж рамкой самой картинки. Фон снимается по силуэту, поэтому…, Рисует кота в новой позе под каждый пост. Поза каждый раз своя, а кот — один и…, {ключ: путь} по тому, что реально лежит на диске. По умолчанию отдаёт только те… (+14 more)
+
+### Community 15 - "Мини-приложение Telegram"
+Cohesion: 0.17
+Nodes (12): Цех: верхний экран со станками, jobs.py — очередь заданий и пульс мака, Мини-приложение Telegram, Обоснование: день целиком в кнопках чата не покажешь, Обоснование: при пяти публикациях в день отдельный пост перестаёт быть событием, Обоснование: «пять в день» — свойство TikTok, а не приложения, Обоснование: мак собирает одним заданием, закрытое приложение работе не мешает, Станок: экран площадки со сменой и настройками (+4 more)
+
+### Community 16 - "Фирменный знак 4xTube (логотип для тёмных подложек)"
+Cohesion: 0.31
+Nodes (9): Глиф: стилизованная цифра 4 / четырёхлучевая вертушка, Светло-серая грань верхнего луча (объём знака), Риск: серая грань почти пропадает на светлом фоне, Лаймовая заливка знака (#C7E24B, бренд-акцент), Фирменный знак 4xTube (логотип для тёмных подложек), Прозрачный фон 512×512 RGBA, рассчитан на тёмную подложку, Логотип веб-приложения / фавикон 4xTube, Читаемость знака в мелком размере (16–64 px фавикон) (+1 more)
+
+### Community 17 - "Правила постбота: почему сделано именно так"
 Cohesion: 0.17
 Nodes (12): TikTok не принимает PNG: только JPEG или WebP до 1080p, Правила постбота: почему сделано именно так, Дедуп по сути, а не по заголовкам: одну мысль легко переупаковать, Кот на слайде живёт в своей колонке и уступает место тексту, а не наоборот, Правка поста сбрасывает посчитанные варианты площадок, Конвейер, остановившись, докладывает владельцу: тишина хуже сбоя, Первая строка описания это весь пост: до «ещё» видно около ста символов, Модель зовётся только по подписке через claude -p, платный API запрещён (+4 more)
 
-### Community 18 - "Community 18"
+### Community 18 - "соединение"
+Cohesion: 0.06
+Nodes (33): Меняет отдельные поля поста. Пустой вызов ничего не делает., `у_телеграма` это номер поста в отложенных Telegram, если отдали ему., Обратно в черновики. Пост остаётся, уходит только время. Уже опубликованный…, Всё, что ещё выйдет. Самое близкое сверху., План, черновики и история одним обращением к базе. Три отдельных запроса стоили…, Формы прошлых постов. Нужны, чтобы лента не собиралась по одному рецепту., Опубликованное, у чего есть смысл спрашивать охват., Средние просмотры по рубрикам и формам: что читают, а что листают. (+25 more)
 
+### Community 19 - "справочник/холст.py"
+Cohesion: 0.06
+Nodes (41): main(), Path, Знак и полоса берутся из общего `стиль.py`, но их места сняты с кадра…, Логотип уходит файлом рядом с доской: вшитый data: раздувает доску за предел…, `знак_на_тёмном` отделяет грунт под логотипом от грунта доски: у финала лист…, Иконка-метка + /имя + ` - ` + описание на одной базовой линии. Перенос описания…, Призыв сохранить — на каждом кадре, а не только в финале: на этом и держатся 6%…, Стиль «справочник»: python3 холст.py посты/<пост>.json Снят с карусели TikTok… (+33 more)
+
+### Community 21 - "карусель"
+Cohesion: 0.18
+Nodes (4): Исправить, кадр(), карусель(), Проверить
+
+### Community 22 - "навигация.py"
+Cohesion: 0.06
+Nodes (29): Экран, Ответ на вопрос уходит по назначению, а не в копилку., Из копилки её и просили: спрашивать «сделать пост?» тут незачем., «Сочинить» и копилка: с чего начинается пост. Копилка из бота была недоступна…, Всё, с чего начинается пост, собрано на одном экране., Раньше рубрики висели в главном меню вровень с «сделать пост»., Ноль на кнопке читается как поломка, а не как «там пусто»., Больше десяти кнопок телеграм прячет за своей прокруткой. (+21 more)
+
+### Community 23 - "окно/холст.py"
+Cohesion: 0.07
+Nodes (50): main(), Path, Ширина строки капсом в em при кегле 1., Самый крупный кегль, при котором заголовок ещё умещается в одну строку. Потолок…, Три кружка справа в шапке. Родные цвета macOS — почерк Apple, поэтому свои:…, Оливковая шапка: она же главный носитель акцента (90×960 = 5,6% доски).…, Скруглённое окно на тёмном фоне. Обводки у окна нет — оно отделяется светлотой;…, Пилюля под окном: логотип слева, «N / 7» справа. Нумерация вынесена из… (+42 more)
+
+### Community 24 - "userbot.py"
+Cohesion: 0.15
+Nodes (20): TelegramClient, telethon_tl_types, Добавляет фирменные иконки в уже опубликованный пост. Нужно там, где под постом…, Просмотры, реакции и пересылки постов канала. Боту эти числа Telegram не отдаёт…, Публикация от вашего аккаунта, а не от бота. Зачем это вообще нужно. Боту…, Сообщения одной темы группы новее номера `после`, старые первыми. Только…, Что уже лежит в отложенных у самого Telegram., вошли() (+12 more)
+
+### Community 25 - "_Настройки"
+Cohesion: 0.09
+Nodes (21): значение(), Экран, Показать и ответить отказом — хуже, чем не показать вовсе., Имя бывает в шестьдесят букв: кириллицей это сто двадцать байт., Настройки: шесть разделов, которых в боте не было. Из чата нельзя было выдать…, Приложение TikTok не заведено: кнопка входа вела бы в никуда., Прибраться — это удалить файлы. Кнопка «сразу» тут неуместна., Молча записать «каждый понедельник в 00:00» — хуже, чем переспросить. (+13 more)
+
+### Community 26 - "Style/замер.py"
+Cohesion: 0.13
+Nodes (25): Д-20. Замер занижает контраст на двухполосных кадрах, ndarray, numpy, main(), Пиксели, чей цвет в маске повторяется: это буквы. Цвета грубо округляются до 8…, Заливки: белая карточка, круглый значок, плашка. Всё, что переживает эрозию и…, Сердцевина штрихов: пиксели, у которых соседи тоже текст. Съедает кайму в 1 px., Связные полосы кадра по вертикали, где строки заняты текстом: (верх, низ) в… (+17 more)
+
+### Community 27 - "форматы.py"
+Cohesion: 0.05
+Nodes (32): collections, random, «Каталог» — единственный светлый дизайн, и ротация под него подстроена., Замеры каталога на семи фонах: 2,0–2,7% чернил., НормаЗамера, Матрица связок: какие вёрстки в каком дизайне ломаются, и реестр под ними.…, Реестр, skipUnless (+24 more)
+
+### Community 28 - "подборка-сайтов/снять.mjs"
+Cohesion: 0.07
+Nodes (33): ref_fs, ref_module, ref_os, ref_path, ref_playwright_core, ref_url, { chromium }, require (+25 more)
+
+### Community 29 - "vercel/tiktok.py"
+Cohesion: 0.08
+Nodes (39): RuntimeError, Свежий токен доступа. Обновляется сам, когда протух., Кто мы в TikTok и какая видимость нам разрешена. TikTok требует спрашивать это…, Кто подключён и что нам разрешено. Ответ живёт десять минут. Спрашивать TikTok…, Работаем ли мы ключом песочницы. У них узнаваемый префикс., Самая открытая из разрешённых. Кроме песочницы: непроверенное приложение TikTok…, Переписывает ссылку на слайд с Supabase на наш собственный адрес. TikTok…, Публикация в TikTok. TikTok устроен строже остальных площадок, и об этом лучше… (+31 more)
+
+### Community 30 - "test_очередь.py"
+Cohesion: 0.09
+Nodes (20): Экран, Под постом ровно то, что с ним можно сделать в его состоянии., Опубликованное не снимается ничем — кнопка была бы обманом., Черновик уже умел всё нужное: набор переносится как есть., Предел callback_data — 64 байта, и кириллица занимает по два., Действие с карточки правит висящее меню, а не шлёт новое., Очередь: план и черновики одним списком, пост — отдельной карточкой. Сторожатся…, Меню ещё не показывали — слать его вдогонку действию незачем. (+12 more)
+
+### Community 31 - "graph-update.py"
+Cohesion: 0.29
+Nodes (6): graphify_ai, graphify_watch, Path, Обновление графа Graphify по коду — быстро, локально и без путей этой машины.…, Абсолютные пути в графе → относительные. Возвращает, сколько поправил., укоротить()
+
+### Community 32 - "агент.py"
+Cohesion: 0.07
+Nodes (33): Грубая проверка, что модель вернула пост, а не рассуждение о нём., Возвращает переписанный пост или исходный, если что-то пошло не так. Падать тут…, Второй проход по тексту: убрать машинную интонацию. Первый проход придумывает,…, очеловечить(), _похоже_на_пост(), Карусель пишется сразу голосом хуманайзера, второго прохода по подписи нет., Второй проход по голосу идёт с усердием medium, а не с high из общих настроек., Усердие (+25 more)
+
+### Community 33 - "1. Семейства постов"
+Cohesion: 0.05
+Nodes (38): 1.10. Живое лицо и родной текст площадки — 1 пост, 1.11. Новостная сводка недели — 1 пост, 1.12. Присланные наборы шаблонов — 1 источник, 2 стиля, 1.13. Технический отчёт — 1 источник, не карусель, 1.1. Каталог-подборка сервисов — 5 постов, 1.2. Сравнение и оценка — 5 постов, 1.3. Пошаговое руководство — 6 постов, 1.4. Скриншот переписки с нейросетью — 2 поста (+30 more)
+
+### Community 34 - "помощник"
+Cohesion: 0.17
+Nodes (17): main(), Path, Выпуск карусели с холста согласования — без проверок и просмотров (слово…, Снимки досок 1620×2160 рисовальщиком постбота, по раскладке холста строка за…, Длина подписи и названия — по правилам из `carousel.py`. Проверка заведена…, помощник(), снять(), тексты() (+9 more)
+
+### Community 35 - "_Вкладка"
+Cohesion: 0.21
+Nodes (9): Path, Снимок в полуторном масштабе, как у командной строки. False — снять старым…, _в_файл(), _Вкладка, дело(), снять(), дело(), До какой ширины ужимать. Ноль означает «оставить как нарисовано». (+1 more)
+
+### Community 36 - "_прогнать"
+Cohesion: 0.12
+Nodes (12): skipIf, Ошибка в скрипте не видна на глаз: страница просто перестаёт исполняться, и…, `node --check` читает поток как обычный скрипт: «import» наверху файла уронил…, Одно и то же имя верхнего уровня в двух файлах — это SyntaxError на весь набор,…, Все скрипты страницы одной строкой, в порядке подключения. Один файл вырос до…, Выполняет выражение рядом с «экр» и отдаёт напечатанное., Атрибуты сегодня в двойных кавычках, но защита не должна от этого зависеть:…, Иначе «&lt;» получилось бы из уже экранированного «&». (+4 more)
+
+### Community 37 - "светофор/холст.py"
+Cohesion: 0.10
+Nodes (35): main(), Path, Ответ — скруглённый квадрат с радиусом 26% стороны (параметр автора, взят как…, Слово-оценка на цветной пилюле — ключевая правка против автора (см. шапку…, Лаймовая полоса `1/5 … 5/5` — прибавка, которой у автора нет. Он не даёт…, Одно крупное слово вверху плюс подзаголовок-критерий мелким. Кегль подбирается…, Одна полоса-регистр: оценка → шеврон → ответ, слева направо., Подвал из двух частей: «Сохрани» слева, указатель «Дальше» справа — приём… (+27 more)
+
+### Community 38 - "приложения/холст.py"
+Cohesion: 0.12
+Nodes (34): main(), Path, Кегль под ширину строки: широкие прописные Onest 800 режутся, если считать по…, Цвет заголовка берётся из поста: владелец 18.09 перекрасил его на холсте в…, Строка заголовка на своей подложке. Подложка облегает строку (`display:inline-…, Кегль, при котором самая длинная строка вместе с полями подложки влезает в…, А+ — тот же текст, что у «сцены», но каждая строка заголовка лежит на своей…, А++ — тот же текст в «окне приложения»: светлая карточка с шапкой и точками,… (+26 more)
+
+### Community 39 - "Паспорт по схеме"
+Cohesion: 0.06
+Nodes (34): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 1. Перепад 1,2–1,7:1 на кадрах 05, 06, 07 (норма ≥3:1) — артефакт замера поверх реального брака, 2. Акцент ≈1% при норме 4–6% — устройство, но нам не годится, 2. Иерархия, 3. Кегли и начертания (кадр 2160×2700), 3. Крупная строка 5,4% при норме 12–15% — устройство, и частично допустимо (+26 more)
+
+### Community 40 - "Паспорт по схеме"
+Cohesion: 0.06
+Nodes (34): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 1. Перепад 1,2–1,7:1 на кадрах 05, 06, 07 (норма ≥3:1) — артефакт замера поверх реального брака, 2. Акцент ≈1% при норме 4–6% — устройство, но нам не годится, 2. Иерархия, 3. Кегли и начертания (кадр 2160×2700), 3. Крупная строка 5,4% при норме 12–15% — устройство, и частично допустимо (+26 more)
+
+### Community 41 - "_База"
+Cohesion: 0.13
+Nodes (7): Процент в поиске — обычный знак, а не подстановка., Ручную публикацию от нашей отличает пустой tg_message_id., У выложенного руками канала нет вовсе: строгое равенство выкинуло бы его из…, Клиент не должен уметь попросить всю базу одним запросом., Свежая база в памяти на каждый тест., _База, Лента
+
+### Community 42 - "светлый-разбор/холст.py"
+Cohesion: 0.12
+Nodes (32): main(), Path, Гигантская цифра кадра фоном: ориентир в ленте, виден даже в превью., Ключевые слова — оранжевым: заголовок перестаёт быть сплошной чёрной плитой., Белая пилюля: либо оранжевый номер сверху, либо оранжевая точка слева., Вертикальные карточки с цветной полосой и таймлайном 1·2·3 слева — кадр «три…, Три карточки в ряд со стрелками между ними — кадр «агент понимает»., Окно стоит ровно: наклон с отражением («летающее окно») владелец забраковал… (+24 more)
+
+### Community 43 - "_Состояние"
+Cohesion: 0.12
+Nodes (16): Экран, «⏳ Сейчас» при пустой очереди заставляет ждать несуществующее., Чужие чаты читает аккаунт владельца: без входа раздел пуст., Пока в них ровно то, что бот уже умел: канал и звук., У переключателя нет своего экрана: заходить в него незачем., Право публиковать и право решать куда — разные вещи., Кнопка «Расписание» со вчерашнего меню всё ещё нажимается., Главный экран: четыре кнопки и строка состояния. Прежнее главное меню было… (+8 more)
+
+### Community 44 - "Слайд"
+Cohesion: 0.16
+Nodes (6): Что приходит от модели: пять слотов и вид., Без «|» это не пара, а два пункта — рисовать нечем., Без «:» непонятно, где имя раздела, а где его пункты., ПодгонкаВида, РаскладкаПолей, Слайд
+
+### Community 45 - "vercel/telegram.py"
+Cohesion: 0.10
+Nodes (32): RuntimeError, Файлы как файлы, а не как снимки. Снимки телеграм пережимает по-своему, а…, Карусель: несколько снимков одним сообщением, подпись у первого. Телеграм…, Тонкий клиент Bot API: только то, что нужно этому боту. Длинный опрос, а не…, Гасит «часики» на кнопке. Без этого клиент висит и кажется, что сломалось., Переписывает уже отправленное сообщение целиком: и текст, и кнопки. Ради этого…, Меняет кнопки под уже отправленным сообщением. Нужно для переключателей:…, Кнопка слева от поля ввода, открывающая мини-приложение. (+24 more)
+
+### Community 46 - "браузер.py"
+Cohesion: 0.15
+Nodes (18): atexit, register, main(), Окна приложения для кадров стиля «приложения»: python3 снимки.py Кладёт PNG в…, страница(), websockets_sync_client, Один живой безголовый Chrome на все кадры вместо запуска на каждый. Раньше…, Координаты блоков. None или {} — мерить старым путём. (+10 more)
+
+### Community 47 - "Антидетектор — полная версия"
+Cohesion: 0.06
+Nodes (30): A. Контентные (1–5), B. Языковые (6–14), C. Стилистические (15–21), D. Коммуникативные (22–26), E. Морфологические (27–30), F. Тональные (31–33), G. Структурные (34–35), H. Человеческие мелочи (36–37) (+22 more)
+
+### Community 48 - "С — общее состояние приложения"
+Cohesion: 0.11
+Nodes (31): Экран станка (экранСтанок), главноеДело() — что делает главная кнопка, Лист конвейера — настройки станка, Лист заказа (листЗаказа), Почему автопилот переключается прямо из цеха, Почему вышедшее садится в ближайшую свободную ячейку, Почему составные data-атрибуты читают через getAttribute — dataset.зСтанок undefined, Почему пост на одобрении показан не как ячейка — у него нет часа (+23 more)
+
+### Community 49 - "publish.py"
+Cohesion: 0.11
+Nodes (24): datetime, Запоминает, куда пост поедет. Одна площадка или несколько., Можно ли публиковать от вашего аккаунта. От аккаунта лучше по двум причинам:…, Отправка готового поста в канал. Вынесено отдельно от core намеренно. core…, Забирает пост из отложенных: перенос и отмена начинаются с этого. Молчать об…, Владелец узнаёт о чужой публикации сразу: канал общий, отвечает он., Доставка в канал. Возвращает message_id или бросает исключение. `кем` это имя…, Возвращает новое состояние: True это «всегда тихо». (+16 more)
+
+### Community 50 - "Паспорт: одиннадцать пунктов"
+Cohesion: 0.06
+Nodes (30): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+22 more)
+
+### Community 51 - "Паспорт: одиннадцать пунктов"
+Cohesion: 0.06
+Nodes (30): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+22 more)
+
+### Community 52 - "нативный-экран/холст.py"
+Cohesion: 0.14
+Nodes (29): main(), Path, Панель с четырьмя рядами: буквы, ряд с Shift и стиранием, нижний ряд с…, Панель диктовки вместо клавиатуры: кнопка микрофона и бегущая волна. Приём тот…, Поле ввода: сам промпт, ряд кнопок и стрелка отправки — то, что человек видит…, Стиль «нативный экран»: промпт показан прямо в поле ввода ИИ, с клавиатурой…, Б — число: гигантская цифра лаймом и строка под ней., В — до/после: зачёркнутая клавиатура сверху, голос снизу. (+21 more)
+
+### Community 53 - "public/sheets.js"
+Cohesion: 0.15
+Nodes (29): действия(), довести(), доступ(), закрытьЛист(), каналы(), лист(), листЗаказа(), нарисовать() (+21 more)
+
+### Community 54 - "webapp/sheets.js"
+Cohesion: 0.15
+Nodes (29): действия(), довести(), доступ(), закрытьЛист(), каналы(), лист(), листЗаказа(), нарисовать() (+21 more)
+
+### Community 55 - "vercel/конвейер.py"
+Cohesion: 0.12
+Nodes (27): Справочник рубрик и форм поста. Отдельный модуль, потому что список рубрик…, Exception, Сколько ещё собрать. В ручном режиме считаем не по расписанию, а по готовым…, Сочиняет одну карусель под следующий угол и ставит её в план., Владелец узнаёт, что конвейер встал. Раньше сбой уходил в traceback на маке и…, Карусель собрана, но кадры с браком: в план не пошла, нужен человек., Конвейер: бот сам придумывает, рисует и ставит в план. Разница между «умеет…, Добирает план одной площадки до запаса. Возвращает номера новых. (+19 more)
+
+### Community 56 - "access.py"
+Cohesion: 0.10
+Nodes (22): Одноразовый код на сутки. Дольше он и не нужен, а лежать вечно опасно., Гасит код и впускает человека. Код одноразовый: второй раз не сработает., Ключ личной ссылки. Заводится сам при первом обращении., Кто пришёл по личной ссылке. Ноль, если ключ не тот. Сравнение постоянное по…, Кого пускать к боту. Бота можно найти по имени, поэтому проверка нужна: без неё…, {id: {'имя': …, 'когда': …}}. Владельца в списке нет, он есть всегда., Сколько часов осталось. Ноль означает «закрыто»., Что человеку позволено. У владельца всегда полный доступ. (+14 more)
+
+### Community 57 - "маркер/холст.py"
+Cohesion: 0.16
+Nodes (27): main(), Path, Пунктирная связка между блоками — как у автора между шагами., Фразы в двойных звёздочках — под маркер. Так автор выделяет главное в абзаце., Кот файлом, а не данными внутри страницы: вшитый PNG раздувал доску за 2 МБ, и…, Все коты поста: на обложках, кадрах и финале., Б — число: гигант лаймом во весь верх, строка под ним. Цифра и так герой стиля,…, В — до/после: зачёркнутая строка сверху, подсвеченная маркером снизу. (+19 more)
+
+### Community 58 - "Паспорт референса №12 — @mike.mozg, «Агент HERMES: 5 идей для вайбкодинга»"
+Cohesion: 0.07
+Nodes (27): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+19 more)
+
+### Community 59 - "Паспорт референса №12 — @mike.mozg, «Агент HERMES: 5 идей для вайбкодинга»"
+Cohesion: 0.07
+Nodes (27): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+19 more)
+
+### Community 60 - "vercel/access.py"
+Cohesion: 0.10
+Nodes (22): Одноразовый код на сутки. Дольше он и не нужен, а лежать вечно опасно., Гасит код и впускает человека. Код одноразовый: второй раз не сработает., Ключ личной ссылки. Заводится сам при первом обращении., Кто пришёл по личной ссылке. Ноль, если ключ не тот. Сравнение постоянное по…, Кого пускать к боту. Бота можно найти по имени, поэтому проверка нужна: без неё…, {id: {'имя': …, 'когда': …}}. Владельца в списке нет, он есть всегда., Сколько часов осталось. Ноль означает «закрыто»., Что человеку позволено. У владельца всегда полный доступ. (+14 more)
+
+### Community 61 - "проверка.py"
+Cohesion: 0.09
+Nodes (25): ast, builtins, contextlib, importlib, Path, Claude Code на месте и понимает флаги, которыми мы его зовём. Незнакомый флаг…, Ключи, браузер и прочее, без чего часть работы не сделается., Подставляет пустые ответы вместо чтения базы. Возвращает, как было. Проверка… (+17 more)
+
+### Community 62 - "Паспорт стиля: bezikovkirill / DcqI7Zhjt0m"
+Cohesion: 0.07
+Nodes (26): 01 — обложка, 02 — приём: анализ конкурента, 03 — приём: поиск того же товара дешевле, 04 — приём: переписать резюме под вакансию, 05 — приём: план погашения долгов, 06 — приём: планирование поездки, 07 — приём: разбор юридических документов, 08 — приём: разбор состава продукта (+18 more)
+
+### Community 63 - "Паспорт стиля: bezikovkirill / DcqI7Zhjt0m"
+Cohesion: 0.07
+Nodes (26): 01 — обложка, 02 — приём: анализ конкурента, 03 — приём: поиск того же товара дешевле, 04 — приём: переписать резюме под вакансию, 05 — приём: план погашения долгов, 06 — приём: планирование поездки, 07 — приём: разбор юридических документов, 08 — приём: разбор состава продукта (+18 more)
+
+### Community 64 - "сервисы/холст.py"
+Cohesion: 0.08
+Nodes (48): Path, Помощник холста принимает имена картинок только латиницей., Значок из Gemini лежит на заливке #ECEFF6: заливку в прозрачность мягким…, (файл, подпись, тело) по порядку карусели; запасные обложки — в конце, выпуск…, Вариация «сервисов»: один сервис на кадр (пост с `"вид": "один"`). Рерайт…, Узкое имя в поле 920: Oswald сжат по ширине, длинное имя сжимается сильнее. У…, Слово «выделено курсором», как у автора: голубая плашка и две каретки с точками., Логотип канала на каждом кадре (слово владельца 17.09.2026: «верни наш логотип… (+40 more)
+
+### Community 65 - "приёмка.py"
+Cohesion: 0.10
+Nodes (22): Лист кадров поста, чтобы посмотреть карусель одним взглядом. python…, Нет отчёта — пост рисован до приёмки, судить его нечем., «№4: текст за краем; №7: …». Пусто, если брака нет., Поможет ли сократить текст: брак от раскладки или шрифт ужат глубоко., Приёмка кадров: что осталось не так, когда рисовальщик сделал всё, что мог.…, Дальнейшие отметки относятся к этому кадру. Повтор номера начинает его заново., Копия записи текущего кадра. Пусто, если журнала нет., Забирает журнал и закрывает его. Пусто, если журнал не начинали. (+14 more)
+
+### Community 66 - "handler"
+Cohesion: 0.24
+Nodes (5): handler, BaseHTTPRequestHandler, Только заголовки. Так проверяют картинку перед скачиванием., Отдаёт слайд с нашего адреса. Без подписи и без разбора, кто пришёл. Нужно…, Возврат из TikTok после разрешения доступа. Код на токены меняет мак: там лежит…
+
+### Community 67 - "конвейер.py"
+Cohesion: 0.13
+Nodes (26): Exception, Сколько ещё собрать. В ручном режиме считаем не по расписанию, а по готовым…, Сочиняет одну карусель под следующий угол и ставит её в план., Владелец узнаёт, что конвейер встал. Раньше сбой уходил в traceback на маке и…, Карусель собрана, но кадры с браком: в план не пошла, нужен человек., Конвейер: бот сам придумывает, рисует и ставит в план. Разница между «умеет…, Добирает план одной площадки до запаса. Возвращает номера новых., Сколько публикаций держим готовыми: часы в сутках умножить на дни. (+18 more)
+
+### Community 68 - "_Подмена"
+Cohesion: 0.10
+Nodes (11): dict, У владельца база живёт с первого выпуска. Отсутствующей колонки хватит, чтобы…, Ряд базы отвечает и на `keys()`, и на доступ по имени., Подменяет имена в модуле на время проверки., С клиента приезжает что угодно; в базу должно уйти только своё., Лента, ловушка(), _Подмена (+3 more)
+
+### Community 69 - "Зазоры"
+Cohesion: 0.12
+Nodes (12): skipUnless, Финал каждого дизайна белого списка: вёрстка, которую рисовальщик отдал бы в…, В «стрелке» стрелка — `div.знак`; логотипом её считать нельзя (пост 96, кадр 3)., Финал поста 96: плашка кончается на 1190, логотип начинается на 1191., Облачко прижато к коту нарочно: у него хвостик, это одна фигура (пост 96, кадр…, Финал поста 96: рамка строки в 25 px от плашки, хвосты букв — в ~29., Коробка вывода растянута margin-bottom:auto до плашки, буквы кончаются выше., ВБраузере (+4 more)
+
+### Community 70 - "главный_цикл"
+Cohesion: 0.15
+Nodes (14): m_видео(), Голосовая заметка: расшифровываем и дальше как обычный текст. Идея приходит на…, Кружок тоже несёт голос., Как показывать человека владельцу: имя и, если есть, @псевдоним., Незнакомец. Либо у него код приглашения, либо ему тут нечего делать. Свой id…, Публикует всё, чему пришло время, и докладывает владельцу., Кладёт заметку в копилку и заодно обновляет показатели проекта., главный_цикл() (+6 more)
+
+### Community 71 - "test_темы.py"
+Cohesion: 0.15
+Nodes (6): Журнал тем: справочник, применения и правило пяти постов. Сторожится здесь…, Подменяет путь к базе на пустой файл и возвращает всё как было., _ВременнаяБаза, ЖурналВБазе, Очередь, Схема
+
+### Community 72 - "_снять"
+Cohesion: 0.11
+Nodes (25): Path, Кегль заголовка под его длину. Раньше длинное просто обрезалось многоточием, и…, Вертикальный кадр 1080x1920 для сторис: зовёт в профиль. Ключевое слово…, Вертикальная обложка эфира. Читается с ленты, а не с монитора., Возвращает путь к PNG или None, если Chrome недоступен. `файл_позы` — уже…, Ширина и высота из заголовка PNG, без Pillow: card едет в облако., Слово вылезло из колонки, но буквы кончаются дальше половины бокового поля.…, Приёмка готового кадра: то, что на нём осталось, когда рисовальщик закончил.… (+17 more)
+
+### Community 73 - "vercel/card.py"
+Cohesion: 0.13
+Nodes (23): copy, Готовит отрисованный слайд под требования площадки. Рисуем мы в полуторном…, Рисует карточку поста: вёрстка → снимок безголовым Chrome. Почему браузер, а не…, Говорит, если кадр вышел пустым или перегруженным. Путь отдаёт как есть.…, Ширина позы к её высоте. Позы разной формы, и считать её долей нельзя., Какого роста кот встанет сбоку от текста, никого не задев. Вертикальный формат…, Какого роста кот встанет на обложке, не задев заголовок (Д-17). Обложка сажала…, Слайд выбранного вида. Обвязка общая, внутренность своя. Перед снимком… (+15 more)
+
+### Community 74 - "tools_днк.py"
+Cohesion: 0.17
+Nodes (17): main(), Path, ДНК стилей: что снято с каждого чужого референса и во что превратилось у нас.…, Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа., Достаёт из разбора то, что решает: что перенесено и что нет. Разборы написаны…, Папка стиля: чужие кадры, наши кадры, разбор, числа., Наш фирменный: чужого источника нет, кадры рисует сам бот. Он здесь не как…, Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не обязан… (+9 more)
+
+### Community 75 - "config.py"
+Cohesion: 0.06
+Nodes (46): Настройки. Всё из окружения — в код секреты не попадают., Путь к безголовому Chrome. Им рисуются карточки. На сервере обычно chromium из…, Есть ли claude, которым бот сочиняет. Ввозим внутри: config читается первым, и…, Чего не хватает для запуска. Пусто — можно стартовать., агент_на_месте(), проверить(), хром(), dotenv (+38 more)
+
+### Community 76 - "Паспорт стиля: ythemark, пост DdEJxI-mfRT"
+Cohesion: 0.08
+Nodes (23): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+15 more)
+
+### Community 77 - "Паспорт стиля: ythemark, пост DdEJxI-mfRT"
+Cohesion: 0.08
+Nodes (23): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+15 more)
+
+### Community 78 - "vercel/x.py"
+Cohesion: 0.20
+Nodes (17): RuntimeError, Кладёт снимок в X и возвращает его номер для твита., Отправляет пост в X. Возвращает адрес первого твита. Карусель из шести слайдов…, Проверка ключей: чей аккаунт за ними стоит., Публикация в X (бывший твиттер). Здесь нет ни одной библиотеки поверх сети: X…, Процентное кодирование по RFC 3986: у OAuth свой набор безопасных букв., Заголовок Authorization для одного запроса. В подпись входят только параметры…, залить() (+9 more)
+
+### Community 79 - "public/core.js"
+Cohesion: 0.12
+Nodes (16): ВИДЫ_РАБОТ, ВИДЫ_ФОРМАТА, загрузитьЧисла(), зов(), идей(), лента, перерисоватьЛенту(), площадкаИмя() (+8 more)
+
+### Community 80 - "public/screens.js"
+Cohesion: 0.17
+Nodes (22): вМинутах(), зашлоНеЗашло(), назначен(), нутроЛенты(), нутроЧисла(), ПЛОЩАДКИ_ЛЕНТЫ, полосаДня(), понеделям() (+14 more)
+
+### Community 81 - "vercel/приёмка.py"
+Cohesion: 0.11
+Nodes (21): Нет отчёта — пост рисован до приёмки, судить его нечем., «№4: текст за краем; №7: …». Пусто, если брака нет., Поможет ли сократить текст: брак от раскладки или шрифт ужат глубоко., Приёмка кадров: что осталось не так, когда рисовальщик сделал всё, что мог.…, Дальнейшие отметки относятся к этому кадру. Повтор номера начинает его заново., Копия записи текущего кадра. Пусто, если журнала нет., Забирает журнал и закрывает его. Пусто, если журнал не начинали., Отчёт после перерисовки части кадров: свежие записи заменяют прежние. (+13 more)
+
+### Community 82 - "webapp/core.js"
+Cohesion: 0.12
+Nodes (16): ВИДЫ_РАБОТ, ВИДЫ_ФОРМАТА, загрузитьЧисла(), зов(), идей(), лента, перерисоватьЛенту(), площадкаИмя() (+8 more)
+
+### Community 83 - "webapp/screens.js"
+Cohesion: 0.17
+Nodes (22): вМинутах(), зашлоНеЗашло(), назначен(), нутроЛенты(), нутроЧисла(), ПЛОЩАДКИ_ЛЕНТЫ, полосаДня(), понеделям() (+14 more)
+
+### Community 84 - "придирки.py"
+Cohesion: 0.06
+Nodes (39): Готовое содержимое для площадки: картинки и текст. Считается один раз и живёт в…, Выбрасывает посчитанные варианты: пост изменился, и они устарели. Вариант живёт…, Куда этот пост уже ушёл. Ключ площадка, значение адрес или отметка., Один пост, разные площадки: подготовка содержимого под каждую. Слайды карусели…, Текст под площадку. Пост, сочинённый прямо под эту площадку, переписывать не…, Слайды в формате площадки. Если формат совпадает, ничего не рисуем., _без_разметки(), выложено() (+31 more)
+
+### Community 85 - "Реестр дефектов кадров"
+Cohesion: 0.09
+Nodes (21): Д-01. Каталог: белый текст по крему на тёмных кадрах, Д-02. Каталог: «против» не виден и уезжает за нижний край, Д-03. Пособие: подсветка пропадает на светлых кадрах, Д-04. Пособие: «шаг» пишет номер кадра вместо номера шага, Д-05. Манифест в квадрате мелкий, Д-06. Манифест: «Й» и «Ё» садятся на строку выше, Д-07. Финал: хвост буквы заходит на плашку призыва, Д-08. Призыв финала выбирается не по смыслу (+13 more)
+
+### Community 86 - "api.py"
+Cohesion: 0.15
+Nodes (20): Идеи, ждущие своей очереди. Пустой список, если таблицы ещё нет., Канал, по которому считается всё показываемое человеку., Живые значения проекта. Пусто, если таблицы ещё нет., Всё для вкладки «Числа». Пустое вместо падения. База у владельца живёт с…, Что умеет приложение. Одна реализация на оба входа. Приложение открывается…, Куда открыть вышедший пост. Два источника, и второй появился позже: телеграм мы…, Состояние конвейера по площадкам для вкладки «Ещё»., Кто подключён в TikTok. Без обращения к самому TikTok: только из базы. (+12 more)
+
+### Community 87 - "_снять"
+Cohesion: 0.13
+Nodes (22): Path, Кегль заголовка под его длину. Раньше длинное просто обрезалось многоточием, и…, Вертикальный кадр 1080x1920 для сторис: зовёт в профиль. Ключевое слово…, Вертикальная обложка эфира. Читается с ленты, а не с монитора., Возвращает путь к PNG или None, если Chrome недоступен. `файл_позы` — уже…, Ширина и высота из заголовка PNG, без Pillow: card едет в облако., Слово вылезло из колонки, но буквы кончаются дальше половины бокового поля.…, Приёмка готового кадра: то, что на нём осталось, когда рисовальщик закончил.… (+14 more)
+
+### Community 88 - "предполёт.py"
+Cohesion: 0.20
+Nodes (15): «№2: беда; №7: замечание». Пусто, если сказать нечего., Слайд из сломанной связки в надёжный вид, не теряя слов. Пункты переезжают в…, Чинит беды предполёта без модели. Новая карусель и что сделано. Слова не…, Проверяет и чинит до отрисовки. Модель — не больше одного прохода. Модель…, Предполёт: что сломается на кадре, видно ещё по тексту карусели. Приёмка судит…, Отчёт вида приёмки: {годен, кадры: [{номер, вид, беды, замечания}]}., _без_звёздочек(), _в_надёжный() (+7 more)
+
+### Community 89 - "фразы.py"
+Cohesion: 0.17
+Nodes (21): main(), Повторяемый разброс в [-1, 1]: у одной и той же строки штрих всегда один и тот…, Путь SVG «мазок кистью» в поле 100×12: лента переменной толщины, а не ровная…, Зачёркивание от руки — фоном самой строки, а не отдельным слоем поверх ячейки.…, Овал от руки вокруг блока: та же лента, свёрнутая в кольцо (remocn Scribble…, Стрелка от руки (remocn Ink Arrow): дуга лентой и два пера наконечника., Своё CSS поверх стилевого, плюс JetBrains — им набран промпт в стеклянном окне., Две колонки по рядам: у каждой пары одна высота, даже если справа три строки, а… (+13 more)
+
+### Community 90 - "Паспорт стиля: maysoulme, пост Dcqzh6ICOvz"
+Cohesion: 0.09
+Nodes (21): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+13 more)
+
+### Community 91 - "Паспорт стиля: maysoulme, пост Dcqzh6ICOvz"
+Cohesion: 0.09
+Nodes (21): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+13 more)
+
+### Community 92 - "threads.py"
 Cohesion: 0.33
-Nodes (2): ходРабот(), экранСтанок()
+Nodes (10): RuntimeError, Публикация в Threads. Threads работает не так, как X: пост сначала собирают…, Отправляет пост в Threads. Возвращает его номер. Ссылки на снимки должны быть…, Проверка ключей: чей профиль за ними стоит., _запрос(), _контейнер(), кто_мы(), настроен() (+2 more)
 
-### Community 19 - "Community 19"
+### Community 93 - "vercel/api.py"
+Cohesion: 0.15
+Nodes (20): Идеи, ждущие своей очереди. Пустой список, если таблицы ещё нет., Канал, по которому считается всё показываемое человеку., Живые значения проекта. Пусто, если таблицы ещё нет., Всё для вкладки «Числа». Пустое вместо падения. База у владельца живёт с…, Что умеет приложение. Одна реализация на оба входа. Приложение открывается…, Куда открыть вышедший пост. Два источника, и второй появился позже: телеграм мы…, Состояние конвейера по площадкам для вкладки «Ещё»., Кто подключён в TikTok. Без обращения к самому TikTok: только из базы. (+12 more)
 
+### Community 94 - "_обложка_страница"
+Cohesion: 0.13
+Nodes (22): Экранирует и запрещает перенос внутри слов с дефисом. Без этого «ИИ-ролика»…, Слово в *звёздочках* становится лаймовым. Тег в содержимое пускать нельзя:…, Обрезает список под вёрстку и говорит, если что-то отрезал. Молчаливая обрезка…, Строка списка: со знаком инструмента, если он в ней назван, иначе с меткой.…, Разметка одного вида. `з` это его содержимое, у каждого своё., CSS-маска со знаком инструмента, вшитая в страницу данными. Ссылкой `file://`…, Ищет инструмент в начале строки: (css-маска, его имя, остаток строки). Ищем…, Страница обложки и размеры холста. Кегль задаётся снаружи, чтобы его можно было… (+14 more)
+
+### Community 95 - "source.py"
+Cohesion: 0.19
+Nodes (13): html_parser, ipaddress, socket, Подпись и содержимое слайдов поста TikTok., Скачивает слайды во временную папку и отдаёт их содержание словами. Папка…, Заголовок и текст страницы. None, если не открылась., Материал для поста: ссылка на статью или своя идея текстом. Ссылку бот…, Из строки владельца делает тему и, если была ссылка, содержимое страницы. (+5 more)
+
+### Community 96 - "до-после/рисовать.py"
+Cohesion: 0.28
+Nodes (15): css(), main(), Главная обложка. `фото` подменяет сцену: у «симбы» тот же заголовок на другом…, Фото-Карусель, стиль «до-после»: промпт, маленькая плитка «до» и крупная…, Google Sans — шрифт самого референса (Google Fonts, OFL, переменный 400–700,…, Кот, нарисованный под этот стиль (`кот.py`), из `коты/`: как `стиль.кот`, но не…, картинка(), обложка() (+7 more)
+
+### Community 97 - "дуотон/холст.py"
+Cohesion: 0.17
+Nodes (20): main(), Path, Кот файлом: вшитый данными PNG раздувал доску до 3,9 МБ, и помощник холста её…, Один кадр. Текст с рамкой занимает на строку больше — пояснение опускается…, Б — число: гигант лаймом вместо крупной фразы, метки сверху, кот внизу., В — до/после: зачёркнутое «печатать» и слово в рамке «говорить»., Холст стиля «дуотон»: python3 холст.py посты/<пост>.json Разбор референса — в…, Фото в два цвета: тени — грунт, света — лайм. (+12 more)
+
+### Community 98 - "отчёт/холст.py"
+Cohesion: 0.21
+Nodes (20): main(), Path, Кот файлом: вшитый данными PNG раздувает доску за предел помощника холста (2…, Б — число-герой прямо на обложке: стиль и так держится на числах., В — до/после: две строки отчёта, старая зачёркнута., Кадр-страница отчёта. Зоны заданы числами и не зависят от величины числа-героя:…, Холст стиля «отчёт»: python3 холст.py посты/<пост>.json Стиль вырос из темы, а…, Число-герой занимает строку целиком: короткое ставится крупнее длинного. (+12 more)
+
+### Community 99 - "ПравкаТекста"
+Cohesion: 0.13
+Nodes (7): Дублёр сети: запоминает вызов и отвечает так, как велено. Мока нет намеренно —…, Иначе повторное нажатие плодит новое меню — та самая лента., Сообщение удалили или оно с картинкой — надо слать новое., Звёздочки автора обязаны стать жирным и в правке тоже., Без reply_markup телеграм оставил бы кнопки прошлого экрана., ПравкаТекста, _Телеграм
+
+### Community 100 - "_Цех"
+Cohesion: 0.15
+Nodes (12): Экран, Пустой экран «заберите файлы» обещает то, чего нет., Дублёры настроек площадки и её постов., Раньше их ловила лестница elif — экран новый, руки старые. bot ввозится ради…, Когда площадка публикует сама, забирать файлы незачем., У экрана с параметром и родитель с параметром., ЗабратьФайлами, _коды() (+4 more)
+
+### Community 101 - "экраны.py"
+Cohesion: 0.15
+Nodes (19): dataclasses, typing, Совпал ли код с шаблоном вида «set:acc:*». Возвращает аргумент. Звёздочек может…, Запись экрана и подставленный аргумент. Сперва точное совпадение, потом…, Куда ведёт «назад». Аргумент подставляется и в родителя тоже., Цепочка от главного до этого экрана. Пустая, если экрана нет., Где человек находится. Пусто до третьего уровня — там и так видно. Последняя…, Экраны бота: что показать и чем это нажимается. Экран здесь — чистая функция… (+11 more)
+
+### Community 102 - "Разметка"
+Cohesion: 0.22
+Nodes (5): У Midjourney логотипа нет — вместо знака точка, но пункт остаётся., Вес приходит от модели: 7 или 0 не должны ломать вёрстку., В общей обвязке счётчика нет: площадки рисуют свой поверх., Логотипа Midjourney у нас нет — название всё равно должно остаться., Разметка
+
+### Community 103 - "замер.py"
+Cohesion: 0.08
+Nodes (18): Д-19 и Д-20: два дефекта измерителя, найденные 19.09.2026 на живых кадрах. По…, Кегль считается по высоте полосы чернил, а не по буквам. На кадре 02 у…, Локальный фон усредняется по обеим полосам двухполосного кадра. Кадр 01 —…, Д19ПерепадНаПлотномСписке, Д20КонтрастНаДвухполосном, Пороги замера кадра. Числа здесь не выдуманы: они сняты с наших же кадров 12…, Главное требование: проверка не должна ругаться на принятые кадры. Числа —…, НашиКадрыПроходят (+10 more)
+
+### Community 104 - "_Подмена"
+Cohesion: 0.12
+Nodes (9): Автопилот, Заказ, ПапкаПриБраке, ряд(), Сократить, Имя папки содержит заголовок. Сменился заголовок — сменилось и имя, и прежняя…, Подменяет имена в модуле на время проверки., _Подмена (+1 more)
+
+### Community 105 - "_Подмена"
+Cohesion: 0.14
+Nodes (7): Папка есть, а файлов в ней нет — открывать нечего, это то же самое, что её…, Рабочая папка поста: открыть, а если её удалили — собрать заново. Главное…, Пересобирать существующую папку — значит стереть её и скачать всё заново из…, Маршрут, ОткрытьПапку, собрать(), _Подмена
+
+### Community 106 - "worker.py"
+Cohesion: 0.13
+Nodes (19): Thread, traceback, Набивает расписание вперёд: по посту на день в заданное время., Спрашивает у телеграма, сколько людей увидело недавние посты. Раз в полчаса и…, Одна строка о том, что работа началась. Остальное скажет «готово»., Владелец узнаёт, что работа кончилась, даже если свернул приложение. Карусель…, Рабочий: берёт задания из очереди и делает тяжёлое. Живёт на маке, потому что…, Одно задание за раз. Вернёт False, если работы не было. (+11 more)
+
+### Community 107 - "коллаж.py"
+Cohesion: 0.31
+Nodes (13): Image, main(), Картинки для обложек: `python3 коллаж.py` → снимки/сетка.png, полоса.png,…, Кусок снимка нужной пропорции: режем по ширине от верха, чтобы попал контент., Девять плиток по числу событий: видно, что новостей много, и ни одна не…, Три крупных снимка встык: читается как лента новостей, а не как отдельный кадр., Карточки внахлёст: колода новостей, из которой торчат края нижних., _взять() (+5 more)
+
+### Community 108 - "кадр_с_текстом"
+Cohesion: 0.13
+Nodes (12): Path, #1B3487 по #F2EFE8 — 9,7:1 по формуле WCAG: слабого текста быть не должно., Приглушённый серый по светлому — ровно то, ради чего порог 8:1., Тёмный значок рядом с текстом даёт слабые пиксели, но кадр остаётся годным., Заголовок 150 px и подпись 46 px дают два уровня кегля и заметный перепад., Широкий снимок интерфейса на пол-кадра — картинка. Попав в строки, он выдаёт…, Семь одинаково светлых кадров сливаются в превью-сетке профиля., Т-С-С-С-Т: чередование есть, про ритм отчёт молчит. (+4 more)
+
+### Community 109 - "сетка/холст.py"
+Cohesion: 0.27
+Nodes (12): main(), Path, Дуотон поверх выреза: цвет меняется, прозрачность остаётся. Без сохранения…, Холст стиля «сетка» — повтор присланного набора шаблонов один в один, меняются…, Гигант занимает всю ширину между полями: кегль считается по длине строки., голова(), дуотон_с_альфой(), знак_и_полоса() (+4 more)
+
+### Community 110 - "Внешняя доказательная база: как устроены карусели, которые дочитывают"
+Cohesion: 0.11
+Nodes (18): 0. Как читать этот отчёт, 10. Список приёмов для обложки, 11. Что из этого прикладывается к «Claude Code: 5 приёмов», 1. Первый слайд (обложка), 2. Второй слайд и переход 1→2, 3. Удержание по ходу карусели, 4. Длина карусели, 5. Визуальные приёмы обложки (+10 more)
+
+### Community 111 - "промпты/холст.py"
+Cohesion: 0.23
+Nodes (18): main(), Path, Имя сцены на холсте: помощник принимает только латиницу, цифры, точки и дефисы., Сцены ужимаются до ширины кадра и уходят в JPEG: восемь исходников по 2 МБ дают…, Холст согласования стиля «промпты»: python3 холст.py посты/<пост>.json Стиль…, Полоса — фирменный лайм на всех кадрах, светлых и тёмных: это знак бренда, и он…, Заголовок в одно слово держит высоту строки 12–14% кадра. Длинное слово на…, голова() (+10 more)
+
+### Community 112 - "слайд_финал"
+Cohesion: 0.12
+Nodes (19): Кегли для видов считаются от базовых, чтобы не заводить их трижды., @font-face для перечисленных начертаний, кириллица и латиница., Правит кегли под характер дизайна. Множителями, а не размерами в em: em…, Шрифты и стили выбранного дизайна., Стили холста и, если нужно, дополнительный слой., Слой с котом и его стили. Пустая пара, если кота не просили., Вёрстка слайда и его размеры, без отрисовки. Отделено от снимка, чтобы…, Где стоят лапы кота, от нижнего края: над логотипом с запасом. Было «низ_знака… (+11 more)
+
+### Community 113 - "bot.py"
+Cohesion: 0.11
+Nodes (28): main(), Раздел «что ответить»: повторный проход и настройки., Читает чаты из папки за заданное окно и предлагает, что ответить. Работа…, Настройки раздела: из какой папки читать и сколько показывать., Куда ведёт нажатие: действие, экран или старая лестница. Порядок разбора важен.…, Сервер мини-приложения и его публичный адрес., Ставит кнопку приложения всем своим, а не только владельцу. Адрес туннеля…, Бот-редактор: сочиняет пост с картинкой и ставит его в расписание канала.… (+20 more)
+
+### Community 114 - "_поле"
+Cohesion: 0.10
+Nodes (22): Значение колонки, которой у старых постов может не быть вовсе. База переживала…, Адрес вышедшего поста в канале. Пусто, если открывать нечего. Только публичный…, Четыре слота времени вместо кнопок поста, на той же карточке. Отдельным экраном…, Под постом ровно то, что с ним можно сделать в его состоянии. Черновик умел всё…, Первая строка карточки: чем этот пост сейчас является., Передумал переносить: на карточку возвращается её обычный набор., Слоты времени вместо кнопок поста, на той же карточке., Снятие с плана. Отданный телеграму пост забирается из отложенных. Иначе он… (+14 more)
+
+### Community 115 - "PostBot как дизайн-студия"
+Cohesion: 0.11
+Nodes (17): PostBot как дизайн-студия, Библиотека макетов, Вне рамок, Дорожная карта, Зачем, Препресс, Расход, Решения владельца, которые действуют (+9 more)
+
+### Community 116 - "_коротко"
+Cohesion: 0.18
+Nodes (13): Exception, Кто пущен в редактор и на каких правах. Раньше выдать код можно было только из…, Один человек: сменить роль или убрать., Подключение и отправка каруселей. У TikTok нет отложенных публикаций, поэтому…, Того, что показывали, больше нет: станка, поста, человека. Навигация покажет…, Файлы поста в чат — для площадки, которую выкладывают руками. Телеграм…, Обрезает заголовок так, чтобы кнопка не разъехалась на две строки. Кнопка с…, доступ() (+5 more)
+
+### Community 117 - "вдохновение.py"
+Cohesion: 0.16
+Nodes (15): BaseModel, Накопленные приёмы — куском для задания модели. Это фон, а не задание: карусель…, Разбор чужого поста сразу в указания для генератора карусели., Готовый разбор — в указания генератору. Отделено от `указания`, потому что…, Свайп-файл: чужой удачный пост — в наш рерайтом. Правило владельца: **рерайт…, Разбор чужого поста: его конструктор, разобранный до деталей. Полей о структуре…, Чужой пост — в конструктор. Модель, потому что это чтение, а не счёт., Кладёт механику в свайп-файл. Возвращает, сколько их стало. (+7 more)
+
+### Community 118 - "Архитектура: Vercel, мак, Telegram, Supabase"
+Cohesion: 0.15
+Nodes (16): api.py — маршруты приложения для Vercel и мака, Архитектура: Vercel, мак, Telegram, Supabase, Файл сессии в deploy/ключи, Мак — тяжёлая работа и отправка постов, Очередь заданий и пульс мака, Повторяющиеся публикации по дням недели, Публикация от аккаунта, а не от бота, Обоснование: боту Telegram эти числа не отдаёт (+8 more)
+
+### Community 119 - "github.py"
+Cohesion: 0.24
+Nodes (17): main(), Приглашение «$» и галочка «✓» фирменным лаймом., Фото-Карусель, стиль «подборка GitHub» (терминал с $): кадры 1620×2160 одним…, Картинка проекта: первый кадр GIF, обрезка по полю «обрезка», JPEG шириной 1400., Узкий Oswald под огромную цифру и широкий Manrope под заголовок — только…, звёзды(), карточка(), карточка_замена() (+9 more)
+
+### Community 120 - "Принять"
+Cohesion: 0.16
+Nodes (4): Принять, png(), Path, Принять
+
+### Community 121 - "vercel/jobs.py"
+Cohesion: 0.11
+Nodes (13): Что делается прямо сейчас. Для полоски хода в приложении. Генерация идёт…, Мак говорит, что он на месте. Раз в полминуты, из рабочего цикла., Очередь заданий между Vercel и маком. Страница приложения живёт на Vercel и…, Таблица заданий. Как и у постов, одного раза на запуск достаточно., Кладёт задание в очередь и возвращает его ключ., Забирает одно задание. Помечает его сразу, чтобы не взяли дважды., Сообщает, на каком этапе работа: приложение показывает это человеку., в_работе() (+5 more)
+
+### Community 122 - "vercel/markup.py"
+Cohesion: 0.14
+Nodes (15): Сколько символов увидит телеграм: разметка в лимит не входит., Полная подготовка текста поста перед отправкой., Разметка постов: из привычных звёздочек в HTML телеграма. Почему не отдавать…, Убирает тире как знак препинания, оставляя дефис внутри слов. «Кто-то» и «во-…, Первая непустая строка всегда жирная целиком. Если модель слепила заголовок с…, Подряд идущие строки с «>» сливаются в одну цитату., Гасит кавычки в адресе, который поедет внутрь href. Общий escape тут не…, Текст автора → HTML для parse_mode=HTML. (+7 more)
+
+### Community 123 - "json"
+Cohesion: 0.05
+Nodes (37): hashlib, hmac, http_server, io, json, Новые позы кота под кадры «до-после»: python3 кот.py <имя> ["поза по-…, main(), Path (+29 more)
+
+### Community 124 - "Экран"
+Cohesion: 0.15
+Nodes (18): Всё, что экрану и действию нужно знать о нажавшем. Права приходят готовыми, а…, Спрашивает прежде, чем чистить: это удаление файлов, а не настройка., Куда пишем. Право публиковать и право решать куда — разные вещи., Рубрики поста отдельным экраном, чтобы не теснить главное меню., Конвейер. Одна строка на площадку: включён ли и насколько полон план., Настройки одной площадки внутри конвейера., План и черновики одним списком: значок отличает, тычок открывает. Одним, а не…, Сколько всего и что заходит. Средние просмотры по рубрикам стоят рядом с… (+10 more)
+
+### Community 125 - "слайд_финал"
+Cohesion: 0.10
+Nodes (25): Кегли для видов считаются от базовых, чтобы не заводить их трижды., @font-face для перечисленных начертаний, кириллица и латиница., Правит кегли под характер дизайна. Множителями, а не размерами в em: em…, Шрифты и стили выбранного дизайна., Стили холста и, если нужно, дополнительный слой., Слой с котом и его стили. Пустая пара, если кота не просили., Вёрстка слайда и его размеры, без отрисовки. Отделено от снимка, чтобы…, Кегль заголовка слайда — по замеру, а не по средней ширине знака. Пробная… (+17 more)
+
+### Community 126 - "Экран цеха (экранЦех)"
+Cohesion: 0.13
+Nodes (17): экр() — экранирование HTML, Экран цеха (экранЦех), Почему верхний экран — станки, а не посты, Почему заливка ячейки ползёт вместо отдельного индикатора, Почему мигает первая пустая ячейка — труд виден там же, где итог, Почему повтор после сбоя стоит там же, где написано «встал», Почему нажатие на пустую ячейку ставит заказ, Почему шкала — топливо станка, а пустая ячейка это работа (+9 more)
+
+### Community 127 - "Редактор 4xTube — мини-приложение"
+Cohesion: 0.12
+Nodes (17): Экран сырья (экранСырьё), Почему выключен вертикальный свайп — человек выкидывал себя в чат, Почему факты — один список: правило .факты div рисовало рамку в рамке, Почему появилась обводка фокуса — человек с клавиатурой не видел, где он, Почему корень 16, а не 14 — вторая ступень уходила ниже 12px, Почему min-width:0 обязателен — длинное слово распирало строку, Почему настройки живут внутри станка — «пять в день» это свойство TikTok, Почему отступы считает телеграм — в вебвью env(safe-area-inset) врёт (+9 more)
+
+### Community 128 - "jobs.py"
+Cohesion: 0.12
+Nodes (12): Что делается прямо сейчас. Для полоски хода в приложении. Генерация идёт…, Мак говорит, что он на месте. Раз в полминуты, из рабочего цикла., Очередь заданий между Vercel и маком. Страница приложения живёт на Vercel и…, Задания, застрявшие «в работе», возвращаем в очередь. Рабочего могли убить…, Выкидывает старые задания: очередь не архив., Кладёт задание в очередь и возвращает его ключ., в_работе(), вернуть_зависшие() (+4 more)
+
+### Community 129 - "tools_дизайны.py"
+Cohesion: 0.25
+Nodes (9): Доклад, main(), Path, Папка на каждый дизайн карусели: паспорт из кода и лист образцовых кадров.…, Вёрстка четырёх кадров без снимка: _снять подменён записью., запреты(), лист(), паспорт() (+1 more)
+
+### Community 130 - "Подмены"
+Cohesion: 0.18
+Nodes (4): Подмены, Рисование, ловить(), Сценарий
+
+### Community 131 - "Недели"
+Cohesion: 0.15
+Nodes (6): График из нулей честнее, чем отсутствие графика: провал в выпуске это тоже…, Среднее считается только по постам, у которых числа есть: пост без охвата не…, У владельца база с первого выпуска: там есть посты без чисел., _дней_назад(), Итоги, Недели
+
+### Community 132 - "test_значки.py"
+Cohesion: 0.14
+Nodes (7): Значки инструментов: распознавание имени, вшивание данными, цвет., Маску с file:// Chrome не грузит и молча рисует пустоту., Лайм на кремовом даёт контраст 1,3 к 1 — знак пропадает., Плитки и чипы на светлом кадре выходили тёмными с тёмным текстом., ЗнакВСтранице, ПоверхностьНаСветломКадре, ЦветЗнака
+
+### Community 133 - "Стиль «дуотон»"
+Cohesion: 0.12
+Nodes (15): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+7 more)
+
+### Community 134 - "Стиль «дуотон»"
+Cohesion: 0.12
+Nodes (15): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+7 more)
+
+### Community 135 - "Стиль «маркер»"
+Cohesion: 0.12
+Nodes (15): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+7 more)
+
+### Community 136 - "Стиль «маркер»"
+Cohesion: 0.12
+Nodes (15): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+7 more)
+
+### Community 137 - "закрыть"
+Cohesion: 0.14
+Nodes (8): Отпускает соединение этой нити. Нужно только при остановке., Внутри этого блока о новых черновиках владельцу не пишут., Поля карточки поста. Пусто у старых постов, снятых до появления правки., Слайды карусели. У обычного поста пусто, и это не ошибка., закрыть(), картинки(), карточка(), тихо()
+
+### Community 138 - "Тёплый"
+Cohesion: 0.17
+Nodes (7): skipUnless, Ошибки страницы доходят до снимка, а не теряются в протоколе., без_тёплого(), ОшибкиСтраницы, Тёплый, мерить(), эталон()
+
+### Community 139 - "ПриёмыЖанров"
+Cohesion: 0.18
+Nodes (5): Обложка и финал зовут дизайн без размеров вида — он не должен падать. Это…, Не только обложка: светлые кадры и инверсия тоже зовут дизайн., 13 сентября 2026: «Помоги» выходило без «П» — огромная « садилась на букву.…, КавычкаМанифеста, ПриёмыЖанров
+
+### Community 140 - "Сразу"
+Cohesion: 0.18
+Nodes (7): Папка на столе — это «готово к выкладке». Брак готовым не бывает., Для каких площадок складывать папку и что при этом не делать., Телеграм публикует бот сам: папка для него только мусорит стол., Автопилот рисует и ночью. Окно Finder среди ночи — не помощь., Папка — удобство. Из-за неё не должен падать сам пост., Сразу, падает()
+
+### Community 141 - "_Дублёры"
+Cohesion: 0.07
+Nodes (13): _карусель_в_базе(), ПравкаКарусели, ВКонвейере, _СБедой, Вторая половина: кадры по готовому тексту, без похода в модель., Иначе на стол уедут кадры, нарисованные до правки. Пост 98 так и вышел 12…, Столько от настоящей Карусели, сколько читает core., Подменяет сочинение, рисование и запись в базу. (+5 more)
+
+### Community 142 - "vercel/уборка.py"
+Cohesion: 0.21
+Nodes (13): Убирает с мака то, что уже лежит в хранилище или никому не нужно. На маке файл…, Полная уборка. Зовётся раз в сутки сама и кнопкой по требованию., Уборка за собой: и на диске, и в хранилище. Каждый черновик оставляет след.…, Все имена файлов внутри любой вложенности. Раньше карточка разбиралась на один…, Имена файлов, на которые ссылается хоть один пост. Смотрим во все места сразу:…, Выносит из хранилища всё, на что никто не ссылается., _в_секунды(), занятые() (+5 more)
+
+### Community 143 - "vercel/варианты.py"
+Cohesion: 0.09
+Nodes (22): Готовое содержимое для площадки: картинки и текст. Считается один раз и живёт в…, Выбрасывает посчитанные варианты: пост изменился, и они устарели. Вариант живёт…, Куда этот пост уже ушёл. Ключ площадка, значение адрес или отметка., Один пост, разные площадки: подготовка содержимого под каждую. Слайды карусели…, Текст под площадку. Пост, сочинённый прямо под эту площадку, переписывать не…, Слайды в формате площадки. Если формат совпадает, ничего не рисуем., _без_разметки(), выложено() (+14 more)
+
+### Community 144 - "POST /api/approve"
+Cohesion: 0.22
+Nodes (9): POST /api/approve, Почему одобрить значит дать час, а не запланировать и не опубликовать, Почему отметка одобрения стоит на самом посте — переживает перезагрузку, card.ячейка — отметка одобрения на посте, Хранение OAuth-токенов и контента оператора, Privacy Policy 4xTube Publisher, Разрешения TikTok: user.info.basic и video.publish, Terms of Service 4xTube Publisher (+1 more)
+
+### Community 145 - "_текст"
+Cohesion: 0.17
+Nodes (15): Экранирует и запрещает перенос внутри слов с дефисом. Без этого «ИИ-ролика»…, Обрезает список под вёрстку и говорит, если что-то отрезал. Молчаливая обрезка…, Строка списка: со знаком инструмента, если он в ней назван, иначе с меткой.…, Разметка одного вида. `з` это его содержимое, у каждого своё., CSS-маска со знаком инструмента, вшитая в страницу данными. Ссылкой `file://`…, Ищет инструмент в начале строки: (css-маска, его имя, остаток строки). Ищем…, Строка списка. Значок из текста переезжает на место точки. Иначе получается два…, _знак_инструмента() (+7 more)
+
+### Community 146 - "Ручка"
+Cohesion: 0.30
+Nodes (4): BaseHTTPRequestHandler, Path, Картинка поста. Тоже за подписью: по ссылке её не подсмотреть., Ручка
+
+### Community 147 - "_картинка"
+Cohesion: 0.20
+Nodes (10): Всё, что нужно, чтобы потом перерисовать карточку без новой генерации., Ручная правка: текст поста и надписи на карточке. Карточка перерисовывается…, Кот для перерисовки. Берём того же, что уже стоит на карточке. Рисовать нового…, Рисует карточку и возвращает ссылку на неё. Ссылка, а не путь: страница…, Сочиняет пост с карточкой и кладёт черновиком. Возвращает его номер. В `тема`…, _картинка(), новый(), обновить() (+2 more)
+
+### Community 148 - "Сторителлинг-корректор"
+Cohesion: 0.13
+Nodes (14): 12 ПРИЁМОВ (по ним проверяешь текст), АНТИ-ИИ ФИЛЬТР, ГЛАВНЫЕ ПРАВИЛА (не нарушай никогда), Макро — каркас истории, Микро — зум в момент, МОДУЛЬ «БИЗНЕС И ПРОДАЖИ», Поправки постбота (важнее правил выше, когда расходятся), ПОСЛЕ «ДА» — ПОЛНОЕ ПЕРЕПИСЫВАНИЕ (+6 more)
+
+### Community 149 - "bot.py — цикл опроса, меню, кнопки, расписание"
+Cohesion: 0.20
+Nodes (10): bot.py — цикл опроса, меню, кнопки, расписание, Редактор 4xTube: бот для постов в канал, Длинный опрос вместо вебхука, Три пути к теме: рубрика, своя тема, ссылка, Меню /start и превью с временем, Обязательное подтверждение публикации, Обоснование: промах в канал на десять тысяч человек не отменяется, Обоснование: публичный адрес и сертификат не нужны (+2 more)
+
+### Community 150 - "вертекс.py"
+Cohesion: 0.25
+Nodes (7): Адрес модели. Nano Banana второго поколения (`gemini-3-*`) доступен только в…, Доступ к Gemini через Vertex AI — на кредитах Google Cloud, а не на предоплате…, Путь к файлу сервисного ключа. Берётся из общего облака, кладётся во временный…, Bearer-токен Vertex. Учётки берутся один раз и обновляются по сроку., адрес(), заголовки(), ключ_сервисного_аккаунта()
+
+### Community 151 - "facts.py"
+Cohesion: 0.18
+Nodes (13): Достаёт из заметки постоянные показатели. Пусто, если их нет., Выделяет показатели из заметки и сразу их записывает., Что бот знает о проекте прямо сейчас. Копилка идей хранит поводы для постов, а…, Записывает поверх прежнего: у факта одно текущее значение., Факты для задания писателю. Пусто, если их ещё нет или если запрещены., Схема ответа. Pydantic ввозится здесь, а не сверху: на Vercel этого модуля нет…, все(), выделить() (+5 more)
+
+### Community 152 - "данные"
+Cohesion: 0.29
+Nodes (9): main(), Path, Макет поста в ленте: python3 макет.py посты/<пост>.json Телефоны с лентой…, иконка(), телефон(), Файл внутрь страницы: по file:// Chrome шрифты и картинки молча не рисует., @font-face для гарнитур вида («семья», «файл без набора», вес) из assets/fonts., данные() (+1 more)
+
+### Community 153 - "db.py — посты, расписание, настройки"
+Cohesion: 0.14
+Nodes (15): db.py — посты, расписание, настройки, Форма поста: список, разбор, схема, история, Карусель: рассуждение по слайдам, У карусели нет кнопок под группой, Конвейер: бот сам придумывает и ставит в план, Отменённые темы больше не предлагаются, Если площадка не подключена: пост в черновики, без повторов, Обоснование: человек не участвует в рутине, вмешивается только когда не нравится (+7 more)
+
+### Community 155 - "разбор/холст.py"
+Cohesion: 0.26
+Nodes (14): main(), Path, Снимки режутся под рамку кадра: 929×330 — это пропорция 2,8, середина диапазона…, Холст согласования стиля «разбор»: python3 холст.py посты/<пост>.json Стиль…, Полоса — фирменный лайм на всех кадрах: это знак бренда, он один во всей…, По самой длинной строке: у Onest 800 знак занимает около 0,63 кегля., голова(), знак_и_полоса() (+6 more)
+
+### Community 156 - "test_заголовки.py"
+Cohesion: 0.19
+Nodes (8): Заголовки безопасности у выложенного приложения. Второй эшелон обороны. Первый…, Настройки Vercel такими, какими их пишет сборщик., Заголовки для всех путей, именем к значению., Ради этого всё и затевалось: без «unsafe-inline» браузер не исполнит ни…, Заголовки не должны вытеснить то, ради чего файл существует., _заголовки(), _настройки(), Политика
+
+### Community 157 - "ПилюлиИзДанных"
+Cohesion: 0.36
+Nodes (3): Точка-маркер — часть почерка жанра, её терять нельзя., обложка(), ПилюлиИзДанных
+
+### Community 158 - "ЗапаснаяВетка"
+Cohesion: 0.19
+Nodes (6): Подменяет имена в модуле на время проверки., Финал без кота. Браузер не нужен: проверяется сама страница., Тот же отступ, что уже стоит в ветке с котом: «Итог» один и тот же, и две ветки…, В шаблоне у вывода свой margin-top:auto. Поправка с той же силой селектора…, ЗапаснаяВетка, _Подмена
+
+### Community 159 - "vercel/facts.py"
+Cohesion: 0.18
+Nodes (13): Достаёт из заметки постоянные показатели. Пусто, если их нет., Выделяет показатели из заметки и сразу их записывает., Что бот знает о проекте прямо сейчас. Копилка идей хранит поводы для постов, а…, Записывает поверх прежнего: у факта одно текущее значение., Факты для задания писателю. Пусто, если их ещё нет или если запрещены., Схема ответа. Pydantic ввозится здесь, а не сверху: на Vercel этого модуля нет…, все(), выделить() (+5 more)
+
+### Community 160 - "public/app.js"
+Cohesion: 0.26
+Nodes (13): главноеДело(), идти(), ИМЯ_РАЗДЕЛА, назад(), найтиПост(), отметитьРаздел(), площадка(), подвязать() (+5 more)
+
+### Community 161 - "vercel/storage.py"
+Cohesion: 0.19
+Nodes (14): Path, Где лежат карточки постов. Пока всё крутилось на маке, карточки были файлами…, Создаёт ведро, если его ещё нет. Публичное: карточки не секрет., Заливает карточку и возвращает постоянную ссылку на неё., Ссылки на все файлы в прежнем порядке; не залитый остаётся путём. По одному…, Содержимое карточки, откуда бы она ни лежала., Локальный файл: телеграму нужно отдать картинку, а не адрес. Отправлять по…, байты() (+6 more)
+
+### Community 162 - "vercel/times.py"
+Cohesion: 0.21
+Nodes (16): datetime, Зона по имени, а не по смещению. datetime.now().astimezone() отдаёт застывшее…, Время публикаций. Хранится в UTC, показывается в вашей зоне. Почему так, а не…, «сегодня в 20:00», «завтра в 10:00», «6 сен в 18:30»., Сегодня в это время, а если уже прошло, то завтра., Готовые кнопки времени. Утро и вечер, потому что канал живёт ими., Своё время руками: «20:00», «завтра 9:30», «06.09 18:00»., _ближайшее() (+8 more)
+
+### Community 163 - "webapp/app.js"
+Cohesion: 0.26
+Nodes (13): главноеДело(), идти(), ИМЯ_РАЗДЕЛА, назад(), найтиПост(), отметитьРаздел(), площадка(), подвязать() (+5 more)
+
+### Community 164 - "отклики.py"
+Cohesion: 0.06
+Nodes (50): BaseModel, datetime, Момент, раньше которого не читаем, в UTC., Человеческая запись начала окна → момент времени. Понимает «04.09 14:00»,…, Как окно называется владельцу., Больше не предлагать то, что владелец уже видел. Без этого повторное нажатие в…, «Что ответить»: читает чужие чаты за три дня и предлагает варианты ответа.…, Папки чатов, как их видит сам Telegram. (+42 more)
+
+### Community 165 - "уборка.py"
+Cohesion: 0.21
+Nodes (13): Убирает с мака то, что уже лежит в хранилище или никому не нужно. На маке файл…, Полная уборка. Зовётся раз в сутки сама и кнопкой по требованию., Уборка за собой: и на диске, и в хранилище. Каждый черновик оставляет след.…, Все имена файлов внутри любой вложенности. Раньше карточка разбиралась на один…, Имена файлов, на которые ссылается хоть один пост. Смотрим во все места сразу:…, Выносит из хранилища всё, на что никто не ссылается., _в_секунды(), занятые() (+5 more)
+
+### Community 166 - "показать"
+Cohesion: 0.17
+Nodes (12): Шлёт карточку поста и возвращает сообщение, под которым остались кнопки.…, Тычок в строку очереди: пост приходит отдельным сообщением. Отдельным, а не…, Повтор удачного поста: копия черновиком, а не публикация заново. Черновиком,…, Включить или усыпить площадку. Включённая тут же добирает план: без этого…, Добирает план и показывает владельцу то, что получилось., Один и тот же пост, слово в слово. Ничего не сочиняется заново., анонс_стрима(), догнать_конвейер() (+4 more)
+
+### Community 167 - "carousel.py"
+Cohesion: 0.05
+Nodes (64): mascot_склад(), BaseModel, Есть ли на слайде что рисовать. Схема разрешает всем полям быть пустыми, и…, Правит вёрстку под то, что на слайде на самом деле заполнено. Вёрстку модель…, Пять слотов модели раскладываем в поля, которые ждёт рисовалка. Раскладка живёт…, Один слайд. Полей нарочно мало и они общие для всех вёрсток. Схема из двадцати…, Слова для пилюль обложки: что встретится в карусели дальше. Свои метки из…, Слайд короче, по той же мысли. Исходные поля тем же объектом, если не вышло.… (+56 more)
+
+### Community 168 - "channels.py"
+Cohesion: 0.20
+Nodes (13): Куда публиковать: тестовый канал или основной. Разница между ними не в…, Адреса обоих каналов и выбранный. Тестовый по умолчанию из .env., Адрес канала, в который уходят посты прямо сейчас., Адрес основного канала. По нему считается всё, что показывают человеку:…, Переключает канал. На пустой адрес не переключаемся., Существует ли канал и может ли бот там публиковать. Возвращает {'ок': bool,…, выбрать(), задать() (+5 more)
+
+### Community 169 - "дорисовать"
+Cohesion: 0.21
+Nodes (13): Пост-листалка: несколько слайдов в одном стиле под общей подписью. Хранится…, Только текст карусели, без единого кадра. Пост кладётся обычным черновиком, но…, Рисует кадры по уже одобренному тексту и снимает пометку эскиза. Ничего не…, Правка карусели словами: тот же текст с правкой, та же форма. До 14 сентября…, Партия каруселей на один станок, сразу разложенная по ячейкам. Заказ это не…, Ставит время. Если можем, отдаём пост телеграму насовсем. Отданный пост…, дорисовать(), заказ() (+5 more)
+
+### Community 170 - "_Связь"
+Cohesion: 0.16
+Nodes (7): Тонкая обёртка: прячет разницу между «?» и «%s» в подстановках. Она же держит…, Учит sqlite опускать регистр по-русски. Встроенный `LOWER` в sqlite трогает…, Ошибки, после которых соединение годится только выбросить., _открыть(), привить(), _разрыв(), _Связь
+
+### Community 171 - "icons.py"
+Cohesion: 0.21
+Nodes (13): Pattern, Длинные варианты первыми: «⚡️» с модификатором должен победить «⚡»., Меняет эмодзи на иконки канала в готовом HTML. Внутрь тегов не заходим: подмена…, Свои иконки канала вместо стандартных эмодзи. У канала есть набор иконок в…, Спрашивает состав набора у Телеграма., Заменяет чужие эмодзи на ближайшие фирменные. Делается ДО разбора разметки:…, к_своим(), _к_своим() (+5 more)
+
+### Community 172 - "Карусели TikTok и Instagram: что работает по свежим данным"
+Cohesion: 0.14
+Nodes (13): 1. Обзор, 2. Тактики удержания, 3. Тактики охвата и вовлечения, 4. Рекомендации по площадкам, 5. Ключевые источники, Instagram, Instagram, TikTok (+5 more)
+
+### Community 173 - "подборка-сайтов/рисовать.py"
+Cohesion: 0.30
+Nodes (13): main(), Path, Фото-Карусель, стиль «подборка сайтов»: обложка, по сайту на кадр, тёмный…, Снимок сайта ужатый до ширины кадра: 5-мегабайтный PNG странице ни к чему., веер(), картинка(), обложка(), сайт() (+5 more)
+
+### Community 174 - "Стиль «светофор» — паспорт и порядок сборки"
+Cohesion: 0.14
+Nodes (13): 1. Доля акцента уйдёт выше нормы 4–6% — это дефект замера Д-21, а не брак кадра, 2. Капитель категории 8–10,5% высоты, а не 12–15%, 3. На обложке «Светофор без слов» два слова нарочно затемнены, Палитра и три уровня шкалы, Папка стиля, Порядок сборки нового поста, Снимки сервисов: Фото-Карусель, Сознательные отклонения (обязательно к чтению перед приёмкой) (+5 more)
+
+### Community 175 - "Стиль «справочник»"
+Cohesion: 0.14
+Nodes (13): Бюджет строки — место, где счёт на грани, Ловушки, проверенные отрисовкой, Новый референс на этот стиль, Носитель акцента, которого у автора нет, Палитра, Ритм ленты, Собрать пост, Сознательные отступления от порогов (записаны, значит допустимы) (+5 more)
+
+### Community 176 - "times.py"
+Cohesion: 0.23
+Nodes (15): datetime, Зона по имени, а не по смещению. datetime.now().astimezone() отдаёт застывшее…, Время публикаций. Хранится в UTC, показывается в вашей зоне. Почему так, а не…, «сегодня в 20:00», «завтра в 10:00», «6 сен в 18:30»., Сегодня в это время, а если уже прошло, то завтра., Готовые кнопки времени. Утро и вечер, потому что канал живёт ими., Своё время руками: «20:00», «завтра 9:30», «06.09 18:00»., _ближайшее() (+7 more)
+
+### Community 177 - "_ВременнаяБаза"
+Cohesion: 0.20
+Nodes (3): База, _ВременнаяБаза, Сбор
+
+### Community 179 - "слайд_обложка"
+Cohesion: 0.15
+Nodes (14): Замер страницы; одну и ту же страницу второй раз не меряем. Цикл ужатия в…, Координаты блоков со страницы. Пусто, если браузер не ответил. Размер окна…, Каким кадром идёт этот слайд, тёмным или светлым. Ритм списан с замера чужой…, Отступ низа кота на обложке от низа холста — CSS `bottom` для `.кот`. Отдельной…, Первый слайд: цепляет и заставляет листнуть. Дизайн и фон те же, что у середины…, _замерить(), _замерить_заново(), _низ_кота_обложки() (+6 more)
+
+### Community 180 - "vercel/channels.py"
+Cohesion: 0.20
+Nodes (13): Куда публиковать: тестовый канал или основной. Разница между ними не в…, Адреса обоих каналов и выбранный. Тестовый по умолчанию из .env., Адрес канала, в который уходят посты прямо сейчас., Адрес основного канала. По нему считается всё, что показывают человеку:…, Переключает канал. На пустой адрес не переключаемся., Существует ли канал и может ли бот там публиковать. Возвращает {'ок': bool,…, выбрать(), задать() (+5 more)
+
+### Community 181 - "_Связь"
+Cohesion: 0.16
+Nodes (7): Тонкая обёртка: прячет разницу между «?» и «%s» в подстановках. Она же держит…, Учит sqlite опускать регистр по-русски. Встроенный `LOWER` в sqlite трогает…, Ошибки, после которых соединение годится только выбросить., _открыть(), привить(), _разрыв(), _Связь
+
+### Community 182 - "vercel/icons.py"
+Cohesion: 0.21
+Nodes (13): Pattern, Длинные варианты первыми: «⚡️» с модификатором должен победить «⚡»., Меняет эмодзи на иконки канала в готовом HTML. Внутрь тегов не заходим: подмена…, Свои иконки канала вместо стандартных эмодзи. У канала есть набор иконок в…, Спрашивает состав набора у Телеграма., Заменяет чужие эмодзи на ближайшие фирменные. Делается ДО разбора разметки:…, к_своим(), _к_своим() (+5 more)
+
+### Community 183 - "vercel/publish.py"
+Cohesion: 0.11
+Nodes (24): datetime, Запоминает, куда пост поедет. Одна площадка или несколько., Можно ли публиковать от вашего аккаунта. От аккаунта лучше по двум причинам:…, Отправка готового поста в канал. Вынесено отдельно от core намеренно. core…, Забирает пост из отложенных: перенос и отмена начинаются с этого. Молчать об…, Владелец узнаёт о чужой публикации сразу: канал общий, отвечает он., Доставка в канал. Возвращает message_id или бросает исключение. `кем` это имя…, Возвращает новое состояние: True это «всегда тихо». (+16 more)
+
+### Community 184 - "слайд_вида"
+Cohesion: 0.13
+Nodes (20): Говорит, если кадр вышел пустым или перегруженным. Путь отдаёт как есть.…, Ширина позы к её высоте. Позы разной формы, и считать её долей нельзя., Слайд выбранного вида. Обвязка общая, внутренность своя. Перед снимком…, Замер страницы; одну и ту же страницу второй раз не меряем. Цикл ужатия в…, Координаты блоков со страницы. Пусто, если браузер не ответил. Размер окна…, Что не так с расстановкой. Пустой список означает «всё чисто». Проверяем ровно…, Отступ низа кота на обложке от низа холста — CSS `bottom` для `.кот`. Отдельной…, Первый слайд: цепляет и заставляет листнуть. Дизайн и фон те же, что у середины… (+12 more)
+
+### Community 185 - "core.py"
+Cohesion: 0.18
+Nodes (12): Что бот умеет, без привязки к тому, откуда его позвали. Кнопки в чате и веб-…, Черновик анонса стримов. Текст и карточка всегда одни и те же., Снимает время. Если пост лежал у телеграма, забираем его оттуда. Без этого он…, Возвращает новое состояние: True это «всегда тихо»., Уходит ли пост без уведомления. Два повода, и они складываются. Ручной…, Публикует всё, чему пришло время. Зовётся на каждом круге опроса. Два случая,…, анонс(), без_звука() (+4 more)
+
+### Community 186 - "crosspost.py"
+Cohesion: 0.22
+Nodes (12): Версии поста для площадок. Считаются один раз и остаются в карточке., Тот же пост на других площадках. Перепечатывать телеграмный текст в X и Threads…, Схема ответа. Заводится по требованию: pydantic есть только на маке, а включать…, Где вообще заданы ключи. Кнопку без ключей показывать незачем., _без_разметки(), включено(), доступно(), _модель() (+4 more)
+
+### Community 187 - "Разнообразие каруселей: паспорт формата"
+Cohesion: 0.15
+Nodes (12): Не входит, Новые типы (вторая часть), Паспорт, Порядок выпуска, Проблема, Проверки, Простой язык, Разнообразие каруселей: паспорт формата (+4 more)
+
+### Community 188 - "рисовать() — перерисовка экрана"
+Cohesion: 0.17
+Nodes (13): АДРЕСА и хеш-адреса (#shop, #stock, #m-код), идти() — переход между экранами, экран и станок — где мы сейчас, площадка() — родные кнопки телеграма, Почему вкладок нет — из цеха в станок, из смены в пост, возврат один, Почему ссылка #m-tiktok открывает станок сразу, Почему в адресе латиница — кириллица кодируется процентами, Почему MutationObserver ловит удаление листов разом (+5 more)
+
+### Community 189 - "Лист поста (открыть)"
+Cohesion: 0.17
+Nodes (13): Лист поста (открыть), Лист ручной правки (править), Почему считаются знаки — предел подписи 1024, пост рвётся надвое, Почему адреса одной строкой — было восемь кнопок на карточку и сорок на экран, Почему ровно две колонки — четвёртая площадка вставала во всю ширину, Почему выбор площадки прямо на карточке, а не кнопками в чате бота, Почему карусель прилипает к слайду — как в телеграме, Почему правка идёт через довести — раньше стояло С = о.state и состояние обнулялось (+5 more)
+
+### Community 190 - "card.py — карточка и афиша через Chrome"
+Cohesion: 0.15
+Nodes (13): Афиша стрима: своя вёрстка, Анонс стримов правится и запоминается, assets/mascot — позы кота-маскота, card.py — карточка и афиша через Chrome, Карточка — другой угол той же темы, Кнопка 🎨: перерисовать кота в той же позе, Правка руками: текст и надписи карточки, Обоснование: карточка объясняет, афиша зовёт (+5 more)
+
+### Community 191 - "Отдача слайдов через /api/slide"
+Cohesion: 0.18
+Nodes (11): Отдача слайдов через /api/slide, core.py — общее для чата и приложения, Чем карусель для TikTok отличается от канальной, Проверка подписи initData секретом из токена, Обоснование: адрес приложения публичный, Обоснование: подпись говорит, кто пришёл, но прав не даёт, Обоснование: TikTok сам приходит за снимками только на подтверждённый домен, Обоснование: в TikTok зритель холодный и не дочитает вступление (+3 more)
+
+### Community 192 - "Supabase — база и хранилище карточек"
+Cohesion: 0.14
+Nodes (15): Gemini как запасной путь расшифровки, Обоснование: TikTok приходит за картинками не сразу, отложка может отдать через неделю, Обоснование: позу кота выкидывать нельзя, иначе пост не перерисовать, Supabase — база и хранилище карточек, Threads: 500 символов, картинки по ссылке, Уборка ненужных файлов, Whisper расшифровывает голосовые на маке, Базовые пакеты: requests, python-dotenv, pydantic, pillow, numpy (+7 more)
+
+### Community 193 - "Style/README.md"
+Cohesion: 0.15
+Nodes (11): ДНК стилей из референсов, Как читать, Пересборка, Присланный референс: правка стиля или новый стиль?, Чем ДНК отличаются, Что в каждой папке, ДНК стиля «фирменный», Наши кадры в этом стиле (+3 more)
+
+### Community 194 - "Паспорт стиля: @whygolding, карточки новостей со снимком"
+Cohesion: 0.15
+Nodes (12): 10. Картинки, 11. Адаптация под наш кадр 1620×2160, 1. Палитра, 2. Иерархия, 3. Кегли и начертания, 4. Радиусы, 5. Границы, 6. Тени и свечения (+4 more)
+
+### Community 195 - "_спокойно"
+Cohesion: 0.24
+Nodes (11): Список из того, что может не ответить. Пустой вместо падения. Очередь заданий…, Шесть разделов, из которых в боте раньше не было ни одного. Канал, доступ и…, Живые значения проекта: сколько каналов, роликов, подписчиков. Их подставляет…, Правила «каждый четверг в 19:00». Анонс стрима нужен каждую неделю в один и тот…, Удаление отдельным экраном: рядом с «выключить» промах стоил бы правила., настройки(), повторы(), _показатели() (+3 more)
+
+### Community 196 - "vercel/crosspost.py"
+Cohesion: 0.22
+Nodes (12): Версии поста для площадок. Считаются один раз и остаются в карточке., Тот же пост на других площадках. Перепечатывать телеграмный текст в X и Threads…, Схема ответа. Заводится по требованию: pydantic есть только на маке, а включать…, Где вообще заданы ключи. Кнопку без ключей показывать незачем., _без_разметки(), включено(), доступно(), _модель() (+4 more)
+
+### Community 197 - "вход.py"
+Cohesion: 0.18
+Nodes (10): asyncio, main(), Вход по QR-коду: тот же способ, которым Telegram подключает компьютер. Кода из…, нарисовать(), Разовый вход в Telegram аккаунтом. Два шага, чтобы код можно было передать.…, Просит прислать код по SMS: в приложении его иногда не замечают., смс(), qrcode (+2 more)
+
+### Community 198 - "ответить_словами"
+Cohesion: 0.14
+Nodes (14): Разбирает написанное владельцем начало окна. Ложь — не разобрал., Выключенное правило остаётся в списке. Стримы уходят на паузу и возвращаются;…, Просит воркер разложить повторы наперёд. Молча, если он не берёт., Ответ на заданный вопрос. Ложь означает «вопроса не было». Возврат важен: не…, «четверг 19:00 анонс» → правило. Ничего не понял — None. День ищется по началу…, Адрес выложенного поста. Пришёл текст без ссылки — говорим прямо. Не молча:…, Правка поста из чата: заменой текста или указанием переписать. Номер поста не…, задать_окно() (+6 more)
+
+### Community 199 - "_обложка_страница"
+Cohesion: 0.14
+Nodes (18): Слово в *звёздочках* становится лаймовым. Тег в содержимое пускать нельзя:…, Каким кадром идёт этот слайд, тёмным или светлым. Ритм списан с замера чужой…, Сколько строк займёт текст при этом кегле. Считаем как браузер. Раньше здесь…, Самый крупный кегль, при котором заголовок укладывается в `строк` строк. Первым…, Страница обложки и размеры холста. Кегль задаётся снаружи, чтобы его можно было…, Ряд пилюль обложки или пустая строка, если жанр их не носит или слов нет.…, Крупнейший кегль, при котором заголовок ложится ровно — по замеру. Прикидка…, Середина: одна мысль, при желании с крупным значением. (+10 more)
+
+### Community 200 - "разметить"
+Cohesion: 0.24
+Nodes (10): datetime, Кладёт пост в отложенные канала. Дальше Telegram публикует сам. Без времени…, Карусель от аккаунта: группа снимков с фирменными иконками в подписи., Отправляет или откладывает карусель. Возвращает номер первого снимка., Текст автора → (чистый текст, метки разметки и своих эмодзи)., альбом(), _альбом(), отложить() (+2 more)
+
+### Community 201 - "voice.py"
+Cohesion: 0.29
+Nodes (9): Path, Расшифровка голосовых заметок. Идея приходит на ходу, и надиктовать её проще,…, Ленивая загрузка модели. None, если whisper недоступен., Текст голосового или None, если не вышло ни одним способом., _whisper(), доступна(), _местным(), расшифровать() (+1 more)
+
+### Community 202 - "Конвейер карусели без перерисовок"
+Cohesion: 0.09
+Nodes (21): 0. Подготовка перед партией, 1. Тема, 2. Паспорт формата, 4. Отрисовка, 5. В3 автоприёмка, 6. В4 глаза по чек-листу, 7. Правка по лестнице — карусель не выбрасывается, 8. Выпуск (+13 more)
+
+### Community 203 - "Текст переписывается под площадку, а не режется"
+Cohesion: 0.17
+Nodes (12): Что проверено, а что нет, humanizer.py — второй проход по голосу, markup.py — звёздочки автора в HTML, Текст переписывается под площадку, а не режется, Обоснование: другая длина, нет разметки и наших иконок, Обоснование: Markdown ломает жирный, MarkdownV2 требует экранирования, Обоснование: ровный текст читается сгенерированным, Обоснование: пауза тире выдаёт машинный текст сильнее любого признака (+4 more)
+
+### Community 204 - "stream.py"
+Cohesion: 0.21
+Nodes (11): Path, Ссылки уходят и текстом, и кнопками: кнопку жмут чаще., Анонс стримов. Пост, который не сочиняется, а повторяется дословно. Всё…, Правки владельца поверх значений из кода., Запоминает анонс насовсем. Афиша перерисуется при следующем показе., Одна и та же афиша на все анонсы. Рисуется при первом вызове., карточка(), кнопки() (+3 more)
+
+### Community 205 - "сводка/рисовать.py"
+Cohesion: 0.22
+Nodes (16): main(), Кадр-новость: рубрика, заголовок, абзац, снимок. Без снимка не рисуется., Первый кадр: рубрика, заголовок крупнее обычного, снимок ниже. `о` передаётся,…, Стиль «сводка»: карточка новости со снимком. `python3 рисовать.py…, Последний кадр: вывод и призыв. Снимка нет — показывать больше нечего.…, Снимок данными и его отношение высоты к ширине. По `file://` Chrome снимок…, Снимок в скруглённой рамке: вписан по ширине, высокий обрезается снизу.…, кадр() (+8 more)
+
+### Community 206 - "Пороги"
+Cohesion: 0.17
+Nodes (3): «Манифест» нарочно без акцента, и у образца его ровно ноль., Разбор не всегда находит акцент: у кадра его может не быть вовсе., Пороги
+
+### Community 207 - "_Тихая"
+Cohesion: 0.20
+Nodes (4): Ручка без сокета: нас интересуют только заголовки, а не сеть., ЗаголовкиОтдачи, _отдать(), _Тихая
+
+### Community 209 - "Навигация"
+Cohesion: 0.17
+Nodes (6): Нижняя навигация — единственный явный способ попасть в разделы. До неё переходы…, Больше пяти в нижней навигации не читаются и не попадают пальцем., Иконка без подписи для чтеца экрана — кнопка без названия., Одни иконки человек разгадывает, а не читает., Эмодзи зависят от гарнитуры устройства и не подчиняются цвету., Навигация
+
+### Community 210 - "_кегль_обложки"
+Cohesion: 0.20
+Nodes (12): Кегль заголовка слайда — по замеру, а не по средней ширине знака. Пробная…, Сколько строк займёт текст при этом кегле. Считаем как браузер. Раньше здесь…, Самый крупный кегль, при котором заголовок укладывается в `строк` строк. Первым…, Есть ли в блоке строка-обрывок — одинокое короткое слово. Смотрим все строки, а…, Ширины строк заголовка так, как их разложил браузер., Крупнейший кегль, при котором заголовок ложится ровно — по замеру. Прикидка…, _висит(), _кегль_обложки() (+4 more)
+
+### Community 211 - "vercel/stream.py"
+Cohesion: 0.21
+Nodes (11): Path, Ссылки уходят и текстом, и кнопками: кнопку жмут чаще., Анонс стримов. Пост, который не сочиняется, а повторяется дословно. Всё…, Правки владельца поверх значений из кода., Запоминает анонс насовсем. Афиша перерисуется при следующем показе., Одна и та же афиша на все анонсы. Рисуется при первом вызове., карточка(), кнопки() (+3 more)
+
+### Community 212 - "обернуть"
+Cohesion: 0.29
+Nodes (7): код(), имя(), Объявляет нажатие, которое что-то меняет. Обработчик возвращает код экрана,…, Действие, обернуть(), Запись, обернуть()
+
+### Community 213 - "base64"
+Cohesion: 0.25
+Nodes (8): argparse, base64, requests, main(), Path, Нарисовать картинку для кадра карусели: python3 картинка.py <файл.png>…, `буквы` снимает запрет на надписи: этикетка бренда на товаре без них не выходит., нарисовать()
+
+### Community 214 - "markup.py"
+Cohesion: 0.32
+Nodes (7): Полная подготовка текста поста перед отправкой., Разметка постов: из привычных звёздочек в HTML телеграма. Почему не отдавать…, Убирает тире как знак препинания, оставляя дефис внутри слов. «Кто-то» и «во-…, Первая непустая строка всегда жирная целиком. Если модель слепила заголовок с…, без_тире(), жирная_первая(), причесать()
+
+### Community 215 - "референсы.py"
+Cohesion: 0.17
+Nodes (13): main(), Референсы под рерайт из командной строки. python3 tools_референсы.py список…, _строка(), Референсы под рерайт: ссылки из темы «Под рерайт» группы «Полезное» в базу.…, Один пост — одна строка: у Instagram и TikTok отрезаются параметры. Один и тот…, Адреса из сущностей сообщения и из самого текста, без повторов, по порядку., Кладёт ссылки сообщений в базу и двигает курсор. Возвращает число новых., Дочитывает тему после курсора. Ошибка чтения летит наружу, курсор не трогается. (+5 more)
+
+### Community 217 - "пары/рисовать.py"
+Cohesion: 0.33
+Nodes (11): main(), Фото-Карусель, стиль «пары»: платный сервис и его бесплатный двойник на одном…, Узкий Oswald под слово-акцент, Manrope под тонкую строку и имена, Golos под…, колонка(), обложка(), пара(), плитка(), почему() (+3 more)
+
+### Community 218 - "Файлы"
+Cohesion: 0.18
+Nodes (10): Задача 1: журнал тем в базе, Задача 2: правило пяти постов, Задача 3: очередь свободных тем из базы, Задача 4: стадия эскиза, Задача 5: замер готовых кадров, Задача 6: подпись и хэштеги по данным разбора, Конвейер постбота: план → эскиз → рендер, Общие ограничения (+2 more)
+
+### Community 219 - "_Текст"
+Cohesion: 0.29
+Nodes (3): HTMLParser, Выдирает читаемый текст. Полноценный парсер тут был бы лишней зависимостью., _Текст
+
+### Community 220 - "ходРабот() — полоска хода работ"
+Cohesion: 0.18
+Nodes (11): ходРабот() — полоска хода работ, Лист шагов долгой работы, Почему полоска прячется, пока открыт лист шагов, Почему главное действие принадлежит листу — две главные кнопки разом опасны, Почему опрос состояния идёт сам, а экран перерисовывается только в конце, Почему полоска хода видна на любом экране — генерация идёт минутами, Почему этап переводится человеческими словами, Почему станок подсвечивает только свою работу — заказ TikTok зажигал телеграм (+3 more)
+
+### Community 221 - "Расписание: UTC в базе, имя зоны для показа"
+Cohesion: 0.18
+Nodes (11): Автозапуск launchd на macOS, Ночная тишина 23:00–8:00, не отключается, Опоздавшие больше чем на три часа возвращаются в черновики, План на неделю, Расписание: UTC в базе, имя зоны для показа, Обоснование: десять тысяч уведомлений в три часа ночи дороже любого поста, Обоснование: после перевода часов «+03:00» означало бы другой момент, Обоснование: канал живёт регулярностью, руками ритм не удержать (+3 more)
+
+### Community 222 - "сервисы/рисовать.py"
+Cohesion: 0.38
+Nodes (10): main(), px(), Фото-Карусель, стиль «подборка сервисов»: навык → значки сервисов → карточка с…, значок(), кадр(), кот_из_холста(), обложка(), страница() (+2 more)
+
+### Community 223 - "Паспорт стиля «нативный экран» — @promptdrill"
+Cohesion: 0.18
+Nodes (10): Белая плашка: четыре вида (слово владельца 18.09.2026), Вариация «диктовка» (18.09.2026), ДНК: числа, снятые `замер.py` с кадров референса, Как читать эти числа, Клавиатура и строка состояния (18.09.2026), Наши кадры против ДНК (замер 18.09.2026, пост «спарринг»), Паспорт стиля «нативный экран» — @promptdrill, Устройство нашего кадра (1080×1440 на холсте) (+2 more)
+
+### Community 224 - "Паспорт стиля «нативный экран» — @promptdrill"
+Cohesion: 0.18
+Nodes (10): Белая плашка: четыре вида (слово владельца 18.09.2026), Вариация «диктовка» (18.09.2026), ДНК: числа, снятые `замер.py` с кадров референса, Как читать эти числа, Клавиатура и строка состояния (18.09.2026), Наши кадры против ДНК (замер 18.09.2026, пост «спарринг»), Паспорт стиля «нативный экран» — @promptdrill, Устройство нашего кадра (1080×1440 на холсте) (+2 more)
+
+### Community 225 - "Стиль «окно» — белое окно приложения на тёмном фоне"
+Cohesion: 0.18
+Nodes (10): Главное решение: окно рисуется вёрсткой, не снимком, Закон стиля, Пять видов доказательства, Ритм ленты, Собрать пост, Сознательные отступления от порогов (записаны, как требует `ПУБЛИКАЦИЯ.md`), Стиль «окно» — белое окно приложения на тёмном фоне, Типографика (+2 more)
+
+### Community 226 - "vercel/threads.py"
+Cohesion: 0.33
+Nodes (10): RuntimeError, Публикация в Threads. Threads работает не так, как X: пост сначала собирают…, Отправляет пост в Threads. Возвращает его номер. Ссылки на снимки должны быть…, Проверка ключей: чей профиль за ними стоит., _запрос(), _контейнер(), кто_мы(), настроен() (+2 more)
+
+### Community 227 - "ДНК"
+Cohesion: 0.18
+Nodes (4): Стиль без чужих кадров — это описание, а не ДНК: проверить по нему нечего, и…, Кадр-заставка без строк даёт контраст 1,0:1 и занижает ДНК стиля., «Что НЕ перенесено» — единственная защита от копии чужого почерка. Если раздела…, ДНК
+
+### Community 228 - "test_кот_под_карточками.py"
+Cohesion: 0.33
+Nodes (3): Всё, что тянется во всю ширину, коту места не оставляет., Кот не должен уходить под карточки новых вёрсток. Найдено на живом посте 100:…, ВёрсткиБезКота
+
+### Community 229 - "re"
+Cohesion: 0.08
+Nodes (18): Справочник рубрик и форм поста. Отдельный модуль, потому что список рубрик…, Popen, re, Контент-план 14 сентября 2026: 5 каруселей TikTok и 5 постов Threads. Данные и…, тексты(), subprocess, Жанр — это своя вёрстка кадра, а не другой шрифт поверх общей. 12 сентября 2026…, Паспорта дизайнов в docs/дизайны не отстают от кода. Паспорт собирается из… (+10 more)
+
+### Community 230 - "vercel/замер.py"
+Cohesion: 0.24
+Nodes (9): Плотность готового кадра: сколько на нём чернил и сколько акцента. Меряем по…, Замечания по готовому кадру. Молчит, если картинку прочесть не вышло., Замер готового кадра: предупреждение, а не запрет. Пороги свои, из скила…, Пороги для дизайна. Чей норм нет — судится общей., Замечания к кадру. Пустой список — кадр в норме. На самих границах кадр годен:…, нормы(), оценить(), проверить_снимок() (+1 more)
+
+### Community 231 - "datetime"
+Cohesion: 0.24
+Nodes (8): datetime, Повторяющиеся публикации. Анонс стрима нужен каждую неделю в один и тот же час,…, Ближайшие даты по правилу, начиная с завтрашнего дня., Досоздаёт недостающие повторы. Зовётся рабочим раз в час., ближайшие(), правила(), разложить(), _уже_стоит()
+
+### Community 232 - "в_площадку"
+Cohesion: 0.33
+Nodes (6): Публикует карусель в TikTok. Возвращает номер публикации у них. У TikTok нет…, X и Threads: там всё проще, картинки и короткий текст., Одна доставка в одно место. Возвращает след: адрес или номер. Здесь же и только…, в_площадку(), в_сеть(), в_тикток()
+
+### Community 233 - "подготовить"
+Cohesion: 0.22
+Nodes (10): Создаёт таблицы и добирает новые колонки. Одного раза на запуск хватает. Раньше…, Кладёт ссылку в очередь. False — такая уже есть: повтор молча пропускается., Очередь референсов, старые сверху. `None` — все статусы., Референс в работу: названный номер или самая старая новая. None — брать нечего., взять_референс(), добавить_референс(), _колонки(), отметить_референс() (+2 more)
+
+### Community 234 - "темы.py"
+Cohesion: 0.40
+Nodes (5): Очередь тем и правило пяти постов. Канал повторялся не потому, что тем мало, а…, Прошло ли пять чужих постов с прошлого раза. `применения` — что и на каких…, Темы, которые сегодня разрешено брать. Порядок справочника сохраняется. Порядок…, доступна(), свободные()
+
+### Community 235 - "ideas.py"
+Cohesion: 0.20
+Nodes (3): Копилка идей. Ссылки и мысли приходят в течение дня, а садишься писать вечером.…, Идея, которая ждёт дольше всех. Ею и займёмся, если тему не задали., самая_старая()
+
+### Community 236 - "Переезд на сервер"
+Cohesion: 0.22
+Nodes (10): DATABASE_URL и перенос накопленного, Dockerfile — питон и Chromium, Карточку рисует браузер, а не нейросеть, Переезд на сервер, Почему бот не живёт на Vercel, Обоснование: cron раз в сутки и нет Chromium в python-функциях, Обоснование: адрес туннеля меняется и ноутбук выключают, Обоснование: генеративные модели врут в кириллице (+2 more)
+
+### Community 237 - "в_html"
+Cohesion: 0.20
+Nodes (8): Сколько символов увидит телеграм: разметка в лимит не входит., Подряд идущие строки с «>» сливаются в одну цитату., Гасит кавычки в адресе, который поедет внутрь href. Общий escape тут не…, Текст автора → HTML для parse_mode=HTML., в_html(), _в_адрес(), длина(), _цитаты()
+
+### Community 238 - "ДНК стиля «до-после»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «до-после», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 239 - "ДНК стиля «дуотон»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «дуотон», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 240 - "ДНК стиля «маркер»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «маркер», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 241 - "ДНК стиля «нативный-экран»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «нативный-экран», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 242 - "ДНК стиля «окно»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «окно», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 243 - "ДНК стиля «приложения»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «приложения», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 244 - "ДНК стиля «промпты»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «промпты», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 245 - "ДНК стиля «разбор»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «разбор», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 246 - "Стиль «светлый разбор» (рерайт 1в1 кадров 2–8 поста Instagram Dc_JBG4D3Oq)"
+Cohesion: 0.20
+Nodes (9): Замер (18.09.2026), Заметная отделка (18.09.2026, «улучшения должны быть заметны»), Наше и чужое, Отделка (18.09.2026, после одобрения макета), Собрать пост, Стиль «светлый разбор» (рерайт 1в1 кадров 2–8 поста Instagram Dc_JBG4D3Oq), Три обложки (обязательно), Устройство кадра (1080×1440 на холсте) (+1 more)
+
+### Community 247 - "Стиль «светлый разбор» (рерайт 1в1 кадров 2–8 поста Instagram Dc_JBG4D3Oq)"
+Cohesion: 0.20
+Nodes (9): Замер (18.09.2026), Заметная отделка (18.09.2026, «улучшения должны быть заметны»), Наше и чужое, Отделка (18.09.2026, после одобрения макета), Собрать пост, Стиль «светлый разбор» (рерайт 1в1 кадров 2–8 поста Instagram Dc_JBG4D3Oq), Три обложки (обязательно), Устройство кадра (1080×1440 на холсте) (+1 more)
+
+### Community 248 - "ДНК стиля «светофор»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «светофор», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 249 - "ДНК стиля «скетч»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «скетч», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 250 - "ДНК стиля «справочник»"
+Cohesion: 0.20
+Nodes (9): ДНК стиля «справочник», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что НЕ перенесено (+1 more)
+
+### Community 252 - "ДизайнВНаборе"
+Cohesion: 0.20
+Nodes (5): В том и приём: в ленте тёмных постов он читается как чужой., Иначе на чётном кадре светлые буквы пропадали на белой карточке., body:before занят оформлением: «полоса» и «линии» затирали пятна., От position:relative логотип вставал в поток и растягивался., ДизайнВНаборе
+
+### Community 253 - "ЗнакПослеПлашки"
+Cohesion: 0.31
+Nodes (4): Пост 90: «, без сторон и сумм» начиналось с запятой., Пост 91: точка стояла одна строкой под плашкой., ЗнакПослеПлашки, _нутро()
+
+### Community 254 - "Дизайн"
+Cohesion: 0.27
+Nodes (3): Латиница нужна отдельно: названия вроде Claude кириллицей не набрать., У обложки нет размеров вида — дизайн не должен падать на ключе., Дизайн
+
+### Community 255 - "Ссылки"
+Cohesion: 0.20
+Nodes (4): Кавычка закрывала href, и дальше писался любой атрибут., Сегодня атрибут в двойных кавычках, но менять разметку опасно., Ссылка с параметрами обязана остаться рабочей., Ссылки
+
+### Community 257 - "vercel/ideas.py"
+Cohesion: 0.20
+Nodes (3): Копилка идей. Ссылки и мысли приходят в течение дня, а садишься писать вечером.…, Идея, которая ждёт дольше всех. Ею и займёмся, если тему не задали., самая_старая()
+
+### Community 258 - "стиль.py"
+Cohesion: 0.16
+Nodes (11): pil, Лист кадров для глаз: python3 лист.py кадры/<пост> [куда.png], Path, Разметка кота, ссылающаяся на файл `kot-<поза латиницей>.webp` рядом с доской., Сохраняет позы всех котов поста рядом с доской и возвращает пути., Фирменный стиль Фото-Карусели одним файлом — общий для всех стилей в `Style/`.…, Знак и полоса как в фирменных кадрах card.py (3к4) ×1,5; всё важное выше…, знак_и_полоса_css() (+3 more)
+
+### Community 259 - "secrets"
+Cohesion: 0.33
+Nodes (5): secrets, Path, Лист кадров: вся карусель одной картинкой. Приём из html-instagram-carousel:…, Склеивает кадры сеткой. Номера кадров из «брак» обводятся ржавым., собрать()
+
+### Community 260 - "подготовить"
+Cohesion: 0.22
+Nodes (10): Создаёт таблицы и добирает новые колонки. Одного раза на запуск хватает. Раньше…, Кладёт ссылку в очередь. False — такая уже есть: повтор молча пропускается., Очередь референсов, старые сверху. `None` — все статусы., Референс в работу: названный номер или самая старая новая. None — брать нечего., взять_референс(), добавить_референс(), _колонки(), отметить_референс() (+2 more)
+
+### Community 261 - "кар() — адрес карточки с подписью"
+Cohesion: 0.25
+Nodes (9): кар() — адрес карточки с подписью, КЛЮЧ и AUTH — пропуск в API, Почему у всплывашки aria-live — без неё чтец экрана её не видит, Почему карточка из хранилища открывается только по подписи, Почему вне телеграма пропуском служит ключ из адреса, сказать() — всплывашка об итоге, зов() — POST-обёртка над fetch, Проверка подписи Telegram (initData) на каждом запросе (+1 more)
+
+### Community 262 - "Выбор канала: тестовый или основной"
+Cohesion: 0.25
+Nodes (8): channels.py — тестовый и основной канал, Дублирование только с основного канала, Проверка канала и прав на месте, Обоснование: цена ошибки в тестовом и основном отличается на десять тысяч человек, Обоснование: узнать об отсутствии прав при первой публикации было бы поздно, Обоснование: тестовый канал существует, чтобы пробовать, наружу не уходит, Выбор канала: тестовый или основной, Канал записывается вместе с постом
+
+### Community 263 - "writer.py — голос канала и сочинение текста"
+Cohesion: 0.13
+Nodes (17): content.py — закрытый список углов, facts.py — что бот знает о проекте, ideas.py — копилка идей, Копилка идей, Правка словами: кнопка «Переписать», Рамки объёма: 450–800 символов, Обоснование: пост читают с телефона одним взглядом, Обоснование: материал попадается днём, а пишут вечером (+9 more)
+
+### Community 264 - "ДНК стиля «отчёт»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «отчёт», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 265 - "ДНК стиля «пары»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «пары», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 266 - "ДНК стиля «подборка-github»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «подборка-github», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 267 - "ДНК стиля «подборка-сайтов»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «подборка-сайтов», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 268 - "ДНК стиля «светлый-разбор»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «светлый-разбор», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 269 - "ДНК стиля «сводка»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «сводка», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 270 - "ДНК стиля «сервисы»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «сервисы», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 271 - "ДНК стиля «сетка»"
+Cohesion: 0.22
+Nodes (8): ДНК стиля «сетка», ДНК: что снято с чужих кадров, Источник, Наши кадры в этом стиле, Новый референс на этот стиль, По каждому кадру, Что в папке, Что перенесено
+
+### Community 272 - "Огрызок"
+Cohesion: 0.22
+Nodes (3): Что считать висячей строкой. Числа — настоящие замеры обложек 100 и 101., Половина меры читается как строка, а не как обрывок., Огрызок
+
+### Community 274 - "картинка-телеграм.py"
+Cohesion: 0.47
+Nodes (5): main(), Картинка к посту в Telegram-канал: python3 картинка-телеграм.py <файл.json>…, Звуковая дорожка: высоты повторяемые, чтобы картинка не менялась от запуска к…, волна(), страница()
+
+### Community 275 - ".test_папка_складывается_когда_кадры_уже_в_базе"
+Cohesion: 0.27
+Nodes (5): б(), следы(), Точка, где карусель становится готовой: кадры записаны в базу., Выгрузка читает слайды из базы. Позови её до записи — и в папку уедут прежние…, Дорисовка
+
+### Community 276 - "БезИнлайна"
+Cohesion: 0.22
+Nodes (4): core объявляет то, чем пользуются остальные, а app запускает всё. Перепутанный…, Сборщик берёт из webapp всё, кроме черновиков с «_» в начале., Строгая CSP держится на том, что своего кода в странице нет. Стоит вернуть один…, БезИнлайна
+
+### Community 277 - "vercel/repeats.py"
+Cohesion: 0.27
+Nodes (7): Повторяющиеся публикации. Анонс стрима нужен каждую неделю в один и тот же час,…, Ближайшие даты по правилу, начиная с завтрашнего дня., Досоздаёт недостающие повторы. Зовётся рабочим раз в час., ближайшие(), правила(), разложить(), _уже_стоит()
+
+### Community 278 - "футер"
+Cohesion: 0.33
+Nodes (6): Отдаёт пост телеграму в отложенные. Возвращает его номер там., Адрес для кнопки «Подписаться». Хранится в настройках, а не в коде:…, Дописывает призыв подписаться со ссылкой на канал. Делается здесь, а не…, отложить(), ссылка_подписки(), футер()
+
+### Community 279 - "кадры"
+Cohesion: 0.40
+Nodes (3): Path, кадры(), Лист
+
+### Community 281 - "бракованные"
+Cohesion: 0.40
+Nodes (5): Позы, которые владелец отверг вручную. Автоматика ловит обрезанных котов, но не…, Больше эту позу не берём., бракованные(), вернуть_позу(), забраковать()
+
+### Community 282 - "лист() — нижний лист (bottom sheet)"
+Cohesion: 0.29
+Nodes (8): лист() — нижний лист (bottom sheet), Почему область нажатия тумблера растят невидимо до 44 точек, Почему кружок крестика рисуют внутри, а цель нажатия остаётся 44 точки, Почему при открытом листе «назад» закрывает лист, а не уходит в цех, Почему у листа три выхода — промахнуться мимо 92% высоты некуда, Почему жест считается только от полоски — иначе перехватывал прокрутку, тянуть() — закрытие листа свайпом вниз, закрытьЛист()
+
+### Community 284 - "test_сводка.py"
+Cohesion: 0.36
+Nodes (4): Стиль «сводка»: кадр держится на снимке, и это проверяется, а не…, Кадр, ОбложкаИФинал, рисовалка()
+
+### Community 285 - "Паспорт стиля «до-после» — @skilzhub, «Viral Prompt Codes Part 2»"
+Cohesion: 0.25
+Nodes (7): Замер (`шаблоны/замер.py`), Одиннадцать пунктов, Паспорт стиля «до-после» — @skilzhub, «Viral Prompt Codes Part 2», Текст: оригинал и наш рерайт, Устройство: чем это новый стиль, а не вариация, Что НЕ перенесено, Что перенесено
+
+### Community 286 - "Паспорт стиля «до-после» — @skilzhub, «Viral Prompt Codes Part 2»"
+Cohesion: 0.25
+Nodes (7): Замер (`шаблоны/замер.py`), Одиннадцать пунктов, Паспорт стиля «до-после» — @skilzhub, «Viral Prompt Codes Part 2», Текст: оригинал и наш рерайт, Устройство: чем это новый стиль, а не вариация, Что НЕ перенесено, Что перенесено
+
+### Community 287 - "Стиль «сводка»"
+Cohesion: 0.25
+Nodes (7): Когда брать, Порядок сборки, Сознательные отклонения от наших порогов, Состав папки, Стиль «сводка», Устройство кадра 1620×2160, Что перенесено и что нет
+
+### Community 288 - "Стиль «сводка»"
+Cohesion: 0.25
+Nodes (7): Когда брать, Порядок сборки, Сознательные отклонения от наших порогов, Состав папки, Стиль «сводка», Устройство кадра 1620×2160, Что перенесено и что нет
+
+### Community 289 - "Стиль «скетч»"
+Cohesion: 0.25
+Nodes (7): Адаптация под наш кадр 1620×2160, Стиль «скетч», Чего в этом стиле нет ни на одном кадре, Чем отличается от «маркера», Числа: референс против наших порогов, Что НЕ перенесено, Что перенесено
+
+### Community 290 - "Стиль «скетч»"
+Cohesion: 0.25
+Nodes (7): Адаптация под наш кадр 1620×2160, Стиль «скетч», Чего в этом стиле нет ни на одном кадре, Чем отличается от «маркера», Числа: референс против наших порогов, Что НЕ перенесено, Что перенесено
+
+### Community 291 - "РостКотаОбложки"
+Cohesion: 0.25
+Nodes (3): `_рост_кота_обложки`: тот же приём, что `_рост_в_колонке` у середины, но для…, 3:4: кот стоит по центру под заголовком (`кот_лево` = 50%)., РостКотаОбложки
+
+### Community 308 - "светлый-разбор/снимки.py"
+Cohesion: 0.60
+Nodes (4): main(), Снимки-доказательства для стиля «светлый разбор»: python3 снимки.py Кладёт PNG…, окно_списка(), окно_файла()
+
+### Community 311 - "_рамка.js"
+Cohesion: 0.29
+Nodes (7): rамка_готова(), беды, доска, записать(), открыть_пост, рамка, части
+
+### Community 312 - "ЗамерВидитКарточки"
+Cohesion: 0.40
+Nodes (3): Замер должен знать блоки новых вёрсток, иначе он слеп к наложениям., Задвоенный селектор мерил бы один блок дважды., ЗамерВидитКарточки
+
+### Community 313 - "опубликовать"
+Cohesion: 0.22
+Nodes (9): RuntimeError, Список площадок поста. Пусто означает телеграм: так было всегда., Отправляет пост туда, куда он назначен. Возвращает номер в телеграме. Площадок…, Публикует всё, чему пришло время. Зовётся на каждом круге опроса. Два случая,…, Часть площадок приняла пост, часть отказала. Это не провал: где-то пост уже…, догнать_расписание(), куда_едет(), опубликовать() (+1 more)
+
+### Community 314 - "до-после/холст.py"
+Cohesion: 0.27
+Nodes (10): main(), картинка(), свой_кот(), Path, Холст согласования «до-после» на claude.ai: python3 холст.py посты/<пост>.json…, Помощник холста из распакованного скила design; путь меняется с версией Claude…, Страница кадра → доска холста: стили в helmet, тело в рамку 1080×1440 с zoom…, доска() (+2 more)
+
+### Community 315 - "опубликовать"
+Cohesion: 0.22
+Nodes (9): RuntimeError, Список площадок поста. Пусто означает телеграм: так было всегда., Отправляет пост туда, куда он назначен. Возвращает номер в телеграме. Площадок…, Публикует всё, чему пришло время. Зовётся на каждом круге опроса. Два случая,…, Часть площадок приняла пост, часть отказала. Это не провал: где-то пост уже…, догнать_расписание(), куда_едет(), опубликовать() (+1 more)
+
+### Community 316 - "Рерайт @zawetwarpp «Сайты, которые обязан знать каждый вайбкодер» — НАРИСОВАН, лежит в tiktok-14-09-Сайты-о-которых-молчит-каждый-вайбкодер"
+Cohesion: 0.29
+Nodes (6): Кадры, Новый пост в этом стиле (с 15 сентября 2026), Папка стиля, Паспорт стиля @zawetwarpp, Разбор владельца, Рерайт @zawetwarpp «Сайты, которые обязан знать каждый вайбкодер» — НАРИСОВАН, лежит в tiktok-14-09-Сайты-о-которых-молчит-каждый-вайбкодер
+
+### Community 317 - "Рерайт @zawetwarpp «Сайты, которые обязан знать каждый вайбкодер» — НАРИСОВАН, лежит в tiktok-14-09-Сайты-о-которых-молчит-каждый-вайбкодер"
+Cohesion: 0.29
+Nodes (6): Кадры, Новый пост в этом стиле (с 15 сентября 2026), Папка стиля, Паспорт стиля @zawetwarpp, Разбор владельца, Рерайт @zawetwarpp «Сайты, которые обязан знать каждый вайбкодер» — НАРИСОВАН, лежит в tiktok-14-09-Сайты-о-которых-молчит-каждый-вайбкодер
+
+### Community 319 - "СвояВёрстка"
+Cohesion: 0.29
+Nodes (3): Не просто «есть», а действительно разные: свои блоки у каждого., В разметку подставляются надпись, заголовок и номера кадров., СвояВёрстка
+
+### Community 322 - "test_эталоны.py"
+Cohesion: 0.39
+Nodes (5): skipUnless, Эталон поста 96: замер обязан совпасть, годные кадры — без тревог. Страховка…, опись(), страница(), Эталон
+
+### Community 324 - "Родители"
+Cohesion: 0.29
+Nodes (3): Кольцо в родителях завесило бы бота: «назад» ходило бы по кругу., Кириллица занимает по два байта, а в кнопку влезает 64., Родители
+
+### Community 326 - "снимки-файлов.py"
 Cohesion: 0.67
-Nodes (2): укоротить(), Абсолютные пути в графе → относительные. Возвращает, сколько поправил.
-
-### Community 20 - "Community 20"
-
-Cohesion: 1.0
-Nodes (2): Почему у анонса стримов своя вёрстка, Почему картинка не пересказывает пост
-
-### Community 21 - "Community 21"
-
-Cohesion: 1.0
-Nodes (0): 
-
-### Community 22 - "Community 22"
-
-Cohesion: 1.0
-Nodes (0): 
-
-### Community 23 - "Community 23"
-
-Cohesion: 1.0
-Nodes (0): 
-
-### Community 24 - "Community 24"
-
-Cohesion: 1.0
-Nodes (1): Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.
-
-### Community 25 - "Community 25"
-
-Cohesion: 1.0
-Nodes (1): Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа
-
-### Community 26 - "Community 26"
-
-Cohesion: 1.0
-Nodes (1): Папка стиля: чужие кадры, наши кадры, разбор, числа.
-
-### Community 27 - "Community 27"
-
-Cohesion: 1.0
-Nodes (1): Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как
-
-### Community 28 - "Community 28"
-
-Cohesion: 1.0
-Nodes (1): Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан
-
-### Community 29 - "Community 29"
-
-Cohesion: 1.0
-Nodes (1): Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.
-
-### Community 30 - "Community 30"
-
-Cohesion: 1.0
-Nodes (1): README: чем ДНК стилей отличаются друг от друга.
-
-### Community 31 - "Community 31"
-
-Cohesion: 1.0
-Nodes (1): Светлая и тёмная огибающие кадра — то, что лежит ВОКРУГ буквы.      Простое разм
-
-### Community 32 - "Community 32"
-
-Cohesion: 1.0
-Nodes (1): Числа одного кадра. Текстом считается то, что заметно отличается от своей подлож
-
-### Community 33 - "Community 33"
-
-Cohesion: 1.0
-Nodes (1): Заливки: белая карточка, круглый значок, плашка. Всё, что переживает эрозию и
-
-### Community 34 - "Community 34"
-
-Cohesion: 1.0
-Nodes (1): Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.
-
-### Community 35 - "Community 35"
-
-Cohesion: 1.0
-Nodes (1): Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа
-
-### Community 36 - "Community 36"
-
-Cohesion: 1.0
-Nodes (1): Папка стиля: чужие кадры, наши кадры, разбор, числа.
-
-### Community 37 - "Community 37"
-
-Cohesion: 1.0
-Nodes (1): Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как
-
-### Community 38 - "Community 38"
-
-Cohesion: 1.0
-Nodes (1): Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан
-
-### Community 39 - "Community 39"
-
-Cohesion: 1.0
-Nodes (1): Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.
-
-### Community 40 - "Community 40"
-
-Cohesion: 1.0
-Nodes (1): README: чем ДНК стилей отличаются друг от друга.
-
-### Community 41 - "Community 41"
-
-Cohesion: 1.0
-Nodes (1): Сервер мини-приложения и его публичный адрес.
-
-### Community 42 - "Community 42"
-
-Cohesion: 1.0
-Nodes (1): Ставит кнопку приложения всем своим, а не только владельцу.      Адрес туннеля м
-
-### Community 43 - "Community 43"
-
-Cohesion: 1.0
-Nodes (1): Что уже лежит в отложенных у самого Telegram.
-
-### Community 44 - "Community 44"
-
-Cohesion: 1.0
-Nodes (1): Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.
-
-### Community 45 - "Community 45"
-
-Cohesion: 1.0
-Nodes (1): Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа
-
-### Community 46 - "Community 46"
-
-Cohesion: 1.0
-Nodes (1): Папка стиля: чужие кадры, наши кадры, разбор, числа.
-
-### Community 47 - "Community 47"
-
-Cohesion: 1.0
-Nodes (1): Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как
-
-### Community 48 - "Community 48"
-
-Cohesion: 1.0
-Nodes (1): Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан
-
-### Community 49 - "Community 49"
-
-Cohesion: 1.0
-Nodes (1): Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.
-
-### Community 50 - "Community 50"
-
-Cohesion: 1.0
-Nodes (1): README: чем ДНК стилей отличаются друг от друга.
-
-### Community 51 - "Community 51"
-
-Cohesion: 1.0
-Nodes (1): Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.
-
-### Community 52 - "Community 52"
-
-Cohesion: 1.0
-Nodes (1): Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа
-
-### Community 53 - "Community 53"
-
-Cohesion: 1.0
-Nodes (1): Папка стиля: чужие кадры, наши кадры, разбор, числа.
-
-### Community 54 - "Community 54"
-
-Cohesion: 1.0
-Nodes (1): Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как
-
-### Community 55 - "Community 55"
-
-Cohesion: 1.0
-Nodes (1): Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан
-
-### Community 56 - "Community 56"
-
-Cohesion: 1.0
-Nodes (1): Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.
-
-### Community 57 - "Community 57"
-
-Cohesion: 1.0
-Nodes (1): README: чем ДНК стилей отличаются друг от друга.
-
-### Community 58 - "Community 58"
-
-Cohesion: 1.0
-Nodes (1): Выполняет одно задание. Возвращает номер поста, если он появился.
-
-### Community 59 - "Community 59"
-
-Cohesion: 1.0
-Nodes (1): Набивает расписание вперёд: по посту на день в заданное время.
-
-### Community 60 - "Community 60"
-
-Cohesion: 1.0
-Nodes (1): Спрашивает у телеграма, сколько людей увидело недавние посты.      Раз в полчаса
-
-### Community 61 - "Community 61"
-
-Cohesion: 1.0
-Nodes (1): Одна строка о том, что работа началась. Остальное скажет «готово».
-
-### Community 62 - "Community 62"
-
-Cohesion: 1.0
-Nodes (1): Одно задание за раз. Вернёт False, если работы не было.
-
-### Community 63 - "Community 63"
-
-Cohesion: 1.0
-Nodes (1): Поднимает рабочего рядом с ботом.
-
-### Community 64 - "Community 64"
-
-Cohesion: 1.0
-Nodes (1): Тонкая обёртка: прячет разницу между «?» и «%s» в подстановках.      Она же держ
-
-### Community 65 - "Community 65"
-
-Cohesion: 1.0
-Nodes (1): Ошибки, после которых соединение годится только выбросить.
-
-### Community 66 - "Community 66"
-
-Cohesion: 1.0
-Nodes (1): Отпускает соединение этой нити. Нужно только при остановке.
-
-### Community 67 - "Community 67"
-
-Cohesion: 1.0
-Nodes (1): Создаёт таблицы и добирает новые колонки. Одного раза на запуск хватает.      Ра
-
-### Community 68 - "Community 68"
-
-Cohesion: 1.0
-Nodes (1): Кладёт черновик. `картинки` это карусель: несколько снимков под один текст.
-
-### Community 69 - "Community 69"
-
-Cohesion: 1.0
-Nodes (1): Меняет отдельные поля поста. Пустой вызов ничего не делает.
-
-### Community 70 - "Community 70"
-
-Cohesion: 1.0
-Nodes (1): Поля карточки поста. Пусто у старых постов, снятых до появления правки.
-
-### Community 71 - "Community 71"
-
-Cohesion: 1.0
-Nodes (1): Слайды карусели. У обычного поста пусто, и это не ошибка.
-
-### Community 72 - "Community 72"
-
-Cohesion: 1.0
-Nodes (1): `у_телеграма` это номер поста в отложенных Telegram, если отдали ему.
-
-### Community 73 - "Community 73"
-
-Cohesion: 1.0
-Nodes (1): Обратно в черновики. Пост остаётся, уходит только время.      Уже опубликованный
-
-### Community 74 - "Community 74"
-
-Cohesion: 1.0
-Nodes (1): Что пора публиковать. Проверяется на каждом круге опроса.
-
-### Community 75 - "Community 75"
-
-Cohesion: 1.0
-Nodes (1): Всё, что ещё выйдет. Самое близкое сверху.
-
-### Community 76 - "Community 76"
-
-Cohesion: 1.0
-Nodes (1): Формы прошлых постов. Нужны, чтобы лента не собиралась по одному рецепту.
-
-### Community 77 - "Community 77"
-
-Cohesion: 1.0
-Nodes (1): Заголовки прошлых постов, уходят в промпт как список запретов.      Берём все че
-
-### Community 78 - "Community 78"
-
-Cohesion: 1.0
-Nodes (1): Сбрасывает запомненные настройки. Зовётся после любой записи.
-
-### Community 79 - "Community 79"
-
-Cohesion: 1.0
-Nodes (1): Опубликованное, у чего есть смысл спрашивать охват.
-
-### Community 80 - "Community 80"
-
-Cohesion: 1.0
-Nodes (1): Средние просмотры по рубрикам и формам: что читают, а что листают.
-
-### Community 81 - "Community 81"
-
-Cohesion: 1.0
-Nodes (1): Прошлые темы по существу, а не по заголовкам.      Заголовок это упаковка, и по
-
-### Community 82 - "Community 82"
-
-Cohesion: 1.0
-Nodes (1): Лучшие и худшие посты по охвату. Для промпта, а не для отчёта.      Числа мы соб
-
-### Community 83 - "Community 83"
-
-Cohesion: 1.0
-Nodes (1): Черновики и план общие, а «опубликовано» считается по каналу.      Пост становит
-
-### Community 84 - "Community 84"
-
-Cohesion: 1.0
-Nodes (1): Записывает поверх прежнего: у факта одно текущее значение.
-
-### Community 85 - "Community 85"
-
-Cohesion: 1.0
-Nodes (1): Факты для задания писателю. Пусто, если их ещё нет.
-
-### Community 86 - "Community 86"
-
-Cohesion: 1.0
-Nodes (1): Схема ответа. Pydantic ввозится здесь, а не сверху: на Vercel этого     модуля н
-
-### Community 87 - "Community 87"
-
-Cohesion: 1.0
-Nodes (1): Достаёт из заметки постоянные показатели. Пусто, если их нет.
-
-### Community 88 - "Community 88"
-
-Cohesion: 1.0
-Nodes (1): Выделяет показатели из заметки и сразу их записывает.
-
-### Community 89 - "Community 89"
-
-Cohesion: 1.0
-Nodes (1): Присылает файлы и подпись отдельными сообщениями.      Подпись идёт своим сообще
-
-### Community 90 - "Community 90"
-
-Cohesion: 1.0
-Nodes (1): Путь к безголовому Chrome. Им рисуются карточки.      На сервере обычно chromium
-
-### Community 91 - "Community 91"
-
-Cohesion: 1.0
-Nodes (1): Есть ли claude, которым бот сочиняет. Ввозим внутри: config читается     первым,
-
-### Community 92 - "Community 92"
-
-Cohesion: 1.0
-Nodes (1): Чего не хватает для запуска. Пусто — можно стартовать.
-
-### Community 93 - "Community 93"
-
-Cohesion: 1.0
-Nodes (1): Окружение для CLI: с полным PATH и без ключей от платного API.
-
-### Community 94 - "Community 94"
-
-Cohesion: 1.0
-Nodes (1): Схема с латинскими именами. Карта заполняется по дороге: латинское → своё.
-
-### Community 95 - "Community 95"
-
-Cohesion: 1.0
-Nodes (1): Ответ с русскими именами. Обход тот же, только в другую сторону.
-
-### Community 96 - "Community 96"
-
-Cohesion: 1.0
-Nodes (1): Ответ простым текстом. С картинками агент откроет их сам и посмотрит.
-
-### Community 97 - "Community 97"
-
-Cohesion: 1.0
-Nodes (1): Всё вместе: собрать, открыть папку, прислать в чат.
-
-### Community 98 - "Community 98"
-
-Cohesion: 1.0
-Nodes (1): Гасит «часики» на кнопке. Без этого клиент висит и кажется, что сломалось.
-
-### Community 99 - "Community 99"
-
-Cohesion: 1.0
-Nodes (1): Меняет кнопки под уже отправленным сообщением.      Нужно для переключателей: че
-
-### Community 100 - "Community 100"
-
-Cohesion: 1.0
-Nodes (1): Кнопка слева от поля ввода, открывающая мини-приложение.
-
-### Community 101 - "Community 101"
-
-Cohesion: 1.0
-Nodes (1): Кнопка внутри сообщения. Работает только в личке, не в канале.
-
-### Community 102 - "Community 102"
-
-Cohesion: 1.0
-Nodes (1): Забирает файл по его id. Нужно для голосовых заметок.
-
-### Community 103 - "Community 103"
-
-Cohesion: 1.0
-Nodes (1): Картинка поста. Тоже за подписью: по ссылке её не подсмотреть.
-
-### Community 104 - "Community 104"
-
-Cohesion: 1.0
-Nodes (1): Пост-листалка: несколько слайдов в одном стиле под общей подписью.      Хранится
-
-### Community 105 - "Community 105"
-
-Cohesion: 1.0
-Nodes (1): Правит существующий пост по указанию владельца. Номер остаётся тем же.      Номе
-
-### Community 106 - "Community 106"
-
-Cohesion: 1.0
-Nodes (1): Ручная правка: текст поста и надписи на карточке.      Карточка перерисовывается
-
-### Community 107 - "Community 107"
-
-Cohesion: 1.0
-Nodes (1): После правки посчитанные варианты площадок становятся ложью.      Вариант считае
-
-### Community 108 - "Community 108"
-
-Cohesion: 1.0
-Nodes (1): Кот для перерисовки. Берём того же, что уже стоит на карточке.      Рисовать нов
-
-### Community 109 - "Community 109"
-
-Cohesion: 1.0
-Nodes (1): Новая поза кота под тот же текст. Модель каждый раз рисует иначе.
-
-### Community 110 - "Community 110"
-
-Cohesion: 1.0
-Nodes (1): Пересобирает слайды по сохранённому тексту, ничего не сочиняя заново.      Нужно
-
-### Community 111 - "Community 111"
-
-Cohesion: 1.0
-Nodes (1): Одну картинку заново, другой позой кота.      У кота бывает пять лап или лишний
-
-### Community 112 - "Community 112"
-
-Cohesion: 1.0
-Nodes (1): Партия каруселей на один станок, сразу разложенная по ячейкам.      Заказ это не
-
-### Community 113 - "Community 113"
-
-Cohesion: 1.0
-Nodes (1): Черновик анонса стримов. Текст и карточка всегда одни и те же.
-
-### Community 114 - "Community 114"
-
-Cohesion: 1.0
-Nodes (1): Ставит время. Если можем, отдаём пост телеграму насовсем.      Отданный пост Tel
-
-### Community 115 - "Community 115"
-
-Cohesion: 1.0
-Nodes (1): Снимает время. Если пост лежал у телеграма, забираем его оттуда.      Без этого
-
-### Community 116 - "Community 116"
-
-Cohesion: 1.0
-Nodes (1): Возвращает новое состояние: True это «всегда тихо».
-
-### Community 117 - "Community 117"
-
-Cohesion: 1.0
-Nodes (1): Уходит ли пост без уведомления.      Два повода, и они складываются. Ручной выкл
-
-### Community 118 - "Community 118"
-
-Cohesion: 1.0
-Nodes (1): Публикует всё, чему пришло время. Зовётся на каждом круге опроса.      Два случа
-
-### Community 119 - "Community 119"
-
-Cohesion: 1.0
-Nodes (1): Сколько символов увидит телеграм: разметка в лимит не входит.
-
-### Community 120 - "Community 120"
-
-Cohesion: 1.0
-Nodes (1): Полная подготовка текста поста перед отправкой.
-
-### Community 121 - "Community 121"
-
-Cohesion: 1.0
-Nodes (1): Строка списка. Значок из текста переезжает на место точки.      Иначе получается
-
-### Community 122 - "Community 122"
-
-Cohesion: 1.0
-Nodes (1): Кегль заголовка под его длину.      Раньше длинное просто обрезалось многоточием
-
-### Community 123 - "Community 123"
-
-Cohesion: 1.0
-Nodes (1): Экранирует и запрещает перенос внутри слов с дефисом.      Без этого «ИИ-ролика»
-
-### Community 124 - "Community 124"
-
-Cohesion: 1.0
-Nodes (1): Возвращает путь к PNG или None, если Chrome недоступен.      `файл_позы` — уже о
-
-### Community 125 - "Community 125"
-
-Cohesion: 1.0
-Nodes (1): Вёрстка → PNG. Общая часть всех вёрсток.
-
-### Community 126 - "Community 126"
-
-Cohesion: 1.0
-Nodes (1): Афиша стрима. Отдельная вёрстка, потому что задача другая.      Обычная карточка
-
-### Community 127 - "Community 127"
-
-Cohesion: 1.0
-Nodes (1): Каким кадром идёт этот слайд, тёмным или светлым.      Ритм списан с замера чужо
-
-### Community 128 - "Community 128"
-
-Cohesion: 1.0
-Nodes (1): Самый крупный кегль, при котором заголовок укладывается в `строк` строк.      По
-
-### Community 129 - "Community 129"
-
-Cohesion: 1.0
-Nodes (1): Первый слайд: цепляет и заставляет листнуть.
-
-### Community 130 - "Community 130"
-
-Cohesion: 1.0
-Nodes (1): Середина: одна мысль, при желании с крупным значением.
-
-### Community 131 - "Community 131"
-
-Cohesion: 1.0
-Nodes (1): Последний: одна фраза, к которой всё вело, и что делать дальше.      Призыв стои
-
-### Community 132 - "Community 132"
-
-Cohesion: 1.0
-Nodes (1): Вертикальная обложка эфира. Читается с ленты, а не с монитора.
-
-### Community 133 - "Community 133"
-
-Cohesion: 1.0
-Nodes (1): Готовит отрисованный слайд под требования площадки.      Рисуем мы в полуторном
-
-### Community 134 - "Community 134"
-
-Cohesion: 1.0
-Nodes (1): Кегли для видов считаются от базовых, чтобы не заводить их трижды.
-
-### Community 135 - "Community 135"
-
-Cohesion: 1.0
-Nodes (1): Слово в *звёздочках* становится лаймовым.      Тег в содержимое пускать нельзя:
-
-### Community 136 - "Community 136"
-
-Cohesion: 1.0
-Nodes (1): Обрезает список под вёрстку и говорит, если что-то отрезал.      Молчаливая обре
-
-### Community 137 - "Community 137"
-
-Cohesion: 1.0
-Nodes (1): Разметка одного вида. `з` это его содержимое, у каждого своё.
-
-### Community 138 - "Community 138"
-
-Cohesion: 1.0
-Nodes (1): @font-face для перечисленных начертаний, кириллица и латиница.
-
-### Community 139 - "Community 139"
-
-Cohesion: 1.0
-Nodes (1): Правит кегли под характер дизайна.      Множителями, а не размерами в em: em счи
-
-### Community 140 - "Community 140"
-
-Cohesion: 1.0
-Nodes (1): Шрифты и стили выбранного дизайна.
-
-### Community 141 - "Community 141"
-
-Cohesion: 1.0
-Nodes (1): Стили холста и, если нужно, дополнительный слой.
-
-### Community 142 - "Community 142"
-
-Cohesion: 1.0
-Nodes (1): Слой с котом и его стили. Пустая пара, если кота не просили.
-
-### Community 143 - "Community 143"
-
-Cohesion: 1.0
-Nodes (1): Вёрстка слайда и его размеры, без отрисовки.      Отделено от снимка, чтобы комп
-
-### Community 144 - "Community 144"
-
-Cohesion: 1.0
-Nodes (1): Ширина позы к её высоте. Позы разной формы, и считать её долей нельзя.
-
-### Community 145 - "Community 145"
-
-Cohesion: 1.0
-Nodes (1): Какого роста кот встанет сбоку от текста, никого не задев.      Вертикальный фор
-
-### Community 146 - "Community 146"
-
-Cohesion: 1.0
-Nodes (1): Слайд выбранного вида. Обвязка общая, внутренность своя.      Перед снимком комп
-
-### Community 147 - "Community 147"
-
-Cohesion: 1.0
-Nodes (1): Координаты блоков со страницы. Пусто, если браузер не ответил.      Размер окна
-
-### Community 148 - "Community 148"
-
-Cohesion: 1.0
-Nodes (1): Что не так с расстановкой. Пустой список означает «всё чисто».      Проверяем ро
-
-### Community 149 - "Community 149"
-
-Cohesion: 1.0
-Nodes (1): Ключи, браузер и прочее, без чего часть работы не сделается.
-
-### Community 150 - "Community 150"
-
-Cohesion: 1.0
-Nodes (1): Состояние конвейера по площадкам для вкладки «Ещё».
-
-### Community 151 - "Community 151"
-
-Cohesion: 1.0
-Nodes (1): Кто подключён в TikTok. Без обращения к самому TikTok: только из базы.
-
-### Community 152 - "Community 152"
-
-Cohesion: 1.0
-Nodes (1): Площадки поста с отметкой, выбрана ли каждая и есть ли к ней ключи.
-
-### Community 153 - "Community 153"
-
-Cohesion: 1.0
-Nodes (1): Идеи, ждущие своей очереди. Пустой список, если таблицы ещё нет.
-
-### Community 154 - "Community 154"
-
-Cohesion: 1.0
-Nodes (1): Канал, по которому считается всё показываемое человеку.
-
-### Community 155 - "Community 155"
-
-Cohesion: 1.0
-Nodes (1): Живые значения проекта. Пусто, если таблицы ещё нет.
-
-### Community 156 - "Community 156"
-
-Cohesion: 1.0
-Nodes (1): Один слайд.      Полей нарочно мало и они общие для всех вёрсток. Схема из двадц
-
-### Community 157 - "Community 157"
-
-Cohesion: 1.0
-Nodes (1): Какая из фраз достанется этой карусели.      Выбор считается от темы, а не берёт
-
-### Community 158 - "Community 158"
-
-Cohesion: 1.0
-Nodes (1): Числа прошлых постов — только той площадке, к которой они относятся.      Охват
-
-### Community 159 - "Community 159"
-
-Cohesion: 1.0
-Nodes (1): Приёмы из свайп-файла. Пусто, пока владелец ничего туда не положил.
-
-### Community 160 - "Community 160"
-
-Cohesion: 1.0
-Nodes (1): Список поз, которые реально лежат на диске, с человеческим пояснением.
-
-### Community 161 - "Community 161"
-
-Cohesion: 1.0
-Nodes (1): Сценарий карусели обычным текстом, без схемы.      Длинную карусель структуриров
-
-### Community 162 - "Community 162"
-
-Cohesion: 1.0
-Nodes (1): Сценарий из текста превращает в данные для отрисовки.      Вторая половина двухп
-
-### Community 163 - "Community 163"
-
-Cohesion: 1.0
-Nodes (1): Текст карусели. Голос канала общий, а правила подачи у площадок разные.
-
-### Community 164 - "Community 164"
-
-Cohesion: 1.0
-Nodes (1): Снимает звёздочки и прочую разметку.      TikTok и Threads показывают её как ест
-
-### Community 165 - "Community 165"
-
-Cohesion: 1.0
-Nodes (1): Готовый текст под карусель: подпись и хештеги.      Призыва подписаться здесь не
-
-### Community 166 - "Community 166"
-
-Cohesion: 1.0
-Nodes (1): Следит, чтобы в карусели была хоть одна реплика кота.      Приём с персонажем, к
-
-### Community 167 - "Community 167"
-
-Cohesion: 1.0
-Nodes (1): Поза, место и крупность. Кот стоит ровно на половине слайдов.      Возвращает вс
-
-### Community 168 - "Community 168"
-
-Cohesion: 1.0
-Nodes (1): Есть ли на слайде что рисовать.      Схема разрешает всем полям быть пустыми, и
-
-### Community 169 - "Community 169"
-
-Cohesion: 1.0
-Nodes (1): Правит вёрстку под то, что на слайде на самом деле заполнено.      Вёрстку модел
-
-### Community 170 - "Community 170"
-
-Cohesion: 1.0
-Nodes (1): Пять слотов модели раскладываем в поля, которые ждёт рисовалка.      Раскладка ж
-
-### Community 171 - "Community 171"
-
-Cohesion: 1.0
-Nodes (1): Рисует карусель из сохранённых данных. Одна дорога для всех, кто рисует.      Ра
-
-### Community 172 - "Community 172"
-
-Cohesion: 1.0
-Nodes (1): Какая поза досталась какому слайду. Для «эта поза бракованная».      Считается т
-
-### Community 173 - "Community 173"
-
-Cohesion: 1.0
-Nodes (1): Текст плюс отрисованные слайды. Возвращает (карусель, ссылки на картинки).
-
-### Community 174 - "Community 174"
-
-Cohesion: 1.0
-Nodes (1): Есть ли чем читать чужие чаты.      Читает их аккаунт владельца, а не бот: боту
-
-### Community 175 - "Community 175"
-
-Cohesion: 1.0
-Nodes (1): Главное меню. Одна строка это один вид работы, без вложенности.      Разделы, ко
-
-### Community 176 - "Community 176"
-
-Cohesion: 1.0
-Nodes (1): Рубрики поста отдельным экраном, чтобы не теснить главное меню.
-
-### Community 177 - "Community 177"
-
-Cohesion: 1.0
-Nodes (1): Конвейер. Одна строка на площадку: включён ли и насколько полон план.
-
-### Community 178 - "Community 178"
-
-Cohesion: 1.0
-Nodes (1): Настройки одной площадки внутри конвейера.
-
-### Community 179 - "Community 179"
-
-Cohesion: 1.0
-Nodes (1): Кнопки под черновиком: сначала куда, потом когда.      Порядок не случайный. «Ку
-
-### Community 180 - "Community 180"
-
-Cohesion: 1.0
-Nodes (1): Раздел «Конвейер»: площадки, их темп и разовая сборка.
-
-### Community 181 - "Community 181"
-
-Cohesion: 1.0
-Nodes (1): Правка поста из чата: заменой текста или указанием переписать.      Номер поста
-
-### Community 182 - "Community 182"
-
-Cohesion: 1.0
-Nodes (1): Разбирает «12:00, 19:00» и подобное. Человек пишет как удобно ему.
-
-### Community 183 - "Community 183"
-
-Cohesion: 1.0
-Nodes (1): Добирает план и показывает владельцу то, что получилось.
-
-### Community 184 - "Community 184"
-
-Cohesion: 1.0
-Nodes (1): Один и тот же пост, слово в слово. Ничего не сочиняется заново.
-
-### Community 185 - "Community 185"
-
-Cohesion: 1.0
-Nodes (1): Кладёт заметку в копилку и заодно обновляет показатели проекта.
-
-### Community 186 - "Community 186"
-
-Cohesion: 1.0
-Nodes (1): Голосовая заметка: расшифровываем и дальше как обычный текст.      Идея приходит
-
-### Community 187 - "Community 187"
-
-Cohesion: 1.0
-Nodes (1): Кружок тоже несёт голос.
-
-### Community 188 - "Community 188"
-
-Cohesion: 1.0
-Nodes (1): Раздел «что ответить»: повторный проход и настройки.
-
-### Community 189 - "Community 189"
-
-Cohesion: 1.0
-Nodes (1): Читает чаты из папки за заданное окно и предлагает, что ответить.      Работа до
-
-### Community 190 - "Community 190"
-
-Cohesion: 1.0
-Nodes (1): Разбирает написанное владельцем начало окна.
-
-### Community 191 - "Community 191"
-
-Cohesion: 1.0
-Nodes (1): Настройки раздела: из какой папки читать и сколько показывать.
-
-### Community 192 - "Community 192"
-
-Cohesion: 1.0
-Nodes (1): Выбор канала. Только владельцу: право публиковать и право решать, куда,     это
-
-### Community 193 - "Community 193"
-
-Cohesion: 1.0
-Nodes (1): Как показывать человека владельцу: имя и, если есть, @псевдоним.
-
-### Community 194 - "Community 194"
-
-Cohesion: 1.0
-Nodes (1): Незнакомец. Либо у него код приглашения, либо ему тут нечего делать.      Свой i
-
-### Community 195 - "Community 195"
-
-Cohesion: 1.0
-Nodes (1): Публикует всё, чему пришло время, и докладывает владельцу.
-
-### Community 196 - "Community 196"
-
-Cohesion: 1.0
-Nodes (1): Ставит кнопку приложения всем своим, а не только владельцу.      Адрес туннеля м
-
-### Community 197 - "Community 197"
-
-Cohesion: 1.0
-Nodes (1): Локальный файл: телеграму нужно отдать картинку, а не адрес.      Отправлять по
-
-### Community 198 - "Community 198"
-
-Cohesion: 1.0
-Nodes (1): Можно ли отсюда публиковать. Нужны ключи и разовый вход.
-
-### Community 199 - "Community 199"
-
-Cohesion: 1.0
-Nodes (1): Вошли ли мы в аккаунт вообще.      Отличается от `настроен` тем, что не требует
-
-### Community 200 - "Community 200"
-
-Cohesion: 1.0
-Nodes (1): Запомненные имя и права. Без обращения к TikTok, только из базы.
-
-### Community 201 - "Community 201"
-
-Cohesion: 1.0
-Nodes (1): Адрес, по которому владелец один раз разрешает боту постить.
-
-### Community 202 - "Community 202"
-
-Cohesion: 1.0
-Nodes (1): Меняет код из браузера на токены. Делается один раз.
-
-### Community 203 - "Community 203"
-
-Cohesion: 1.0
-Nodes (1): Свежий токен доступа. Обновляется сам, когда протух.
-
-### Community 204 - "Community 204"
-
-Cohesion: 1.0
-Nodes (1): Кто мы в TikTok и какая видимость нам разрешена.      TikTok требует спрашивать
-
-### Community 205 - "Community 205"
-
-Cohesion: 1.0
-Nodes (1): Кто подключён и что нам разрешено. Ответ живёт десять минут.      Спрашивать Tik
-
-### Community 206 - "Community 206"
-
-Cohesion: 1.0
-Nodes (1): Работаем ли мы ключом песочницы. У них узнаваемый префикс.
-
-### Community 207 - "Community 207"
-
-Cohesion: 1.0
-Nodes (1): Самая открытая из разрешённых.      Кроме песочницы: непроверенное приложение Ti
-
-### Community 208 - "Community 208"
-
-Cohesion: 1.0
-Nodes (1): Переписывает ссылку на слайд с Supabase на наш собственный адрес.      TikTok за
-
-### Community 209 - "Community 209"
-
-Cohesion: 1.0
-Nodes (1): Фотопост из наших слайдов. Возвращает номер публикации.      Номер не адрес: Tik
-
-### Community 210 - "Community 210"
-
-Cohesion: 1.0
-Nodes (1): Что стало с публикацией: собирается, вышла или отклонена.
-
-### Community 211 - "Community 211"
-
-Cohesion: 1.0
-Nodes (1): Ждёт итога публикации, но недолго: висеть в задании незачем.
-
-### Community 212 - "Community 212"
-
-Cohesion: 1.0
-Nodes (1): Куда ведёт этот пост. Пусто, если владелец ссылки не давал.      Обычно адрес пр
-
-### Community 213 - "Community 213"
-
-Cohesion: 1.0
-Nodes (1): Отрезает от поста строки-адреса. Возвращает текст без них и адрес.      Нужно в
-
-### Community 214 - "Community 214"
-
-Cohesion: 1.0
-Nodes (1): Ставит адрес последней строкой, отделив пустой.      Приписывает код, а не модел
-
-### Community 215 - "Community 215"
-
-Cohesion: 1.0
-Nodes (1): Задание по присланному материалу. Два режима, и они разные по сути.      Со ссыл
-
-### Community 216 - "Community 216"
-
-Cohesion: 1.0
-Nodes (1): Форма, которой давно не было. Иначе лента станет однообразной.
-
-### Community 217 - "Community 217"
-
-Cohesion: 1.0
-Nodes (1): Настоящие данные владельца: единственный законный источник цифр.
-
-### Community 218 - "Community 218"
-
-Cohesion: 1.0
-Nodes (1): Настоящие числа прошлых постов — модели, а не только человеку.      Охват собира
-
-### Community 219 - "Community 219"
-
-Cohesion: 1.0
-Nodes (1): Список эмодзи, у которых есть фирменный значок канала.      Подмена происходит п
-
-### Community 220 - "Community 220"
-
-Cohesion: 1.0
-Nodes (1): Один вызов модели. Голос канала и разбор ответа общие для всех поводов.
-
-### Community 221 - "Community 221"
-
-Cohesion: 1.0
-Nodes (1): Тот же пост с правкой от владельца.      Сочинять заново нельзя: человек попроси
-
-### Community 222 - "Community 222"
-
-Cohesion: 1.0
-Nodes (1): Новый пост. `уже_было` это прошлые темы «заголовок — суть», чтобы не повторяться
-
-### Community 223 - "Community 223"
-
-Cohesion: 1.0
-Nodes (1): Заголовок и текст страницы. None, если не открылась.
-
-### Community 224 - "Community 224"
-
-Cohesion: 1.0
-Nodes (1): Из строки владельца делает тему и, если была ссылка, содержимое страницы.
-
-### Community 225 - "Community 225"
-
-Cohesion: 1.0
-Nodes (1): Грубая проверка, что модель вернула пост, а не рассуждение о нём.
-
-### Community 226 - "Community 226"
-
-Cohesion: 1.0
-Nodes (1): Возвращает переписанный пост или исходный, если что-то пошло не так.      Падать
-
-### Community 227 - "Community 227"
-
-Cohesion: 1.0
-Nodes (1): Самый крупный кегль, при котором заголовок укладывается в `строк` строк.      По
-
-### Community 228 - "Community 228"
-
-Cohesion: 1.0
-Nodes (1): Первый слайд: цепляет и заставляет листнуть.
-
-### Community 229 - "Community 229"
-
-Cohesion: 1.0
-Nodes (1): Середина: одна мысль, при желании с крупным значением.
-
-### Community 230 - "Community 230"
-
-Cohesion: 1.0
-Nodes (1): Последний: одна фраза, к которой всё вело, и что делать дальше.      Призыв стои
-
-### Community 231 - "Community 231"
-
-Cohesion: 1.0
-Nodes (1): Вертикальная обложка эфира. Читается с ленты, а не с монитора.
-
-### Community 232 - "Community 232"
-
-Cohesion: 1.0
-Nodes (1): Готовит отрисованный слайд под требования площадки.      Рисуем мы в полуторном
-
-### Community 233 - "Community 233"
-
-Cohesion: 1.0
-Nodes (1): Кегли для видов считаются от базовых, чтобы не заводить их трижды.
-
-### Community 234 - "Community 234"
-
-Cohesion: 1.0
-Nodes (1): Слово в *звёздочках* становится лаймовым.      Тег в содержимое пускать нельзя:
-
-### Community 235 - "Community 235"
-
-Cohesion: 1.0
-Nodes (1): Разметка одного вида. `з` это его содержимое, у каждого своё.
-
-### Community 236 - "Community 236"
-
-Cohesion: 1.0
-Nodes (1): @font-face для перечисленных начертаний, кириллица и латиница.
-
-### Community 237 - "Community 237"
-
-Cohesion: 1.0
-Nodes (1): Правит кегли под характер дизайна.      Множителями, а не размерами в em: em счи
-
-### Community 238 - "Community 238"
-
-Cohesion: 1.0
-Nodes (1): Шрифты и стили выбранного дизайна.
-
-### Community 239 - "Community 239"
-
-Cohesion: 1.0
-Nodes (1): Стили холста и, если нужно, дополнительный слой.
-
-### Community 240 - "Community 240"
-
-Cohesion: 1.0
-Nodes (1): Слой с котом и его стили. Пустая пара, если кота не просили.
-
-### Community 241 - "Community 241"
-
-Cohesion: 1.0
-Nodes (1): Вёрстка слайда и его размеры, без отрисовки.      Отделено от снимка, чтобы комп
-
-### Community 242 - "Community 242"
-
-Cohesion: 1.0
-Nodes (1): Ширина позы к её высоте. Позы разной формы, и считать её долей нельзя.
-
-### Community 243 - "Community 243"
-
-Cohesion: 1.0
-Nodes (1): Какого роста кот встанет сбоку от текста, никого не задев.      Вертикальный фор
-
-### Community 244 - "Community 244"
-
-Cohesion: 1.0
-Nodes (1): Координаты блоков со страницы. Пусто, если браузер не ответил.      Размер окна
-
-### Community 245 - "Community 245"
-
-Cohesion: 1.0
-Nodes (1): Что не так с расстановкой. Пустой список означает «всё чисто».      Проверяем ро
-
-### Community 246 - "Community 246"
-
-Cohesion: 1.0
-Nodes (1): Только заголовки. Так проверяют картинку перед скачиванием.
-
-### Community 247 - "Community 247"
-
-Cohesion: 1.0
-Nodes (1): Три места: Vercel, мак, Telegram, Supabase
-
-### Community 248 - "Community 248"
-
-Cohesion: 1.0
-Nodes (1): Очередь заданий связывает приложение и мак
-
-### Community 249 - "Community 249"
-
-Cohesion: 1.0
-Nodes (1): Углы контента: закрытый список, идут по кругу
-
-### Community 250 - "Community 250"
-
-Cohesion: 1.0
-Nodes (1): X и Threads: текст переписывается под площадку
-
-### Community 251 - "Community 251"
-
-Cohesion: 1.0
-Nodes (1): TikTok берёт картинки только с подтверждённого домена
-
-### Community 252 - "Community 252"
-
-Cohesion: 1.0
-Nodes (1): Почему разметка переводится в HTML
-
-### Community 253 - "Community 253"
-
-Cohesion: 1.0
-Nodes (1): Почему карточку рисует браузер, а не нейросеть
-
-### Community 254 - "Community 254"
-
-Cohesion: 1.0
-Nodes (1): Почему не выдумываются цифры
-
-### Community 255 - "Community 255"
-
-Cohesion: 1.0
-Nodes (1): Почему публикуем от аккаунта, а не от бота
-
-### Community 256 - "Community 256"
-
-Cohesion: 1.0
-Nodes (1): Опоздание больше трёх часов: пост в черновики
-
-### Community 257 - "Community 257"
-
-Cohesion: 1.0
-Nodes (1): Время в UTC, зона именем, а не смещением
-
-### Community 258 - "Community 258"
-
-Cohesion: 1.0
-Nodes (1): Второй проход по голосу: как это звучит
-
-### Community 259 - "Community 259"
-
-Cohesion: 1.0
-Nodes (1): Копилка идей: материал днём, пишут вечером
-
-### Community 260 - "Community 260"
-
-Cohesion: 1.0
-Nodes (1): Коды приглашений вместо зашитых id
-
-### Community 261 - "Community 261"
-
-Cohesion: 1.0
-Nodes (1): Тестовый и основной канал, проверка прав на месте
-
-### Community 262 - "Community 262"
-
-Cohesion: 1.0
-Nodes (1): Ничего не уходит в канал само
+Nodes (3): main(), Снимки файлов проекта для кадров-доказательств: python3 снимки-файлов.py Кладёт…, страница()
+
+### Community 328 - "дизайны/README.md"
+Cohesion: 0.33
+Nodes (4): Дизайны карусели, Дизайн «каталог», Запреты, Образец
+
+### Community 329 - "storage.py"
+Cohesion: 0.19
+Nodes (14): Path, Где лежат карточки постов. Пока всё крутилось на маке, карточки были файлами…, Создаёт ведро, если его ещё нет. Публичное: карточки не секрет., Заливает карточку и возвращает постоянную ссылку на неё., Ссылки на все файлы в прежнем порядке; не залитый остаётся путём. По одному…, Содержимое карточки, откуда бы она ни лежала., Локальный файл: телеграму нужно отдать картинку, а не адрес. Отправлять по…, байты() (+6 more)
+
+### Community 330 - "Фото-Карусель, стиль «до-после» (промпт и результат на товаре)"
+Cohesion: 0.33
+Nodes (5): Известное, Размеры, Собрать пост, Фото-Карусель, стиль «до-после» (промпт и результат на товаре), Холст на claude.ai
+
+### Community 331 - "Фото-Карусель, стиль «пары» (платный сервис и бесплатный двойник)"
+Cohesion: 0.33
+Nodes (5): Вариация «фразы» (17.09.2026), Замер запаса (слово владельца 15.09.2026), Папка стиля, Собрать пост, Фото-Карусель, стиль «пары» (платный сервис и бесплатный двойник)
+
+### Community 332 - "Фото-Карусель, стиль «пары» (платный сервис и бесплатный двойник)"
+Cohesion: 0.33
+Nodes (5): Вариация «фразы» (17.09.2026), Замер запаса (слово владельца 15.09.2026), Папка стиля, Собрать пост, Фото-Карусель, стиль «пары» (платный сервис и бесплатный двойник)
+
+### Community 334 - "ВБраузере"
+Cohesion: 0.33
+Nodes (4): skipUnless, Замер обязан отдавать строки крупных блоков по отдельности., Живая обложка поста 100: прежде выходило «Тему для/ролика/подберёт/ИИ»., ВБраузере
+
+### Community 337 - "РотацияПодСветлыйДизайн"
+Cohesion: 0.33
+Nodes (3): Пара «дизайн+фон» сразу давала каталогу один шанс из тридцати., Слово владельца: «оставить один наш фирменный, остальное новое». «Терминал» и…, РотацияПодСветлыйДизайн
+
+### Community 341 - "ПравкаОбновляетПапку"
+Cohesion: 0.33
+Nodes (3): Ничего не поменялось — пересобирать нечего., Каждая дорога, по которой у поста меняются кадры или текст, обязана обновить…, ПравкаОбновляетПапку
+
+### Community 344 - "убрать_идею"
+Cohesion: 0.25
+Nodes (8): Копилка. Пустая, если её таблицы ещё нет — это не повод падать., Все шесть способов начать пост, собранные в одном месте. Раньше они стояли…, Заметки, отложенные на потом. Тычок берёт заметку в работу. Материал попадается…, Удаление отдельным экраном, а не второй кнопкой у каждой строки. Кнопка «🗑»…, _идей(), копилка(), сочинить(), убрать_идею()
+
+### Community 345 - "_иконки"
+Cohesion: 0.50
+Nodes (4): Длина в кодовых единицах utf-16: Telegram считает смещения именно так. Для…, Метки своих эмодзи поверх готового текста. Бот подставляет их HTML-тегами, но…, _в_utf16(), _иконки()
+
+### Community 348 - "Фото-Карусель, стиль «подборка сервисов»"
+Cohesion: 0.40
+Nodes (4): Вариация «один сервис на кадр» (17.09.2026), Вариация «раздел списком со значками» (17.09.2026), Порядок: холст → правка владельцем → выпуск (решение владельца 15.09.2026), Фото-Карусель, стиль «подборка сервисов»
+
+### Community 349 - "Фото-Карусель, стиль «подборка сервисов»"
+Cohesion: 0.40
+Nodes (4): Вариация «один сервис на кадр» (17.09.2026), Вариация «раздел списком со значками» (17.09.2026), Порядок: холст → правка владельцем → выпуск (решение владельца 15.09.2026), Фото-Карусель, стиль «подборка сервисов»
+
+### Community 351 - "ПосадкаКота"
+Cohesion: 0.40
+Nodes (3): Кота сажают сразу с запасом: иначе проверка его потом выкидывает («рисую без…, Кадр 2 поста 101: строка кончалась в 15 px от кота, стоявшего сбоку., ПосадкаКота
+
+### Community 353 - "ПодсветкаНаОбложке"
+Cohesion: 0.40
+Nodes (3): Звёздочки в заголовке обложки раньше уезжали в кадр как есть., Без правила разобранное слово выходило обычным текстом., ПодсветкаНаОбложке
+
+### Community 357 - "Контекст проекта (для Claude Code)"
+Cohesion: 0.50
+Nodes (3): Изолированная копия ответвляется от `head`, а не от `origin`, Контекст проекта (для Claude Code), У проекта свой граф знаний — смотреть его до поиска по файлам
+
+### Community 358 - "сводка/холст.py"
+Cohesion: 0.38
+Nodes (6): html, main(), Path, Холст согласования: `python3 холст.py посты/<пост>.json` → холсты/<пост>/…, ужать(), экр()
+
+### Community 359 - "запомнить"
+Cohesion: 0.50
+Nodes (4): Сбрасывает запомненные настройки. Зовётся после любой записи., Настройка переживает перезапуск: правки владельца не должны теряться., забыть_кэш(), запомнить()
+
+### Community 361 - "Дизайн «атмосфера»"
+Cohesion: 0.50
+Nodes (3): Дизайн «атмосфера», Запреты, Образец
+
+### Community 362 - "Дизайн «брутальный»"
+Cohesion: 0.50
+Nodes (3): Дизайн «брутальный», Запреты, Образец
+
+### Community 363 - "Дизайн «журнал»"
+Cohesion: 0.50
+Nodes (3): Дизайн «журнал», Запреты, Образец
+
+### Community 364 - "Дизайн «заметка»"
+Cohesion: 0.50
+Nodes (3): Дизайн «заметка», Запреты, Образец
+
+### Community 365 - "Дизайн «манифест»"
+Cohesion: 0.50
+Nodes (3): Дизайн «манифест», Запреты, Образец
+
+### Community 366 - "Дизайн «минимал»"
+Cohesion: 0.50
+Nodes (3): Дизайн «минимал», Запреты, Образец
+
+### Community 367 - "Дизайн «неон»"
+Cohesion: 0.50
+Nodes (3): Дизайн «неон», Запреты, Образец
+
+### Community 368 - "Дизайн «плакат»"
+Cohesion: 0.50
+Nodes (3): Дизайн «плакат», Запреты, Образец
+
+### Community 369 - "Дизайн «пособие»"
+Cohesion: 0.50
+Nodes (3): Дизайн «пособие», Запреты, Образец
+
+### Community 370 - "Дизайн «редакционный»"
+Cohesion: 0.50
+Nodes (3): Дизайн «редакционный», Запреты, Образец
+
+### Community 371 - "Дизайн «терминал»"
+Cohesion: 0.50
+Nodes (3): Дизайн «терминал», Запреты, Образец
+
+### Community 372 - "Дизайн «фирменный»"
+Cohesion: 0.50
+Nodes (3): Дизайн «фирменный», Запреты, Образец
+
+### Community 373 - "Дизайн «чертёж»"
+Cohesion: 0.50
+Nodes (3): Дизайн «чертёж», Запреты, Образец
+
+### Community 374 - "Дизайн «швейцарский»"
+Cohesion: 0.50
+Nodes (3): Дизайн «швейцарский», Запреты, Образец
+
+### Community 375 - "Фото-Карусель, стиль «подборка GitHub» (терминал с $)"
+Cohesion: 0.50
+Nodes (3): Папка стиля, Собрать пост, Фото-Карусель, стиль «подборка GitHub» (терминал с $)
+
+### Community 376 - "Фото-Карусель, стиль «подборка GitHub» (терминал с $)"
+Cohesion: 0.50
+Nodes (3): Папка стиля, Собрать пост, Фото-Карусель, стиль «подборка GitHub» (терминал с $)
+
+### Community 380 - "в_площадку"
+Cohesion: 0.33
+Nodes (6): Публикует карусель в TikTok. Возвращает номер публикации у них. У TikTok нет…, X и Threads: там всё проще, картинки и короткий текст., Одна доставка в одно место. Возвращает след: адрес или номер. Здесь же и только…, в_площадку(), в_сеть(), в_тикток()
+
+### Community 381 - "vercel/db.py"
+Cohesion: 0.11
+Nodes (22): База постов. SQLite на ноутбуке, Postgres в Supabase на сервере. Почему две.…, Отпускает соединение этой нити. Нужно только при остановке., Кладёт черновик. `картинки` это карусель: несколько снимков под один текст.…, Внутри этого блока о новых черновиках владельцу не пишут., Одна строка владельцу: появился черновик. Раньше о готовом посте узнавали…, Поля карточки поста. Пусто у старых постов, снятых до появления правки., Слайды карусели. У обычного поста пусто, и это не ошибка., Владелец выложил пост руками — бот об этом иначе не узнает. В TikTok мы не… (+14 more)
+
+### Community 382 - "запомнить"
+Cohesion: 0.50
+Nodes (4): Сбрасывает запомненные настройки. Зовётся после любой записи., Настройка переживает перезапуск: правки владельца не должны теряться., забыть_кэш(), запомнить()
+
+### Community 383 - "vercel.json"
+Cohesion: 0.50
+Nodes (3): headers, regions, rewrites
+
+### Community 384 - "футер"
+Cohesion: 0.33
+Nodes (6): Отдаёт пост телеграму в отложенные. Возвращает его номер там., Адрес для кнопки «Подписаться». Хранится в настройках, а не в коде:…, Дописывает призыв подписаться со ссылкой на канал. Делается здесь, а не…, отложить(), ссылка_подписки(), футер()
+
+### Community 392 - "главный"
+Cohesion: 0.50
+Nodes (4): Есть ли чем читать чужие чаты. Читает их аккаунт владельца, а не бот: боту…, Что сейчас происходит и что можно сделать — в таком порядке. Дел ровно четыре,…, главный(), _чаты_доступны()
+
+### Community 393 - "test_инверсия.py"
+Cohesion: 0.25
+Nodes (4): skipUnless, Инверсия — перевёрнутая палитра: лаймовый фон, тёмный акцент, ничего не…, ВБраузере, Палитра
+
+### Community 446 - "tools_стенд.py"
+Cohesion: 0.60
+Nodes (4): Готовит поддельное состояние для снимков: `webapp/_стенд.json`. Данные нарочно…, _день_недели(), _пост(), собрать()
 
 ## Ambiguous Edges - Review These
-- `Проверка подписи initData секретом из токена` → `Отдача слайдов через /api/slide`  [AMBIGUOUS]
-  README.md · relation: conceptually_related_to
-- `Светло-серая грань верхнего луча (объём знака)` → `Читаемость знака в мелком размере (16–64 px фавикон)`  [AMBIGUOUS]
-  webapp/logo.png · relation: conceptually_related_to
-- `Плашка «ПРЯМОЙ ЭФИР» с красной точкой` → `Красная точка эфира: rust #E2703A или чистый красный?`  [AMBIGUOUS]
-  assets/stream_card.png · relation: conceptually_related_to
 - `Лист доступа — кто может пользоваться` → `Terms of Service 4xTube Publisher`  [AMBIGUOUS]
   webapp/terms.html · relation: conceptually_related_to
+- `Светло-серая грань верхнего луча (объём знака)` → `Читаемость знака в мелком размере (16–64 px фавикон)`  [AMBIGUOUS]
+  webapp/logo.png · relation: conceptually_related_to
+- `Отдача слайдов через /api/slide` → `Проверка подписи initData секретом из токена`  [AMBIGUOUS]
+  README.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **1135 isolated node(s):** `Возвращает id пользователя, если подпись настоящая и свежая.`, `Выполняет одно задание. Возвращает номер поста, если он появился.`, `Набивает расписание вперёд: по посту на день в заданное время.`, `Спрашивает у телеграма, сколько людей увидело недавние посты.      Раз в полчаса`, `Владелец узнаёт, что работа кончилась, даже если свернул приложение.      Карусе` (+1130 more)
-  These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 20`** (2 nodes): `Почему у анонса стримов своя вёрстка`, `Почему картинка не пересказывает пост`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (1 nodes): `content.py`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 22`** (1 nodes): `content.py`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 23`** (1 nodes): `__init__.py`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 24`** (1 nodes): `Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 25`** (1 nodes): `Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (1 nodes): `Папка стиля: чужие кадры, наши кадры, разбор, числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (1 nodes): `Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (1 nodes): `Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (1 nodes): `Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (1 nodes): `README: чем ДНК стилей отличаются друг от друга.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (1 nodes): `Светлая и тёмная огибающие кадра — то, что лежит ВОКРУГ буквы.      Простое разм`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (1 nodes): `Числа одного кадра. Текстом считается то, что заметно отличается от своей подлож`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (1 nodes): `Заливки: белая карточка, круглый значок, плашка. Всё, что переживает эрозию и`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (1 nodes): `Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (1 nodes): `Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (1 nodes): `Папка стиля: чужие кадры, наши кадры, разбор, числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (1 nodes): `Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (1 nodes): `Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (1 nodes): `Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (1 nodes): `README: чем ДНК стилей отличаются друг от друга.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (1 nodes): `Сервер мини-приложения и его публичный адрес.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (1 nodes): `Ставит кнопку приложения всем своим, а не только владельцу.      Адрес туннеля м`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (1 nodes): `Что уже лежит в отложенных у самого Telegram.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (1 nodes): `Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (1 nodes): `Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (1 nodes): `Папка стиля: чужие кадры, наши кадры, разбор, числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (1 nodes): `Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (1 nodes): `Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (1 nodes): `Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (1 nodes): `README: чем ДНК стилей отличаются друг от друга.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (1 nodes): `Гоняет шаблонный `замер.py` по кадрам и разбирает его вывод в числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (1 nodes): `Достаёт из разбора то, что решает: что перенесено и что нет.      Разборы написа`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 53`** (1 nodes): `Папка стиля: чужие кадры, наши кадры, разбор, числа.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 54`** (1 nodes): `Наш фирменный: чужого источника нет, кадры рисует сам бот.      Он здесь не как`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 55`** (1 nodes): `Чужие числа против наших порогов. Без вердикта «плохо»: чужой кадр не     обязан`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 56`** (1 nodes): `Паспорт ДНК: откуда взято, что снято с кадров, что перенесено.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 57`** (1 nodes): `README: чем ДНК стилей отличаются друг от друга.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 58`** (1 nodes): `Выполняет одно задание. Возвращает номер поста, если он появился.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 59`** (1 nodes): `Набивает расписание вперёд: по посту на день в заданное время.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 60`** (1 nodes): `Спрашивает у телеграма, сколько людей увидело недавние посты.      Раз в полчаса`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 61`** (1 nodes): `Одна строка о том, что работа началась. Остальное скажет «готово».`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 62`** (1 nodes): `Одно задание за раз. Вернёт False, если работы не было.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 63`** (1 nodes): `Поднимает рабочего рядом с ботом.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 64`** (1 nodes): `Тонкая обёртка: прячет разницу между «?» и «%s» в подстановках.      Она же держ`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 65`** (1 nodes): `Ошибки, после которых соединение годится только выбросить.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 66`** (1 nodes): `Отпускает соединение этой нити. Нужно только при остановке.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 67`** (1 nodes): `Создаёт таблицы и добирает новые колонки. Одного раза на запуск хватает.      Ра`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 68`** (1 nodes): `Кладёт черновик. `картинки` это карусель: несколько снимков под один текст.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 69`** (1 nodes): `Меняет отдельные поля поста. Пустой вызов ничего не делает.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 70`** (1 nodes): `Поля карточки поста. Пусто у старых постов, снятых до появления правки.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 71`** (1 nodes): `Слайды карусели. У обычного поста пусто, и это не ошибка.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 72`** (1 nodes): ``у_телеграма` это номер поста в отложенных Telegram, если отдали ему.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 73`** (1 nodes): `Обратно в черновики. Пост остаётся, уходит только время.      Уже опубликованный`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 74`** (1 nodes): `Что пора публиковать. Проверяется на каждом круге опроса.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 75`** (1 nodes): `Всё, что ещё выйдет. Самое близкое сверху.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 76`** (1 nodes): `Формы прошлых постов. Нужны, чтобы лента не собиралась по одному рецепту.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 77`** (1 nodes): `Заголовки прошлых постов, уходят в промпт как список запретов.      Берём все че`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 78`** (1 nodes): `Сбрасывает запомненные настройки. Зовётся после любой записи.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 79`** (1 nodes): `Опубликованное, у чего есть смысл спрашивать охват.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 80`** (1 nodes): `Средние просмотры по рубрикам и формам: что читают, а что листают.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 81`** (1 nodes): `Прошлые темы по существу, а не по заголовкам.      Заголовок это упаковка, и по`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 82`** (1 nodes): `Лучшие и худшие посты по охвату. Для промпта, а не для отчёта.      Числа мы соб`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 83`** (1 nodes): `Черновики и план общие, а «опубликовано» считается по каналу.      Пост становит`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 84`** (1 nodes): `Записывает поверх прежнего: у факта одно текущее значение.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 85`** (1 nodes): `Факты для задания писателю. Пусто, если их ещё нет.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 86`** (1 nodes): `Схема ответа. Pydantic ввозится здесь, а не сверху: на Vercel этого     модуля н`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 87`** (1 nodes): `Достаёт из заметки постоянные показатели. Пусто, если их нет.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 88`** (1 nodes): `Выделяет показатели из заметки и сразу их записывает.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 89`** (1 nodes): `Присылает файлы и подпись отдельными сообщениями.      Подпись идёт своим сообще`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 90`** (1 nodes): `Путь к безголовому Chrome. Им рисуются карточки.      На сервере обычно chromium`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 91`** (1 nodes): `Есть ли claude, которым бот сочиняет. Ввозим внутри: config читается     первым,`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 92`** (1 nodes): `Чего не хватает для запуска. Пусто — можно стартовать.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 93`** (1 nodes): `Окружение для CLI: с полным PATH и без ключей от платного API.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 94`** (1 nodes): `Схема с латинскими именами. Карта заполняется по дороге: латинское → своё.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 95`** (1 nodes): `Ответ с русскими именами. Обход тот же, только в другую сторону.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 96`** (1 nodes): `Ответ простым текстом. С картинками агент откроет их сам и посмотрит.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 97`** (1 nodes): `Всё вместе: собрать, открыть папку, прислать в чат.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 98`** (1 nodes): `Гасит «часики» на кнопке. Без этого клиент висит и кажется, что сломалось.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 99`** (1 nodes): `Меняет кнопки под уже отправленным сообщением.      Нужно для переключателей: че`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 100`** (1 nodes): `Кнопка слева от поля ввода, открывающая мини-приложение.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 101`** (1 nodes): `Кнопка внутри сообщения. Работает только в личке, не в канале.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 102`** (1 nodes): `Забирает файл по его id. Нужно для голосовых заметок.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 103`** (1 nodes): `Картинка поста. Тоже за подписью: по ссылке её не подсмотреть.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 104`** (1 nodes): `Пост-листалка: несколько слайдов в одном стиле под общей подписью.      Хранится`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 105`** (1 nodes): `Правит существующий пост по указанию владельца. Номер остаётся тем же.      Номе`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 106`** (1 nodes): `Ручная правка: текст поста и надписи на карточке.      Карточка перерисовывается`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 107`** (1 nodes): `После правки посчитанные варианты площадок становятся ложью.      Вариант считае`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 108`** (1 nodes): `Кот для перерисовки. Берём того же, что уже стоит на карточке.      Рисовать нов`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 109`** (1 nodes): `Новая поза кота под тот же текст. Модель каждый раз рисует иначе.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 110`** (1 nodes): `Пересобирает слайды по сохранённому тексту, ничего не сочиняя заново.      Нужно`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 111`** (1 nodes): `Одну картинку заново, другой позой кота.      У кота бывает пять лап или лишний`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 112`** (1 nodes): `Партия каруселей на один станок, сразу разложенная по ячейкам.      Заказ это не`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 113`** (1 nodes): `Черновик анонса стримов. Текст и карточка всегда одни и те же.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 114`** (1 nodes): `Ставит время. Если можем, отдаём пост телеграму насовсем.      Отданный пост Tel`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 115`** (1 nodes): `Снимает время. Если пост лежал у телеграма, забираем его оттуда.      Без этого`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 116`** (1 nodes): `Возвращает новое состояние: True это «всегда тихо».`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 117`** (1 nodes): `Уходит ли пост без уведомления.      Два повода, и они складываются. Ручной выкл`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 118`** (1 nodes): `Публикует всё, чему пришло время. Зовётся на каждом круге опроса.      Два случа`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 119`** (1 nodes): `Сколько символов увидит телеграм: разметка в лимит не входит.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 120`** (1 nodes): `Полная подготовка текста поста перед отправкой.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 121`** (1 nodes): `Строка списка. Значок из текста переезжает на место точки.      Иначе получается`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 122`** (1 nodes): `Кегль заголовка под его длину.      Раньше длинное просто обрезалось многоточием`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 123`** (1 nodes): `Экранирует и запрещает перенос внутри слов с дефисом.      Без этого «ИИ-ролика»`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 124`** (1 nodes): `Возвращает путь к PNG или None, если Chrome недоступен.      `файл_позы` — уже о`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 125`** (1 nodes): `Вёрстка → PNG. Общая часть всех вёрсток.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 126`** (1 nodes): `Афиша стрима. Отдельная вёрстка, потому что задача другая.      Обычная карточка`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 127`** (1 nodes): `Каким кадром идёт этот слайд, тёмным или светлым.      Ритм списан с замера чужо`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 128`** (1 nodes): `Самый крупный кегль, при котором заголовок укладывается в `строк` строк.      По`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 129`** (1 nodes): `Первый слайд: цепляет и заставляет листнуть.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 130`** (1 nodes): `Середина: одна мысль, при желании с крупным значением.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 131`** (1 nodes): `Последний: одна фраза, к которой всё вело, и что делать дальше.      Призыв стои`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 132`** (1 nodes): `Вертикальная обложка эфира. Читается с ленты, а не с монитора.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 133`** (1 nodes): `Готовит отрисованный слайд под требования площадки.      Рисуем мы в полуторном`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 134`** (1 nodes): `Кегли для видов считаются от базовых, чтобы не заводить их трижды.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 135`** (1 nodes): `Слово в *звёздочках* становится лаймовым.      Тег в содержимое пускать нельзя:`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 136`** (1 nodes): `Обрезает список под вёрстку и говорит, если что-то отрезал.      Молчаливая обре`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 137`** (1 nodes): `Разметка одного вида. `з` это его содержимое, у каждого своё.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 138`** (1 nodes): `@font-face для перечисленных начертаний, кириллица и латиница.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 139`** (1 nodes): `Правит кегли под характер дизайна.      Множителями, а не размерами в em: em счи`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 140`** (1 nodes): `Шрифты и стили выбранного дизайна.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 141`** (1 nodes): `Стили холста и, если нужно, дополнительный слой.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 142`** (1 nodes): `Слой с котом и его стили. Пустая пара, если кота не просили.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 143`** (1 nodes): `Вёрстка слайда и его размеры, без отрисовки.      Отделено от снимка, чтобы комп`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 144`** (1 nodes): `Ширина позы к её высоте. Позы разной формы, и считать её долей нельзя.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 145`** (1 nodes): `Какого роста кот встанет сбоку от текста, никого не задев.      Вертикальный фор`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 146`** (1 nodes): `Слайд выбранного вида. Обвязка общая, внутренность своя.      Перед снимком комп`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 147`** (1 nodes): `Координаты блоков со страницы. Пусто, если браузер не ответил.      Размер окна`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 148`** (1 nodes): `Что не так с расстановкой. Пустой список означает «всё чисто».      Проверяем ро`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 149`** (1 nodes): `Ключи, браузер и прочее, без чего часть работы не сделается.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 150`** (1 nodes): `Состояние конвейера по площадкам для вкладки «Ещё».`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 151`** (1 nodes): `Кто подключён в TikTok. Без обращения к самому TikTok: только из базы.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 152`** (1 nodes): `Площадки поста с отметкой, выбрана ли каждая и есть ли к ней ключи.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 153`** (1 nodes): `Идеи, ждущие своей очереди. Пустой список, если таблицы ещё нет.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 154`** (1 nodes): `Канал, по которому считается всё показываемое человеку.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 155`** (1 nodes): `Живые значения проекта. Пусто, если таблицы ещё нет.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 156`** (1 nodes): `Один слайд.      Полей нарочно мало и они общие для всех вёрсток. Схема из двадц`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 157`** (1 nodes): `Какая из фраз достанется этой карусели.      Выбор считается от темы, а не берёт`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 158`** (1 nodes): `Числа прошлых постов — только той площадке, к которой они относятся.      Охват`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 159`** (1 nodes): `Приёмы из свайп-файла. Пусто, пока владелец ничего туда не положил.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 160`** (1 nodes): `Список поз, которые реально лежат на диске, с человеческим пояснением.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 161`** (1 nodes): `Сценарий карусели обычным текстом, без схемы.      Длинную карусель структуриров`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 162`** (1 nodes): `Сценарий из текста превращает в данные для отрисовки.      Вторая половина двухп`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 163`** (1 nodes): `Текст карусели. Голос канала общий, а правила подачи у площадок разные.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 164`** (1 nodes): `Снимает звёздочки и прочую разметку.      TikTok и Threads показывают её как ест`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 165`** (1 nodes): `Готовый текст под карусель: подпись и хештеги.      Призыва подписаться здесь не`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 166`** (1 nodes): `Следит, чтобы в карусели была хоть одна реплика кота.      Приём с персонажем, к`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 167`** (1 nodes): `Поза, место и крупность. Кот стоит ровно на половине слайдов.      Возвращает вс`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 168`** (1 nodes): `Есть ли на слайде что рисовать.      Схема разрешает всем полям быть пустыми, и`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 169`** (1 nodes): `Правит вёрстку под то, что на слайде на самом деле заполнено.      Вёрстку модел`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 170`** (1 nodes): `Пять слотов модели раскладываем в поля, которые ждёт рисовалка.      Раскладка ж`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 171`** (1 nodes): `Рисует карусель из сохранённых данных. Одна дорога для всех, кто рисует.      Ра`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 172`** (1 nodes): `Какая поза досталась какому слайду. Для «эта поза бракованная».      Считается т`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 173`** (1 nodes): `Текст плюс отрисованные слайды. Возвращает (карусель, ссылки на картинки).`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 174`** (1 nodes): `Есть ли чем читать чужие чаты.      Читает их аккаунт владельца, а не бот: боту`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 175`** (1 nodes): `Главное меню. Одна строка это один вид работы, без вложенности.      Разделы, ко`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 176`** (1 nodes): `Рубрики поста отдельным экраном, чтобы не теснить главное меню.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 177`** (1 nodes): `Конвейер. Одна строка на площадку: включён ли и насколько полон план.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 178`** (1 nodes): `Настройки одной площадки внутри конвейера.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 179`** (1 nodes): `Кнопки под черновиком: сначала куда, потом когда.      Порядок не случайный. «Ку`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 180`** (1 nodes): `Раздел «Конвейер»: площадки, их темп и разовая сборка.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 181`** (1 nodes): `Правка поста из чата: заменой текста или указанием переписать.      Номер поста`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 182`** (1 nodes): `Разбирает «12:00, 19:00» и подобное. Человек пишет как удобно ему.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 183`** (1 nodes): `Добирает план и показывает владельцу то, что получилось.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 184`** (1 nodes): `Один и тот же пост, слово в слово. Ничего не сочиняется заново.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 185`** (1 nodes): `Кладёт заметку в копилку и заодно обновляет показатели проекта.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 186`** (1 nodes): `Голосовая заметка: расшифровываем и дальше как обычный текст.      Идея приходит`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 187`** (1 nodes): `Кружок тоже несёт голос.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 188`** (1 nodes): `Раздел «что ответить»: повторный проход и настройки.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 189`** (1 nodes): `Читает чаты из папки за заданное окно и предлагает, что ответить.      Работа до`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 190`** (1 nodes): `Разбирает написанное владельцем начало окна.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 191`** (1 nodes): `Настройки раздела: из какой папки читать и сколько показывать.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 192`** (1 nodes): `Выбор канала. Только владельцу: право публиковать и право решать, куда,     это`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 193`** (1 nodes): `Как показывать человека владельцу: имя и, если есть, @псевдоним.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 194`** (1 nodes): `Незнакомец. Либо у него код приглашения, либо ему тут нечего делать.      Свой i`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 195`** (1 nodes): `Публикует всё, чему пришло время, и докладывает владельцу.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 196`** (1 nodes): `Ставит кнопку приложения всем своим, а не только владельцу.      Адрес туннеля м`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 197`** (1 nodes): `Локальный файл: телеграму нужно отдать картинку, а не адрес.      Отправлять по`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 198`** (1 nodes): `Можно ли отсюда публиковать. Нужны ключи и разовый вход.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 199`** (1 nodes): `Вошли ли мы в аккаунт вообще.      Отличается от `настроен` тем, что не требует`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 200`** (1 nodes): `Запомненные имя и права. Без обращения к TikTok, только из базы.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 201`** (1 nodes): `Адрес, по которому владелец один раз разрешает боту постить.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 202`** (1 nodes): `Меняет код из браузера на токены. Делается один раз.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 203`** (1 nodes): `Свежий токен доступа. Обновляется сам, когда протух.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 204`** (1 nodes): `Кто мы в TikTok и какая видимость нам разрешена.      TikTok требует спрашивать`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 205`** (1 nodes): `Кто подключён и что нам разрешено. Ответ живёт десять минут.      Спрашивать Tik`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 206`** (1 nodes): `Работаем ли мы ключом песочницы. У них узнаваемый префикс.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 207`** (1 nodes): `Самая открытая из разрешённых.      Кроме песочницы: непроверенное приложение Ti`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 208`** (1 nodes): `Переписывает ссылку на слайд с Supabase на наш собственный адрес.      TikTok за`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 209`** (1 nodes): `Фотопост из наших слайдов. Возвращает номер публикации.      Номер не адрес: Tik`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 210`** (1 nodes): `Что стало с публикацией: собирается, вышла или отклонена.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 211`** (1 nodes): `Ждёт итога публикации, но недолго: висеть в задании незачем.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 212`** (1 nodes): `Куда ведёт этот пост. Пусто, если владелец ссылки не давал.      Обычно адрес пр`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 213`** (1 nodes): `Отрезает от поста строки-адреса. Возвращает текст без них и адрес.      Нужно в`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 214`** (1 nodes): `Ставит адрес последней строкой, отделив пустой.      Приписывает код, а не модел`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 215`** (1 nodes): `Задание по присланному материалу. Два режима, и они разные по сути.      Со ссыл`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 216`** (1 nodes): `Форма, которой давно не было. Иначе лента станет однообразной.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 217`** (1 nodes): `Настоящие данные владельца: единственный законный источник цифр.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 218`** (1 nodes): `Настоящие числа прошлых постов — модели, а не только человеку.      Охват собира`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 219`** (1 nodes): `Список эмодзи, у которых есть фирменный значок канала.      Подмена происходит п`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 220`** (1 nodes): `Один вызов модели. Голос канала и разбор ответа общие для всех поводов.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 221`** (1 nodes): `Тот же пост с правкой от владельца.      Сочинять заново нельзя: человек попроси`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 222`** (1 nodes): `Новый пост. `уже_было` это прошлые темы «заголовок — суть», чтобы не повторяться`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 223`** (1 nodes): `Заголовок и текст страницы. None, если не открылась.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 224`** (1 nodes): `Из строки владельца делает тему и, если была ссылка, содержимое страницы.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 225`** (1 nodes): `Грубая проверка, что модель вернула пост, а не рассуждение о нём.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 226`** (1 nodes): `Возвращает переписанный пост или исходный, если что-то пошло не так.      Падать`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 227`** (1 nodes): `Самый крупный кегль, при котором заголовок укладывается в `строк` строк.      По`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 228`** (1 nodes): `Первый слайд: цепляет и заставляет листнуть.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 229`** (1 nodes): `Середина: одна мысль, при желании с крупным значением.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 230`** (1 nodes): `Последний: одна фраза, к которой всё вело, и что делать дальше.      Призыв стои`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 231`** (1 nodes): `Вертикальная обложка эфира. Читается с ленты, а не с монитора.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 232`** (1 nodes): `Готовит отрисованный слайд под требования площадки.      Рисуем мы в полуторном`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 233`** (1 nodes): `Кегли для видов считаются от базовых, чтобы не заводить их трижды.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 234`** (1 nodes): `Слово в *звёздочках* становится лаймовым.      Тег в содержимое пускать нельзя:`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 235`** (1 nodes): `Разметка одного вида. `з` это его содержимое, у каждого своё.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 236`** (1 nodes): `@font-face для перечисленных начертаний, кириллица и латиница.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 237`** (1 nodes): `Правит кегли под характер дизайна.      Множителями, а не размерами в em: em счи`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 238`** (1 nodes): `Шрифты и стили выбранного дизайна.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 239`** (1 nodes): `Стили холста и, если нужно, дополнительный слой.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 240`** (1 nodes): `Слой с котом и его стили. Пустая пара, если кота не просили.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 241`** (1 nodes): `Вёрстка слайда и его размеры, без отрисовки.      Отделено от снимка, чтобы комп`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 242`** (1 nodes): `Ширина позы к её высоте. Позы разной формы, и считать её долей нельзя.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 243`** (1 nodes): `Какого роста кот встанет сбоку от текста, никого не задев.      Вертикальный фор`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 244`** (1 nodes): `Координаты блоков со страницы. Пусто, если браузер не ответил.      Размер окна`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 245`** (1 nodes): `Что не так с расстановкой. Пустой список означает «всё чисто».      Проверяем ро`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 246`** (1 nodes): `Только заголовки. Так проверяют картинку перед скачиванием.`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 247`** (1 nodes): `Три места: Vercel, мак, Telegram, Supabase`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 248`** (1 nodes): `Очередь заданий связывает приложение и мак`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 249`** (1 nodes): `Углы контента: закрытый список, идут по кругу`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 250`** (1 nodes): `X и Threads: текст переписывается под площадку`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 251`** (1 nodes): `TikTok берёт картинки только с подтверждённого домена`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 252`** (1 nodes): `Почему разметка переводится в HTML`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 253`** (1 nodes): `Почему карточку рисует браузер, а не нейросеть`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 254`** (1 nodes): `Почему не выдумываются цифры`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 255`** (1 nodes): `Почему публикуем от аккаунта, а не от бота`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 256`** (1 nodes): `Опоздание больше трёх часов: пост в черновики`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 257`** (1 nodes): `Время в UTC, зона именем, а не смещением`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 258`** (1 nodes): `Второй проход по голосу: как это звучит`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 259`** (1 nodes): `Копилка идей: материал днём, пишут вечером`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 260`** (1 nodes): `Коды приглашений вместо зашитых id`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 261`** (1 nodes): `Тестовый и основной канал, проверка прав на месте`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 262`** (1 nodes): `Ничего не уходит в канал само`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **1083 isolated node(s):** `симба.sh script`, `финал.sh script`, `require`, `{ chromium }`, `[стр, адрес, файл]` (+1078 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3027 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **107 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+
+## Suggested Questions
+_Questions this graph is uniquely positioned to answer:_
+
+- **What is the exact relationship between `Лист доступа — кто может пользоваться` and `Terms of Service 4xTube Publisher`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **What is the exact relationship between `Светло-серая грань верхнего луча (объём знака)` and `Читаемость знака в мелком размере (16–64 px фавикон)`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **What is the exact relationship between `Отдача слайдов через /api/slide` and `Проверка подписи initData секретом из токена`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **Why does `Паспорт` connect `Паспорт` to `форматы.py`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `handler` connect `handler` to `json`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Why does `Дизайн` connect `Дизайн` to `форматы.py`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **What connects `симба.sh script`, `финал.sh script`, `require` to the rest of the system?**
+  _1083 weakly-connected nodes found - possible documentation gaps or missing edges._
