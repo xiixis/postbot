@@ -16,8 +16,15 @@ function _найти(корень, годится) {
   return readdirSync(корень).sort().reverse().map(и => join(корень, и)).find(годится) ?? null;
 }
 
-const _база = _найти(join(homedir(), ".npm/_npx"),
-                     п => existsSync(join(п, "node_modules/playwright-core")));
+// npx кладёт кэш в разные места: на маке и Linux это ~/.npm/_npx, на Windows
+// AppData\Local\npm-cache\_npx. Ищем в обоих, иначе снимок на второй системе
+// падает на первой строке (поймано на Windows 22.09.2026).
+const _места = [join(homedir(), ".npm/_npx"),
+                join(homedir(), "AppData/Local/npm-cache/_npx"),
+                process.env.npm_config_cache ? join(process.env.npm_config_cache, "_npx") : null];
+const _база = _места.filter(Boolean)
+  .map(м => _найти(м, п => existsSync(join(п, "node_modules/playwright-core"))))
+  .find(Boolean) ?? null;
 if (!_база) {
   console.error("нет playwright-core: поставить `npx playwright --version` и повторить");
   process.exit(1);
