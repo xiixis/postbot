@@ -118,9 +118,9 @@ html,body{width:%dpx;height:%dpx;background:#F2F1EF;font-family:-apple-system,"H
 .строка{display:flex;align-items:center;height:78px;padding:0 36px;font-size:34px;color:#15150F}
 .строка:nth-child(even){background:#F6F6F4}
 .шапка-таблицы{font-size:30px;color:#66665F;font-weight:600;height:69px}
-.имя-ф{flex:1;display:flex;align-items:center;gap:14px}
-.дата{width:495px;color:#3A3A38}.размер{width:165px;text-align:right;color:#3A3A38}
-.тип{width:285px;text-align:right;color:#3A3A38}
+.имя-ф{flex:1;min-width:0;display:flex;align-items:center;gap:14px;white-space:nowrap}
+.дата{width:420px;color:#3A3A38}.размер{width:110px;text-align:right;color:#3A3A38}
+.тип{width:250px;text-align:right;color:#3A3A38}
 .значок{width:39px;height:33px;border-radius:4px;background:#39C46B}
 .значок.файл{background:#DCDCD8}
 """
