@@ -1020,9 +1020,9 @@
     "semantic_hash": ""
   },
   "Style/\u0441\u043f\u0440\u0430\u0432\u043e\u0447\u043d\u0438\u043a/\u0445\u043e\u043b\u0441\u0442.py": {
-    "mtime": 1790021519.175878,
-    "seen": 1790021525.4345,
-    "ast_hash": "2084c66e161e4626daaf0852618a0113",
+    "mtime": 1790075584.3598108,
+    "seen": 1790076386.070116,
+    "ast_hash": "1f6056eb339605df257ac19132069877",
     "semantic_hash": ""
   },
   "Style/\u0441\u0442\u0438\u043b\u044c.py": {
@@ -2124,9 +2124,9 @@
     "semantic_hash": ""
   },
   "Style/\u0441\u043f\u0440\u0430\u0432\u043e\u0447\u043d\u0438\u043a/\u0412\u0410\u0420\u0418\u0410\u0426\u0418\u0418.md": {
-    "mtime": 1790010009.9468749,
-    "seen": 1790010238.245527,
-    "ast_hash": "5838be32e0cf5223ccc21d634f6e2cd7",
+    "mtime": 1790021838.2434688,
+    "seen": 1790076386.070297,
+    "ast_hash": "505a09398182c3da4874f77ab06c4d5d",
     "semantic_hash": ""
   },
   "Style/\u0441\u043f\u0440\u0430\u0432\u043e\u0447\u043d\u0438\u043a/\u0414\u0418\u0417\u0410\u0419\u041d.md": {
@@ -4788,15 +4788,15 @@
     "semantic_hash": ""
   },
   "Style/\u0441\u043f\u0440\u0430\u0432\u043e\u0447\u043d\u0438\u043a/\u043f\u043e\u0441\u0442\u044b/frazy-dlya-otveta.json": {
-    "mtime": 1790010469.9773278,
-    "seen": 1790010920.59956,
-    "ast_hash": "a53246facd6aa33d8c6d9fab6375897e",
+    "mtime": 1790076213.0019035,
+    "seen": 1790076386.070115,
+    "ast_hash": "43012120fba797eb11a96ef1a946a2f3",
     "semantic_hash": ""
   },
   "Style/\u043e\u043a\u043d\u043e/\u043f\u043e\u0441\u0442\u044b/notebooklm.json": {
-    "mtime": 1790011015.880885,
-    "seen": 1790019310.331595,
-    "ast_hash": "f363a00cd791c33fd90513520f91c78e",
+    "mtime": 1790076213.0024989,
+    "seen": 1790076386.070047,
+    "ast_hash": "f37c162365324b04c7b05fffe407e6e1",
     "semantic_hash": ""
   },
   "tests/test_\u043e\u0431\u043b\u0430\u0447\u043d\u0430\u044f_\u0441\u0431\u043e\u0440\u043a\u0430.py": {
