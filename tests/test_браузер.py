@@ -21,7 +21,7 @@ import браузер  # noqa: E402
 
 
 def эталон(имя: str) -> str:
-    return (ПАПКА / имя).read_text(encoding="utf-8").replace("{{АССЕТЫ}}", str(config.АССЕТЫ))
+    return (ПАПКА / имя).read_text(encoding="utf-8").replace("file://{{АССЕТЫ}}", config.АССЕТЫ.as_uri())
 
 
 @contextmanager
