@@ -168,7 +168,7 @@ class _Вкладка:
         self.позвать("Emulation.setScrollbarsHidden", {"hidden": масштаб != 1})
         self.события.clear()
         self.ошибки = []
-        self.позвать("Page.navigate", {"url": f"file://{путь}"})
+        self.позвать("Page.navigate", {"url": Path(путь).resolve().as_uri()})
         self.ждать("Page.loadEventFired")
         self.позвать("Runtime.evaluate", {"expression": "document.fonts.ready.then(() => 1)",
                                           "awaitPromise": True})

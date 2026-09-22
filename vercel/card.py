@@ -24,26 +24,39 @@ import config
 import замер
 import приёмка
 
+
+def адрес(путь) -> str:
+    """Адрес файла для Chrome, пригодный на любой системе.
+
+    Строка вида "file://" + путь верна только там, где путь начинается со слеша:
+    на маке выходит три слеша и всё работает, а на Windows получается
+    file://C:\\4xSoft\\… — Chrome такого не открывает и отвечает
+    ERR_FILE_NOT_FOUND. Кадр при этом рисуется без шрифтов и картинок, молча, а
+    падают потом замеры: так на Windows легло 60 тестов разом (22.09.2026).
+    Path.as_uri() собирает адрес по правилам схемы на обеих системах.
+    """
+    return Path(путь).resolve().as_uri()
+
 ШРИФТЫ = """
 /* Шрифты лежат в проекте, а не тянутся из интернета: на сервере каждая
    загрузка это секунды, а без сети карточка вообще осталась бы без шрифта.
    Заголовочный Onest выбран за кириллицу: у прежнего Bricolage её нет, и
    русские заголовки рисовались чем придётся, по-разному на разных машинах. */
 @font-face{{font-family:Onest;font-weight:800;font-display:block;
-  src:url('file://{папка}/onest-800-cyrillic.woff2') format('woff2');
+  src:url('{папка}/onest-800-cyrillic.woff2') format('woff2');
   unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}}
 @font-face{{font-family:Onest;font-weight:800;font-display:block;
-  src:url('file://{папка}/onest-800-latin.woff2') format('woff2')}}
+  src:url('{папка}/onest-800-latin.woff2') format('woff2')}}
 @font-face{{font-family:Plex;font-weight:400;font-display:block;
-  src:url('file://{папка}/plex-400-cyrillic.woff2') format('woff2');
+  src:url('{папка}/plex-400-cyrillic.woff2') format('woff2');
   unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}}
 @font-face{{font-family:Plex;font-weight:400;font-display:block;
-  src:url('file://{папка}/plex-400-latin.woff2') format('woff2')}}
+  src:url('{папка}/plex-400-latin.woff2') format('woff2')}}
 @font-face{{font-family:Plex;font-weight:600;font-display:block;
-  src:url('file://{папка}/plex-600-cyrillic.woff2') format('woff2');
+  src:url('{папка}/plex-600-cyrillic.woff2') format('woff2');
   unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}}
 @font-face{{font-family:Plex;font-weight:600;font-display:block;
-  src:url('file://{папка}/plex-600-latin.woff2') format('woff2')}}
+  src:url('{папка}/plex-600-latin.woff2') format('woff2')}}
 """
 
 
@@ -109,7 +122,7 @@ def _пункт(строка: str) -> str:
 
 
 def _шрифты() -> str:
-    return ШРИФТЫ.format(папка=config.АССЕТЫ / "fonts")
+    return ШРИФТЫ.format(папка=адрес(config.АССЕТЫ / "fonts"))
 
 
 def _кегль(заголовок: str) -> int:
@@ -159,12 +172,12 @@ def нарисовать(надпись: str, заголовок: str, пунк�
     # Без кота колонка растягивается на всю карточку. Иначе получается текст
     # слева и огромная пустота справа, будто картинку не догрузили.
     есть_кот = bool(файл_позы and Path(файл_позы).exists())
-    герой = f'<div class="hero"><img src="file://{файл_позы}"></div>' if есть_кот else ""
+    герой = f'<div class="hero"><img src="{адрес(файл_позы)}"></div>' if есть_кот else ""
 
     # Фирменный знак вместо надписи: логотип в тёмном варианте, тот же, что
     # у приложения. Стоит слева внизу, чтобы никогда не налезать на кота.
     лого = config.АССЕТЫ / "logo-dark.png"
-    знак = f'<img class="wm" src="file://{лого}">' if лого.exists() else ""
+    знак = f'<img class="wm" src="{адрес(лого)}">' if лого.exists() else ""
 
     строки = "".join(_пункт(п) for п in пункты[:5])
 
@@ -295,7 +308,7 @@ def _снять(страница: str, ширина: int = 1280, высота: i
              f"--screenshot={итог}", f"--window-size={ширина},{высота}",
              "--default-background-color=12130Fff",
              f"--force-device-scale-factor={МАСШТАБ_СНИМКА}",
-             f"file://{путь}"],
+             адрес(путь)],
             capture_output=True, timeout=180)
     except Exception:                                        # noqa: BLE001
         return None
@@ -362,9 +375,9 @@ def афиша(надпись: str, заголовок: str, подзаголо�
     # Без кота колонка растягивается на всю карточку. Иначе получается текст
     # слева и огромная пустота справа, будто картинку не догрузили.
     есть_кот = bool(файл_позы and Path(файл_позы).exists())
-    герой = f'<div class="hero"><img src="file://{файл_позы}"></div>' if есть_кот else ""
+    герой = f'<div class="hero"><img src="{адрес(файл_позы)}"></div>' if есть_кот else ""
     лого = config.АССЕТЫ / "logo-dark.png"
-    знак = f'<img class="wm" src="file://{лого}">' if лого.exists() else ""
+    знак = f'<img class="wm" src="{адрес(лого)}">' if лого.exists() else ""
     ряд = '<i>◆</i>'.join(f"<span>{html.escape(п)}</span>" for п in площадки)
 
     страница = АФИША.format(
@@ -402,7 +415,7 @@ body{{background:{фон};color:{текст};font-family:Plex,-apple-system,sans
 </style>
 <div class="grid"></div>
 {нутро}
-<img class="знак" src="file://{лого}">
+<img class="знак" src="{лого}">
 <div class="полоса" style="width:{доля}%"></div>
 """
 
@@ -773,7 +786,7 @@ def _обложка_страница(надпись: str, заголовок: st
         д["кот_высота"] = высота_кота
     панель, стили_холста = _оформление(оформление, д)
     свой_вид = _дизайн(дизайн, д) + стили_холста
-    кот = (f'<div class="кот"><img src="file://{Path(поза).resolve()}"></div>'
+    кот = (f'<div class="кот"><img src="{адрес(поза)}"></div>'
            if с_котом else "")
     # Подсветка *звёздочками* разбирается и здесь. Раньше обложка шла мимо
     # неё: слово в звёздочках так и уезжало в кадр вместе со звёздочками —
@@ -1099,7 +1112,7 @@ h1{{position:relative;margin-top:26px;font-family:Onest,sans-serif;font-weight:8
 <h1>{заголовок}</h1>
 <div class="sub">{подзаголовок}</div>
 {герой}
-<div class="foot"><img src="file://{лого}"><span>{ник}</span></div>
+<div class="foot"><img src="{лого}"><span>{ник}</span></div>
 """
 
 
@@ -1153,7 +1166,7 @@ h1 span{{color:{лайм};text-shadow:0 0 70px rgba({лайм_rgb},.45)}}
 <div class="sub">{подзаголовок}</div>
 {герой}
 <div class="cta">{призыв}</div>
-<div class="foot"><img src="file://{лого}"><span>{ник}</span></div>
+<div class="foot"><img src="{лого}"><span>{ник}</span></div>
 """
 
 
@@ -1175,7 +1188,7 @@ def сторис(надпись: str, заголовок: str, подзагол�
     кегль = 116 if знаков <= 18 else 100 if знаков <= 28 else 86 if знаков <= 40 else 72
     файл = mascot.взять(поза) if поза else None
     рост = 560 if знаков <= 28 else 500
-    герой = (f'<div class="hero"><img src="file://{Path(файл).resolve()}"></div>'
+    герой = (f'<div class="hero"><img src="{адрес(файл)}"></div>'
              if файл and Path(файл).exists() else "")
     страница = СТОРИС.format(
         шрифты=_шрифты(), фон=config.ФОН, текст=config.ТЕКСТ,
@@ -1190,7 +1203,7 @@ def сторис(надпись: str, заголовок: str, подзагол�
         # нельзя: там телеграм, а сторис уходит в TikTok, и чужой адрес в
         # кадре зовёт туда, куда зритель всё равно не попадёт.
         ник=html.escape(ник or ""),
-        лого=config.АССЕТЫ / "logo-dark.png")
+        лого=адрес(config.АССЕТЫ / "logo-dark.png"))
     return _снять(страница, 1080, 1920)
 
 
@@ -2246,7 +2259,7 @@ def _фейсы(набор) -> str:
             if путь.exists():
                 куски.append(
                     f"@font-face{{font-family:'{семья}';font-weight:{вес};"
-                    f"font-display:block;src:url('file://{путь}') format('woff2')}}")
+                    f"font-display:block;src:url('{адрес(путь)}') format('woff2')}}")
     return "".join(куски)
 
 
@@ -3156,7 +3169,7 @@ def _кот(где: str, поза, д: dict, крупность: str = "сред
               f'{_текст(реплика, 70)}</div>'
               if (реплика or "").strip() else "")
     слой = (f'{пузырь}<div class="кот-слой кот-{где}">'
-            f'<img src="file://{Path(поза).resolve()}"></div>')
+            f'<img src="{адрес(поза)}"></div>')
     # Кот и текст делят слайд по высоте, а не по ширине. Сначала было
     # наоборот: текст ужимался вбок и оставлял коту колонку. Читалось плохо,
     # строки рвались по одному слову. Теперь текст прижат вверх и держит всю
@@ -3763,7 +3776,7 @@ def _замерить_заново(страница: str, ширина: int = 10
         готово = subprocess.run(
             [хром, "--headless", "--disable-gpu", "--no-sandbox",
              f"--window-size={ширина},{высота}",
-             "--virtual-time-budget=3000", "--dump-dom", f"file://{файл}"],
+             "--virtual-time-budget=3000", "--dump-dom", адрес(файл)],
             capture_output=True, text=True, timeout=90)
         м = re.search(r'data-замер="([^"]+)"', готово.stdout)
         if not м:
