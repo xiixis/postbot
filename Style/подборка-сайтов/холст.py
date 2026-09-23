@@ -72,15 +72,19 @@ def обложка_число(о: dict) -> str:
 
 
 def обложка_тайна(о: dict) -> str:
-    """Кот выглядывает из прорехи в бумажной стене, за ней лаймовый свет."""
+    """Кот выглядывает из прорехи в бумажной стене, за ней лаймовый свет.
+
+    Текст крупный (слово владельца 23.09.2026: «не читабельный») и весь выше прорехи:
+    заголовок в две строки, под ним в одну строку плашка «$0» и подпись.
+    """
     п = СВЕТ
     return (фон_сцены("kot-dyra.jpg")
-            + f'<div style="position: absolute; left: 80px; top: 110px; width: 920px; {КРУП} font-size: 92px; line-height: 1.04; '
+            + f'<div style="position: absolute; left: 80px; top: 90px; width: 940px; {КРУП} font-size: 112px; line-height: 1.02; '
               f'color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: 80px; top: 330px; padding: 14px 26px; border-radius: 16px; background: #12130E; '
-              f'{ТЕКСТ} font-weight: 700; font-size: 38px; color: {стиль.ЛАЙМ};">{о["плашка"]}</div>'
-            + f'<div style="position: absolute; left: 80px; top: 440px; width: 440px; {ТЕКСТ} font-size: 38px; line-height: 1.3; '
-              f'color: {п["второй"]};">{о["под"]}</div>'
+            + f'<div style="position: absolute; left: 80px; top: 360px; display: flex; align-items: center; gap: 26px;">'
+              f'<div style="padding: 6px 28px 12px; border-radius: 20px; background: #12130E; {КРУП} font-size: 68px; '
+              f'line-height: 1.1; color: {стиль.ЛАЙМ};">{о["плашка"]}</div>'
+              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 48px; color: {п["текст"]};">{о["под"]}</div></div>'
             + низ(п))
 
 
