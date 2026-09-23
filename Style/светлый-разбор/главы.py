@@ -27,6 +27,7 @@ import дизайн_холст as дх  # noqa: E402
        "rgba(199,226,75,0) 34%), radial-gradient(circle at 0% 100%, rgba(199,226,75,.10), rgba(199,226,75,0) 40%);")
 ЧЕРН, СЕР, ОЛИВА, ЛАЙМ = "#141413", "#45453F", "#3F4D08", стиль.ЛАЙМ
 ЧИП_ФОН = "#EDF4CC"
+CLAUDE = "#D97757"                     # фирменный цвет Claude: слово «CLAUDE.» на обложке (слово владельца 23.09.2026)
 ТЕНЬ = "0 1px 2px rgba(20,20,19,.05), 0 12px 32px rgba(20,20,19,.08)"
 КРУП = "font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.03em;"
 ТЕКСТ = "font-family: Golos, 'Helvetica Neue', Arial, sans-serif;"
@@ -162,7 +163,7 @@ def обложка_постер(о: dict) -> str:
             f'<div style="flex-grow: 1; height: 3px; background: #3A3530;"></div><div style="{КРУП} font-size: 64px; '
             f'{объём("#1C1B19", "#0A0A09", 5)}">{стр[2]}</div><div style="flex-grow: 1; height: 3px; background: #3A3530;"></div></div>'
             f'<div style="position: absolute; left: 0; top: 540px; width: 1080px; text-align: center; {КРУП} font-size: 150px; '
-            f'line-height: 1; {объём("#FBFAF5", "#8C8A7E", 12)}">{стр[3]}</div>'
+            f'line-height: 1; {объём(CLAUDE, "#9E4A2E", 12)}">{стр[3]}</div>'
             + низ(тёмный=True))
 
 
@@ -199,13 +200,26 @@ def обложка_сетка(о: dict, площадки: list) -> str:
 
 
 def финал(ф: dict, счёт: str) -> str:
+    """Финал читается с расстояния ленты (слово владельца 23.09.2026: «не читается текст»).
+
+    Вместо серого абзаца — карточка «что ты сохраняешь» из трёх жирных пунктов с галочками,
+    призыв — тёмной плашкой с лаймом, «ссылка в профиле» — жирной тёмной строкой.
+    """
+    пункты = "".join(
+        f'<div style="display: flex; gap: 22px; align-items: center;">'
+        f'<div style="width: 52px; height: 52px; border-radius: 26px; background: {ЛАЙМ}; flex-shrink: 0; display: flex; '
+        f'align-items: center; justify-content: center; {КРУП} font-size: 30px; color: {ЧЕРН};">✓</div>'
+        f'<div style="{ТЕКСТ} font-size: 40px; line-height: 1.2; color: {ЧЕРН}; white-space: nowrap;"><b>{ж}</b> {т}</div></div>'
+        for ж, т in ф["итог"])
     return (f'<div style="position: absolute; inset: 0; {ФОН}"></div>'
-            + заголовок(ф["строки"], 230, 96) + абзац(ф["подводка"], 470, 38, 620)
-            + f'<div style="position: absolute; left: 80px; top: 700px; padding: 26px 40px; border-radius: 999px; '
-              f'background: {ЛАЙМ}; box-shadow: 0 10px 30px rgba(94,113,18,.35); {ТЕКСТ} font-weight: 700; font-size: 36px; '
-              f'color: {ЧЕРН};">{ф["кнопка"]}</div>'
-            + абзац(ф["под_кнопкой"], 830, 30, 520)
-            + f'<img src="kot-ukazyvaet.webp" style="position: absolute; right: 20px; top: 560px; height: 600px;">'
+            + заголовок(ф["строки"], 110, 112)
+            + карта(380, пункты, отступ="40px 44px", шаг=28).replace("width: 920px", "width: 680px")
+            + f'<div style="position: absolute; left: 80px; top: 780px; padding: 28px 44px; border-radius: 999px; '
+              f'background: {ЧЕРН}; box-shadow: 0 12px 30px rgba(20,20,19,.25); {ТЕКСТ} font-weight: 700; font-size: 44px; '
+              f'color: {ЛАЙМ};">{ф["кнопка"]}</div>'
+            + f'<div style="position: absolute; left: 84px; top: 920px; {ТЕКСТ} font-weight: 700; font-size: 40px; '
+              f'color: {ЧЕРН};">{ф["под_кнопкой"]} ↗</div>'
+            + f'<img src="kot-ukazyvaet.webp" style="position: absolute; right: -40px; top: 620px; height: 540px;">'
             + низ(счёт))
 
 
