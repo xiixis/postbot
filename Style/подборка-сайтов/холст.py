@@ -55,31 +55,52 @@ def пункт(н: int, всего: int, с: dict) -> str:
 {низ(п, с["адрес"])}"""
 
 
+def фон_сцены(файл: str) -> str:
+    return (f'<img src="{файл}" style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; '
+            f'object-fit: cover;">')
+
+
 def обложка_число(о: dict) -> str:
+    """Кот у огромной глянцевой девятки (сцена Gemini, 23.09.2026), текст — под ними."""
     п = СВЕТ
-    return f"""<div style="position: absolute; left: 0; top: 20px; width: 1080px; text-align: center; {КРУП} font-size: 520px; line-height: 1; color: {п["акцент"]};">{о["число"]}</div>
-<div style="position: absolute; left: 80px; top: 520px; width: 920px; text-align: center; {КРУП} font-size: 92px; line-height: 1.02; color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>
-<div style="position: absolute; left: 80px; top: 840px; width: 920px; text-align: center; {ТЕКСТ} font-size: 44px; line-height: 1.3; color: {п["второй"]};">{о["под"]}</div>
-{низ(п)}"""
+    return (фон_сцены("kot-devyat.jpg")
+            + f'<div style="position: absolute; left: 60px; top: 850px; width: 960px; text-align: center; {КРУП} font-size: 80px; '
+              f'line-height: 1.04; color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
+            + f'<div style="position: absolute; left: 60px; top: 1036px; width: 960px; text-align: center; {ТЕКСТ} font-size: 40px; '
+              f'color: {п["второй"]};">{о["под"]}</div>'
+            + низ(п))
 
 
-def обложка_коллаж(о: dict, снимки: list[str]) -> str:
+def обложка_тайна(о: dict) -> str:
+    """Кот выглядывает из прорехи в бумажной стене, за ней лаймовый свет."""
+    п = СВЕТ
+    return (фон_сцены("kot-dyra.jpg")
+            + f'<div style="position: absolute; left: 80px; top: 110px; width: 920px; {КРУП} font-size: 92px; line-height: 1.04; '
+              f'color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
+            + f'<div style="position: absolute; left: 80px; top: 330px; padding: 14px 26px; border-radius: 16px; background: #12130E; '
+              f'{ТЕКСТ} font-weight: 700; font-size: 38px; color: {стиль.ЛАЙМ};">{о["плашка"]}</div>'
+            + f'<div style="position: absolute; left: 80px; top: 440px; width: 440px; {ТЕКСТ} font-size: 38px; line-height: 1.3; '
+              f'color: {п["второй"]};">{о["под"]}</div>'
+            + низ(п))
+
+
+def обложка_веер(о: dict, снимки: list[str]) -> str:
+    """Кот-ведущий показывает на веер настоящих снимков сервисов в лаймовом свечении."""
     п = ТЬМА
-    плитки = "".join(f'<img src="{с}" style="width: 100%; height: 170px; object-fit: cover; object-position: top; '
-                     f'border-radius: 18px; border: 2px solid {п["рамка"]};">' for с in снимки[:9])
-    return f"""<div style="position: absolute; left: 60px; top: 60px; width: 960px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px;">{плитки}</div>
-<div style="position: absolute; left: 80px; top: 660px; width: 920px; {КРУП} font-size: 96px; line-height: 1.02; color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>
-<div style="position: absolute; left: 80px; top: 900px; padding: 20px 34px; border-radius: 20px; background: {п["акцент"]}; {КРУП} font-size: 56px; color: #12130E;">{о["плашка"]}</div>
-{низ(п)}"""
-
-
-def обложка_кот(о: dict) -> str:
-    п = СВЕТ
-    return f"""<div style="position: absolute; left: 80px; top: 100px; width: 920px; {КРУП} font-size: 104px; line-height: 1.0; color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>
-<div style="position: absolute; left: 80px; top: 380px; {КРУП} font-size: 280px; line-height: 1; color: #12130E; background: {стиль.ЛАЙМ}; padding: 10px 44px 24px; border-radius: 40px;">{о["плашка"]}</div>
-<div style="position: absolute; left: 80px; top: 760px; width: 440px; {ТЕКСТ} font-size: 42px; line-height: 1.3; color: {п["второй"]};">{о["под"]}</div>
-<img src="kot-moneta.webp" style="position: absolute; right: 40px; top: 470px; height: 640px;">
-{низ(п)}"""
+    карты = ""
+    for i, (с, x, y, угол) in enumerate(zip(снимки[:3], (70, 150, 110), (330, 470, 610), (-9, 4, -3))):
+        карты += (f'<img src="{с}" style="position: absolute; left: {x}px; top: {y}px; width: 520px; height: 325px; '
+                  f'object-fit: cover; object-position: top; border-radius: 20px; border: 2px solid rgba(241,243,234,.18); '
+                  f'transform: rotate({угол}deg); box-shadow: 0 24px 60px rgba(0,0,0,.55);">')
+    # Верх сцены притемнён: заголовок не должен тонуть в лаймовом свечении.
+    тень = ('<div style="position: absolute; left: 0; top: 0; width: 1080px; height: 420px; '
+            'background: linear-gradient(180deg, rgba(18,19,15,.92) 0%, rgba(18,19,15,.75) 55%, rgba(18,19,15,0) 100%);"></div>')
+    return (фон_сцены("kot-veer.jpg") + тень + карты
+            + f'<div style="position: absolute; left: 80px; top: 90px; width: 920px; {КРУП} font-size: 100px; line-height: 1.02; '
+              f'color: {п["текст"]};">{о["строки"][0]} <span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
+            + f'<div style="position: absolute; left: 80px; top: 1010px; padding: 16px 30px; border-radius: 18px; background: {п["акцент"]}; '
+              f'{КРУП} font-size: 52px; color: #12130E;">{о["плашка"]}</div>'
+            + низ(п))
 
 
 def финал(ф: dict, имена: list[str]) -> str:
@@ -96,20 +117,23 @@ def финал(ф: dict, имена: list[str]) -> str:
 
 
 def main():
+    global CSS
     файл = Path(sys.argv[1]).resolve()
     пост = json.loads(файл.read_text(encoding="utf-8"))
     корень = ТУТ / "холсты" / файл.stem
+    CSS = дх.шрифты_холста(CSS, корень)
     врем = корень / "_файлы"
-    файлы = list(ШРИФТЫ) + [дх.логотип(врем), дх.кот("moneta", врем), дх.кот("ukazyvaet", врем)]
+    файлы = list(ШРИФТЫ) + [дх.логотип(врем), дх.кот("ukazyvaet", врем)]
+    файлы += [ТУТ / "картинки" / и for и in ("kot-devyat.jpg", "kot-dyra.jpg", "kot-veer.jpg")]
     for с in пост["пункты"]:
         снимок = дх.снимок_сайта(ТУТ / с["снимок_файл"], врем)
         с["снимок"] = снимок.name
         файлы.append(снимок)
     всего = len(пост["пункты"]) + 2
     обложки = {"число": lambda: обложка_число(пост["обложка"]),
-               "коллаж": lambda: обложка_коллаж(пост["обложка_коллаж"], [с["снимок"] for с in пост["пункты"]]),
-               "кот": lambda: обложка_кот(пост["обложка_кот"])}
-    фон = {"число": СВЕТ["фон"], "коллаж": ТЬМА["фон"], "кот": СВЕТ["фон"]}
+               "тайна": lambda: обложка_тайна(пост["обложка_тайна"]),
+               "веер": lambda: обложка_веер(пост["обложка_веер"], [с["снимок"] for с in пост["пункты"]])}
+    фон = {"число": СВЕТ["фон"], "тайна": СВЕТ["фон"], "веер": ТЬМА["фон"]}
     порядок = [пост.get("главная", "число")] + [и for и in обложки if и != пост.get("главная", "число")]
     доски = [("Main.dc.html", f"01 · Обложка · {порядок[0]}", дх.доска("Обложка", обложки[порядок[0]](), фон[порядок[0]], CSS))]
     for н, с in enumerate(пост["пункты"], 1):
