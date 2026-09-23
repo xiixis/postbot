@@ -69,12 +69,17 @@ renderVals() {{ return {{}}; }}
 
 
 def собрать(корень: Path, название: str, доски: list[tuple[str, str, str]],
-            файлы: list[Path], заметка: str = "", в_ряд: int = 5) -> Path:
+            файлы: list[Path], заметка: str = "", в_ряд: int = 5, источник: str = "") -> Path:
     """Раскладывает `корень/project/`: доски, файлы рядом, canvas.json. Возвращает project/.
 
     `доски` — (имя файла, подпись на холсте, html). Главная обложка — `Main.dc.html`,
     запасные — `Oblozhka2.dc.html`, `Oblozhka3.dc.html`: выпуск их не снимает.
+
+    `источник` — ссылка на референс; на холсте она стоит всегда (слово владельца
+    23.09.2026: «теперь всегда прикрепляй ссылку в самом холсте»). Без неё холст не собирается.
     """
+    if not источник.strip():
+        raise SystemExit("нет ссылки на референс: заполни поле «источник» в файле поста")
     проект = корень / "project"
     if проект.exists():
         shutil.rmtree(проект)
@@ -90,6 +95,7 @@ def собрать(корень: Path, название: str, доски: list[t
     заметки = {}
     if заметка:
         заметки["pravka"] = {"x": 0, "y": -560, "text": заметка, "w": 900, "fill": "green", "size": "l"}
+    заметки["referens"] = {"x": Ш + ШАГ_Х, "y": -560, "text": "Референс: " + источник, "w": 900, "fill": "blue", "size": "l"}
     индекс = {"v": 3, "createdOnFiles": {"v": 1, "at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")},
               "title": название, "launch": {"view": "canvas"}, "pages": [], "boards": доски_json,
               "order": порядок, "notes": заметки, "designSystems": []}
