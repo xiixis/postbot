@@ -1,0 +1,24 @@
+Claude edits my videos now.
+
+Not with a timeline. With code. Remotion turns a video into a React component, so a coding agent can edit it the same way it edits a website, and then render it a hundred times without me touching anything.
+
+Here is the whole loop:
+
+1. Build the template once. One React component becomes the look of every video you post.
+2. Render with your data. Claude Code fires npx remotion render from the terminal, passing the content in as props. No editor opens.
+3. Publish everywhere. Hand the finished file to Blotato and the same video goes out to Instagram, TikTok, YouTube, X, LinkedIn, Facebook, Threads, Bluesky and Pinterest.
+
+The part nobody talks about: because every frame is a React render, the output is deterministic. Render the same project a hundred times, get a hundred identical files. That is what makes it safe to automate.
+
+Two receipts before you ask:
+Remotion is free for individuals and companies with up to 3 employees (remotion.dev/license).
+Blotato ships a hosted MCP server, so Claude can publish without you writing a single HTTP call.
+
+Save this one. Build the template on a Sunday and your posting stops being a task.
+
+Want the full build, step by step? Comment “PIPELINE” and I will send it over.
+
+.
+.
+.
+#remotion #claudecode #aiautomation #contentautomation #reactjs buildinpublic aitools contentcreator devtools automation aiworkflow creatoreconomy
