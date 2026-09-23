@@ -18,10 +18,21 @@ sys.path.insert(0, str(ТУТ.parent))
 import стиль  # noqa: E402
 import дизайн_холст as дх  # noqa: E402
 
-СВЕТ = {"фон": стиль.КРЕМ, "текст": "#12130E", "второй": "#34372C", "акцент": "#3F4D08",  # олива темнее: #56690C по крему 5,4:1
+СВЕТ = {"фон": стиль.КРЕМ, "текст": "#12130E", "второй": "#1E1F17", "акцент": "#12130E",
         "плашка": "#FFFFFF", "рамка": "rgba(18,19,14,.10)", "лого": "filter: brightness(.45) saturate(1.4);"}
 ТЬМА = {"фон": стиль.ТЁМНЫЙ, "текст": стиль.СВЕТЛЫЙ, "второй": "#C9CCBF", "акцент": стиль.ЛАЙМ,
         "плашка": "#1E2019", "рамка": "rgba(241,243,234,.10)", "лого": ""}
+# Акцент по светлому — лаймовый маркер под тёмным текстом, а не цветной текст. Олива #3F4D08
+# по крему держала контраст, но в ленте сливалась с фоном (слово владельца 23.09.2026:
+# «тусклый, незаметный… замени везде»). Лайм как цвет текста по светлому не читается (1,7:1),
+# а тёмный текст на лайме даёт ~13:1 и остаётся самым заметным пятном кадра.
+def маркер(текст: str, п: dict) -> str:
+    if п is ТЬМА:
+        return f'<span style="color: {стиль.ЛАЙМ};">{текст}</span>'
+    return (f'<span style="background: {стиль.ЛАЙМ}; color: #12130E; padding: 0 .14em; border-radius: .14em; '
+            f'-webkit-box-decoration-break: clone; box-decoration-break: clone;">{текст}</span>')
+
+
 КРУП = "font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.02em;"
 ТЕКСТ = "font-family: Golos, 'Helvetica Neue', Arial, sans-serif;"
 CSS, ШРИФТЫ = дх.шрифты(("Onest", "onest-800", 800), ("Golos", "golos-400", 400), ("Golos", "golos-700", 700))
@@ -39,15 +50,15 @@ def пункт(н: int, всего: int, с: dict) -> str:
     п = ТЬМА if н % 2 else СВЕТ
     пункты = "".join(
         f'<div style="display: flex; gap: 22px; align-items: baseline;">'
-        f'<div style="width: 14px; height: 14px; border-radius: 7px; background: {п["акцент"]}; flex-shrink: 0; '
+        f'<div style="width: 14px; height: 14px; border-radius: 7px; background: {стиль.ЛАЙМ}; border: 3px solid #12130E; flex-shrink: 0; '
         f'transform: translateY(-6px);"></div><div>{т}</div></div>' for т in с["можно"])
     пометка = (f'<div style="{ТЕКСТ} font-size: 26px; color: {п["второй"]};">{с["пометка"]}</div>'
                if с.get("пометка") else "")
-    return f"""<div style="position: absolute; left: 80px; top: 70px; width: 920px; {КРУП} font-size: 72px; line-height: 1.05; color: {п["текст"]};"><span style="color: {п["акцент"]};">{н}.</span> {с["имя"]}</div>
+    return f"""<div style="position: absolute; left: 80px; top: 70px; width: 920px; {КРУП} font-size: 72px; line-height: 1.05; color: {п["текст"]};">{маркер(f"{н}.", п)} {с["имя"]}</div>
 <div style="position: absolute; left: 80px; top: 166px; width: 920px; {ТЕКСТ} font-weight: 700; font-size: 40px; line-height: 1.2; color: {п["текст"]};">{с["что"]}</div>
 <img src="{с["снимок"]}" style="position: absolute; left: 80px; top: 246px; width: 920px; height: 380px; object-fit: cover; object-position: top; border-radius: 28px; border: 2px solid {п["рамка"]}; box-shadow: 0 18px 50px rgba(0,0,0,.18);">
 <div style="position: absolute; left: 80px; top: 664px; width: 920px; box-sizing: border-box; padding: 32px 40px; border-radius: 28px; background: {п["плашка"]}; border: 2px solid {п["рамка"]}; display: flex; flex-direction: column; gap: 12px; {ТЕКСТ} font-size: 32px; line-height: 1.2; color: {п["текст"]};">
-<div style="font-weight: 700; color: {п["акцент"]};">Можно:</div>
+<div style="font-weight: 700;">{маркер("Можно:", п)}</div>
 {пункты}
 <div style="font-weight: 700; margin-top: 6px;">{с["кому"]}</div>
 {пометка}
@@ -65,16 +76,16 @@ def обложка_число(о: dict) -> str:
 
     Текст должен остановить ленту (слово владельца 23.09.2026), поэтому он в три строки и
     крупно. Места под ним нет, пока сцена стоит как нарисована: пустое небо над девяткой
-    срезается — сцена поднята на 180 px, низ кадра залит тем же кремом, что у сцены.
+    срезается — сцена поднята на 91 px (позиции выставил владелец на холсте), низ кадра залит тем же кремом, что у сцены.
     """
     п = СВЕТ
     строки = о["строки"]
     return (f'<div style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; background: #EBEAE5;"></div>'
-            f'<img src="kot-devyat.jpg" style="position: absolute; left: 0; top: -180px; width: 1080px; height: 1440px; object-fit: cover;">'
-            + f'<div style="position: absolute; left: 40px; top: 680px; width: 1000px; text-align: center; {КРУП} font-size: 118px; '
-              f'line-height: .98; color: {п["текст"]};">{строки[0]}<br>{строки[1]}<br><span style="color: {п["акцент"]};">{строки[2]}</span></div>'
-            + f'<div style="position: absolute; left: 40px; top: 1040px; width: 1000px; text-align: center; {ТЕКСТ} font-weight: 700; '
-              f'font-size: 42px; color: {п["второй"]};">{о["под"]}</div>'
+            f'<img src="kot-devyat.jpg" style="position: absolute; left: 0; top: -91px; width: 1080px; height: 1440px; object-fit: cover;">'
+            + f'<div style="position: absolute; left: 40px; top: 741px; width: 1000px; text-align: center; {КРУП} font-size: 118px; '
+              f'line-height: .98; color: {п["текст"]};">{строки[0]}<br>{строки[1]}<br>{маркер(строки[2], п)}</div>'
+            + f'<div style="position: absolute; left: 55px; top: 1111px; width: 1000px; text-align: center; {ТЕКСТ} font-weight: 700; '
+              f'font-size: 48px; color: {п["второй"]};">{о["под"]}</div>'
             + низ(п))
 
 
@@ -87,7 +98,7 @@ def обложка_тайна(о: dict) -> str:
     п = СВЕТ
     return (фон_сцены("kot-dyra.jpg")
             + f'<div style="position: absolute; left: 80px; top: 90px; width: 940px; {КРУП} font-size: 112px; line-height: 1.02; '
-              f'color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
+              f'color: {п["текст"]};">{о["строки"][0]}<br>{маркер(о["строки"][1], п)}</div>'
             + f'<div style="position: absolute; left: 80px; top: 360px; display: flex; align-items: center; gap: 26px;">'
               f'<div style="padding: 6px 28px 12px; border-radius: 20px; background: #12130E; {КРУП} font-size: 68px; '
               f'line-height: 1.1; color: {стиль.ЛАЙМ};">{о["плашка"]}</div>'
@@ -108,8 +119,8 @@ def обложка_веер(о: dict, снимки: list[str]) -> str:
             'background: linear-gradient(180deg, rgba(18,19,15,.92) 0%, rgba(18,19,15,.75) 55%, rgba(18,19,15,0) 100%);"></div>')
     return (фон_сцены("kot-veer.jpg") + тень + карты
             + f'<div style="position: absolute; left: 80px; top: 90px; width: 920px; {КРУП} font-size: 100px; line-height: 1.02; '
-              f'color: {п["текст"]};">{о["строки"][0]} <span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: 80px; top: 1010px; padding: 16px 30px; border-radius: 18px; background: {п["акцент"]}; '
+              f'color: {п["текст"]};">{о["строки"][0]} {маркер(о["строки"][1], п)}</div>'
+            + f'<div style="position: absolute; left: 80px; top: 1010px; padding: 16px 30px; border-radius: 18px; background: {стиль.ЛАЙМ}; '
               f'{КРУП} font-size: 52px; color: #12130E;">{о["плашка"]}</div>'
             + низ(п))
 
@@ -117,9 +128,9 @@ def обложка_веер(о: dict, снимки: list[str]) -> str:
 def финал(ф: dict, имена: list[str]) -> str:
     п = СВЕТ
     чипы = "".join(f'<div style="padding: 14px 24px; border-radius: 999px; background: #FFFFFF; border: 2px solid {п["рамка"]}; '
-                   f'{ТЕКСТ} font-weight: 700; font-size: 30px; color: {п["текст"]};"><span style="color: {п["акцент"]};">{i}</span> {и}</div>'
+                   f'{ТЕКСТ} font-weight: 700; font-size: 30px; color: {п["текст"]};">{маркер(str(i), п)} {и}</div>'
                    for i, и in enumerate(имена, 1))
-    return f"""<div style="position: absolute; left: 80px; top: 110px; width: 920px; {КРУП} font-size: 88px; line-height: 1.04; color: {п["текст"]};">{ф["строки"][0]}<br><span style="color: {п["акцент"]};">{ф["строки"][1]}</span></div>
+    return f"""<div style="position: absolute; left: 80px; top: 110px; width: 920px; {КРУП} font-size: 88px; line-height: 1.04; color: {п["текст"]};">{ф["строки"][0]}<br>{маркер(ф["строки"][1], п)}</div>
 <div style="position: absolute; left: 80px; top: 330px; width: 920px; display: flex; flex-wrap: wrap; gap: 16px;">{чипы}</div>
 <div style="position: absolute; left: 80px; top: 610px; width: 540px; {ТЕКСТ} font-weight: 700; font-size: 42px; line-height: 1.25; color: {п["текст"]};">{ф["вопрос"]}</div>
 <div style="position: absolute; left: 80px; top: 840px; width: 540px; box-sizing: border-box; padding: 34px 38px; border-radius: 28px; background: {стиль.ТЁМНЫЙ}; {ТЕКСТ} font-weight: 700; font-size: 36px; line-height: 1.3; color: {стиль.ЛАЙМ};">{ф["плашка"]}</div>

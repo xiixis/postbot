@@ -25,8 +25,16 @@ import дизайн_холст as дх  # noqa: E402
 
 ФОН = ("background: #F5F4EF; background-image: radial-gradient(circle at 92% 4%, rgba(199,226,75,.30), "
        "rgba(199,226,75,0) 34%), radial-gradient(circle at 0% 100%, rgba(199,226,75,.10), rgba(199,226,75,0) 40%);")
-ЧЕРН, СЕР, ОЛИВА, ЛАЙМ = "#141413", "#45453F", "#3F4D08", стиль.ЛАЙМ
-ЧИП_ФОН = "#EDF4CC"
+ЧЕРН, СЕР, ЛАЙМ = "#141413", "#26261F", стиль.ЛАЙМ
+# Олива #3F4D08 как цвет текста сливалась с фоном (слово владельца 23.09.2026: «тусклый,
+# незаметный… замени везде»). Акцент по светлому теперь — лаймовый маркер под тёмным текстом:
+# ~13:1 и самое заметное пятно кадра. Чипы, номера и точки — лайм с тёмным.
+ЧИП_ФОН = ЛАЙМ
+
+
+def маркер(текст: str) -> str:
+    return (f'<span style="background: {ЛАЙМ}; color: {ЧЕРН}; padding: 0 .14em; border-radius: .14em; '
+            f'-webkit-box-decoration-break: clone; box-decoration-break: clone;">{текст}</span>')
 CLAUDE = "#D97757"                     # фирменный цвет Claude: слово «CLAUDE.» на обложке (слово владельца 23.09.2026)
 ТЕНЬ = "0 1px 2px rgba(20,20,19,.05), 0 12px 32px rgba(20,20,19,.08)"
 КРУП = "font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.03em;"
@@ -45,11 +53,11 @@ def низ(счёт: str = "", тёмный: bool = False) -> str:
 
 def метка(текст: str) -> str:
     return (f'<div style="position: absolute; left: 80px; top: 76px; {МОНО} font-weight: 700; font-size: 24px; '
-            f'letter-spacing: .32em; text-transform: uppercase; color: {ОЛИВА};">{текст}</div>')
+            f'letter-spacing: .32em; text-transform: uppercase; color: {ЧЕРН};">{маркер(текст)}</div>')
 
 
 def заголовок(строки: list[str], верх: int, кегль: int = 80) -> str:
-    хвост = f'<br><span style="color: {ОЛИВА};">{строки[1]}</span>' if len(строки) > 1 else ""
+    хвост = f'<br>{маркер(строки[1])}' if len(строки) > 1 else ""
     return (f'<div style="position: absolute; left: 80px; top: {верх}px; width: 920px; {КРУП} font-size: {кегль}px; '
             f'line-height: 1.05; color: {ЧЕРН};">{строки[0]}{хвост}</div>')
 
@@ -61,7 +69,7 @@ def абзац(текст: str, верх: int, кегль: int = 34, ширин�
 
 def чипы(текст: str, тёмный: bool = False) -> str:
     """`команда` в тексте — чип моноширинным (у автора синий на голубом)."""
-    фон, цвет = ("#26271F", ЛАЙМ) if тёмный else (ЧИП_ФОН, ОЛИВА)
+    фон, цвет = ("#26271F", ЛАЙМ) if тёмный else (ЛАЙМ, ЧЕРН)
     куски = текст.split("`")
     return "".join(к if i % 2 == 0 else
                    f'<span style="{МОНО} font-size: .82em; padding: 2px 10px; border-radius: 8px; background: {фон}; '
@@ -76,10 +84,10 @@ def карта(верх: int, тело: str, тёмная: bool = False, отс�
 
 
 def пункты(список: list[list[str]], тёмный: bool = False) -> str:
-    т, с, точка = ((стиль.СВЕТЛЫЙ, "#C9CCBF", ЛАЙМ) if тёмный else (ЧЕРН, СЕР, ОЛИВА))
+    т, с, точка = ((стиль.СВЕТЛЫЙ, "#C9CCBF", ЛАЙМ) if тёмный else (ЧЕРН, СЕР, ЛАЙМ))
     return "".join(
         f'<div style="display: flex; gap: 20px; align-items: baseline; {ТЕКСТ} font-size: 34px; line-height: 1.38; color: {с};">'
-        f'<div style="width: 12px; height: 12px; border-radius: 6px; background: {точка}; flex-shrink: 0; transform: translateY(-5px);"></div>'
+        f'<div style="width: 12px; height: 12px; border-radius: 6px; background: {точка}; border: 3px solid {т}; flex-shrink: 0; transform: translateY(-5px);"></div>'
         f'<div><span style="font-weight: 700; color: {т};">{ж}</span> — {чипы(п, тёмный)}</div></div>' for ж, п in список)
 
 
@@ -93,7 +101,7 @@ def кадр(к: dict, н: int, всего: int) -> str:
         плитка = (f'<div style="position: absolute; left: 80px; top: 200px; display: flex; align-items: center; gap: 24px;">'
                   f'<div style="width: 92px; height: 92px; border-radius: 24px; background: #FFFFFF; box-shadow: {ТЕНЬ}; '
                   f'display: flex; align-items: center; justify-content: center;"><div style="width: 0; height: 0; '
-                  f'border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 32px solid {ОЛИВА}; '
+                  f'border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 32px solid {ЧЕРН}; '
                   f'margin-left: 8px;"></div></div><div style="{ТЕКСТ} font-weight: 700; font-size: 44px; color: {ЧЕРН};">'
                   f'{к["инструмент"]}</div></div>')
         строки = "".join(f'<div style="{МОНО} font-size: 28px; line-height: 1.55; color: {ЦВЕТ_КОДА[ц]}; white-space: pre;">{т}</div>'
@@ -107,7 +115,7 @@ def кадр(к: dict, н: int, всего: int) -> str:
         for i, (з, т) in enumerate(к["шаги"]):
             карты += карта(400 + i * 215, (
                 f'<div style="display: flex; gap: 28px; align-items: flex-start;">'
-                f'<div style="width: 60px; height: 60px; border-radius: 30px; background: {ЧИП_ФОН}; color: {ОЛИВА}; {КРУП} '
+                f'<div style="width: 60px; height: 60px; border-radius: 30px; background: {ЛАЙМ}; color: {ЧЕРН}; {КРУП} '
                 f'font-size: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">{i + 1}</div>'
                 f'<div><div style="{ТЕКСТ} font-weight: 700; font-size: 38px; color: {ЧЕРН};">{з}</div>'
                 f'<div style="{ТЕКСТ} font-size: 30px; line-height: 1.38; color: {СЕР}; margin-top: 6px;">{чипы(т)}</div></div></div>'),
@@ -118,7 +126,7 @@ def кадр(к: dict, н: int, всего: int) -> str:
         тёмная = к.get("тёмная_карта", False)
         тело = (метка(к["метка"])
                 + f'<div style="position: absolute; left: 74px; top: 250px; {КРУП} font-size: 140px; line-height: 1; color: {ЧЕРН};">'
-                  f'{имя}<span style="color: {ОЛИВА};">.{хвост}</span></div>'
+                  f'{имя}{маркер("." + хвост)}</div>'
                 + абзац(к["подводка"], 420, 38)
                 + карта(530, пункты(к["пункты"], тёмная), тёмная=тёмная))
     elif вид == "сетка":
@@ -192,7 +200,7 @@ def обложка_сетка(о: dict, площадки: list) -> str:
               f'justify-content: center; gap: 22px;"><div style="width: 0; height: 0; border-top: 44px solid transparent; '
               f'border-bottom: 44px solid transparent; border-left: 74px solid {ЛАЙМ}; margin-left: 16px;"></div>'
               f'<div style="{МОНО} font-size: 26px; color: {стиль.СВЕТЛЫЙ};">ролик.mp4</div></div>'
-            + f'<div style="position: absolute; left: 385px; top: 650px; {КРУП} font-size: 84px; color: {ОЛИВА};">→</div>'
+            + f'<div style="position: absolute; left: 385px; top: 650px; {КРУП} font-size: 84px; color: {ЧЕРН};">→</div>'
             + f'<div style="position: absolute; left: 500px; top: 520px; width: 500px; display: grid; '
               f'grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">{плитки}</div>'
             + f'<img src="kot-ukazyvaet.webp" style="position: absolute; right: 60px; top: 900px; height: 420px;">'
