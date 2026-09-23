@@ -32,9 +32,11 @@ import дизайн_холст as дх  # noqa: E402
 ЧИП_ФОН = ЛАЙМ
 
 
+# Капсула — inline-block со своим отступом сверху: строчная подсветка при плотном интерлиньяже
+# залезала на строку выше («капсула у Google залазит на текст», 23.09.2026).
 def маркер(текст: str) -> str:
-    return (f'<span style="background: {ЛАЙМ}; color: {ЧЕРН}; padding: 0 .14em; border-radius: .14em; '
-            f'-webkit-box-decoration-break: clone; box-decoration-break: clone;">{текст}</span>')
+    return (f'<span style="background: {ЛАЙМ}; color: {ЧЕРН}; display: inline-block; line-height: 1; '
+            f'padding: .03em .16em .08em; margin-top: .1em; border-radius: .16em;">{текст}</span>')
 CLAUDE = "#D97757"                     # фирменный цвет Claude: слово «CLAUDE.» на обложке (слово владельца 23.09.2026)
 ТЕНЬ = "0 1px 2px rgba(20,20,19,.05), 0 12px 32px rgba(20,20,19,.08)"
 КРУП = "font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.03em;"

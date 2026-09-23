@@ -26,11 +26,13 @@ import дизайн_холст as дх  # noqa: E402
 # по крему держала контраст, но в ленте сливалась с фоном (слово владельца 23.09.2026:
 # «тусклый, незаметный… замени везде»). Лайм как цвет текста по светлому не читается (1,7:1),
 # а тёмный текст на лайме даёт ~13:1 и остаётся самым заметным пятном кадра.
+# Капсула — inline-block со своим отступом сверху: строчная подсветка при плотном интерлиньяже
+# залезала на строку выше («капсула у Google залазит на текст», 23.09.2026).
 def маркер(текст: str, п: dict) -> str:
     if п is ТЬМА:
         return f'<span style="color: {стиль.ЛАЙМ};">{текст}</span>'
-    return (f'<span style="background: {стиль.ЛАЙМ}; color: #12130E; padding: 0 .14em; border-radius: .14em; '
-            f'-webkit-box-decoration-break: clone; box-decoration-break: clone;">{текст}</span>')
+    return (f'<span style="background: {стиль.ЛАЙМ}; color: #12130E; display: inline-block; line-height: 1; '
+            f'padding: .03em .16em .08em; margin-top: .1em; border-radius: .16em;">{текст}</span>')
 
 
 КРУП = "font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.02em;"
@@ -82,7 +84,7 @@ def обложка_число(о: dict) -> str:
     строки = о["строки"]
     return (f'<div style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; background: #EBEAE5;"></div>'
             f'<img src="kot-devyat.jpg" style="position: absolute; left: 0; top: -91px; width: 1080px; height: 1440px; object-fit: cover;">'
-            + f'<div style="position: absolute; left: 40px; top: 741px; width: 1000px; text-align: center; {КРУП} font-size: 118px; '
+            + f'<div style="position: absolute; left: 40px; top: 725px; width: 1000px; text-align: center; {КРУП} font-size: 118px; '
               f'line-height: .98; color: {п["текст"]};">{строки[0]}<br>{строки[1]}<br>{маркер(строки[2], п)}</div>'
             + f'<div style="position: absolute; left: 55px; top: 1111px; width: 1000px; text-align: center; {ТЕКСТ} font-weight: 700; '
               f'font-size: 48px; color: {п["второй"]};">{о["под"]}</div>'
