@@ -61,13 +61,20 @@ def фон_сцены(файл: str) -> str:
 
 
 def обложка_число(о: dict) -> str:
-    """Кот у огромной глянцевой девятки (сцена Gemini, 23.09.2026), текст — под ними."""
+    """Кот у огромной глянцевой девятки (сцена Gemini, 23.09.2026), текст — под ними.
+
+    Текст должен остановить ленту (слово владельца 23.09.2026), поэтому он в три строки и
+    крупно. Места под ним нет, пока сцена стоит как нарисована: пустое небо над девяткой
+    срезается — сцена поднята на 180 px, низ кадра залит тем же кремом, что у сцены.
+    """
     п = СВЕТ
-    return (фон_сцены("kot-devyat.jpg")
-            + f'<div style="position: absolute; left: 60px; top: 850px; width: 960px; text-align: center; {КРУП} font-size: 80px; '
-              f'line-height: 1.04; color: {п["текст"]};">{о["строки"][0]}<br><span style="color: {п["акцент"]};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: 60px; top: 1036px; width: 960px; text-align: center; {ТЕКСТ} font-size: 40px; '
-              f'color: {п["второй"]};">{о["под"]}</div>'
+    строки = о["строки"]
+    return (f'<div style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; background: #EBEAE5;"></div>'
+            f'<img src="kot-devyat.jpg" style="position: absolute; left: 0; top: -180px; width: 1080px; height: 1440px; object-fit: cover;">'
+            + f'<div style="position: absolute; left: 40px; top: 680px; width: 1000px; text-align: center; {КРУП} font-size: 118px; '
+              f'line-height: .98; color: {п["текст"]};">{строки[0]}<br>{строки[1]}<br><span style="color: {п["акцент"]};">{строки[2]}</span></div>'
+            + f'<div style="position: absolute; left: 40px; top: 1040px; width: 1000px; text-align: center; {ТЕКСТ} font-weight: 700; '
+              f'font-size: 42px; color: {п["второй"]};">{о["под"]}</div>'
             + низ(п))
 
 
