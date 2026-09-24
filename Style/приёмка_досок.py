@@ -67,6 +67,131 @@ document.fonts.ready.then(() => {
        "ЗАПАС": ЗАПАС, "КРАЙ": КРАЙ}
 
 
+# ── Проверка 1: по тексту, без браузера ──────────────────────────────────────
+# Средняя ширина знака в долях кегля, снята с досок 24.09 (строка «одним списком» Onest 800
+# при кегле 80 — 591 px на 13 знаков = 0,57). Оценка грубая: она ловит «заголовок лёг в три
+# строки вместо двух», а точное «впритык» меряет Chrome.
+ШИРИНА_ЗНАКА = {"Onest": 0.56, "Golos": 0.5, "Oswald": 0.42, "JetBrains": 0.6}
+КРУПНЫЙ = 56          # кегль, с которого текст — заголовок: мельче оценка не нужна
+_ВНУТРИ_СТРОКИ = {"span", "b", "i", "em", "strong", "br"}
+_ПУСТЫЕ = {"img", "br", "meta", "link", "input", "hr", "source"}
+
+
+def _px(значение: str) -> float | None:
+    м = re.fullmatch(r"\s*(-?[\d.]+)(px)?\s*", значение or "")
+    return float(м.group(1)) if м else None
+
+
+def _свойства(стиль_: str) -> dict:
+    """Инлайновый style блока → числа: left, top, width, right, font-size, line-height, семья."""
+    с = {}
+    for пара in стиль_.split(";"):
+        ключ, _, значение = пара.partition(":")
+        с[ключ.strip().lower()] = значение.strip()
+    итог = {к: _px(с.get(к, "")) for к in ("left", "top", "width", "right", "font-size")}
+    итог = {к: (int(в) if в is not None and в == int(в) else в) for к, в in итог.items()}
+    кегль = итог["font-size"]
+    высота = с.get("line-height", "")
+    if высота.endswith("px") and кегль:
+        итог["line-height"] = _px(высота) / кегль
+    else:
+        итог["line-height"] = _px(высота) or 1.2
+    итог["семья"] = с.get("font-family", "").split(",")[0].strip(" '\"")
+    итог["разрядка"] = float(м.group(1)) if (м := re.fullmatch(r"(-?[\d.]+)em", с.get("letter-spacing", ""))) else 0.0
+    return итог
+
+
+class _Блоки(HTMLParser):
+    """Верхние дети корня доски (`div` шириной 1080): стиль, строки текста, есть ли вложенные блоки."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.глубина, self.корень, self.тек, self.блоки = 0, None, None, []
+
+    def handle_starttag(self, тег, атрибуты):
+        а = dict(атрибуты)
+        верхний = self.корень is not None and self.глубина == self.корень
+        if тег in _ПУСТЫЕ:
+            if self.тек is not None and тег == "br":
+                self.тек["строки"].append("")
+            elif верхний:
+                self.блоки.append({"тег": тег, "стиль": а.get("style") or "", "строки": [""], "вложено": True})
+            return
+        self.глубина += 1
+        if self.корень is None and тег == "div" and "width: 1080px" in (а.get("style") or ""):
+            self.корень = self.глубина
+        elif верхний:
+            self.тек = {"тег": тег, "стиль": а.get("style") or "", "строки": [""], "вложено": False}
+            self.блоки.append(self.тек)
+        elif self.тек is not None and тег not in _ВНУТРИ_СТРОКИ:
+            self.тек["вложено"] = True
+
+    def handle_endtag(self, тег):
+        if тег in _ПУСТЫЕ:
+            return
+        if self.корень is not None and self.глубина == self.корень + 1:
+            self.тек = None
+        elif self.корень is not None and self.глубина == self.корень:
+            self.корень = None
+        self.глубина -= 1
+
+    def handle_data(self, данные):
+        if self.тек is not None:
+            self.тек["строки"][-1] += данные
+
+
+def _строк(текст: str, ширина: float, знак: float) -> int:
+    """Жадный перенос по словам, как у браузера; слово длиннее строки — одна строка."""
+    строк, длина = 0, 0.0
+    for слово in текст.split():
+        w = len(слово) * знак
+        if строк and длина + знак + w <= ширина:
+            длина += знак + w
+        else:
+            строк, длина = строк + 1, w
+    return max(строк, 1)
+
+
+def _строки_слово(н: int) -> str:
+    return "строка" if н % 10 == 1 and н % 100 != 11 else (
+        "строки" if н % 10 in (2, 3, 4) and н % 100 not in (12, 13, 14) else "строк")
+
+
+def по_тексту(html: str) -> list[str]:
+    """Проверка 1: крупный текст, который по оценке строк налезет на блок под ним."""
+    разбор = _Блоки()
+    разбор.feed(html)
+    блоки = []
+    for б in разбор.блоки:
+        с = _свойства(б["стиль"])
+        if с["left"] is None and с["right"] is not None and с["width"] is not None:
+            с["left"] = 1080 - с["right"] - с["width"]
+        текст = " ".join(" ".join(б["строки"]).split())
+        блоки.append({**б, **с, "текст": текст})
+    беды = []
+    for б in блоки:
+        if (б["вложено"] or not б["текст"] or (б["font-size"] or 0) < КРУПНЫЙ
+                or None in (б["left"], б["top"], б["width"])):
+            continue
+        знак = (ШИРИНА_ЗНАКА.get(б["семья"], 0.55) + б["разрядка"]) * б["font-size"]
+        строк = sum(_строк(с, б["width"], знак) for с in б["строки"] if с.strip())
+        низ = round(б["top"] + строк * б["font-size"] * б["line-height"])
+        # Запас судится по буквам, как у Chrome, а не по коробке строки: низ букв без
+        # выносных примерно на пятую часть кегля выше низа строки. По коробке «5 ИИ
+        # рисуют ролик за тебя» (4 строки, 118 px) стоит в 17 px от подписи, по буквам — в 41.
+        буквы = низ - 0.2 * б["font-size"]
+        for с in блоки:
+            if с is б or с["top"] is None or с["left"] is None or с["top"] <= б["top"]:
+                continue
+            правый = с["left"] + (с["width"] or 1)
+            if с["left"] < б["left"] + б["width"] and правый > б["left"] and буквы > с["top"] - ЗАПАС:
+                сосед = с["текст"][:16] or с["тег"]
+                беды.append(f"«{б['текст'][:24]}» ≈{строк} {_строки_слово(строк)} до {низ} px — "
+                            f"налезет на «{сосед}» (верх {с['top']})")
+                break
+    return беды
+
+
 def _имя(кто: str) -> str:
     """«:Hedra хватает,» → «Hedra хватает,»; класс без текста остаётся классом."""
     класс, _, текст = кто.partition(":")

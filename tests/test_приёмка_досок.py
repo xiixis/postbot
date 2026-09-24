@@ -98,6 +98,41 @@ class Снимки(unittest.TestCase):
         self.assertEqual([с.stat().st_mtime_ns for с in снимки], было)
 
 
+class ПоТексту(unittest.TestCase):
+    """Проверка 1, без браузера: оценка строк крупного текста по ширине знака."""
+
+    @classmethod
+    def setUpClass(cls):
+        import приёмка_досок
+        cls.п = приёмка_досок
+
+    def беды(self, имя: str) -> list[str]:
+        return self.п.по_тексту((ЭТАЛОНЫ / f"{имя}.dc.html").read_text(encoding="utf-8"))
+
+    def test_годные_без_бед(self):
+        for д in снять_доски.доски(ЭТАЛОНЫ):
+            if "bityi" not in д["file"]:
+                with self.subTest(д["file"]):
+                    self.assertEqual(self.беды(д["file"].removesuffix(".dc.html")), [])
+
+    def test_заголовок_финала_в_три_строки(self):
+        беды = self.беды("A-bityi-final-3-stroki")
+        self.assertEqual(len(беды), 1, беды)
+        self.assertIn("≈3 строки", беды[0])
+        self.assertIn("Claude", беды[0])          # сосед — список замен
+
+    def test_подпись_на_заголовке(self):
+        беды = self.беды("B-bityi-pod-na-zagolovke")
+        self.assertTrue(any("Ролик" in б for б in беды), беды)
+
+    def test_разбор_стиля(self):
+        с = self.п._свойства("left: 80px; top: 112px; width: 640px; font-family: Onest, 'Arial Black';"
+                             " font-size: 80px; line-height: 1.0;")
+        self.assertEqual((с["left"], с["top"], с["width"], с["font-size"], с["line-height"]),
+                         (80, 112, 640, 80, 1.0))
+        self.assertEqual(с["семья"], "Onest")
+
+
 def беды_с(беды: list[str], слово: str) -> list[str]:
     return [б for б in беды if б.startswith(слово)]
 
