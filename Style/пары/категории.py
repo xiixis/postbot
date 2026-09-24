@@ -16,7 +16,10 @@
 экономии** внизу каждого кадра ($20 → $50 → $79 → $89 → $109). Он держит дочитывание до
 финала и даёт финалу расплату: у автора последний кадр — просто просьба подписаться.
 
-Доски 1080×1440 (`../дизайн_холст.py`); дальше Artifact → «готово» → `../выпуск.py`.
+Доски 1080×1440 (`../дизайн_холст.py`). После сборки сама печатается приёмка досок
+(`../приёмка_досок.py`): «годен» или брак по номерам досок и путь к листу; `--без-снимка` —
+только быстрая проверка по тексту. Брак чинится до выкладки холста; дальше Artifact →
+«готово» → `../выпуск.py`.
 """
 import json
 import sys
@@ -149,9 +152,10 @@ def кадр(н: int, всего: int, к: dict) -> str:
     стрелка = ('<svg viewBox="0 0 80 24" fill="none" stroke="#12130E" stroke-width="3.4" '
                'stroke-linecap="round" stroke-linejoin="round" style="width: 72px; height: 22px;">'
                '<path d="M4 12h68M60 4l12 8-12 8"/></svg>')
-    # Кружок со стрелкой лежит на обеих карточках нарочно (`data-рядом`). Строка-вывод
-    # шириной 560, а не 600: плашка «не платим уже» начинается на 670, и при 600 коробки
-    # перекрывались на 10 px, а буквы стояли в 4 px от плашки — нашла приёмка досок 24.09.
+    # Кружок со стрелкой лежит на обеих карточках нарочно (`data-рядом`). Строка-вывод 590
+    # и плашка «не платим уже» 300 (было 600 и 330): коробки перекрывались на 10 px, буквы
+    # стояли в 4 px от плашки — нашла приёмка досок 24.09. Уже 590 вывод не сжимать: самая
+    # длинная строка 586 px, при 560 кадр 4 лёг в четыре строки и сел на знак.
     return f"""{СЕТКА}
 <div style="position: absolute; left: {КРАЙ}px; top: 60px; {ТЕКСТ} font-weight: 700; font-size: 30px; letter-spacing: .02em; color: {стиль.ОЛИВА};">{к["рубрика"]}</div>
 {счёт}
@@ -159,8 +163,8 @@ def кадр(н: int, всего: int, к: dict) -> str:
 <div class="стрелка" data-рядом="карта" style="position: absolute; left: 506px; top: {КАРТА_ВЕРХ + КАРТА_В // 2 - 34}px; width: 68px; height: 68px; border-radius: 50%; background: {БЕЛАЯ}; border: 2px solid {РАМКА}; box-shadow: {ТЕНЬ}; display: flex; align-items: center; justify-content: center; z-index: 2;">{стрелка}</div>
 {карточка(к["платно"], False, КРАЙ)}
 {карточка(к["бесплатно"], True, 560)}
-<div style="position: absolute; left: {КРАЙ}px; top: {ВЫВОД_ВЕРХ}px; width: 560px; {ТЕКСТ} font-weight: 700; font-size: 38px; line-height: 1.24; color: {ВТОРОЙ};">{к["вывод"]}</div>
-<div style="position: absolute; right: {КРАЙ}px; top: {ВЫВОД_ВЕРХ - 4}px; width: 330px; box-sizing: border-box; padding: 22px 26px 26px; border-radius: 28px; background: {стиль.ЛАЙМ}; text-align: center;">
+<div style="position: absolute; left: {КРАЙ}px; top: {ВЫВОД_ВЕРХ}px; width: 590px; {ТЕКСТ} font-weight: 700; font-size: 38px; line-height: 1.24; color: {ВТОРОЙ};">{к["вывод"]}</div>
+<div style="position: absolute; right: {КРАЙ}px; top: {ВЫВОД_ВЕРХ - 4}px; width: 300px; box-sizing: border-box; padding: 22px 26px 26px; border-radius: 28px; background: {стиль.ЛАЙМ}; text-align: center;">
 <div style="{ТЕКСТ} font-weight: 700; font-size: 24px; letter-spacing: .02em; color: {ЧЕРНИЛА}; opacity: .72;">не платим уже</div>
 <div style="{КРУП} font-size: 62px; line-height: 1.05; color: {ЧЕРНИЛА}; margin-top: 4px;">{к["экономия"]}<span style="{ТЕКСТ} font-weight: 700; font-size: 26px;">/мес</span></div>
 </div>
@@ -408,6 +412,8 @@ def main():
     проект = дх.собрать(корень, пост["название"], доски, файлы, пост.get("заметка", ""), в_ряд=5,
                         источник=пост.get("источник", ""))
     print(f"холст: {проект} — досок {len(доски)}")
+    import приёмка_досок
+    приёмка_досок.доложить(проект, снимки="--без-снимка" not in sys.argv[2:])
 
 
 if __name__ == "__main__":
