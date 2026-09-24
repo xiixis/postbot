@@ -100,7 +100,7 @@ def кадр(н: int, всего: int, с: dict) -> str:
 {значок(с)}
 <div style="{УЗКИЙ} font-size: {кегль(с["имя"], 116, 92, 12)}px; line-height: 1; letter-spacing: .01em; color: {СВЕТЛЫЙ};">{с["имя"]}</div>
 <div style="width: 100%; display: flex; flex-direction: column; gap: 20px; {ТЕКСТ} font-size: 38px; line-height: 1.26; color: {ВТОРОЙ};">{строки}</div>
-<div style="margin-top: auto; display: inline-flex; align-items: center; gap: 16px; padding: 18px 34px 22px; border-radius: 999px; background: {стиль.ЛАЙМ}; {ТЕКСТ} font-weight: 700; font-size: 34px; color: #12130E;">{ГАЛКА}Бесплатно: {с["бесплатно"]}</div>
+<div style="margin-top: auto; display: inline-flex; align-items: center; gap: 16px; padding: 18px 34px 22px; border-radius: 999px; background: {стиль.ЛАЙМ}; {ТЕКСТ} font-weight: 700; font-size: 34px; color: #12130E;">{ГАЛКА}{с["задача"][0].upper() + с["задача"][1:]}</div>
 </div>
 {низ(с["адрес"])}"""
 
@@ -182,29 +182,50 @@ def обложка_плёнка(о: dict, сервисы: list[dict]) -> str:
 
 
 def финал(ф: dict, сервисы: list[dict]) -> str:
-    """Итог: все пятеро сеткой со значками, плашка-призыв и кот."""
+    """Итог — карта выбора: под каждой задачей свой сервис, и широкая плашка-призыв.
+
+    Прежний финал был столбцом из пяти одинаковых клеток и пустым низом. Здесь пятёрка
+    разложена по задачам («нужен аватар — DeepBrain»), каждый значок в своём цветном гало,
+    а призыв и ссылка сведены в одну плашку во всю ширину (правка владельца 24.09.2026).
+    """
     клетки = ""
-    for с in сервисы:
-        клетки += (f'<div style="display: flex; align-items: center; gap: 22px; padding: 20px 26px; '
-                   f'border-radius: 26px; background: {СТЕКЛО}; border: 2px solid {РАМКА};">'
-                   f'<img src="{с["значок"]}" style="width: 66px; height: 66px; object-fit: contain; '
-                   f'border-radius: {"50%" if с.get("во_весь") else "0"};">'
-                   f'<div><div style="{ТЕКСТ} font-weight: 700; font-size: 36px; color: {СВЕТЛЫЙ};">{с["имя"]}</div>'
-                   f'<div style="{ТЕКСТ} font-size: 27px; color: {ТИХИЙ}; margin-top: 2px;">{с["итог"]}</div></div></div>')
+    for н, с in enumerate(сервисы):
+        # Значок всегда в белом круге: у части сервисов png с белой подложкой, и без круга
+        # в тёмной клетке он читается как приклеенный квадрат.
+        диск = (f'<div style="width: 68px; height: 68px; border-radius: 50%; background: #FFFFFF; '
+                f'flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">'
+                f'<img src="{с["значок"]}" style="width: {"100%" if с.get("во_весь") else "64%"}; '
+                f'height: {"100%" if с.get("во_весь") else "64%"}; '
+                f'object-fit: {"cover" if с.get("во_весь") else "contain"};"></div>')
+        # Последняя клетка занимает обе колонки: одинокая половинка в ряду смотрится обрывом.
+        ширина = ' grid-column: span 2;' if н == len(сервисы) - 1 and len(сервисы) % 2 else ''
+        клетки += (
+            f'<div style="position: relative; box-sizing: border-box; padding: 24px 24px 26px;{ширина} '
+            f'border-radius: 30px; background: {СТЕКЛО}; border: 2px solid {РАМКА}; overflow: hidden;">'
+            f'<div style="position: absolute; right: -40px; top: -40px; width: 160px; height: 160px; '
+            f'border-radius: 50%; background: {с["цвет"]}; opacity: .30; filter: blur(30px);"></div>'
+            f'<div style="position: relative; display: flex; align-items: center; gap: 18px;">'
+            f'{диск}'
+            f'<div style="min-width: 0;">'
+            f'<div style="{ТЕКСТ} font-size: 26px; color: {ТИХИЙ};">{с["задача"]}</div>'
+            f'<div style="{ТЕКСТ} font-weight: 700; font-size: 38px; line-height: 1.1; color: {СВЕТЛЫЙ};">'
+            f'{с["имя"]}</div></div></div></div>')
     return (f'<div style="position: absolute; inset: 0; background: radial-gradient(76% 54% at 22% 8%, '
-            f'rgba(199,226,75,.18), rgba(18,19,15,0) 62%), {ГРУНТ};"></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 90px; width: 940px; {КРУП} '
-              f'font-size: 92px; line-height: 1.0; color: {СВЕТЛЫЙ};">{ф["строки"][0]}<br>'
+            f'rgba(199,226,75,.20), rgba(18,19,15,0) 62%), radial-gradient(62% 44% at 92% 96%, '
+            f'rgba(199,226,75,.12), rgba(18,19,15,0) 60%), {ГРУНТ};"></div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 100px; width: 640px; {КРУП} '
+              f'font-size: 88px; line-height: 1.0; color: {СВЕТЛЫЙ};">{ф["строки"][0]}<br>'
               f'<span style="color: {стиль.ЛАЙМ};">{ф["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 340px; width: 620px; display: flex; '
-              f'flex-direction: column; gap: 14px;">{клетки}</div>'
-            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; right: 26px; '
-              f'top: 356px; height: 390px;">'
-            + f'<div style="position: absolute; right: {КРАЙ}px; top: 800px; width: 380px; box-sizing: border-box; '
-              f'padding: 26px 30px 30px; border-radius: 28px; background: {стиль.ЛАЙМ}; {КРУП} font-size: 44px; '
-              f'line-height: 1.08; color: #12130E;">{ф["призыв"]}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 1012px; {ТЕКСТ} font-weight: 700; '
-              f'font-size: 40px; color: {ВТОРОЙ};">{ф["ссылка"]}</div>'
+            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; right: 24px; '
+              f'top: 70px; height: 280px;">'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 392px; width: 940px; display: grid; '
+              f'grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">{клетки}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 880px; width: 940px; box-sizing: border-box; '
+              f'padding: 30px 38px 34px; border-radius: 32px; background: {стиль.ЛАЙМ}; display: flex; '
+              f'align-items: center; justify-content: space-between; gap: 24px;">'
+              f'<div style="{КРУП} font-size: 52px; line-height: 1.06; color: #12130E;">{ф["призыв"]}</div>'
+              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 30px; line-height: 1.2; color: #2A3106; '
+              f'text-align: right; max-width: 330px;">{ф["ссылка"]}</div></div>'
             + низ())
 
 

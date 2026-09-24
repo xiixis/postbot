@@ -30,7 +30,18 @@ import дизайн_холст as дх  # noqa: E402
 # ── Палитра ──────────────────────────────────────────────────────────────────
 # У автора холодный голубой градиент и синий текст. Берём его светлоту и воздух, но
 # уводим в наш крем: синий у нас не фирменный, а лайм по синему не звучит.
-БУМАГА = "linear-gradient(170deg, #FBFCF7 0%, #EDEFE4 58%, #E4E7D9 100%)"
+#
+# Грунт не плоская заливка (слово владельца 24.09.2026: «можно на фоне сделать небольшой
+# интересный градиент»): лаймовое свечение из правого верхнего угла, оливковый подтон в
+# левом нижнем и еле заметная сетка поверх — тот же приём, что держит кадр у автора.
+БУМАГА = ("radial-gradient(64% 46% at 92% 2%, rgba(199,226,75,.34) 0%, rgba(199,226,75,0) 62%),"
+          "radial-gradient(58% 42% at 2% 98%, rgba(86,105,12,.13) 0%, rgba(86,105,12,0) 64%),"
+          "linear-gradient(168deg, #FCFDF8 0%, #F0F2E7 54%, #E5E8DA 100%)")
+СЕТКА = (  # 40 px клетка, тоньше волоса: кадр перестаёт быть пустым листом
+    '<div style="position: absolute; inset: 0; pointer-events: none; opacity: .5; '
+    'background-image: linear-gradient(rgba(18,19,14,.045) 1px, transparent 1px), '
+    'linear-gradient(90deg, rgba(18,19,14,.045) 1px, transparent 1px); '
+    'background-size: 40px 40px;"></div>')
 ЧЕРНИЛА, ВТОРОЙ, ТИХИЙ = "#12130E", "#1E1F17", "#3A3E33"
 БЕЛАЯ = "#FFFFFF"
 РАМКА = "rgba(18,19,14,.09)"
@@ -39,8 +50,15 @@ import дизайн_холст as дх  # noqa: E402
 
 КРУП = "font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.025em;"
 ТЕКСТ = "font-family: Golos, 'Helvetica Neue', Arial, sans-serif;"
+ЧЕК = "font-family: JetBrains, 'SFMono-Regular', Menlo, monospace;"   # цифры на бумажном чеке
 CSS, ШРИФТЫ = дх.шрифты(("Onest", "onest-800", 800), ("Golos", "golos-400", 400),
-                        ("Golos", "golos-700", 700))
+                        ("Golos", "golos-700", 700), ("JetBrains", "jetbrains-400", 400),
+                        ("JetBrains", "jetbrains-700", 700))
+
+
+def грунт() -> str:
+    """Фон кадра: градиент плюс сетка. Один вызов на доску, самым первым слоем."""
+    return f'<div style="position: absolute; inset: 0; background: {БУМАГА};"></div>{СЕТКА}'
 
 # Сетка доски 1080×1440: край 80, всё важное выше 1105, знак в полосе 1191.
 КРАЙ = 80
@@ -112,7 +130,8 @@ def кадр(н: int, всего: int, к: dict) -> str:
     стрелка = ('<svg viewBox="0 0 80 24" fill="none" stroke="#12130E" stroke-width="3.4" '
                'stroke-linecap="round" stroke-linejoin="round" style="width: 72px; height: 22px;">'
                '<path d="M4 12h68M60 4l12 8-12 8"/></svg>')
-    return f"""<div style="position: absolute; left: {КРАЙ}px; top: 60px; {ТЕКСТ} font-weight: 700; font-size: 30px; letter-spacing: .02em; color: {стиль.ОЛИВА};">{к["рубрика"]}</div>
+    return f"""{СЕТКА}
+<div style="position: absolute; left: {КРАЙ}px; top: 60px; {ТЕКСТ} font-weight: 700; font-size: 30px; letter-spacing: .02em; color: {стиль.ОЛИВА};">{к["рубрика"]}</div>
 {счёт}
 <div style="position: absolute; left: {КРАЙ}px; top: 112px; width: 920px; {КРУП} font-size: {кегль(к["категория"], 88, 72, 18)}px; line-height: 1.02; color: {ЧЕРНИЛА};">{к["категория"]}</div>
 <div style="position: absolute; left: 506px; top: {КАРТА_ВЕРХ + КАРТА_В // 2 - 34}px; width: 68px; height: 68px; border-radius: 50%; background: {БЕЛАЯ}; border: 2px solid {РАМКА}; box-shadow: {ТЕНЬ}; display: flex; align-items: center; justify-content: center; z-index: 2;">{стрелка}</div>
@@ -131,96 +150,181 @@ def сцена(файл: str, сдвиг: int = 0) -> str:
             f'height: 1440px; object-fit: cover;">')
 
 
-def обложка_чек(о: dict) -> str:
-    """Главная: кот с длинным чеком, заголовок и подпись в пустом левом верхнем углу.
+def обложка_чек(о: dict, строки_чека: list[tuple[str, str]], итог: str) -> str:
+    """Главная: кот держит настоящий чек — на нём набраны имена и цены, внизу итог.
 
-    Заголовок крупный (правило владельца 23.09.2026: обложка должна остановить ленту),
-    слово-акцент — в лаймовой капсуле.
+    Пустой чек в сцене — просто предмет; чек с цифрами читается за полсекунды и сам
+    задаёт вопрос заголовка (правка владельца 24.09.2026: «обложки должны останавливать»).
+    Цифры набраны моношрифтом поверх бумаги и чуть повёрнуты по её наклону.
     """
+    позиции = "".join(
+        f'<div style="display: flex; justify-content: space-between; gap: 10px;">'
+        f'<span>{имя}</span><span>{цена}</span></div>' for имя, цена in строки_чека)
+    чек = (f'<div style="position: absolute; left: 578px; top: 800px; width: 188px; transform: rotate(-1.2deg); '
+           f'{ЧЕК} font-size: 21px; line-height: 1.55; color: #24261C;">{позиции}'
+           f'<div style="margin: 9px 0 7px; border-top: 2px dashed rgba(18,19,14,.45);"></div>'
+           f'<div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 29px;">'
+           f'<span>ИТОГО</span><span>{итог}</span></div></div>')
     строки = о["строки"]
-    заголовок = f'{строки[0]}<br>{строки[1]} {дх.маркер(строки[2])}'
-    return (f'<div style="position: absolute; inset: 0; background: {БУМАГА};"></div>'
+    return (грунт()
             + сцена("kot-chek.jpg", о.get("сдвиг", 0))
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 76px; width: 900px; {КРУП} '
-              f'font-size: 116px; line-height: 1.0; color: {ЧЕРНИЛА};">{заголовок}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 470px; width: 560px; {ТЕКСТ} '
-              f'font-weight: 700; font-size: 46px; line-height: 1.22; color: {ВТОРОЙ};">{о["под"]}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 660px; display: inline-flex; '
-              f'align-items: center; gap: 18px; padding: 16px 30px 20px; border-radius: 26px; '
-              f'background: {ЧЕРНИЛА}; {КРУП} font-size: 52px; color: {стиль.ЛАЙМ};">{о["плашка"]}</div>'
-            + низ())
-
-
-def обложка_ценники(о: dict, значки: list[dict]) -> str:
-    """Запасная 1: два ряда ценников — слева с суммами, справа с нулями, кот выбирает правый."""
-    ряд = ""
-    for i, с in enumerate(значки[:5]):
-        ряд += (f'<div style="display: flex; align-items: center; gap: 16px; padding: 12px 22px; '
-                f'border-radius: 999px; background: {БЕЛАЯ}; border: 2px solid {РАМКА}; '
-                f'box-shadow: {ТЕНЬ};">'
-                f'<img src="{с["значок"]}" style="width: 44px; height: 44px; object-fit: contain; '
-                f'{"filter: invert(1);" if с.get("инверсия") else ""}">'
-                f'<div style="{КРУП} font-size: 34px; color: {ЧЕРНИЛА};">{с["цена"]}</div></div>')
-    return (f'<div style="position: absolute; inset: 0; background: {БУМАГА};"></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 96px; width: 920px; {КРУП} '
-              f'font-size: 104px; line-height: 1.0; color: {ЧЕРНИЛА};">{о["строки"][0]}<br>'
-              f'{дх.маркер(о["строки"][1])}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 390px; width: 800px; {ТЕКСТ} '
+            + чек
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 88px; width: 880px; {КРУП} '
+              f'font-size: 112px; line-height: .98; color: {ЧЕРНИЛА};">{строки[0]}<br>{строки[1]}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 330px; display: inline-flex; '
+              f'align-items: baseline; gap: 20px;">'
+              f'<span style="{КРУП} font-size: 128px; line-height: 1; color: {ЧЕРНИЛА}; '
+              f'text-decoration: line-through; text-decoration-thickness: 8px; '
+              f'text-decoration-color: {стиль.ЛАЙМ};">{итог}</span>'
+              f'<span style="{КРУП} font-size: 72px; line-height: 1; color: {ТИХИЙ};">→</span>'
+              f'<span style="{КРУП} font-size: 128px; line-height: 1; padding: 0 22px 10px; '
+              f'border-radius: 22px; background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">$0</span></div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 508px; width: 440px; {ТЕКСТ} '
               f'font-weight: 700; font-size: 44px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 556px; width: 620px; display: flex; '
-              f'flex-wrap: wrap; gap: 16px;">{ряд}</div>'
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; right: 24px; '
-              f'top: 700px; height: 400px;">'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 900px; width: 600px; box-sizing: border-box; '
-              f'padding: 26px 32px 30px; border-radius: 30px; background: {ЧЕРНИЛА}; {КРУП} font-size: 54px; '
-              f'line-height: 1.1; color: {стиль.ЛАЙМ};">{о["плашка"]}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 672px; display: inline-flex; '
+              f'align-items: center; gap: 18px; padding: 16px 30px 20px; border-radius: 26px; '
+              f'background: {стиль.ЛАЙМ}; {КРУП} font-size: 48px; color: {ЧЕРНИЛА};">{о["плашка"]}</div>'
             + низ())
 
 
-def обложка_ноль(о: dict) -> str:
-    """Запасная 2: тёмный кадр, гигантский ноль и кот рядом — другой макет и другая светлота."""
-    return (f'<div style="position: absolute; inset: 0; background: radial-gradient(120% 90% at 78% 26%, '
-            f'rgba(199,226,75,.20) 0%, rgba(18,19,15,0) 62%), {стиль.ТЁМНЫЙ};"></div>'
-            + f'<div style="position: absolute; right: -40px; top: 60px; {КРУП} font-size: 720px; '
-              f'line-height: .8; color: {стиль.ЛАЙМ}; opacity: .92;">0</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 112px; width: 780px; {КРУП} '
-              f'font-size: 96px; line-height: 1.0; color: {стиль.СВЕТЛЫЙ};">{о["строки"][0]}<br>'
+def обложка_замена(о: dict, пары: list[dict]) -> str:
+    """Запасная 1: весь пост на обложке — пять платных слева, их бесплатные двойники справа.
+
+    Самый «сохраняемый» макет: человек видит подмену целиком и листает, чтобы прочитать
+    имена. Колонки помечены сверху, между ними столбик стрелок.
+    """
+    левая = правая = стрелки = ""
+    for п in пары:
+        левая += (f'<div style="display: flex; align-items: center; gap: 14px; height: 78px; padding: 0 20px; '
+                  f'border-radius: 22px; background: rgba(255,255,255,.72); border: 2px solid {РАМКА};">'
+                  f'<img src="{п["платно"]["значок"]}" style="width: 42px; height: 42px; object-fit: contain; '
+                  f'border-radius: {"50%" if п["платно"].get("во_весь") else "0"};">'
+                  f'<div style="{ТЕКСТ} font-weight: 700; font-size: 27px; color: {ТИХИЙ}; flex-grow: 1;">{п["платно"]["имя"]}</div>'
+                  f'<div style="{КРУП} font-size: 34px; color: {ТИХИЙ};">{п["платно"]["цена"]}</div></div>')
+        правая += (f'<div style="display: flex; align-items: center; gap: 14px; height: 78px; padding: 0 20px; '
+                   f'border-radius: 22px; background: {БЕЛАЯ}; border: 3px solid {стиль.ЛАЙМ}; box-shadow: {ТЕНЬ};">'
+                   f'<img src="{п["бесплатно"]["значок"]}" style="width: 42px; height: 42px; object-fit: contain; '
+                   f'border-radius: {"50%" if п["бесплатно"].get("во_весь") else "0"};">'
+                   f'<div style="{ТЕКСТ} font-weight: 700; font-size: 27px; color: {ЧЕРНИЛА}; flex-grow: 1;">{п["бесплатно"]["имя"]}</div>'
+                   f'<div style="{КРУП} font-size: 34px; color: {ЧЕРНИЛА};">$0</div></div>')
+        стрелки += (f'<div style="height: 78px; display: flex; align-items: center; justify-content: center; '
+                    f'{КРУП} font-size: 38px; color: {стиль.ОЛИВА};">→</div>')
+    шапка = (f'<div style="position: absolute; left: {КРАЙ}px; top: 486px; width: 920px; display: grid; '
+             f'grid-template-columns: 1fr 60px 1fr; gap: 12px; {ТЕКСТ} font-weight: 700; font-size: 26px; '
+             f'letter-spacing: .02em; color: {ТИХИЙ};"><div>платишь</div><div></div>'
+             f'<div style="color: {ЧЕРНИЛА};">можешь не платить</div></div>')
+    итог = (f'<div style="position: absolute; left: {КРАЙ}px; top: 1014px; display: inline-flex; '
+            f'align-items: baseline; gap: 16px; {КРУП} font-size: 54px; color: {ЧЕРНИЛА};">'
+            f'<span style="text-decoration: line-through; text-decoration-thickness: 5px; '
+            f'text-decoration-color: {стиль.ЛАЙМ};">$109 в месяц</span><span>→</span>'
+            f'<span style="padding: 0 16px 6px; border-radius: 16px; background: {стиль.ЛАЙМ};">$0</span></div>')
+    return (грунт()
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 108px; width: 920px; {КРУП} '
+              f'font-size: 92px; line-height: 1.0; color: {ЧЕРНИЛА};">{о["строки"][0]}<br>'
+              f'{дх.маркер(о["строки"][1])}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 344px; width: 800px; {ТЕКСТ} '
+              f'font-weight: 700; font-size: 40px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
+            + шапка
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 534px; width: 920px; display: grid; '
+              f'grid-template-columns: 1fr 60px 1fr; gap: 12px;">'
+              f'<div style="display: flex; flex-direction: column; gap: 12px;">{левая}</div>'
+              f'<div style="display: flex; flex-direction: column; gap: 12px;">{стрелки}</div>'
+              f'<div style="display: flex; flex-direction: column; gap: 12px;">{правая}</div></div>'
+            + итог
+            + низ())
+
+
+def обложка_списание(о: dict, значки: list[dict]) -> str:
+    """Запасная 2: тёмный кадр и карточка списания $109 с лаймовым штампом «ОТМЕНЕНО».
+
+    Здесь работает не число, а сюжет: знакомый всем счёт за подписки и печать поверх него.
+    Прежний вариант (гигантский ноль) был красив, но ничего не обещал.
+    """
+    ряд = "".join(
+        f'<div style="width: 58px; height: 58px; border-radius: 50%; background: #FFFFFF; flex-shrink: 0; '
+        f'display: flex; align-items: center; justify-content: center; overflow: hidden;">'
+        f'<img src="{с["значок"]}" style="width: {"100%" if с.get("во_весь") else "62%"}; '
+        f'height: {"100%" if с.get("во_весь") else "62%"}; object-fit: {"cover" if с.get("во_весь") else "contain"};">'
+        f'</div>' for с in значки[:5])
+    карточка = (
+        f'<div style="position: absolute; left: {КРАЙ}px; top: 452px; width: 920px; box-sizing: border-box; '
+        f'padding: 38px 44px 42px; border-radius: 40px; background: #1B1D17; border: 2px solid rgba(242,244,234,.12); '
+        f'box-shadow: 0 34px 80px rgba(0,0,0,.5);">'
+        f'<div style="display: flex; justify-content: space-between; align-items: center; {ТЕКСТ} '
+        f'font-weight: 700; font-size: 28px; color: #9AA08F;"><span>Подписки на ИИ</span><span>ежемесячно</span></div>'
+        f'<div style="{КРУП} font-size: 124px; line-height: 1.05; color: {стиль.СВЕТЛЫЙ}; margin-top: 8px;">'
+        f'−{о["сумма"]}</div>'
+        f'<div style="display: flex; gap: 14px; margin-top: 24px;">{ряд}</div></div>')
+    штамп = (
+        f'<div style="position: absolute; left: 560px; top: 628px; transform: rotate(-9deg); '
+        f'padding: 12px 30px 16px; border: 7px solid {стиль.ЛАЙМ}; border-radius: 18px; '
+        f'{КРУП} font-size: 66px; line-height: 1; letter-spacing: .02em; color: {стиль.ЛАЙМ}; '
+        f'text-transform: uppercase; background: rgba(18,19,15,.7);">{о["штамп"]}</div>')
+    return (f'<div style="position: absolute; inset: 0; background: '
+            f'radial-gradient(70% 48% at 84% 8%, rgba(199,226,75,.22) 0%, rgba(18,19,15,0) 62%), '
+            f'radial-gradient(60% 40% at 6% 96%, rgba(199,226,75,.10) 0%, rgba(18,19,15,0) 60%), '
+            f'{стиль.ТЁМНЫЙ};"></div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 104px; width: 920px; {КРУП} '
+              f'font-size: 84px; line-height: 1.0; color: {стиль.СВЕТЛЫЙ};">{о["строки"][0]}<br>'
               f'<span style="color: {стиль.ЛАЙМ};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 420px; width: 600px; {ТЕКСТ} '
-              f'font-weight: 700; font-size: 44px; line-height: 1.24; color: #C9CCBF;">{о["под"]}</div>'
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 60px; '
-              f'top: 660px; height: 470px;">'
-            + f'<div style="position: absolute; right: {КРАЙ}px; top: 900px; width: 430px; box-sizing: border-box; '
-              f'padding: 26px 30px 30px; border-radius: 30px; background: {стиль.ЛАЙМ}; {КРУП} font-size: 48px; '
-              f'line-height: 1.08; color: {ЧЕРНИЛА};">{о["плашка"]}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 312px; width: 720px; {ТЕКСТ} '
+              f'font-weight: 700; font-size: 40px; line-height: 1.2; color: #C9CCBF;">{о["под"]}</div>'
+            + карточка + штамп
+            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; right: 36px; '
+              f'top: 812px; height: 300px;">'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 900px; display: inline-flex; '
+              f'align-items: center; padding: 20px 32px 24px; border-radius: 26px; background: {стиль.ЛАЙМ}; '
+              f'{КРУП} font-size: 46px; line-height: 1.08; color: {ЧЕРНИЛА};">{о["плашка"]}</div>'
             + f'<img src="logo.png" style="position: absolute; left: {КРАЙ}px; top: 1191px; height: 44px;">')
 
 
-def финал(ф: dict) -> str:
-    """Итог: сумма расплаты, три пункта «что сохраняешь», тёмная плашка-призыв и кот."""
-    # Метка пункта — лаймовый кружок в тёмной обводке: на светлом лайм читается только так,
-    # и он же добирает долю акцента до нормы (замер 24.09.2026 давал 3,9% при оливковых галочках).
-    пункты = ""
-    for т in ф["пункты"]:
-        пункты += (f'<div style="display: flex; gap: 22px; align-items: flex-start;">'
-                   f'<div style="width: 26px; height: 26px; border-radius: 50%; background: {стиль.ЛАЙМ}; '
-                   f'border: 4px solid {ЧЕРНИЛА}; box-sizing: border-box; flex-shrink: 0; margin-top: 8px;"></div>'
-                   f'<div>{т}</div></div>')
-    return (f'<div style="position: absolute; inset: 0; background: {БУМАГА};"></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 96px; width: 920px; {КРУП} '
-              f'font-size: 96px; line-height: 1.0; color: {ЧЕРНИЛА};">{ф["строки"][0]}<br>'
-              f'{дх.маркер(ф["строки"][1])}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 390px; width: 620px; box-sizing: border-box; '
-              f'padding: 34px 38px 38px; border-radius: 36px; background: {БЕЛАЯ}; border: 2px solid {РАМКА}; '
-              f'box-shadow: {ТЕНЬ}; display: flex; flex-direction: column; gap: 22px; {ТЕКСТ} font-weight: 700; '
-              f'font-size: 34px; line-height: 1.22; color: {ВТОРОЙ};">{пункты}</div>'
-            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; right: 20px; '
-              f'top: 380px; height: 400px;">'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 820px; width: 920px; box-sizing: border-box; '
-              f'padding: 32px 40px 36px; border-radius: 34px; background: {ЧЕРНИЛА}; {КРУП} font-size: 54px; '
-              f'line-height: 1.1; color: {стиль.ЛАЙМ};">{ф["призыв"]}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 1010px; {ТЕКСТ} font-weight: 700; '
-              f'font-size: 42px; color: {ВТОРОЙ};">{ф["ссылка"]}</div>'
+def финал(ф: dict, пары: list[dict]) -> str:
+    """Итог — шпаргалка: все пять замен подряд и сумма, ради которой это сохраняют.
+
+    Прежний финал перечислял три мысли словами; их читать незачем — их и так проговорил
+    пост. Сохраняют не мысль, а список: кто кого заменяет (правка владельца 24.09.2026).
+    """
+    строки = ""
+    for п in пары:
+        строки += (
+            f'<div style="display: grid; grid-template-columns: 1fr 52px 1fr; align-items: center; gap: 10px; '
+            f'height: 76px; padding: 0 22px; border-radius: 24px; background: rgba(255,255,255,.78); '
+            f'border: 2px solid {РАМКА};">'
+            f'<div style="display: flex; align-items: center; gap: 14px; min-width: 0;">'
+            f'<img src="{п["платно"]["значок"]}" style="width: 40px; height: 40px; object-fit: contain; '
+            f'flex-shrink: 0; border-radius: {"50%" if п["платно"].get("во_весь") else "0"};">'
+            f'<span style="{ТЕКСТ} font-weight: 700; font-size: 28px; color: {ТИХИЙ};">{п["платно"]["имя"]}</span>'
+            f'<span style="{КРУП} font-size: 28px; color: {ТИХИЙ};">{п["платно"]["цена"]}</span></div>'
+            f'<div style="{КРУП} font-size: 34px; color: {стиль.ОЛИВА}; text-align: center;">→</div>'
+            # Правая половина строки залита лаймом: «бесплатная сторона» видна одним взглядом,
+            # и доля акцента в финале дотягивает до нормы (замер 24.09 давал 3,0%).
+            f'<div style="display: flex; align-items: center; gap: 14px; min-width: 0; height: 100%; '
+            f'margin: 0 -22px 0 0; padding: 0 22px; border-radius: 0 24px 24px 0; '
+            f'background: rgba(199,226,75,.42);">'
+            f'<img src="{п["бесплатно"]["значок"]}" style="width: 40px; height: 40px; object-fit: contain; '
+            f'flex-shrink: 0; border-radius: {"50%" if п["бесплатно"].get("во_весь") else "0"};">'
+            f'<span style="{ТЕКСТ} font-weight: 700; font-size: 28px; color: {ЧЕРНИЛА};">{п["бесплатно"]["имя"]}</span>'
+            f'<span style="{КРУП} font-size: 28px; padding: 2px 12px 5px; border-radius: 12px; '
+            f'background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">$0</span></div></div>')
+    счёт = (f'<div style="position: absolute; right: {КРАЙ}px; top: 104px; display: flex; flex-direction: column; '
+            f'align-items: flex-end; gap: 4px;">'
+            f'<span style="{КРУП} font-size: 72px; line-height: 1; color: {ТИХИЙ}; text-decoration: line-through; '
+            f'text-decoration-thickness: 7px; text-decoration-color: {стиль.ОЛИВА};">{ф["было"]}</span>'
+            f'<span style="{КРУП} font-size: 104px; line-height: 1; padding: 0 20px 8px; border-radius: 20px; '
+            f'background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">{ф["стало"]}</span></div>')
+    return (грунт()
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 112px; width: 640px; {КРУП} '
+              f'font-size: 80px; line-height: 1.0; color: {ЧЕРНИЛА};">{ф["строки"][0]}<br>{ф["строки"][1]}</div>'
+            + счёт
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 352px; width: 920px; display: flex; '
+              f'flex-direction: column; gap: 12px;">{строки}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 828px; width: 620px; box-sizing: border-box; '
+              f'padding: 30px 36px 34px; border-radius: 32px; background: {ЧЕРНИЛА};">'
+              f'<div style="{КРУП} font-size: 50px; line-height: 1.08; color: {стиль.ЛАЙМ};">{ф["призыв"]}</div>'
+              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 32px; color: #C9CCBF; margin-top: 12px;">'
+              f'{ф["ссылка"]}</div></div>'
+            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; right: 30px; '
+              f'top: 790px; height: 320px;">'
             + низ())
 
 
@@ -231,7 +335,7 @@ def main():
     корень = ТУТ / "холсты" / файл.stem
     CSS = дх.шрифты_холста(CSS, корень)
     врем = корень / "_файлы"
-    позы = {пост["обложка_ценники"]["поза"], пост["обложка_ноль"]["поза"], пост["финал"]["поза"]}
+    позы = {пост["обложка_списание"]["поза"], пост["финал"]["поза"]}
     файлы = list(ШРИФТЫ) + [дх.логотип(врем)] + [дх.кот(п, врем) for п in позы]
     файлы.append(дх.снимок_сайта(ТУТ / пост["обложка"]["сцена"], врем, 1080))
     for к in пост["кадры"]:
@@ -242,17 +346,19 @@ def main():
             с["значок"] = путь.name
     всего = len(пост["кадры"]) + 2
     значки = [к["платно"] for к in пост["кадры"]]
+    чек = [(к["платно"]["имя"], к["платно"]["цена"]) for к in пост["кадры"]]
     доски = [("Main.dc.html", "01 · Обложка · чек",
-              дх.доска("Обложка", обложка_чек(пост["обложка"]), "#EDEFE4", CSS))]
+              дх.доска("Обложка", обложка_чек(пост["обложка"], чек, пост["обложка"]["итог"]), БУМАГА, CSS))]
     for н, к in enumerate(пост["кадры"], 2):
         доски.append((f"Kadr{н:02d}.dc.html", f"{н:02d} · {к['категория_кратко']}",
-                      дх.доска(к["категория_кратко"], кадр(н, всего, к), "#EDEFE4", CSS)))
+                      дх.доска(к["категория_кратко"], кадр(н, всего, к), БУМАГА, CSS)))
     доски.append((f"Kadr{всего:02d}.dc.html", f"{всего:02d} · Финал",
-                  дх.доска("Финал", финал(пост["финал"]), "#EDEFE4", CSS)))
-    доски.append(("Oblozhka2.dc.html", "Обложка 2 · ценники",
-                  дх.доска("Обложка 2", обложка_ценники(пост["обложка_ценники"], значки), "#EDEFE4", CSS)))
-    доски.append(("Oblozhka3.dc.html", "Обложка 3 · ноль",
-                  дх.доска("Обложка 3", обложка_ноль(пост["обложка_ноль"]), стиль.ТЁМНЫЙ, CSS)))
+                  дх.доска("Финал", финал(пост["финал"], пост["кадры"]), БУМАГА, CSS)))
+    доски.append(("Oblozhka2.dc.html", "Обложка 2 · замена",
+                  дх.доска("Обложка 2", обложка_замена(пост["обложка_замена"], пост["кадры"]), БУМАГА, CSS)))
+    доски.append(("Oblozhka3.dc.html", "Обложка 3 · списание",
+                  дх.доска("Обложка 3", обложка_списание(пост["обложка_списание"], значки),
+                           стиль.ТЁМНЫЙ, CSS)))
     проект = дх.собрать(корень, пост["название"], доски, файлы, пост.get("заметка", ""), в_ряд=5,
                         источник=пост.get("источник", ""))
     print(f"холст: {проект} — досок {len(доски)}")
