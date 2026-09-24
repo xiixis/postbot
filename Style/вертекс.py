@@ -23,7 +23,23 @@ from pathlib import Path
 
 ПРОЕКТ = os.getenv("GCP_PROJECT", "xtube-4x-covers")
 РЕГИОН = os.getenv("GCP_REGION", "us-central1")
-ПОИСКОВИК = Path(__file__).resolve().parent.parent.parent / "yt-searcher"
+
+
+def _поисковик() -> Path:
+    """Папка 4xTube: обычно сосед постбота, но из изолированной копии — сосед корня.
+
+    Копия сессии лежит в `postbot/.claude/worktrees/<имя>/`, и путь «на два уровня вверх»
+    приводил в несуществующий `postbot/.claude/worktrees/yt-searcher`: картинки из копии
+    не рисовались вовсе (24.09.2026). Ищем ближайшую папку-соседа вверх по дереву.
+    """
+    for папка in Path(__file__).resolve().parents:
+        сосед = папка / "yt-searcher"
+        if (сосед / "app").is_dir():
+            return сосед
+    return Path(__file__).resolve().parent.parent.parent / "yt-searcher"
+
+
+ПОИСКОВИК = _поисковик()
 
 _временный: Path | None = None
 _учётки = None
