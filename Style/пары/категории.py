@@ -209,10 +209,17 @@ def обложка_чек(о: dict, строки_чека: list[tuple[str, str]]
               f'<span style="{КРУП} font-size: 72px; line-height: 1; color: {ТИХИЙ};">→</span>'
               f'<span style="{КРУП} font-size: 132px; line-height: 1; padding: 0 22px 10px; '
               f'border-radius: 22px; background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">$0</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 516px; width: 440px; {ТЕКСТ} '
-              f'font-weight: 700; font-size: 44px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
+            # Было width 440 / font-size 44: текст «под» падал в 4 строки и налезал на плашку
+            # «5 замен внутри →» на 42 px (приёмка досок 24.09). Кегль 38 — три строки. Шире 460
+            # нельзя: голова кота в сцене начинается около 600 px, и при 620 «нашёлся» легло
+            # на ухо. Приёмка этого не видит — сцена для неё фон; сверено вырезкой снимка.
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 516px; width: 460px; {ТЕКСТ} '
+              f'font-weight: 700; font-size: 38px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
+            # Нижний паддинг был 20 px: плашка стояла впритык к чеку на чеке (зазор 25 px при
+            # пороге 26, приёмка 24.09). Чек не двигаем — он привязан к бумаге в сцене, поэтому
+            # плашку не спускаем ниже, а чуть подрезаем снизу саму плашку.
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 680px; display: inline-flex; '
-              f'align-items: center; gap: 18px; padding: 16px 30px 20px; border-radius: 26px; '
+              f'align-items: center; gap: 18px; padding: 16px 30px 16px; border-radius: 26px; '
               f'background: {стиль.ЛАЙМ}; {КРУП} font-size: 48px; color: {ЧЕРНИЛА};">{о["плашка"]}</div>'
             + низ())
 
