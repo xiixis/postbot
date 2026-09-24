@@ -26,34 +26,17 @@ def снять(папка: Path, куда: Path) -> None:
 
     Раньше снимал `снять-холст.mjs` через playwright-core из ~/4xSoft/html-instagram-carousel;
     17.09.2026 той папки не стало, и выпуск падал. Доска открывается как есть, без support.js
-    холста, а картинки вшиваются данными: по file:// Chrome их молча не рисует.
+    холста, а картинки вшиваются данными (`снять_доски.страница`). Запасные обложки
+    `Oblozhka*` в выпуск не идут.
     """
-    import base64, re
     sys.path.insert(0, str(стиль.ПОСТБОТ))
     import браузер
+    import снять_доски
     куда.mkdir(parents=True, exist_ok=True)
-    # Холст типа Design (с 23.09.2026, `дизайн_холст.py`) держит доски в `project/`, а
-    # индекс в виде `"boards": {файл: {x, y, …}}`; прежние холсты — `"artboards": [...]`.
-    if (папка / "project" / "canvas.json").exists():
-        папка = папка / "project"
-    индекс = json.loads((папка / "canvas.json").read_text(encoding="utf-8"))
-    if "boards" in индекс:
-        индекс["artboards"] = [{"file": ф, **д} for ф, д in индекс["boards"].items()]
-    доски = [а for а in индекс["artboards"]
-             if (папка / а["file"]).exists() and not а["file"].startswith("Oblozhka")]
-    типы = {"webp": "image/webp", "png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg",
-            "svg": "image/svg+xml", "woff2": "font/woff2"}
-    for н, а in enumerate(sorted(доски, key=lambda а: (а["y"], а["x"])), 1):
-        html = (папка / а["file"]).read_text(encoding="utf-8").replace('<script src="./support.js"></script>', "")
-        html = html.replace("<body>", "<body style='margin:0'>", 1)
-        # Кавычки любые: доски «пар» пишутся из вёрстки, где атрибуты в одинарных кавычках.
-        html = re.sub(r"""src=(["'])([^"'/:]+\.(webp|png|jpe?g|svg))\1""", lambda м: 'src="%s"' % стиль.данные(
-            папка / м.group(2), типы[м.group(3)]), html)
-        # Шрифты и фоны в CSS зовутся так же, по имени рядом с доской.
-        html = re.sub(r"""url\((["']?)([^"'/:()]+\.(webp|png|jpe?g|svg|woff2))\1\)""", lambda м: "url(%s)" % стиль.данные(
-            папка / м.group(2), типы[м.group(3)]), html)
-        if not браузер.снять(html, 1080, 1440, куда / f"{н:02d}.png"):
-            raise SystemExit(f"снимок не вышел: {а['file']}")
+    доски = [д for д in снять_доски.доски(папка) if not д["file"].startswith("Oblozhka")]
+    for н, д in enumerate(доски, 1):
+        if not браузер.снять(снять_доски.страница(папка, д["file"]), 1080, 1440, куда / f"{н:02d}.png"):
+            raise SystemExit(f"снимок не вышел: {д['file']}")
 
 
 # Хештеги в подписи обязательны всегда (слово владельца 17.09.2026: «Хештеги!!! Они всегда

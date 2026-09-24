@@ -1,0 +1,176 @@
+{
+ "v": 3,
+ "title": "эталоны приёмки досок",
+ "boards": {
+  "A-Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Main"
+  },
+  "A-Kadr02.dc.html": {
+   "x": 1160,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Kadr02"
+  },
+  "A-Kadr03.dc.html": {
+   "x": 2320,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Kadr03"
+  },
+  "A-Kadr04.dc.html": {
+   "x": 3480,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Kadr04"
+  },
+  "A-Kadr05.dc.html": {
+   "x": 4640,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Kadr05"
+  },
+  "A-Kadr06.dc.html": {
+   "x": 5800,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Kadr06"
+  },
+  "A-Kadr07.dc.html": {
+   "x": 6960,
+   "y": 0,
+   "w": 1080,
+   "h": 1440,
+   "title": "А · Kadr07"
+  },
+  "B-Main.dc.html": {
+   "x": 0,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Main"
+  },
+  "B-Kadr02.dc.html": {
+   "x": 1160,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Kadr02"
+  },
+  "B-Kadr03.dc.html": {
+   "x": 2320,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Kadr03"
+  },
+  "B-Kadr04.dc.html": {
+   "x": 3480,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Kadr04"
+  },
+  "B-Kadr05.dc.html": {
+   "x": 4640,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Kadr05"
+  },
+  "B-Kadr06.dc.html": {
+   "x": 5800,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Kadr06"
+  },
+  "B-Kadr07.dc.html": {
+   "x": 6960,
+   "y": 1640,
+   "w": 1080,
+   "h": 1440,
+   "title": "Б · Kadr07"
+  },
+  "A-bityi-kot-u-kraya.dc.html": {
+   "x": 0,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · финал А 3b4e57c: кот у правого края"
+  },
+  "A-bityi-otmeneno-za-kraem.dc.html": {
+   "x": 1160,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · обложка «списание» a602efa: штамп за краем"
+  },
+  "B-bityi-kot-u-kraya.dc.html": {
+   "x": 2320,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · обложка «превращение»: кот у правого края"
+  },
+  "A-bityi-vyvod-pod-plashkoy.dc.html": {
+   "x": 3480,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · кадр А 4 до правки: вывод под плашкой"
+  },
+  "A-bityi-kot-na-spiske.dc.html": {
+   "x": 4640,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · финал А до правки: кот вплотную к списку"
+  },
+  "A-bityi-final-3-stroki.dc.html": {
+   "x": 5800,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · финал А: заголовок в 3 строки налез на список"
+  },
+  "B-bityi-pod-na-zagolovke.dc.html": {
+   "x": 6960,
+   "y": 3280,
+   "w": 1080,
+   "h": 1440,
+   "title": "битая · обложка «плёнка»: подпись налезла на заголовок"
+  }
+ },
+ "order": [
+  "A-Main.dc.html",
+  "A-Kadr02.dc.html",
+  "A-Kadr03.dc.html",
+  "A-Kadr04.dc.html",
+  "A-Kadr05.dc.html",
+  "A-Kadr06.dc.html",
+  "A-Kadr07.dc.html",
+  "B-Main.dc.html",
+  "B-Kadr02.dc.html",
+  "B-Kadr03.dc.html",
+  "B-Kadr04.dc.html",
+  "B-Kadr05.dc.html",
+  "B-Kadr06.dc.html",
+  "B-Kadr07.dc.html",
+  "A-bityi-kot-u-kraya.dc.html",
+  "A-bityi-otmeneno-za-kraem.dc.html",
+  "B-bityi-kot-u-kraya.dc.html",
+  "A-bityi-vyvod-pod-plashkoy.dc.html",
+  "A-bityi-kot-na-spiske.dc.html",
+  "A-bityi-final-3-stroki.dc.html",
+  "B-bityi-pod-na-zagolovke.dc.html"
+ ]
+}

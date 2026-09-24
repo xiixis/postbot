@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Обложка</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+@font-face{font-family:Oswald;font-weight:600;font-display:block;src:url(oswald-600-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:Oswald;font-weight:600;font-display:block;src:url(oswald-600-cyrillic.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Onest;font-weight:800;font-display:block;src:url(onest-800-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:Onest;font-weight:800;font-display:block;src:url(onest-800-cyrillic.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Golos;font-weight:400;font-display:block;src:url(golos-400-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:Golos;font-weight:400;font-display:block;src:url(golos-400-cyrillic.woff2) format('woff2');unicode-range:U+0400-04FF}
+@font-face{font-family:Golos;font-weight:700;font-display:block;src:url(golos-700-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:Golos;font-weight:700;font-display:block;src:url(golos-700-cyrillic.woff2) format('woff2');unicode-range:U+0400-04FF}
+</style>
+</helmet>
+<div style="width: 1080px; height: 1440px; position: relative; overflow: hidden; background: #12130F;">
+<div style="position: absolute; inset: 0; background: #12130F;"></div><img src="kot-rezhisser.jpg" style="position: absolute; left: 0; top: 0px; width: 1080px; height: 1440px; object-fit: cover;"><div style="position: absolute; left: 70px; top: 120px; width: 700px; font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.025em; font-size: 118px; line-height: .98; color: #F2F4EA;">5 ИИ<br><span style="color: #C7E24B;">рисуют ролик</span><br>за тебя</div><div style="position: absolute; left: 70px; top: 600px; width: 520px; font-family: Golos, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 42px; line-height: 1.22; color: #CBCFBE;">Даёшь текст — забираешь готовый ролик</div><div style="position: absolute; left: 70px; top: 790px; display: inline-flex; align-items: center; gap: 16px; padding: 14px 26px 18px; border-radius: 24px; background: #C7E24B; font-family: Onest, 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.025em; font-size: 40px; color: #12130E;">от заставки до аватара</div><img src="logo.png" style="position: absolute; left: 70px; top: 1191px; height: 44px;">
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1080,"height":1440}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
