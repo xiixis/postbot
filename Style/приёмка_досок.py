@@ -55,6 +55,8 @@ document.fonts.ready.then(() => {
     el.setAttribute('data-блок', '');
     const л = б.left - К.left, п = б.right - К.left, в = б.top - К.top, н = б.bottom - К.top;
     const кот = el.hasAttribute('data-кот') || el.classList.contains('кот');
+    // Кот на картинке сцены (`обложки.кот_сцены`) зону кнопок не судит: его не подвинуть.
+    if (el.classList.contains('кот-сцены')) continue;
     if (н > %(ВЕРХ)d && в < %(НИЗ)d && (кот ? п > %(X)d + %(ДОПУСК)d : л >= %(X)d))
       зона.push((кот ? 'кот' : el.textContent.trim().slice(0, 14) || el.tagName.toLowerCase())
                 + ' ' + Math.round(л) + '–' + Math.round(п));
