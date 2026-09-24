@@ -208,5 +208,40 @@ class Разметка(unittest.TestCase):
         self.assertTrue([б for б in беды if "слева" in б], беды)
 
 
+class Отчёт(unittest.TestCase):
+    """Итог в форме `приёмка.py`: одинаково показывается у бота и у стилей."""
+
+    def test_без_снимка_только_текст(self):
+        import приёмка
+        import приёмка_досок
+        отчёт = приёмка_досок.проверить(холст_из("A-Main", "A-bityi-final-3-stroki"), снимки=False)
+        self.assertFalse(приёмка.годен(отчёт))
+        self.assertEqual(приёмка.бракованные(отчёт), [2])
+        self.assertTrue(приёмка.строкой(отчёт).startswith("№2: «Вся замена"))
+        self.assertEqual(отчёт["кадры"][1]["доска"], "A-bityi-final-3-stroki.dc.html")
+        self.assertNotIn("лист", отчёт)
+
+    def test_команда_без_снимка(self):
+        import subprocess
+        папка = холст_из("A-Main", "A-bityi-final-3-stroki")
+        р = subprocess.run([sys.executable, str(КОРЕНЬ / "Style" / "приёмка_досок.py"), str(папка.parent),
+                            "--без-снимка"], capture_output=True, text=True)
+        self.assertEqual(р.returncode, 1, р.stderr)
+        self.assertIn("брак: №2:", р.stdout)
+
+
+@unittest.skipUnless(config.хром(), "нужен Chrome")
+class ОтчётПолный(unittest.TestCase):
+    def test_разметка_снимок_и_лист(self):
+        import приёмка
+        import приёмка_досок
+        отчёт = приёмка_досок.проверить(холст_из("B-Kadr02", "B-bityi-kot-u-kraya"))
+        self.assertEqual(приёмка.бракованные(отчёт), [2])
+        self.assertIn("под кнопками TikTok: кот", приёмка.строкой(отчёт))
+        self.assertTrue(Path(отчёт["лист"]).exists())
+        # Нормы вкуса из замера снимка — замечания, а не брак.
+        self.assertTrue(all(isinstance(з, str) for к in отчёт["кадры"] for з in к["замечания"]))
+
+
 if __name__ == "__main__":
     unittest.main()
