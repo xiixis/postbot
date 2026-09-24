@@ -21,7 +21,6 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from помощник_холста import помощник as найти_помощника     # noqa: E402
 
 from PIL import Image
 
@@ -363,10 +362,6 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
     return файлы + [папка / "logo.png"]
 
 
-def помощник() -> Path:
-    """Помощник холста из распакованного скила design; путь меняется с версией Claude Code."""
-    return найти_помощника()
-
 
 def main():
     файл = Path(sys.argv[1]).resolve()
@@ -413,21 +408,10 @@ def main():
         "Двигайте и правьте прямо здесь, потом Save и напишите «готово»."}]
     (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
 
-    п = помощник()
-    страница = папка / f"{стиль.латиницей(файл.stem)}.html"
-    команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"), "--out", str(страница),
-               "--title", пост["название"], "--canvas", str(папка / "canvas.json")]
-    for имя, _, _ in доски:
-        команда += ["--artboard", str(папка / имя)]
-    for к in картинки(пост, папка):
-        команда += ["--image", str(к)]
-    вывод = subprocess.run(команда, capture_output=True, text=True)
-    проверка = subprocess.run(["node", str(п), "--check", str(страница)], capture_output=True, text=True)
-    print((вывод.stderr.strip() + "\n") if вывод.stderr.strip() else "", end="")
-    print(проверка.stdout.strip()[:300], проверка.stderr.strip()[:300])
-    if нет_снимков:
-        print("нет снимков, стоят заглушки:", " ".join(нет_снимков))
-    print("страница холста:", страница, f"{страница.stat().st_size // 1024} КБ")
+    # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
+    # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).
+    картинки(пост, папка)          # картинки и коты рядом с досками
+    print("доски холста:", папка, "— выкладка: ПУБЛИКАЦИЯ.md, шаг 5")
 
 
 if __name__ == "__main__":

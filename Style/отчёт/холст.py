@@ -22,7 +22,6 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from помощник_холста import помощник as найти_помощника     # noqa: E402
 
 from PIL import Image
 
@@ -242,20 +241,10 @@ def main():
                  "launch": {"view": "canvas"}}
     (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
 
-    п = найти_помощника()
-    страница_файл = папка / "otchet.html"
-    команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"),
-               "--out", str(страница_файл), "--title", пост.get("название", "Холст"),
-               "--canvas", str(папка / "canvas.json")]
-    for имя, _, _ in доски:
-        команда += ["--artboard", str(папка / имя)]
-    for к in картинки(пост, папка):
-        команда += ["--image", str(к)]
-    р = subprocess.run(команда, capture_output=True, text=True)
-    проверка = subprocess.run(["node", str(п), "--check", str(страница_файл)],
-                              capture_output=True, text=True)
-    print((р.stderr.strip() + "\n" if р.stderr.strip() else "") + проверка.stdout.strip()[:200])
-    print("страница холста:", страница_файл)
+    # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
+    # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).
+    картинки(пост, папка)          # картинки и коты рядом с досками
+    print("доски холста:", папка, "— выкладка: ПУБЛИКАЦИЯ.md, шаг 5")
 
 
 if __name__ == "__main__":

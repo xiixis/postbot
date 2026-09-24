@@ -559,19 +559,9 @@ def main():
     # доски оставались со ссылками в пустоту (та же правка сделана в «справочнике»).
     рядом = картинки(пост, папка)
 
-    п = дп.помощник()
-    страница = папка / f"{дп.латиницей(файл.stem)}.html"
-    команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"), "--out", str(страница),
-               "--title", пост["название"], "--canvas", str(папка / "canvas.json")]
-    for имя, _, _ in доски:
-        команда += ["--artboard", str(папка / имя)]
-    for к in рядом:
-        команда += ["--image", str(к)]
-    вывод = subprocess.run(команда, capture_output=True, text=True)
-    проверка = subprocess.run(["node", str(п), "--check", str(страница)], capture_output=True, text=True)
-    print((вывод.stderr.strip() + "\n") if вывод.stderr.strip() else "", end="")
-    print(проверка.stdout.strip()[:300], проверка.stderr.strip()[:300])
-    print("страница холста:", страница, f"{страница.stat().st_size // 1024} КБ")
+    # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
+    # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).
+    print("доски холста:", папка, "— выкладка: ПУБЛИКАЦИЯ.md, шаг 5")
 
 
 if __name__ == "__main__":

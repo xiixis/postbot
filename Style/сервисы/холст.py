@@ -11,7 +11,6 @@ from io import BytesIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from помощник_холста import помощник as найти_помощника     # noqa: E402
 from PIL import Image
 
 ТУТ = Path(__file__).parent
@@ -188,10 +187,6 @@ def латиницей(имя: str) -> str:
     return "".join(ЛАТ.get(б, б) for б in имя.lower())
 
 
-def помощник() -> Path:
-    """Помощник холста из распакованного скила design; путь меняется с версией Claude Code."""
-    return найти_помощника()
-
 
 def main():
     файл = Path(sys.argv[1]).resolve()
@@ -228,20 +223,12 @@ def main():
     if пост.get("заметка"):
         раскладка["annotations"] = [{"id": "brief", "x": 0, "y": -560, "w": 900, "text": пост["заметка"]}]
     (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
-    п = помощник()
-    страница = папка / f"{латиницей(файл.stem)}.html"     # помощник принимает имя только латиницей
-    команда = ["node", str(п), "--template", str(п.parent / "payload.template.html"), "--out", str(страница),
-               "--title", пост.get("название") or пост["обложка"]["заголовок"][:60], "--canvas", str(папка / "canvas.json")]
-    for имя, _, _ in доски:
-        команда += ["--artboard", str(папка / имя)]
+    # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
+    # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).
     вид = пост.get("вид")
-    for к in (один.картинки(пост, папка, стиль) if вид == "один"
-              else список.картинки(пост, папка) if вид == "список" else картинки(пост, папка)):
-        команда += ["--image", str(к)]
-    р = subprocess.run(команда, capture_output=True, text=True)
-    проверка = subprocess.run(["node", str(п), "--check", str(страница)], capture_output=True, text=True)
-    print((р.stderr.strip() + "\n" if р.stderr.strip() else "") + проверка.stdout.strip()[:160])
-    print("страница холста:", страница)
+    (один.картинки(пост, папка, стиль) if вид == "один"
+     else список.картинки(пост, папка) if вид == "список" else картинки(пост, папка))
+    print("доски холста:", папка, "— выкладка: ПУБЛИКАЦИЯ.md, шаг 5")
 
 
 if __name__ == "__main__":
