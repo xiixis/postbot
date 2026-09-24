@@ -44,6 +44,9 @@ import дизайн_холст as дх  # noqa: E402
     'background-size: 40px 40px;"></div>')
 ЧЕРНИЛА, ВТОРОЙ, ТИХИЙ = "#12130E", "#1E1F17", "#3A3E33"
 БЕЛАЯ = "#FFFFFF"
+# Зачёркивают красным и от руки (слово владельца 24.09.2026: «если зачёркиваешь — зачёркивай
+# прям; зелёным непонятно»). Тот же #FF5A4E, что в вариации «фразы».
+КРАСНЫЙ = "#FF3B30"
 РАМКА = "rgba(18,19,14,.09)"
 ТЕНЬ = "0 18px 44px rgba(18,19,14,.10)"
 СЕРЫЙ_ЧИП = "#E7E9DF"
@@ -59,6 +62,22 @@ CSS, ШРИФТЫ = дх.шрифты(("Onest", "onest-800", 800), ("Golos", "go
 def грунт() -> str:
     """Фон кадра: градиент плюс сетка. Один вызов на доску, самым первым слоем."""
     return f'<div style="position: absolute; inset: 0; background: {БУМАГА};"></div>{СЕТКА}'
+
+
+def зачёркнуто(текст: str, кегль: int, цвет: str = ЧЕРНИЛА, наклон: float = -5,
+               доля: float = .11) -> str:
+    """Сумма, перечёркнутая толстой красной чертой наискось — как ручкой по бумаге.
+
+    `text-decoration: line-through` даёт волосяную линию: при кегле 128 она 8 px и в ленте
+    не читается вовсе, а лаймовая читается как подчёркивание, а не как отмена (правка
+    владельца 24.09.2026). Поэтому черта — отдельный блок высотой ~11% кегля, с наклоном.
+    """
+    т = max(9, round(кегль * доля))
+    return (f'<span style="position: relative; display: inline-block; {КРУП} font-size: {кегль}px; '
+            f'line-height: 1; color: {цвет};">{текст}'
+            f'<span style="position: absolute; left: -4px; right: -4px; top: 50%; height: {т}px; '
+            f'margin-top: -{т // 2}px; background: {КРАСНЫЙ}; border-radius: {т}px; '
+            f'transform: rotate({наклон}deg); box-shadow: 0 2px 0 rgba(18,19,14,.12);"></span></span>')
 
 # Сетка доски 1080×1440: край 80, всё важное выше 1105, знак в полосе 1191.
 КРАЙ = 80
@@ -160,11 +179,17 @@ def обложка_чек(о: dict, строки_чека: list[tuple[str, str]]
     позиции = "".join(
         f'<div style="display: flex; justify-content: space-between; gap: 10px;">'
         f'<span>{имя}</span><span>{цена}</span></div>' for имя, цена in строки_чека)
+    # Итог на самом чеке тоже вычеркнут: красная черта на бумаге договаривает заголовок.
     чек = (f'<div style="position: absolute; left: 578px; top: 800px; width: 188px; transform: rotate(-1.2deg); '
            f'{ЧЕК} font-size: 21px; line-height: 1.55; color: #24261C;">{позиции}'
            f'<div style="margin: 9px 0 7px; border-top: 2px dashed rgba(18,19,14,.45);"></div>'
-           f'<div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 29px;">'
-           f'<span>ИТОГО</span><span>{итог}</span></div></div>')
+           f'<div style="position: relative; display: flex; justify-content: space-between; '
+           f'font-weight: 700; font-size: 29px;"><span>ИТОГО</span><span>{итог}</span>'
+           f'<span style="position: absolute; left: 2px; right: 8px; top: 50%; height: 7px; '
+           f'margin-top: -3px; background: {КРАСНЫЙ}; border-radius: 7px; '
+           f'transform: rotate(-2deg);"></span></div>'
+           f'<div style="margin-top: 12px; text-align: right; font-weight: 700; font-size: 27px; '
+           f'color: #24261C;">$0</div></div>')
     строки = о["строки"]
     return (грунт()
             + сцена("kot-chek.jpg", о.get("сдвиг", 0))
@@ -172,16 +197,14 @@ def обложка_чек(о: dict, строки_чека: list[tuple[str, str]]
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 88px; width: 880px; {КРУП} '
               f'font-size: 112px; line-height: .98; color: {ЧЕРНИЛА};">{строки[0]}<br>{строки[1]}</div>'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 330px; display: inline-flex; '
-              f'align-items: baseline; gap: 20px;">'
-              f'<span style="{КРУП} font-size: 128px; line-height: 1; color: {ЧЕРНИЛА}; '
-              f'text-decoration: line-through; text-decoration-thickness: 8px; '
-              f'text-decoration-color: {стиль.ЛАЙМ};">{итог}</span>'
+              f'align-items: baseline; gap: 22px;">'
+              + зачёркнуто(итог, 132) +
               f'<span style="{КРУП} font-size: 72px; line-height: 1; color: {ТИХИЙ};">→</span>'
-              f'<span style="{КРУП} font-size: 128px; line-height: 1; padding: 0 22px 10px; '
+              f'<span style="{КРУП} font-size: 132px; line-height: 1; padding: 0 22px 10px; '
               f'border-radius: 22px; background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">$0</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 508px; width: 440px; {ТЕКСТ} '
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 516px; width: 440px; {ТЕКСТ} '
               f'font-weight: 700; font-size: 44px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 672px; display: inline-flex; '
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 680px; display: inline-flex; '
               f'align-items: center; gap: 18px; padding: 16px 30px 20px; border-radius: 26px; '
               f'background: {стиль.ЛАЙМ}; {КРУП} font-size: 48px; color: {ЧЕРНИЛА};">{о["плашка"]}</div>'
             + низ())
@@ -214,9 +237,9 @@ def обложка_замена(о: dict, пары: list[dict]) -> str:
              f'letter-spacing: .02em; color: {ТИХИЙ};"><div>платишь</div><div></div>'
              f'<div style="color: {ЧЕРНИЛА};">можешь не платить</div></div>')
     итог = (f'<div style="position: absolute; left: {КРАЙ}px; top: 1014px; display: inline-flex; '
-            f'align-items: baseline; gap: 16px; {КРУП} font-size: 54px; color: {ЧЕРНИЛА};">'
-            f'<span style="text-decoration: line-through; text-decoration-thickness: 5px; '
-            f'text-decoration-color: {стиль.ЛАЙМ};">$109 в месяц</span><span>→</span>'
+            f'align-items: baseline; gap: 18px; {КРУП} font-size: 54px; color: {ЧЕРНИЛА};">'
+            + зачёркнуто("$109 в месяц", 54, наклон=-2, доля=.16) +
+            f'<span>→</span>'
             f'<span style="padding: 0 16px 6px; border-radius: 16px; background: {стиль.ЛАЙМ};">$0</span></div>')
     return (грунт()
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 108px; width: 920px; {КРУП} '
@@ -246,20 +269,27 @@ def обложка_списание(о: dict, значки: list[dict]) -> str:
         f'<img src="{с["значок"]}" style="width: {"100%" if с.get("во_весь") else "62%"}; '
         f'height: {"100%" if с.get("во_весь") else "62%"}; object-fit: {"cover" if с.get("во_весь") else "contain"};">'
         f'</div>' for с in значки[:5])
+    # Две правки владельца с холста 24.09.2026 перенесены в код: штамп он перетащил ПОВЕРХ
+    # суммы, кота — левее и ниже. Сумма при этом укорочена до «−$109» без копеек: с копейками
+    # штамп и красная черта вместе съедали цифры целиком, а отменять нечего, если счёт не виден.
+    штамп = (
+        f'<span style="position: absolute; left: 372px; top: 20px; transform: rotate(-9deg); '
+        f'padding: 12px 30px 16px; border: 7px solid {стиль.ЛАЙМ}; border-radius: 18px; '
+        f'{КРУП} font-size: 62px; line-height: 1; letter-spacing: .02em; color: {стиль.ЛАЙМ}; '
+        f'text-transform: uppercase; background: rgba(18,19,15,.82);">{о["штамп"]}</span>')
+    сумма = (f'<div style="position: relative; {КРУП} font-size: 124px; line-height: 1.05; '
+             f'color: {стиль.СВЕТЛЫЙ}; margin-top: 8px;">−{о["сумма"]}'
+             f'<span style="position: absolute; left: 0; right: 448px; top: 50%; height: 15px; '
+             f'margin-top: -8px; background: {КРАСНЫЙ}; border-radius: 15px; '
+             f'transform: rotate(-4deg);"></span>{штамп}</div>')
     карточка = (
         f'<div style="position: absolute; left: {КРАЙ}px; top: 452px; width: 920px; box-sizing: border-box; '
         f'padding: 38px 44px 42px; border-radius: 40px; background: #1B1D17; border: 2px solid rgba(242,244,234,.12); '
         f'box-shadow: 0 34px 80px rgba(0,0,0,.5);">'
         f'<div style="display: flex; justify-content: space-between; align-items: center; {ТЕКСТ} '
         f'font-weight: 700; font-size: 28px; color: #9AA08F;"><span>Подписки на ИИ</span><span>ежемесячно</span></div>'
-        f'<div style="{КРУП} font-size: 124px; line-height: 1.05; color: {стиль.СВЕТЛЫЙ}; margin-top: 8px;">'
-        f'−{о["сумма"]}</div>'
+        f'{сумма}'
         f'<div style="display: flex; gap: 14px; margin-top: 24px;">{ряд}</div></div>')
-    штамп = (
-        f'<div style="position: absolute; left: 560px; top: 628px; transform: rotate(-9deg); '
-        f'padding: 12px 30px 16px; border: 7px solid {стиль.ЛАЙМ}; border-radius: 18px; '
-        f'{КРУП} font-size: 66px; line-height: 1; letter-spacing: .02em; color: {стиль.ЛАЙМ}; '
-        f'text-transform: uppercase; background: rgba(18,19,15,.7);">{о["штамп"]}</div>')
     return (f'<div style="position: absolute; inset: 0; background: '
             f'radial-gradient(70% 48% at 84% 8%, rgba(199,226,75,.22) 0%, rgba(18,19,15,0) 62%), '
             f'radial-gradient(60% 40% at 6% 96%, rgba(199,226,75,.10) 0%, rgba(18,19,15,0) 60%), '
@@ -269,9 +299,10 @@ def обложка_списание(о: dict, значки: list[dict]) -> str:
               f'<span style="color: {стиль.ЛАЙМ};">{о["строки"][1]}</span></div>'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 312px; width: 720px; {ТЕКСТ} '
               f'font-weight: 700; font-size: 40px; line-height: 1.2; color: #C9CCBF;">{о["под"]}</div>'
-            + карточка + штамп
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; right: 36px; '
-              f'top: 812px; height: 300px;">'
+            + карточка
+            # Кота на холсте передвинул владелец (24.09.2026): левее и на 7 px ниже.
+            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 674px; '
+              f'top: 819px; height: 300px;">'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 900px; display: inline-flex; '
               f'align-items: center; padding: 20px 32px 24px; border-radius: 26px; background: {стиль.ЛАЙМ}; '
               f'{КРУП} font-size: 46px; line-height: 1.08; color: {ЧЕРНИЛА};">{о["плашка"]}</div>'
@@ -307,9 +338,8 @@ def финал(ф: dict, пары: list[dict]) -> str:
             f'<span style="{КРУП} font-size: 28px; padding: 2px 12px 5px; border-radius: 12px; '
             f'background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">$0</span></div></div>')
     счёт = (f'<div style="position: absolute; right: {КРАЙ}px; top: 104px; display: flex; flex-direction: column; '
-            f'align-items: flex-end; gap: 4px;">'
-            f'<span style="{КРУП} font-size: 72px; line-height: 1; color: {ТИХИЙ}; text-decoration: line-through; '
-            f'text-decoration-thickness: 7px; text-decoration-color: {стиль.ОЛИВА};">{ф["было"]}</span>'
+            f'align-items: flex-end; gap: 10px;">'
+            + зачёркнуто(ф["было"], 72, цвет=ТИХИЙ, наклон=-6) +
             f'<span style="{КРУП} font-size: 104px; line-height: 1; padding: 0 20px 8px; border-radius: 20px; '
             f'background: {стиль.ЛАЙМ}; color: {ЧЕРНИЛА};">{ф["стало"]}</span></div>')
     return (грунт()
