@@ -125,6 +125,7 @@ def обложка_режиссёр(о: dict) -> str:
     строки = о["строки"]
     return (f'<div style="position: absolute; inset: 0; background: {ГРУНТ};"></div>'
             + сцена("kot-rezhisser.jpg", о.get("сдвиг", 0))
+            + обложки.кот_по_сцене(о["сцена"], о.get("сдвиг", 0))   # приёмка видит кота на картинке
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 120px; width: 700px; {КРУП} '
               f'font-size: 118px; line-height: .98; color: {СВЕТЛЫЙ};">{строки[0]}<br>'
               f'<span style="color: {стиль.ЛАЙМ};">{строки[1]}</span><br>{строки[2]}</div>'
@@ -135,66 +136,6 @@ def обложка_режиссёр(о: dict) -> str:
               f'background: {стиль.ЛАЙМ}; {КРУП} font-size: 40px; color: #12130E;">{о["плашка"]}</div>'
             + низ())
 
-
-def обложка_превращение(о: dict, сервисы: list[dict]) -> str:
-    """Запасная 1: строка текста превращается в три кадра ролика — приём вместо сцены."""
-    кадрики = ""
-    for i, с in enumerate(сервисы[:3]):
-        кадрики += (f'<div style="width: 268px; height: 200px; border-radius: 26px; overflow: hidden; '
-                    f'background: linear-gradient(150deg, {с["цвет"]}44, rgba(18,19,15,.9)); '
-                    f'border: 2px solid {РАМКА}; display: flex; align-items: center; justify-content: center;">'
-                    f'<img src="{с["значок"]}" style="width: 96px; height: 96px; object-fit: contain; '
-                    f'border-radius: {"50%" if с.get("во_весь") else "0"};"></div>')
-    стрелка = ('<svg viewBox="0 0 40 120" fill="none" stroke="#C7E24B" stroke-width="4" stroke-linecap="round" '
-               'stroke-linejoin="round" style="width: 30px; height: 72px;"><path d="M20 6v96M8 88l12 14 12-14"/></svg>')
-    return (f'<div style="position: absolute; inset: 0; background: radial-gradient(80% 60% at 20% 10%, '
-            f'rgba(199,226,75,.16), rgba(18,19,15,0) 60%), {ГРУНТ};"></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 100px; width: 940px; {КРУП} '
-              f'font-size: 96px; line-height: 1.0; color: {СВЕТЛЫЙ};">{о["строки"][0]}<br>'
-              f'<span style="color: {стиль.ЛАЙМ};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 360px; width: 940px; box-sizing: border-box; '
-              f'padding: 30px 36px; border-radius: 26px; background: {СТЕКЛО}; border: 2px dashed {РАМКА}; '
-              f'{ТЕКСТ} font-weight: 700; font-size: 40px; line-height: 1.24; color: {СВЕТЛЫЙ};">{о["строка_текста"]}</div>'
-            # Стрелка 72 px посреди просвета между строкой и кадриками: при 96 px она заходила
-            # в коробку строки на 13 px (приёмка досок, 24.09).
-            + f'<div style="position: absolute; left: 525px; top: 553px;">{стрелка}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 656px; width: 940px; display: flex; '
-              f'gap: 18px;">{кадрики}</div>'
-            # Кот левее колонки кнопок TikTok (правило владельца 24.09 — и для запасных обложек).
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 680px; '
-              f'top: 900px; height: 260px;">'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 920px; width: 560px; box-sizing: border-box; '
-              f'padding: 24px 30px 28px; border-radius: 28px; background: {стиль.ЛАЙМ}; {КРУП} font-size: 46px; '
-              f'line-height: 1.1; color: #12130E;">{о["плашка"]}</div>'
-            + низ())
-
-
-def обложка_плёнка(о: dict, сервисы: list[dict]) -> str:
-    """Запасная 2: лента кадров с пятью значками идёт через весь кадр, заголовок внизу."""
-    клетки = ""
-    for с in сервисы[:5]:
-        клетки += (f'<div style="width: 220px; height: 220px; border-radius: 22px; background: rgba(255,255,255,.06); '
-                   f'border: 2px solid {РАМКА}; display: flex; align-items: center; justify-content: center; '
-                   f'flex-shrink: 0;">'
-                   f'<img src="{с["значок"]}" style="width: 128px; height: 128px; object-fit: contain; '
-                   f'border-radius: {"50%" if с.get("во_весь") else "0"};"></div>')
-    # Лента нарочно выходит за оба края кадра (`data-вылет`: приёмка досок её край не судит).
-    лента = (f'<div data-вылет style="position: absolute; left: -60px; top: 300px; width: 1240px; padding: 26px 30px; '
-             f'background: rgba(0,0,0,.45); border-top: 3px solid {РАМКА}; border-bottom: 3px solid {РАМКА}; '
-             f'transform: rotate(-7deg); display: flex; gap: 22px;">{клетки}</div>')
-    return (f'<div style="position: absolute; inset: 0; background: radial-gradient(70% 50% at 82% 82%, '
-            f'rgba(199,226,75,.20), rgba(18,19,15,0) 62%), {ГРУНТ};"></div>'
-            + лента
-            # Кот держится левее ≈900 px: справа у TikTok колонка лайков и репостов
-            # (правка владельца 24.09.2026 на обложке «списание»).
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 640px; '
-              f'top: 660px; height: 380px;">'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 684px; width: 560px; {КРУП} '
-              f'font-size: 96px; line-height: .98; color: {СВЕТЛЫЙ};">{о["строки"][0]}<br>'
-              f'<span style="color: {стиль.ЛАЙМ};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 1002px; width: 540px; {ТЕКСТ} '
-              f'font-weight: 700; font-size: 38px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
-            + низ())
 
 
 def финал(ф: dict, сервисы: list[dict]) -> str:
@@ -252,25 +193,24 @@ def main():
     корень = ТУТ / "холсты" / файл.stem
     CSS = дх.шрифты_холста(CSS, корень)
     врем = корень / "_файлы"
-    позы = {пост["обложка_превращение"]["поза"], пост["обложка_плёнка"]["поза"], пост["финал"]["поза"]}
-    файлы = list(ШРИФТЫ) + [дх.логотип(врем)] + [дх.кот(п, врем) for п in позы]
+    файлы = list(ШРИФТЫ) + [дх.логотип(врем), дх.кот(пост["финал"]["поза"], врем)]
+    файлы += обложки.файлы(пост.get("запасные", {}), врем)
     файлы.append(дх.снимок_сайта(ТУТ / пост["обложка"]["сцена"], врем, 1080))
     for с in пост["сервисы"]:
         путь = ТУТ / "значки" / с["файл"]
         файлы.append(путь)
         с["значок"] = путь.name
     всего = len(пост["сервисы"]) + 2
-    доски = [("Main.dc.html", "01 · Обложка · режиссёр",
-              дх.доска("Обложка", обложка_режиссёр(пост["обложка"]), ГРУНТ, CSS))]
+    # Своя обложка по референсу — «режиссёр»; две запасные — из каталога (`../обложки.py`).
+    своя = ("режиссёр", ГРУНТ, обложка_режиссёр(пост["обложка"]))
+    обл = обложки.доски_обложек(пост, своя, ТЕМА, {"значки": пост["сервисы"]}, CSS)
+    доски = обл[:1]
     for н, с in enumerate(пост["сервисы"], 2):
         доски.append((f"Kadr{н:02d}.dc.html", f"{н:02d} · {с['имя']}",
                       дх.доска(с["имя"], кадр(н, всего, с), ГРУНТ, CSS)))
     доски.append((f"Kadr{всего:02d}.dc.html", f"{всего:02d} · Финал",
                   дх.доска("Финал", финал(пост["финал"], пост["сервисы"]), ГРУНТ, CSS)))
-    доски.append(("Oblozhka2.dc.html", "Обложка 2 · превращение",
-                  дх.доска("Обложка 2", обложка_превращение(пост["обложка_превращение"], пост["сервисы"]), ГРУНТ, CSS)))
-    доски.append(("Oblozhka3.dc.html", "Обложка 3 · плёнка",
-                  дх.доска("Обложка 3", обложка_плёнка(пост["обложка_плёнка"], пост["сервисы"]), ГРУНТ, CSS)))
+    доски += обл[1:]
     проект = дх.собрать(корень, пост["название"], доски, файлы, пост.get("заметка", ""), в_ряд=5,
                         источник=пост.get("источник", ""))
     print(f"холст: {проект} — досок {len(доски)}")
