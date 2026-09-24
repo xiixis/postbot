@@ -269,19 +269,20 @@ def обложка_списание(о: dict, значки: list[dict]) -> str:
         f'<img src="{с["значок"]}" style="width: {"100%" if с.get("во_весь") else "62%"}; '
         f'height: {"100%" if с.get("во_весь") else "62%"}; object-fit: {"cover" if с.get("во_весь") else "contain"};">'
         f'</div>' for с in значки[:5])
-    # Две правки владельца с холста 24.09.2026 перенесены в код: штамп он перетащил ПОВЕРХ
-    # суммы, кота — левее и ниже. Сумма при этом укорочена до «−$109» без копеек: с копейками
-    # штамп и красная черта вместе съедали цифры целиком, а отменять нечего, если счёт не виден.
+    # Обе правки владельца с холста 24.09.2026 оставлены как он их сделал.
+    # Штамп лежит ПОВЕРХ суммы и наполовину её закрывает — это замысел, а не помеха:
+    # «тут я „отменено“ поместил на сумму, будто штамп. Плюс не понятно какая сумма и
+    # создаётся тайна». Поэтому здесь нет красной черты: отмену говорит штамп, а сумму
+    # зритель досматривает внутри поста.
+    # Кота он сдвинул влево, «чтобы его не закрывало поле с лайками» — правая колонка
+    # кнопок TikTok. Ничего важного правее 900 px на кадре быть не должно.
     штамп = (
-        f'<span style="position: absolute; left: 372px; top: 20px; transform: rotate(-9deg); '
+        f'<span style="position: absolute; left: 69px; top: 4px; transform: rotate(-9deg); '
         f'padding: 12px 30px 16px; border: 7px solid {стиль.ЛАЙМ}; border-radius: 18px; '
-        f'{КРУП} font-size: 62px; line-height: 1; letter-spacing: .02em; color: {стиль.ЛАЙМ}; '
-        f'text-transform: uppercase; background: rgba(18,19,15,.82);">{о["штамп"]}</span>')
+        f'{КРУП} font-size: 66px; line-height: 1; letter-spacing: .02em; color: {стиль.ЛАЙМ}; '
+        f'text-transform: uppercase; background: rgba(18,19,15,.7);">{о["штамп"]}</span>')
     сумма = (f'<div style="position: relative; {КРУП} font-size: 124px; line-height: 1.05; '
-             f'color: {стиль.СВЕТЛЫЙ}; margin-top: 8px;">−{о["сумма"]}'
-             f'<span style="position: absolute; left: 0; right: 448px; top: 50%; height: 15px; '
-             f'margin-top: -8px; background: {КРАСНЫЙ}; border-radius: 15px; '
-             f'transform: rotate(-4deg);"></span>{штамп}</div>')
+             f'color: {стиль.СВЕТЛЫЙ}; margin-top: 8px;">−{о["сумма"]}{штамп}</div>')
     карточка = (
         f'<div style="position: absolute; left: {КРАЙ}px; top: 452px; width: 920px; box-sizing: border-box; '
         f'padding: 38px 44px 42px; border-radius: 40px; background: #1B1D17; border: 2px solid rgba(242,244,234,.12); '
@@ -348,13 +349,15 @@ def финал(ф: dict, пары: list[dict]) -> str:
             + счёт
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 352px; width: 920px; display: flex; '
               f'flex-direction: column; gap: 12px;">{строки}</div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 828px; width: 620px; box-sizing: border-box; '
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 828px; width: 570px; box-sizing: border-box; '
               f'padding: 30px 36px 34px; border-radius: 32px; background: {ЧЕРНИЛА};">'
-              f'<div style="{КРУП} font-size: 50px; line-height: 1.08; color: {стиль.ЛАЙМ};">{ф["призыв"]}</div>'
-              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 32px; color: #C9CCBF; margin-top: 12px;">'
+              f'<div style="{КРУП} font-size: 48px; line-height: 1.08; color: {стиль.ЛАЙМ};">{ф["призыв"]}</div>'
+              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 30px; color: #C9CCBF; margin-top: 12px;">'
               f'{ф["ссылка"]}</div></div>'
-            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; right: 30px; '
-              f'top: 790px; height: 320px;">'
+            # Кот не у правого края: там колонка лайков и репостов TikTok (правка владельца
+            # 24.09.2026). Ничего важного правее ≈900 px.
+            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; left: 690px; '
+              f'top: 800px; height: 300px;">'
             + низ())
 
 

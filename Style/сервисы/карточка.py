@@ -171,13 +171,15 @@ def обложка_плёнка(о: dict, сервисы: list[dict]) -> str:
     return (f'<div style="position: absolute; inset: 0; background: radial-gradient(70% 50% at 82% 82%, '
             f'rgba(199,226,75,.20), rgba(18,19,15,0) 62%), {ГРУНТ};"></div>'
             + лента
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; right: 44px; '
-              f'top: 640px; height: 420px;">'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 660px; width: 760px; {КРУП} '
+            # Кот держится левее ≈900 px: справа у TikTok колонка лайков и репостов
+            # (правка владельца 24.09.2026 на обложке «списание»).
+            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 640px; '
+              f'top: 660px; height: 380px;">'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 660px; width: 560px; {КРУП} '
               f'font-size: 96px; line-height: .98; color: {СВЕТЛЫЙ};">{о["строки"][0]}<br>'
               f'<span style="color: {стиль.ЛАЙМ};">{о["строки"][1]}</span></div>'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 920px; width: 620px; {ТЕКСТ} '
-              f'font-weight: 700; font-size: 40px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 1002px; width: 540px; {ТЕКСТ} '
+              f'font-weight: 700; font-size: 38px; line-height: 1.2; color: {ВТОРОЙ};">{о["под"]}</div>'
             + низ())
 
 
