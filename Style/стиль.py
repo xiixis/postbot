@@ -104,11 +104,36 @@ def кот(поза: str, высота: int, класс: str = "кот", ряд�
 # знака (canvas.measureText), а не метрики шрифта. У огромной цифры Oswald 520 px
 # рамка строки на ~100 px выше и ниже букв, и срез «5% высоты» её не покрывал —
 # «9» считалась налезающей на ник над ней. Вложенные блоки между собой не
-# сравниваются. Кот может уходить за край кадра, текст — нет. Нарочное соседство
-# (кот опирается на телефон) помечается у блока: data-рядом="<класс соседа>".
+# сравниваются. Кот (класс `кот` или `data-кот`) может уходить за край кадра, текст — нет;
+# блок с `data-вылет` (лента во всю ширину) — тоже. Нарочное соседство (кот опирается на
+# телефон) помечается у блока: data-рядом="<класс соседа>".
+# Повёрнутый блок мерится срезами по 6 px его настоящего контура: описанный прямоугольник
+# ленты 1240 px, повёрнутой на 7°, на ~150 px выше контура и «налезал» на всё под ней.
+# Пороги по умолчанию — кадр 1620; доска холста 1080 передаёт свои (`приёмка_досок.py`).
 ЗАПАС_JS = """
-function запас_кадра(селекторы) {
-  const ЗАПАС = %(ЗАПАС)d, КРАЙ = %(КРАЙ)d, W = document.documentElement.clientWidth;
+function запас_кадра(селекторы, порог_запаса = %(ЗАПАС)d, порог_края = %(КРАЙ)d) {
+  const ЗАПАС = порог_запаса, КРАЙ = порог_края, W = document.documentElement.clientWidth;
+  const срезы = (el, б) => {
+    if (el.offsetWidth === undefined) return null;
+    const т = getComputedStyle(el).transform;
+    if (!т || т === 'none') return null;
+    const м = new DOMMatrixReadOnly(т);
+    if (Math.abs(м.b) < 1e-3 && Math.abs(м.c) < 1e-3) return null;
+    // Центр описанного прямоугольника — образ центра блока при любом аффинном сдвиге.
+    const цх = (б.left + б.right) / 2, цу = (б.top + б.bottom) / 2;
+    const ш = el.offsetWidth / 2, в = el.offsetHeight / 2;
+    const у = [[-ш, -в], [ш, -в], [ш, в], [-ш, в]].map(([x, y]) => [цх + м.a * x + м.c * y, цу + м.b * x + м.d * y]);
+    const к = [];
+    for (let y = б.top; y < б.bottom; y += 6) {
+      const н = Math.min(y + 6, б.bottom), xs = [];
+      for (const с of [y, (y + н) / 2, н]) for (let i = 0; i < 4; i++) {
+        const [x1, y1] = у[i], [x2, y2] = у[(i + 1) %% 4];
+        if (y1 !== y2 && (y1 - с) * (y2 - с) <= 0) xs.push(x1 + (с - y1) * (x2 - x1) / (y2 - y1));
+      }
+      if (xs.length) к.push({л: Math.min(...xs), п: Math.max(...xs), в: y, н});
+    }
+    return к;
+  };
   const видимая = el => {
     if (el.tagName === 'IMG' || el.tagName === 'svg' || !el.textContent.trim()) return true;
     const с = getComputedStyle(el);
@@ -129,7 +154,7 @@ function запас_кадра(селекторы) {
   const рамки = el => {
     if (видимая(el)) {
       const б = el.getBoundingClientRect();
-      return [{л: б.left, п: б.right, в: б.top, н: б.bottom}];
+      return срезы(el, б) || [{л: б.left, п: б.right, в: б.top, н: б.bottom}];
     }
     const к = [];
     const обход = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -150,9 +175,10 @@ function запас_кадра(селекторы) {
   };
   const все = [...new Set(document.querySelectorAll(селекторы ? селекторы + ',[data-блок]' : '[data-блок]'))];
   const блоки = все.filter(el => !все.some(о => о !== el && о.contains(el)))
-    .map(el => ({el, кто: String(el.className.baseVal ?? el.className).split(' ')[0]
+    .map(el => ({el, кто: (String(el.className.baseVal ?? el.className).split(' ')[0]
+                   || (el.hasAttribute('data-кот') ? 'кот' : ''))
                    + (el.textContent.trim() ? ':' + el.textContent.trim().slice(0, 14) : ''),
-                 кот: el.classList.contains('кот'), р: рамки(el)}))
+                 кот: el.classList.contains('кот') || el.hasAttribute('data-кот'), р: рамки(el)}))
     .filter(б => б.р.length);
   const тесно = [];
   for (let i = 0; i < блоки.length; i++) for (let j = i + 1; j < блоки.length; j++) {
@@ -164,7 +190,7 @@ function запас_кадра(селекторы) {
       зазор = Math.min(зазор, Math.max(у.л - х.п, х.л - у.п, у.в - х.н, х.в - у.н));
     if (зазор < ЗАПАС) тесно.push(а.кто + ' ↔ ' + б.кто + ' ' + Math.round(зазор));
   }
-  const край = блоки.filter(б => !б.кот && б.р.some(х => х.л < КРАЙ - 1 || х.п > W - КРАЙ + 1))
+  const край = блоки.filter(б => !б.кот && !б.el.hasAttribute('data-вылет') && б.р.some(х => х.л < КРАЙ - 1 || х.п > W - КРАЙ + 1))
     .map(б => б.кто + ' ' + Math.round(Math.min(...б.р.map(х => х.л))) + '–'
               + Math.round(Math.max(...б.р.map(х => х.п))));
   return {тесно, край};

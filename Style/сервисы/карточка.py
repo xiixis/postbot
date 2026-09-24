@@ -136,7 +136,7 @@ def обложка_превращение(о: dict, сервисы: list[dict]) 
                     f'<img src="{с["значок"]}" style="width: 96px; height: 96px; object-fit: contain; '
                     f'border-radius: {"50%" if с.get("во_весь") else "0"};"></div>')
     стрелка = ('<svg viewBox="0 0 40 120" fill="none" stroke="#C7E24B" stroke-width="4" stroke-linecap="round" '
-               'stroke-linejoin="round" style="width: 40px; height: 96px;"><path d="M20 6v96M8 88l12 14 12-14"/></svg>')
+               'stroke-linejoin="round" style="width: 30px; height: 72px;"><path d="M20 6v96M8 88l12 14 12-14"/></svg>')
     return (f'<div style="position: absolute; inset: 0; background: radial-gradient(80% 60% at 20% 10%, '
             f'rgba(199,226,75,.16), rgba(18,19,15,0) 60%), {ГРУНТ};"></div>'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 100px; width: 940px; {КРУП} '
@@ -145,10 +145,13 @@ def обложка_превращение(о: dict, сервисы: list[dict]) 
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 360px; width: 940px; box-sizing: border-box; '
               f'padding: 30px 36px; border-radius: 26px; background: {СТЕКЛО}; border: 2px dashed {РАМКА}; '
               f'{ТЕКСТ} font-weight: 700; font-size: 40px; line-height: 1.24; color: {СВЕТЛЫЙ};">{о["строка_текста"]}</div>'
-            + f'<div style="position: absolute; left: 520px; top: 510px;">{стрелка}</div>'
+            # Стрелка 72 px посреди просвета между строкой и кадриками: при 96 px она заходила
+            # в коробку строки на 13 px (приёмка досок, 24.09).
+            + f'<div style="position: absolute; left: 525px; top: 553px;">{стрелка}</div>'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 656px; width: 940px; display: flex; '
               f'gap: 18px;">{кадрики}</div>'
-            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; right: 30px; '
+            # Кот левее колонки кнопок TikTok (правило владельца 24.09 — и для запасных обложек).
+            + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 680px; '
               f'top: 900px; height: 260px;">'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 920px; width: 560px; box-sizing: border-box; '
               f'padding: 24px 30px 28px; border-radius: 28px; background: {стиль.ЛАЙМ}; {КРУП} font-size: 46px; '
@@ -165,7 +168,8 @@ def обложка_плёнка(о: dict, сервисы: list[dict]) -> str:
                    f'flex-shrink: 0;">'
                    f'<img src="{с["значок"]}" style="width: 128px; height: 128px; object-fit: contain; '
                    f'border-radius: {"50%" if с.get("во_весь") else "0"};"></div>')
-    лента = (f'<div style="position: absolute; left: -60px; top: 300px; width: 1240px; padding: 26px 30px; '
+    # Лента нарочно выходит за оба края кадра (`data-вылет`: приёмка досок её край не судит).
+    лента = (f'<div data-вылет style="position: absolute; left: -60px; top: 300px; width: 1240px; padding: 26px 30px; '
              f'background: rgba(0,0,0,.45); border-top: 3px solid {РАМКА}; border-bottom: 3px solid {РАМКА}; '
              f'transform: rotate(-7deg); display: flex; gap: 22px;">{клетки}</div>')
     return (f'<div style="position: absolute; inset: 0; background: radial-gradient(70% 50% at 82% 82%, '
@@ -175,7 +179,7 @@ def обложка_плёнка(о: dict, сервисы: list[dict]) -> str:
             # (правка владельца 24.09.2026 на обложке «списание»).
             + f'<img src="kot-{стиль.латиницей(о["поза"])}.webp" style="position: absolute; left: 640px; '
               f'top: 660px; height: 380px;">'
-            + f'<div style="position: absolute; left: {КРАЙ}px; top: 660px; width: 560px; {КРУП} '
+            + f'<div style="position: absolute; left: {КРАЙ}px; top: 684px; width: 560px; {КРУП} '
               f'font-size: 96px; line-height: .98; color: {СВЕТЛЫЙ};">{о["строки"][0]}<br>'
               f'<span style="color: {стиль.ЛАЙМ};">{о["строки"][1]}</span></div>'
             + f'<div style="position: absolute; left: {КРАЙ}px; top: 1002px; width: 540px; {ТЕКСТ} '

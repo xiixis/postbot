@@ -133,7 +133,7 @@ def карточка(с: dict, бесплатно: bool, left: int) -> str:
     имя_кегль = кегль(с["имя"], 52, 40, 11)
     # Слово «Claude» всегда фирменным цветом Claude (правило владельца, `дизайн_холст.CLAUDE`).
     имя_цвет = дх.CLAUDE if с["имя"].lower().startswith("claude") else ЧЕРНИЛА
-    return f"""<div style="position: absolute; left: {left}px; top: {КАРТА_ВЕРХ}px; width: 440px; height: {КАРТА_В}px; box-sizing: border-box; padding: 30px 28px 34px; border-radius: 44px; background: {БЕЛАЯ}; {оправа}; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 18px;">
+    return f"""<div class="карта" style="position: absolute; left: {left}px; top: {КАРТА_ВЕРХ}px; width: 440px; height: {КАРТА_В}px; box-sizing: border-box; padding: 30px 28px 34px; border-radius: 44px; background: {БЕЛАЯ}; {оправа}; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 18px;">
 {чип}
 {значок(с)}
 <div style="{КРУП} font-size: {имя_кегль}px; line-height: 1.05; color: {имя_цвет}; text-align: center;">{с["имя"]}</div>
@@ -149,14 +149,17 @@ def кадр(н: int, всего: int, к: dict) -> str:
     стрелка = ('<svg viewBox="0 0 80 24" fill="none" stroke="#12130E" stroke-width="3.4" '
                'stroke-linecap="round" stroke-linejoin="round" style="width: 72px; height: 22px;">'
                '<path d="M4 12h68M60 4l12 8-12 8"/></svg>')
+    # Кружок со стрелкой лежит на обеих карточках нарочно (`data-рядом`). Строка-вывод
+    # шириной 560, а не 600: плашка «не платим уже» начинается на 670, и при 600 коробки
+    # перекрывались на 10 px, а буквы стояли в 4 px от плашки — нашла приёмка досок 24.09.
     return f"""{СЕТКА}
 <div style="position: absolute; left: {КРАЙ}px; top: 60px; {ТЕКСТ} font-weight: 700; font-size: 30px; letter-spacing: .02em; color: {стиль.ОЛИВА};">{к["рубрика"]}</div>
 {счёт}
 <div style="position: absolute; left: {КРАЙ}px; top: 112px; width: 920px; {КРУП} font-size: {кегль(к["категория"], 88, 72, 18)}px; line-height: 1.02; color: {ЧЕРНИЛА};">{к["категория"]}</div>
-<div style="position: absolute; left: 506px; top: {КАРТА_ВЕРХ + КАРТА_В // 2 - 34}px; width: 68px; height: 68px; border-radius: 50%; background: {БЕЛАЯ}; border: 2px solid {РАМКА}; box-shadow: {ТЕНЬ}; display: flex; align-items: center; justify-content: center; z-index: 2;">{стрелка}</div>
+<div class="стрелка" data-рядом="карта" style="position: absolute; left: 506px; top: {КАРТА_ВЕРХ + КАРТА_В // 2 - 34}px; width: 68px; height: 68px; border-radius: 50%; background: {БЕЛАЯ}; border: 2px solid {РАМКА}; box-shadow: {ТЕНЬ}; display: flex; align-items: center; justify-content: center; z-index: 2;">{стрелка}</div>
 {карточка(к["платно"], False, КРАЙ)}
 {карточка(к["бесплатно"], True, 560)}
-<div style="position: absolute; left: {КРАЙ}px; top: {ВЫВОД_ВЕРХ}px; width: 600px; {ТЕКСТ} font-weight: 700; font-size: 38px; line-height: 1.24; color: {ВТОРОЙ};">{к["вывод"]}</div>
+<div style="position: absolute; left: {КРАЙ}px; top: {ВЫВОД_ВЕРХ}px; width: 560px; {ТЕКСТ} font-weight: 700; font-size: 38px; line-height: 1.24; color: {ВТОРОЙ};">{к["вывод"]}</div>
 <div style="position: absolute; right: {КРАЙ}px; top: {ВЫВОД_ВЕРХ - 4}px; width: 330px; box-sizing: border-box; padding: 22px 26px 26px; border-radius: 28px; background: {стиль.ЛАЙМ}; text-align: center;">
 <div style="{ТЕКСТ} font-weight: 700; font-size: 24px; letter-spacing: .02em; color: {ЧЕРНИЛА}; opacity: .72;">не платим уже</div>
 <div style="{КРУП} font-size: 62px; line-height: 1.05; color: {ЧЕРНИЛА}; margin-top: 4px;">{к["экономия"]}<span style="{ТЕКСТ} font-weight: 700; font-size: 26px;">/мес</span></div>
@@ -355,9 +358,10 @@ def финал(ф: dict, пары: list[dict]) -> str:
               f'<div style="{ТЕКСТ} font-weight: 700; font-size: 30px; color: #C9CCBF; margin-top: 12px;">'
               f'{ф["ссылка"]}</div></div>'
             # Кот не у правого края: там колонка лайков и репостов TikTok (правка владельца
-            # 24.09.2026). Ничего важного правее ≈900 px.
+            # 24.09.2026). Ничего важного правее ≈900 px. Верх 830, а не 800: на 800 уши
+            # кота касались последней строки списка (приёмка досок, 24.09).
             + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" style="position: absolute; left: 690px; '
-              f'top: 800px; height: 300px;">'
+              f'top: 830px; height: 300px;">'
             + низ())
 
 

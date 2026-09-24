@@ -42,6 +42,14 @@ def холст_из(*доски: str) -> Path:
     return папка
 
 
+def доска(папка: Path, файл: str, тело: str) -> None:
+    """Синтетическая доска: шапка и шрифты эталонной, внутри корня — только `тело`."""
+    html = (ЭТАЛОНЫ / "A-Main.dc.html").read_text(encoding="utf-8")
+    начало = html.index(">", html.index('<div style="width: 1080px')) + 1
+    конец = html.index("</div>\n</x-dc>")
+    (папка / файл).write_text(html[:начало] + тело + html[конец:], encoding="utf-8")
+
+
 class СписокДосок(unittest.TestCase):
     def test_по_раскладке_и_с_запасными_обложками(self):
         доски = снять_доски.доски(ЭТАЛОНЫ)
@@ -88,6 +96,81 @@ class Снимки(unittest.TestCase):
         было = [с.stat().st_mtime_ns for с in снимки]
         снять_доски.снять(project)
         self.assertEqual([с.stat().st_mtime_ns for с in снимки], было)
+
+
+def беды_с(беды: list[str], слово: str) -> list[str]:
+    return [б for б in беды if б.startswith(слово)]
+
+
+@unittest.skipUnless(config.хром(), "нужен Chrome")
+class Разметка(unittest.TestCase):
+    """Проверка 2: общий замер запаса на верхних блоках доски и зона кнопок TikTok."""
+
+    @classmethod
+    def setUpClass(cls):
+        import приёмка_досок
+        cls.п = приёмка_досок
+
+    def беды(self, имя: str) -> list[str]:
+        return self.п.по_разметке(ЭТАЛОНЫ, f"{имя}.dc.html")
+
+    def test_годные_проходят(self):
+        """Кадры и главные обложки обоих постов 24.09 — какими их выпустили, с правкой брака,
+        найденного этой же приёмкой (вывод под плашкой, кот на списке)."""
+        годные = [д["file"] for д in снять_доски.доски(ЭТАЛОНЫ) if "bityi" not in д["file"]]
+        self.assertEqual(len(годные), 14)
+        for файл in годные:
+            with self.subTest(файл):
+                self.assertEqual(self.п.по_разметке(ЭТАЛОНЫ, файл), [])
+
+    def test_кот_у_правого_края_под_кнопками(self):
+        """Финал «пар» 3b4e57c: кот стоял `right: 20px` — его закрывала колонка лайков."""
+        беды = беды_с(self.беды("A-bityi-kot-u-kraya"), "под кнопками TikTok")
+        self.assertEqual(len(беды), 1, беды)
+        self.assertIn("кот", беды[0])
+
+    def test_кот_запасной_обложки_тоже(self):
+        self.assertTrue(беды_с(self.беды("B-bityi-kot-u-kraya"), "под кнопками TikTok"))
+
+    def test_штамп_за_краем(self):
+        """Обложка «списание» a602efa: штамп «Отменено» вылез за правый край."""
+        беды = беды_с(self.беды("A-bityi-otmeneno-za-kraem"), "у края")
+        self.assertTrue(any("Отменено" in б for б in беды), беды)
+
+    def test_вывод_под_плашкой(self):
+        """Кадр 4 до правки: строка вывода в 4 px от плашки «не платим уже»."""
+        беды = беды_с(self.беды("A-bityi-vyvod-pod-plashkoy"), "впритык")
+        self.assertTrue(any("не платим" in б for б in беды), беды)
+
+    def test_кот_вплотную_к_списку(self):
+        беды = беды_с(self.беды("A-bityi-kot-na-spiske"), "впритык")
+        self.assertTrue(any("кот" in б for б in беды), беды)
+
+    def test_подпись_на_заголовке(self):
+        self.assertTrue(беды_с(self.беды("B-bityi-pod-na-zagolovke"), "впритык"))
+
+    def test_фон_и_сетка_не_блоки(self):
+        """Сетка и градиент во весь кадр лежат под всем — с ними «налезает» любой блок."""
+        for б in self.беды("A-bityi-kot-u-kraya"):
+            self.assertNotIn(" -1080", б)
+
+    def test_повёрнутый_блок_по_контуру(self):
+        """Лента, повёрнутая на 7°: описанный прямоугольник на ~150 px выше контура."""
+        # Лента 920×120 с центром (540, 360), повёрнута на −7°: правый край поднят, низ
+        # идёт от (91, 476) до (1004, 364). Плашка справа (x 700–1000) на 470: по описанному
+        # прямоугольнику налезает, по контуру низ ленты там ≈ 400 — зазор ~70. Плашка слева
+        # (x 80–300) на 476 — прямо под опущенным краем, зазор ≈ 0: настоящая беда.
+        папка = холст_из("A-Main")
+        доска(папка, "lenta.dc.html",
+              '<div class="лента" style="position: absolute; left: 80px; top: 300px; width: 920px; '
+              'height: 120px; background: #333; transform: rotate(-7deg);"></div>'
+              '<div class="справа" style="position: absolute; left: 700px; top: 470px; width: 300px; '
+              'height: 60px; background: #C7E24B;"></div>'
+              '<div class="слева" style="position: absolute; left: 80px; top: 476px; width: 220px; '
+              'height: 60px; background: #C7E24B;"></div>')
+        беды = беды_с(self.п.по_разметке(папка, "lenta.dc.html"), "впритык")
+        self.assertFalse([б for б in беды if "справа" in б], беды)
+        self.assertTrue([б for б in беды if "слева" in б], беды)
 
 
 if __name__ == "__main__":
