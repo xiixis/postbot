@@ -49,6 +49,39 @@ except Exception:                                    # noqa: BLE001
 # Рабочие данные. В контейнере это подключённый том, иначе папка рядом с кодом:
 # карточки и база не должны исчезать при обновлении образа.
 ДАННЫЕ = Path(os.getenv("POSTBOT_DATA", "").strip() or (КОРЕНЬ / "data"))
+
+
+def рабочий_стол() -> Path:
+    """Рабочий стол этой машины.
+
+    На Windows он бывает перенесён в OneDrive, и `~/Desktop` тогда — пустая старая
+    папка. Настоящий путь лежит в реестре (User Shell Folders), с переменными вида
+    %USERPROFILE%. На маке и Linux — `~/Desktop`.
+    """
+    if os.name == "nt":
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") as ключ:
+                путь = Path(os.path.expandvars(winreg.QueryValueEx(ключ, "Desktop")[0]))
+            if путь.is_dir():
+                return путь
+        except OSError:
+            pass
+    return Path.home() / "Desktop"
+
+
+def папка_постов() -> Path:
+    """Куда выпуск кладёт готовые посты и откуда их берёт черновик TikTok.
+
+    Одна на весь проект (раньше путь был зашит в четырёх файлах — аудит 25.09.2026).
+    ВЫГРУЗКА_ПАПКА в .env главнее всего; нет рабочего стола (сервер) — папка данных.
+    """
+    свой = (os.getenv("ВЫГРУЗКА_ПАПКА") or "").strip()
+    if свой:
+        return Path(свой).expanduser()
+    стол = рабочий_стол()
+    return (стол / "Посты") if стол.is_dir() else (ДАННЫЕ / "выгрузка")
 БАЗА = ДАННЫЕ / "posts.db"
 ВЫВОД = ДАННЫЕ / "cards"
 АССЕТЫ = КОРЕНЬ / "assets"

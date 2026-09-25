@@ -34,7 +34,10 @@ from dotenv import dotenv_values
 import storage
 
 ТУТ = Path(__file__).resolve().parent
-СТОЛ = Path.home() / "Desktop" / "Посты"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import config  # noqa: E402
+
+СТОЛ = config.папка_постов()      # та же папка, куда кладёт Style/выпуск.py
 API = "https://zernio.com/api/v1"
 АККАУНТ_TIKTOK = "6ab297a48d284ffb212def20"     # @4x_tube в Zernio (профиль Default)
 

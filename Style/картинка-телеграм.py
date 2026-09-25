@@ -71,7 +71,7 @@ html,body{{width:{Ш}px;height:{В}px;background:{ГРУНТ};color:{ТЕКСТ}
 
 def main():
     описание = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    куда = Path(sys.argv[2]) if len(sys.argv) > 2 else Path.home() / "Desktop" / "картинка.jpg"
+    куда = Path(sys.argv[2]) if len(sys.argv) > 2 else стиль.config.рабочий_стол() / "картинка.jpg"
     временный = куда.with_suffix(".png")
     if not браузер.снять(страница(описание), Ш, В, временный):
         raise SystemExit("картинка не вышла")

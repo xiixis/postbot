@@ -157,6 +157,31 @@ def _команда(путь: str, задача: str, система: str, мо�
     return команда, задача
 
 
+def без_обёртки_npm(путь: str) -> list[str] | None:
+    """[node, cli.js] вместо обёртки npm `claude.cmd`, или None, если разобрать не вышло.
+
+    Обёртку .cmd subprocess сам не запускает, а через `cmd /c` командная строка
+    разбирается заново: кавычки, `%` и `&` в системной подсказке и JSON-схеме ломаются,
+    а длина упирается в 8191 знак (подсказка голоса канала длиннее). Сама обёртка —
+    это «node "%dp0%/node_modules/…/cli.js" %*», поэтому зовём node напрямую (аудит 25.09.2026).
+    """
+    обёртка = Path(путь)
+    try:
+        текст = обёртка.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+    import re
+    м = re.search(r'"%~?dp0%[\\/]([^"]+?\.m?js)"', текст)
+    if not м:
+        return None
+    скрипт = обёртка.parent / м.group(1).replace("\\", "/")
+    if not скрипт.exists():
+        return None
+    node = обёртка.parent / "node.exe"
+    node_путь = str(node) if node.exists() else shutil.which("node")
+    return [node_путь, str(скрипт)] if node_путь else None
+
+
 def _вызвать(задача: str, система: str, модель: str, метка: str,
              схема: dict | None, усердие: str = "",
              картинки: "list | None" = None) -> dict:
@@ -170,9 +195,11 @@ def _вызвать(задача: str, система: str, модель: str, �
 
     команда, задача = _команда(путь, задача, система, модель, схема,
                                усердие, картинки)
-    # Windows: обёртку npm (.cmd) subprocess напрямую не запускает.
+    # Windows: обёртку npm (.cmd) subprocess напрямую не запускает. Зовём node с cli.js
+    # напрямую, чтобы cmd не разбирал подсказку заново; не вышло — старый путь через cmd.
     if sys.platform == "win32" and путь.lower().endswith((".cmd", ".bat")):
-        команда = ["cmd", "/c"] + команда
+        прямо = без_обёртки_npm(путь)
+        команда = (прямо + команда[1:]) if прямо else (["cmd", "/c"] + команда)
 
     среда = _окружение()
     без_окна = getattr(subprocess, "CREATE_NO_WINDOW", 0) if sys.platform == "win32" else 0

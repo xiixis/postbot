@@ -18,21 +18,35 @@ def _зона():
 
     datetime.now().astimezone() отдаёт застывшее «+03:00». Бот живёт неделями,
     и после перевода часов все запланированные посты уехали бы на час. Имя
-    зоны переводит время само, поэтому сначала ищем его: в TZ, потом в ссылке
-    /etc/localtime, которой macOS и Linux и хранят выбор системы.
+    зоны переводит время само, поэтому сначала ищем его: в POSTBOT_TZ (облако может
+    резервировать TZ), в TZ, потом в ссылке /etc/localtime, которой macOS и Linux
+    хранят выбор системы, а на Windows — через tzlocal: ссылки там нет, и раньше
+    бот на ПК жил на застывшем смещении (аудит 25.09.2026).
     """
-    имя = os.getenv("TZ", "").strip()
+    имя = (os.getenv("POSTBOT_TZ", "") or os.getenv("TZ", "")).strip()
     if not имя:
         ссылка = Path("/etc/localtime")
         if ссылка.is_symlink() and "zoneinfo" in str(ссылка.resolve()):
             имя = str(ссылка.resolve()).split("zoneinfo/")[-1]
+    if not имя:
+        try:
+            import tzlocal
+            имя = tzlocal.get_localzone_name() or ""
+        except Exception:                                    # noqa: BLE001
+            имя = ""
     try:
         return ZoneInfo(имя) if имя else None
     except Exception:                                        # noqa: BLE001
         return None
 
 
-ЗОНА = _зона() or datetime.now().astimezone().tzinfo
+ЗОНА = _зона()
+if ЗОНА is None:
+    # Имя зоны не нашлось: живём на застывшем смещении и честно об этом говорим —
+    # после перевода часов запланированные посты уедут на час.
+    import sys
+    print("⚠ часовой пояс не определён: задайте POSTBOT_TZ (например Europe/Kyiv) в .env", file=sys.stderr)
+    ЗОНА = datetime.now().astimezone().tzinfo
 
 МЕСЯЦЫ = ["янв", "фев", "мар", "апр", "мая", "июн",
           "июл", "авг", "сен", "окт", "ноя", "дек"]
