@@ -8,10 +8,17 @@ services:
   bot:
     build: .
     restart: always
+    # Все настройки бота — из .env (образец .env.example). Для контейнера там
+    # обязательно: TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL, TELEGRAM_ADMIN_ID,
+    # GEMINI_API_KEY, WEBAPP_URL=https://<WEBAPP_HOST>, DATABASE_URL (та же база,
+    # что у мака), POSTBOT_TZ и вход Claude Code: CLAUDE_CODE_OAUTH_TOKEN
+    # (`claude setup-token` на маке) — или один раз /login внутри, см. README.
     env_file: .env
     # Chromium раскладывает страницу в разделяемой памяти, а docker по
     # умолчанию даёт под неё 64 МБ. На карточке 2560x1440 этого не хватает.
     shm_size: "512m"
+    # Том: база (если без Supabase), карточки, сессия Telegram (/data/ключи),
+    # вход Claude Code (/data/claude), модель whisper (/data/hf).
     volumes:
       - data:/data
     expose:

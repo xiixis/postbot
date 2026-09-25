@@ -15,6 +15,11 @@ if [ ! -f .env ]; then
 	exit 1
 fi
 
+if ! grep -q '^CLAUDE_CODE_OAUTH_TOKEN=.' .env; then
+	echo "Внимание: в .env нет CLAUDE_CODE_OAUTH_TOKEN (выпустить: claude setup-token)."
+	echo "Без него после запуска войдите руками: docker compose exec bot claude, затем /login."
+fi
+
 echo "== пакеты =="
 apt-get update -qq
 apt-get install -y -qq ca-certificates curl ufw

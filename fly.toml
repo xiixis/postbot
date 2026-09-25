@@ -1,5 +1,10 @@
 # Развёртывание на Fly.io. Адрес приложения получается сразу и навсегда,
 # поэтому туннель на сервере не нужен: WEBAPP_URL задаётся один раз.
+#
+# Это ВМЕСТО мака, не вместе: бот живёт на одной машине за раз (хозяин.py).
+# Секреты — не здесь, а через `fly secrets set` (список в README, «Сервер в
+# контейнере»): TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL, TELEGRAM_ADMIN_ID,
+# GEMINI_API_KEY, DATABASE_URL, WEBAPP_URL, CLAUDE_CODE_OAUTH_TOKEN.
 app = "postbot-4xtube"
 primary_region = "waw"           # Варшава, ближайший к Киеву регион
 
@@ -8,7 +13,8 @@ primary_region = "waw"           # Варшава, ближайший к Кие�
 [env]
   POSTBOT_DATA = "/data"
   WEBAPP_PORT = "8137"
-  TZ = "Europe/Kiev"
+  # POSTBOT_TZ, а не TZ: times.py берёт его первым, TZ облако может занять своим.
+  POSTBOT_TZ = "Europe/Kyiv"
 
 [http_service]
   internal_port = 8137
@@ -22,6 +28,8 @@ primary_region = "waw"           # Варшава, ближайший к Кие�
   destination = "/data"
 
 [[vm]]
-  memory = "512mb"               # Chromium на карточку берёт около 300 МБ
+  # Chromium на карточку берёт около 300 МБ, Claude Code (Node.js) — ещё
+  # 200–300, whisper на голосовую заметку — около 500. В 512 МБ бот падал бы.
+  memory = "2gb"
   cpu_kind = "shared"
   cpus = 1

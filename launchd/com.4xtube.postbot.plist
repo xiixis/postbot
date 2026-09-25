@@ -4,13 +4,18 @@
   держать ради этого открытый терминал неудобно: закрыли окно, и посты
   перестали выходить.
 
-  Установка (пути подставьте свои):
-    cp launchd/com.4xtube.postbot.plist ~/Library/LaunchAgents/
-    launchctl load ~/Library/LaunchAgents/com.4xtube.postbot.plist
+  Это ШАБЛОН: __ROOT__ — папка 4xSoft этой машины (где лежат postbot и
+  yt-searcher). Руками не копировать, ставить скриптом рядом:
 
-  Остановить:  launchctl unload ~/Library/LaunchAgents/com.4xtube.postbot.plist
-  Посмотреть:  tail -f ~/4xSoft/postbot/data/bot.log
+    bash launchd/установить.sh          поставить или переставить
+    bash launchd/установить.sh снять    остановить и убрать
+
+  Питон — общее окружение yt-searcher/.venv: в системном /usr/bin/python3
+  нет dotenv и остальных зависимостей, бот с ним падает сразу (10.09.2026).
+
+  Посмотреть:  tail -f ~/4xSoft/postbot/data/бот.log
 -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
@@ -18,29 +23,37 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/bin/python3</string>
+    <string>__ROOT__/yt-searcher/.venv/bin/python3</string>
     <string>-u</string>
     <string>bot.py</string>
   </array>
 
   <key>WorkingDirectory</key>
-  <string>/Users/xiix/4xSoft/postbot</string>
+  <string>__ROOT__/postbot</string>
 
-  <!-- cloudflared лежит в /opt/homebrew/bin, а launchd про него не знает -->
+  <!-- cloudflared и claude лежат в /opt/homebrew/bin и ~/.local/bin, а launchd
+       про них не знает: его PATH — только /usr/bin:/bin. -->
   <key>EnvironmentVariables</key>
   <dict>
     <key>PATH</key>
-    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <string>__ROOT__/yt-searcher/.venv/bin:__HOME__/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>PYTHONUTF8</key>
+    <string>1</string>
   </dict>
 
   <key>RunAtLoad</key>
   <true/>
   <key>KeepAlive</key>
   <true/>
+  <!-- Если бот уже живёт на другой машине, хозяин.py не даёт второму стартовать
+       (выход с кодом 1). Раз в минуту launchd пробует снова — и поднимет бота,
+       как только тот, другой, остановится. Чаще пробовать незачем. -->
+  <key>ThrottleInterval</key>
+  <integer>60</integer>
 
   <key>StandardOutPath</key>
-  <string>/Users/xiix/4xSoft/postbot/data/bot.log</string>
+  <string>__ROOT__/postbot/data/бот.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/xiix/4xSoft/postbot/data/bot.log</string>
+  <string>__ROOT__/postbot/data/бот.log</string>
 </dict>
 </plist>

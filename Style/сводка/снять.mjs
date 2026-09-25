@@ -33,13 +33,27 @@ const require = createRequire(join(_база, "package.json"));
 const { chromium } = require("playwright-core");
 
 const [имя, адрес, ш = "1440", в = "900"] = process.argv.slice(2);
-const _версия = _найти(join(homedir(), ".cache/chrome-headless-shell/chrome-headless-shell"),
-                       п => existsSync(join(п, "chrome-headless-shell-mac-arm64/chrome-headless-shell")));
-if (!_версия) {
-  console.error("нет chrome-headless-shell: поставить `npx playwright install chromium-headless-shell`");
+// Chrome: CHROME_PATH, потом кэш chrome-headless-shell любой платформы, потом обычный
+// установленный Chrome. Раньше искалась только сборка mac-arm64, и на ПК и Linux
+// снимальщик не запускался вовсе (аудит кроссплатформенности 25.09.2026).
+const _кэш = join(homedir(), ".cache/chrome-headless-shell/chrome-headless-shell");
+const _сборки = ["mac-arm64", "mac-x64", "linux64", "win64", "win32"].map(п =>
+  join(`chrome-headless-shell-${п}`, п.startsWith("win") ? "chrome-headless-shell.exe" : "chrome-headless-shell"));
+const _версия = _найти(_кэш, в => _сборки.some(с => existsSync(join(в, с))));
+const _кандидаты = [
+  process.env.CHROME_PATH,
+  ...(_версия ? _сборки.map(с => join(_версия, с)) : []),
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+  process.env.LOCALAPPDATA ? join(process.env.LOCALAPPDATA, "Google/Chrome/Application/chrome.exe") : null,
+  "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser",
+];
+const CHROME = _кандидаты.find(п => п && existsSync(п));
+if (!CHROME) {
+  console.error("нет Chrome: задать CHROME_PATH или поставить `npx playwright install chromium-headless-shell`");
   process.exit(1);
 }
-const CHROME = join(_версия, "chrome-headless-shell-mac-arm64/chrome-headless-shell");
 
 const браузер = await chromium.launch({ executablePath: CHROME, headless: true });
 try {

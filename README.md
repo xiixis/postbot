@@ -471,14 +471,15 @@ HTML перед отправкой: экранируются три символ
    месте: если что-то пойдёт не так, уберёте `DATABASE_URL` и продолжите как
    раньше.
 
-3. **Поднять контейнер.** В комплекте `Dockerfile` (питон плюс Chromium для
-   карточек) и `fly.toml`. На Fly.io это три команды:
+3. **Поднять контейнер.** В комплекте `Dockerfile` (питон, Chromium, шрифты,
+   Claude Code) и `fly.toml`; что задать и как не запустить два бота разом —
+   в разделе «Сервер в контейнере» ниже. На Fly.io это четыре команды:
 
    ```bash
    fly launch --no-deploy            # создаст приложение по fly.toml
-   fly volume create postbot_data -r waw -s 1
+   fly volume create postbot_data -r waw -s 3
    fly secrets set TELEGRAM_BOT_TOKEN=… TELEGRAM_CHANNEL=… TELEGRAM_ADMIN_ID=… \
-                   GEMINI_API_KEY=… DATABASE_URL=… \
+                   GEMINI_API_KEY=… DATABASE_URL=… CLAUDE_CODE_OAUTH_TOKEN=… \
                    WEBAPP_URL=https://ваше-имя.fly.dev
    fly deploy
    ```
@@ -497,18 +498,60 @@ HTML перед отправкой: экранируются три символ
 не работает. И карточки рисует Chromium, которого в python-функциях Vercel
 нет и положить туда некуда.
 
+## Сервер в контейнере
+
+`Dockerfile`, `docker-compose.yml` (бот и Caddy на своём VPS, ставится
+`sudo bash deploy/установка.sh`) и `fly.toml` (Fly.io) поднимают того же бота
+на сервере. Внутри образа: питон с `requirements.txt`, Chromium, шрифты Noto с
+кириллицей и эмодзи, tzdata и Claude Code (`npm i -g @anthropic-ai/claude-code`).
+
+**Контейнер — это вместо мака, а не вместе.** Бот живёт на одной машине за раз:
+с 25.09 `хозяин.py` не даёт второму стартовать, пока жив первый (база общая, два
+бота публиковали бы посты дважды). Порядок переезда: погасить бота на маке
+(`bash launchd/установить.sh снять` или `kill`), подождать до трёх минут, пока
+протухнет его отметка, и только тогда поднимать контейнер. Обратно так же.
+
+Что задать (в `.env` для compose, `fly secrets set` для Fly):
+
+| Переменная | Зачем |
+|---|---|
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHANNEL`, `TELEGRAM_ADMIN_ID` | без них бот не стартует |
+| `CLAUDE_CODE_OAUTH_TOKEN` | вход Claude Code по подписке: токен выпускает `claude setup-token` на маке. Вместо него можно один раз войти внутри: `docker compose exec bot claude` (Fly: `fly ssh console -C claude`), затем `/login`; вход ляжет в том (`/data/claude`) |
+| `GEMINI_API_KEY` | кот и картинки; без него `config.проверить()` тоже не пускает |
+| `DATABASE_URL` | та же база Supabase, что у мака, иначе контейнер начнёт с пустой |
+| `WEBAPP_URL` | постоянный https-адрес приложения (`https://<WEBAPP_HOST>` или `https://имя.fly.dev`); без него бот ищет cloudflared, которого в образе нет |
+| `WEBAPP_HOST` | только compose: имя для сертификата Caddy |
+| `POSTBOT_TZ` | часовой пояс расписания, `Europe/Kyiv` (в `fly.toml` уже стоит) |
+| `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`, `TELEGRAM_API_ID`, `TELEGRAM_API_HASH`, `GOOGLE_APPLICATION_CREDENTIALS`, `GCP_PROJECT`, `TIKTOK_*`, `X_*`, `THREADS_*` | как в `.env` мака, если эти площадки и хранилище нужны |
+
+`ANTHROPIC_API_KEY` не задавать: платный API запрещён, `агент.py` его всё равно
+снимает. Ключи из облака команды (`ключи_облака.py`) в контейнер не приезжают:
+соседней папки `yt-searcher` там нет, всё берётся из переменных.
+
+Том `/data` (`POSTBOT_DATA`) держит файловую базу, карточки, вход Claude Code,
+модель whisper и сессию аккаунта Telegram: `deploy/ключи` в образе — ссылка на
+`/data/ключи`, сам файл сессии в образ не попадает. Перенести его с мака:
+`docker compose cp deploy/ключи/аккаунт.session bot:/data/ключи/` (Fly:
+`fly ssh sftp shell`, затем `put`), либо войти заново внутри контейнера:
+`python deploy/вход_qr.py`. Логи: `docker compose logs -f bot` или `fly logs`.
+
 ## Чтобы бот жил сам
 
 Расписание работает, только пока бот запущен. Держать ради этого открытый
-терминал неудобно, поэтому в комплекте лежит готовый автозапуск для macOS:
+терминал неудобно, поэтому в комплекте лежит готовый автозапуск для macOS.
+`launchd/com.4xtube.postbot.plist` — шаблон: пути этой машины и питон общего
+окружения `yt-searcher/.venv` подставляет установщик (в системном
+`/usr/bin/python3` зависимостей нет, бот с ним падает сразу):
 
 ```bash
-cp launchd/com.4xtube.postbot.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.4xtube.postbot.plist
+bash launchd/установить.sh          # поставить или переставить
+bash launchd/установить.sh снять    # остановить и убрать
 ```
 
 Бот поднимется сам при входе в систему и переживёт закрытие терминала. Логи
-пишутся в `data/bot.log`. Остановить: `launchctl unload ~/Library/LaunchAgents/com.4xtube.postbot.plist`.
+пишутся в `data/бот.log`. Если бот уже запущен руками, установщик откажет:
+сперва погасите его. Пока бот работает на другой машине, служба раз в минуту
+упирается в `хозяин.py` и сама поднимет бота, когда тот остановится.
 
 Адрес мини-приложения при каждом запуске новый, но бот прописывает его в
 кнопку меню сам, так что после перезапуска ничего обновлять не нужно.

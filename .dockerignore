@@ -2,7 +2,12 @@
 .venv/
 __pycache__/
 *.pyc
+*.log
 data/
 .git/
 launchd/
+tests/
 assets/stream_card.png
+# Сессия аккаунта Telegram и памятки входа — секреты, в образ не кладутся:
+# в контейнере deploy/ключи — ссылка в том /data/ключи.
+deploy/ключи/
