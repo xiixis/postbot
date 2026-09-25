@@ -26,7 +26,8 @@ from typing import Callable
 import стиль
 import дизайн_холст as дх
 
-СЦЕНЫ = Path.home() / "4xSoft/.claude/маскот/сцены"
+# От самого файла, а не от дома: на ПК проект лежит в C:\4xSoft, и ~/4xSoft там нет.
+СЦЕНЫ = Path(__file__).resolve().parents[2] / ".claude/маскот/сцены"
 КРАСНЫЙ = "#FF3B30"                 # зачёркивают красным и от руки (правка владельца 24.09)
 ПРИГЛУШИТЬ = "filter: brightness(.45) saturate(1.4);"   # логотип на светлом грунте
 
@@ -51,6 +52,7 @@ class Тема:
     край: int = 80
     сетка: str = ""             # слой поверх грунта во весь кадр (у «пар» — клетка 40 px)
     логотип: str = ""           # CSS-фильтр логотипа: на светлом грунте он приглушён
+    свет: str = "199,226,75"    # RGB свечения макетов; у стиля с чужим акцентом (оранжевые «навыки») — свой
 
     @property
     def ширина(self) -> int:
@@ -82,7 +84,7 @@ def низ(т: Тема) -> str:
 
 
 def маркер(т: Тема, текст: str) -> str:
-    return дх.маркер(текст, тёмный_фон=т.тёмная, чернила=т.на_акценте)
+    return дх.маркер(текст, тёмный_фон=т.тёмная, чернила=т.на_акценте, цвет=т.акцент)
 
 
 def зачёркнуто(т: Тема, текст: str, кегль: int, цвет: str = "", наклон: float = -5,
@@ -242,7 +244,7 @@ def превращение(о: dict, т: Тема, д: dict) -> str:
                     f'border-radius: {"50%" if с.get("во_весь") else "0"};"></div>')
     стрелка = (f'<svg viewBox="0 0 40 120" fill="none" stroke="{т.стрелка}" stroke-width="4" stroke-linecap="round" '
                'stroke-linejoin="round" style="width: 30px; height: 72px;"><path d="M20 6v96M8 88l12 14 12-14"/></svg>')
-    return (подложка(т, "radial-gradient(80% 60% at 20% 10%, rgba(199,226,75,.16), rgba(18,19,15,0) 60%)")
+    return (подложка(т, f"radial-gradient(80% 60% at 20% 10%, rgba({т.свет},.16), rgba(18,19,15,0) 60%)")
             + f'<div style="position: absolute; left: {т.край}px; top: 100px; width: {т.ширина}px; {т.крупный} '
               f'font-size: {кегль(о["строки"], т.ширина, 96)}px; line-height: 1.0; color: {т.чернила};">{о["строки"][0]}<br>'
               f'{маркер(т, о["строки"][1])}</div>'
@@ -275,7 +277,7 @@ def плёнка(о: dict, т: Тема, д: dict) -> str:
     лента = (f'<div data-вылет style="position: absolute; left: -60px; top: 300px; width: 1240px; padding: 26px 30px; '
              f'background: rgba(0,0,0,.45); border-top: 3px solid {т.рамка}; border-bottom: 3px solid {т.рамка}; '
              f'transform: rotate(-7deg); display: flex; gap: 22px;">{клетки}</div>')
-    return (подложка(т, "radial-gradient(70% 50% at 82% 82%, rgba(199,226,75,.20), rgba(18,19,15,0) 62%)")
+    return (подложка(т, f"radial-gradient(70% 50% at 82% 82%, rgba({т.свет},.20), rgba(18,19,15,0) 62%)")
             + лента
             + кот(о["поза"], 640, 660, 380)
             + f'<div style="position: absolute; left: {т.край}px; top: 684px; width: 560px; {т.крупный} '
@@ -294,7 +296,7 @@ def число(о: dict, т: Тема, д: dict) -> str:
     наезжает на плашку.
     """
     цвет_числа = т.акцент if т.тёмная else т.чернила
-    return (подложка(т, "radial-gradient(circle at 20% 10%, rgba(199,226,75,.20), rgba(199,226,75,0) 45%)")
+    return (подложка(т, f"radial-gradient(circle at 20% 10%, rgba({т.свет},.20), rgba({т.свет},0) 45%)")
             + f'<div style="position: absolute; left: {т.край}px; top: 40px; {т.крупный} font-size: 400px; '
               f'line-height: 1; color: {цвет_числа};">{о["число"]}</div>'
             + f'<div style="position: absolute; left: {т.край}px; top: 470px; width: {т.ширина}px; {т.крупный} '
@@ -343,6 +345,11 @@ def сцена(о: dict, т: Тема, д: dict) -> str:
     return (f'<img src="{о["сцена"]}.jpg" style="position: absolute; left: 0; top: 0; width: 1080px; '
             f'height: 1440px; object-fit: cover;">'
             + кот_сцены(к)
+            # «затемнить_низ»: светлая деталь сцены (лента конвейера 25.09) легла в запас над знаком —
+            # низ кадра гасится к графиту, знак читается, приёмка не видит там «текста».
+            + ('<div style="position: absolute; left: 0; right: 0; bottom: 0; height: 520px; pointer-events: none; '
+               'background: linear-gradient(0deg, rgba(12,12,10,.96) 0%, rgba(12,12,10,.85) 42%, rgba(12,12,10,0) 100%);">'
+               '</div>' if о.get("затемнить_низ") else "")
             + f'<div style="position: absolute; left: {x0}px; top: {y0}px; width: {ширина}px; display: flex; '
               f'flex-direction: column; align-items: flex-start; gap: 30px;">'
               f'<div style="{т.крупный} font-size: {к_загл}px; line-height: .98; color: {чернила};">'

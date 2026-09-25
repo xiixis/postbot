@@ -29,7 +29,7 @@ import стиль
 CLAUDE = "#D97757"                    # фирменный цвет Claude: слово «Claude» на обложках
 
 
-def маркер(текст: str, тёмный_фон: bool = False, чернила: str = "#12130E") -> str:
+def маркер(текст: str, тёмный_фон: bool = False, чернила: str = "#12130E", цвет: str = "") -> str:
     """Акцент слова: лаймовая капсула под тёмным текстом; на тёмном фоне — лайм текстом.
 
     Олива #3F4D08 по крему держала контраст 8:1, но в ленте «тусклая, незаметная»;
@@ -37,9 +37,10 @@ def маркер(текст: str, тёмный_фон: bool = False, черни�
     самое заметное пятно кадра. Капсула — inline-block со своим отступом сверху:
     строчная подсветка при плотном интерлиньяже залезала на строку выше.
     """
+    цвет = цвет or стиль.ЛАЙМ          # акцент стиля; у всех, кроме «навыков», — лайм
     if тёмный_фон:
-        return f'<span style="color: {стиль.ЛАЙМ};">{текст}</span>'
-    return (f'<span style="background: {стиль.ЛАЙМ}; color: {чернила}; display: inline-block; line-height: 1; '
+        return f'<span style="color: {цвет};">{текст}</span>'
+    return (f'<span style="background: {цвет}; color: {чернила}; display: inline-block; line-height: 1; '
             f'padding: .03em .16em .08em; margin-top: .1em; border-radius: .16em;">{текст}</span>')
 
 
