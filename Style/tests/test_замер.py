@@ -20,7 +20,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import замер  # noqa: E402
 
-ШРИФТ = "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+# Ожидания тестов сняты с метрик Arial Bold, поэтому ищем его на любой ОС: раньше путь
+# был только маковский, и на Windows и Linux 7 тестов падали на ровном месте (аудит
+# 25.09.2026). Шрифт проекта — запасной: у Onest хвосты «р», «у» мелкой строки замер
+# считает отдельной полосой, и тест «два уровня кегля» с ним не сходится.
+ШРИФТЫ_ARIAL = ["/System/Library/Fonts/Supplemental/Arial Bold.ttf",       # мак
+                "C:/Windows/Fonts/arialbd.ttf",                              # Windows
+                "/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf",    # Linux с msttcorefonts
+                "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
+ШРИФТ = next((ш for ш in ШРИФТЫ_ARIAL if Path(ш).exists()),
+             str(Path(__file__).resolve().parents[2] / "assets/fonts/onest-800-cyrillic.woff2"))
 
 
 def кадр_с_текстом(папка: Path, имя: str, цвет: str, фон: str,

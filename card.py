@@ -3777,7 +3777,7 @@ def _замерить_заново(страница: str, ширина: int = 10
             [хром, "--headless", "--disable-gpu", "--no-sandbox",
              f"--window-size={ширина},{высота}",
              "--virtual-time-budget=3000", "--dump-dom", адрес(файл)],
-            capture_output=True, text=True, timeout=90)
+            capture_output=True, text=True, timeout=90, encoding="utf-8", errors="replace")
         м = re.search(r'data-замер="([^"]+)"', готово.stdout)
         if not м:
             return {}

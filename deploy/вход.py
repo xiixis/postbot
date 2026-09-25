@@ -21,7 +21,7 @@ async def запрос(телефон: str):
     await клиент.connect()
     ответ = await клиент.send_code_request(телефон)
     ПАМЯТКА.write_text(json.dumps({"телефон": телефон,
-                                   "хеш": ответ.phone_code_hash}))
+                                   "хеш": ответ.phone_code_hash}), encoding="utf-8")
     ПАМЯТКА.chmod(0o600)
     print("код отправлен, тип:", type(ответ.type).__name__)
     await клиент.disconnect()
@@ -30,18 +30,18 @@ async def запрос(телефон: str):
 async def смс(_=None):
     """Просит прислать код по SMS: в приложении его иногда не замечают."""
     import json as _json
-    д = _json.loads(ПАМЯТКА.read_text())
+    д = _json.loads(ПАМЯТКА.read_text(encoding="utf-8"))
     клиент = TelegramClient(str(userbot.СЕССИЯ), userbot.API_ID, userbot.API_HASH)
     await клиент.connect()
     ответ = await клиент.send_code_request(д["телефон"], force_sms=True)
     ПАМЯТКА.write_text(_json.dumps({"телефон": д["телефон"],
-                                    "хеш": ответ.phone_code_hash}))
+                                    "хеш": ответ.phone_code_hash}), encoding="utf-8")
     print("повтор отправлен, тип:", type(ответ.type).__name__)
     await клиент.disconnect()
 
 
 async def код(значение: str):
-    д = json.loads(ПАМЯТКА.read_text())
+    д = json.loads(ПАМЯТКА.read_text(encoding="utf-8"))
     клиент = TelegramClient(str(userbot.СЕССИЯ), userbot.API_ID, userbot.API_HASH)
     await клиент.connect()
     try:

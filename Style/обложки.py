@@ -280,11 +280,15 @@ def плёнка(о: dict, т: Тема, д: dict) -> str:
     return (подложка(т, f"radial-gradient(70% 50% at 82% 82%, rgba({т.свет},.20), rgba(18,19,15,0) 62%)")
             + лента
             + кот(о["поза"], 640, 660, 380)
-            + f'<div style="position: absolute; left: {т.край}px; top: 684px; width: 560px; {т.крупный} '
-              f'font-size: 96px; line-height: .98; color: {т.чернила};">{о["строки"][0]}<br>'
+            # Заголовок и подпись одной колонкой: заголовок в три строки сдвигает подпись,
+            # а не наезжает на неё; зазор 30 px держит порог 26 на любой ОС (аудит 25.09.2026).
+            # Колонка на 12 px выше прежнего: подпись в три строки не заходит в запас над знаком.
+            + f'<div style="position: absolute; left: {т.край}px; top: 672px; width: 560px; display: flex; '
+              f'flex-direction: column; gap: 30px;">'
+              f'<div style="{т.крупный} font-size: 96px; line-height: .98; color: {т.чернила};">{о["строки"][0]}<br>'
               f'{маркер(т, о["строки"][1])}</div>'
-            + f'<div style="position: absolute; left: {т.край}px; top: 1002px; width: 540px; {т.текст} '
-              f'font-weight: 700; font-size: 38px; line-height: 1.2; color: {т.второй};">{о["под"]}</div>'
+              f'<div style="width: 540px; {т.текст} font-weight: 700; font-size: 38px; line-height: 1.2; '
+              f'color: {т.второй};">{о["под"]}</div></div>'
             + низ(т))
 
 

@@ -365,7 +365,7 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
 
 def main():
     файл = Path(sys.argv[1]).resolve()
-    пост = json.loads(файл.read_text())
+    пост = json.loads(файл.read_text(encoding="utf-8"))
     папка = ТУТ / "холсты" / файл.stem
     папка.mkdir(parents=True, exist_ok=True)
     for старое in папка.glob("*"):
@@ -387,7 +387,7 @@ def main():
     если_мало = [д for д in доски if д[0].startswith(("Main", "Oblozhka"))]
     assert len(если_мало) == 3, "холст без трёх обложек не выкладывается"
     for имя, _, html in доски:
-        (папка / имя).write_text(html)
+        (папка / имя).write_text(html, encoding="utf-8")
 
     # Карусель первой строкой, запасные обложки — второй под ней.
     раскладка = {"artboards": [], "launch": {"view": "canvas"}}
@@ -406,7 +406,7 @@ def main():
     раскладка["annotations"] = [{"id": "brief", "x": 0, "y": -420, "w": 1400, "text":
         f"{пост['название']}: {всего} кадров карусели сверху, запасные обложки снизу.{хвост} "
         "Двигайте и правьте прямо здесь, потом Save и напишите «готово»."}]
-    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
+    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1), encoding="utf-8")
 
     # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
     # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).

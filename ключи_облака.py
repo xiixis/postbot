@@ -85,4 +85,7 @@ def подтянуть(тихо: bool = True) -> dict[str, str]:
 
 
 if __name__ == "__main__":
+    # Windows без PYTHONUTF8: консоль cp1251, print кириллицы и значков падает.
+    import консоль
+    консоль.в_utf8()
     подтянуть(тихо=False)

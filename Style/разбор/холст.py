@@ -148,7 +148,7 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
 
 def main():
     файл = Path(sys.argv[1]).resolve()
-    пост = json.loads(файл.read_text())
+    пост = json.loads(файл.read_text(encoding="utf-8"))
     папка = ТУТ / "холсты" / файл.stem
     папка.mkdir(parents=True, exist_ok=True)
 
@@ -159,13 +159,13 @@ def main():
                       разбор(к, (н + 1) / всего)))
     доски.append((f"Kadr{всего:02d}.dc.html", f"{всего:02d} · Финал", финал(пост["финал"])))
     for имя, _, html in доски:
-        (папка / имя).write_text(html)
+        (папка / имя).write_text(html, encoding="utf-8")
 
     раскладка = {"artboards": [{"file": имя, "title": з, "x": i % 5 * 1180, "y": i // 5 * 1600,
                                 "w": 1080, "h": 1440}
                                for i, (имя, з, _) in enumerate(доски)],
                  "launch": {"view": "canvas"}}
-    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
+    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1), encoding="utf-8")
 
     # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
     # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).

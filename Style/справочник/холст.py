@@ -412,7 +412,7 @@ def _дп():
 def main():
     дп = _дп()
     файл = Path(sys.argv[1]).resolve()
-    пост = json.loads(файл.read_text())
+    пост = json.loads(файл.read_text(encoding="utf-8"))
     папка = ТУТ / "холсты" / файл.stem
     папка.mkdir(parents=True, exist_ok=True)
     for старое in папка.glob("*"):
@@ -436,7 +436,7 @@ def main():
     если_мало = [д for д in доски if д[0].startswith(("Main", "Oblozhka"))]
     assert len(если_мало) == 3, "холст без трёх обложек не выкладывается"
     for имя, _, html in доски:
-        (папка / имя).write_text(html)
+        (папка / имя).write_text(html, encoding="utf-8")
 
     раскладка = {"artboards": [{"file": имя, "title": з, "x": i % 5 * 1180, "y": i // 5 * 1600,
                                 "w": 1080, "h": 1440}
@@ -445,7 +445,7 @@ def main():
         f"{пост['название']}: новый стиль «справочник» — плотный список без подложек, "
         "каждый третий кадр инверсный, три кардинально разные обложки. "
         "Двигайте и правьте прямо здесь, потом Save и напишите «готово»."}]
-    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
+    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1), encoding="utf-8")
 
     # Коты и логотип кладутся рядом с досками ДО помощника: доски ссылаются на них
     # по имени файла, и без них кадр снимается с дырами вместо кота. Раньше вызов

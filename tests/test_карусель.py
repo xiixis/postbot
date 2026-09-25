@@ -27,11 +27,11 @@ def стиль_во_временной(пост: dict, соседи: dict | None
     (папка / "посты").mkdir(parents=True)
     (папка / "значки").mkdir()
     (папка / "значки" / "est.png").write_bytes(b"png")
-    (папка / "категории.py").write_text("print('годен')\n")
+    (папка / "категории.py").write_text("print('годен')\n", encoding="utf-8")
     for имя, п in (соседи or {}).items():
-        (папка / "посты" / f"{имя}.json").write_text(json.dumps(п, ensure_ascii=False))
+        (папка / "посты" / f"{имя}.json").write_text(json.dumps(п, ensure_ascii=False), encoding="utf-8")
     путь = папка / "посты" / "проба.json"
-    путь.write_text(json.dumps(пост, ensure_ascii=False))
+    путь.write_text(json.dumps(пост, ensure_ascii=False), encoding="utf-8")
     return путь
 
 
@@ -44,7 +44,7 @@ class Снабжение(unittest.TestCase):
         путь = стиль_во_временной({"вид": "категории", "кадры": [{"платно": {"файл": "est.png"},
                                                                   "бесплатно": {"файл": "nety.png"}}],
                                    "финал": {"поза": "nety-pozy"}, "обложка": {"сцена": "nety-sceny"}})
-        беды = карусель.снабжение(json.loads(путь.read_text()), путь.parent.parent)
+        беды = карусель.снабжение(json.loads(путь.read_text(encoding="utf-8")), путь.parent.parent)
         self.assertEqual(len(беды), 3, беды)
         self.assertTrue(any("nety.png" in б and "значок" in б for б in беды))
         self.assertTrue(any("nety-pozy" in б and "поза" in б for б in беды))
@@ -52,7 +52,7 @@ class Снабжение(unittest.TestCase):
 
     def test_старый_путь_сцены_от_стиля(self):
         путь = стиль_во_временной({"обложка": {"сцена": "картинки/нет.png"}})
-        беды = карусель.снабжение(json.loads(путь.read_text()), путь.parent.parent)
+        беды = карусель.снабжение(json.loads(путь.read_text(encoding="utf-8")), путь.parent.parent)
         self.assertEqual(len(беды), 1)
         self.assertIn("картинки/нет.png", беды[0])
 
@@ -60,7 +60,7 @@ class Снабжение(unittest.TestCase):
 class Обложки(unittest.TestCase):
     def test_годные(self):
         путь = стиль_во_временной({"запасные": ЗАПАСНЫЕ})
-        беды, предупреждения = карусель.обложки_поста(json.loads(путь.read_text()), путь)
+        беды, предупреждения = карусель.обложки_поста(json.loads(путь.read_text(encoding="utf-8")), путь)
         self.assertEqual((беды, предупреждения), ([], []))
 
     def test_одна_запасная_и_чужой_макет(self):
@@ -74,7 +74,7 @@ class Обложки(unittest.TestCase):
 
     def test_та_же_пара_что_у_соседа(self):
         путь = стиль_во_временной({"запасные": ЗАПАСНЫЕ}, соседи={"прошлый": {"запасные": ЗАПАСНЫЕ}})
-        _, предупреждения = карусель.обложки_поста(json.loads(путь.read_text()), путь)
+        _, предупреждения = карусель.обложки_поста(json.loads(путь.read_text(encoding="utf-8")), путь)
         self.assertEqual(len(предупреждения), 1)
         self.assertIn("прошлый", предупреждения[0])
 
@@ -96,7 +96,7 @@ class Рисовальщик(unittest.TestCase):
 class Команда(unittest.TestCase):
     def test_пост_24_09_без_снимка(self):
         р = subprocess.run([sys.executable, str(КОРЕНЬ / "Style" / "карусель.py"), str(ПОСТ_А), "--без-снимка"],
-                           capture_output=True, text=True, timeout=300)
+                           capture_output=True, text=True, timeout=300, encoding="utf-8", errors="replace")
         self.assertEqual(р.returncode, 0, р.stdout[-800:] + р.stderr[-800:])
         self.assertIn("годен", р.stdout)
         self.assertIn("KVY4guCxa7niTvSCgh7xsv", р.stdout)          # ссылка на холст из поста

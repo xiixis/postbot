@@ -109,7 +109,7 @@ def main():
         sys.exit(1)
 
     флаги = ["--без-снимка"] if "--без-снимка" in sys.argv[2:] else []
-    р = subprocess.run([sys.executable, str(путь), str(файл), *флаги], capture_output=True, text=True)
+    р = subprocess.run([sys.executable, str(путь), str(файл), *флаги], capture_output=True, text=True, encoding="utf-8", errors="replace")
     вывод = [с for с in р.stdout.splitlines() if с.strip()]
     print("\n".join(вывод))
     if р.returncode:

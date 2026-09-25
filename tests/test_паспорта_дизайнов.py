@@ -30,7 +30,7 @@ class Паспорта(unittest.TestCase):
         for имя in card.ДИЗАЙНЫ:
             with self.subTest(дизайн=имя):
                 папка = tools_дизайны.ПАПКА / имя
-                файл = (папка / "ПАСПОРТ.md").read_text()
+                файл = (папка / "ПАСПОРТ.md").read_text(encoding="utf-8")
                 сейчас = tools_дизайны.паспорт(имя, (папка / "лист.jpg").exists())
                 self.assertEqual(без_даты(файл), без_даты(сейчас))
 

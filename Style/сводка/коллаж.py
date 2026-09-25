@@ -90,4 +90,9 @@ def main():
 
 
 if __name__ == "__main__":
+    # Windows без PYTHONUTF8: консоль cp1251, print кириллицы и значков падает.
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import консоль
+    консоль.в_utf8()
     main()

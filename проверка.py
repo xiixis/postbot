@@ -144,7 +144,7 @@ def агент_готов() -> list[str]:
         return ["claude не найден: бот не сможет сочинять"]
 
     готово = subprocess.run([путь, "--help"], capture_output=True, text=True,
-                            timeout=60, env=агент._окружение())
+                            timeout=60, env=агент._окружение(), encoding="utf-8", errors="replace")
     справка = (готово.stdout or "") + (готово.stderr or "")
     флаги = set()
     for картинки in (None, ["слайд.png"]):

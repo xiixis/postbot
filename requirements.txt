@@ -18,3 +18,8 @@ websockets>=12
 # Публикация от аккаунта и чтение чужих чатов: боту Telegram ни отложенных
 # постов, ни чужой переписки не даёт, обычному аккаунту даёт.
 telethon>=1.36
+# Часовые пояса на Windows: там нет /etc/localtime и базы zoneinfo без этого пакета.
+tzdata
+# Вход в Telegram по QR (deploy/вход_qr.py) и Vertex для картинок (Style/вертекс.py).
+qrcode
+google-auth

@@ -523,7 +523,7 @@ def картинки(пост: dict, папка: Path) -> list[Path]:
 def main():
     дп = _дп()
     файл = Path(sys.argv[1]).resolve()
-    пост = json.loads(файл.read_text())
+    пост = json.loads(файл.read_text(encoding="utf-8"))
     папка = ТУТ / "холсты" / файл.stem
     папка.mkdir(parents=True, exist_ok=True)
     for старое in папка.glob("*"):
@@ -545,14 +545,14 @@ def main():
     assert len([д for д in доски if д[0].startswith(("Main", "Oblozhka"))]) == 3, \
         "холст без трёх обложек не выкладывается"
     for имя, _, html in доски:
-        (папка / имя).write_text(html)
+        (папка / имя).write_text(html, encoding="utf-8")
 
     раскладка = {"artboards": [{"file": имя, "title": з, "x": i % 5 * 1180, "y": i // 5 * 1600, "w": 1080, "h": 1440}
                                for i, (имя, з, _) in enumerate(доски)], "launch": {"view": "canvas"}}
     раскладка["annotations"] = [{"id": "brief", "x": 0, "y": -420, "w": 1400, "text":
         f"{пост['название']}: окно приложения нарисовано вёрсткой, не снимком. "
         "Двигайте и правьте прямо здесь, потом Save и напишите «готово»."}]
-    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
+    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1), encoding="utf-8")
 
     # Картинки кладутся рядом с досками ДО помощника: доски ссылаются на них по
     # имени файла, и если помощника на диске нет, падение уносило их с собой —

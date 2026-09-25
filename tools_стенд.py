@@ -177,6 +177,9 @@ def _день_недели(когда) -> int:
 
 
 if __name__ == "__main__":
+    # Windows без PYTHONUTF8: консоль cp1251, print кириллицы и значков падает.
+    import консоль
+    консоль.в_utf8()
     КУДА.write_text(json.dumps(собрать(), ensure_ascii=False, indent=1),
                     encoding="utf-8")
     print("стенд собран:", КУДА)

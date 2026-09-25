@@ -61,7 +61,7 @@ def вынести_картинки(html: str, папка: Path, картинк�
 def main():
     дп = _из_до_после()
     файл = Path(sys.argv[1]).resolve()
-    П = json.loads(файл.read_text())
+    П = json.loads(файл.read_text(encoding="utf-8"))
     р.П = П
     папка = ТУТ / "холсты" / файл.stem
     папка.mkdir(parents=True, exist_ok=True)
@@ -84,7 +84,7 @@ def main():
 
     картинки: dict[str, Path] = {}
     for имя, _, html in доски:
-        (папка / имя).write_text(дп.доска(вынести_картинки(html, папка, картинки)))
+        (папка / имя).write_text(дп.доска(вынести_картинки(html, папка, картинки)), encoding="utf-8")
 
     раскладка = {"artboards": [], "launch": {"view": "canvas"}}
     кадров = обложек = 0
@@ -99,7 +99,7 @@ def main():
     раскладка["annotations"] = [{"id": "brief", "x": 0, "y": -420, "w": 1400, "text":
         f"{П.get('название', 'Пост')}: {кадров} кадров карусели сверху, запасные обложки снизу. "
         "Двигайте, правьте текст и удаляйте блоки прямо здесь, потом Save и напишите «готово»."}]
-    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1))
+    (папка / "canvas.json").write_text(json.dumps(раскладка, ensure_ascii=False, indent=1), encoding="utf-8")
 
     # Сборка страницы помощником холста (seed-canvas) убрана 24.09.2026: он не распаковывается с
     # 21.09, а холст собирается своими руками (`.claude/ПУБЛИКАЦИЯ.md`, шаг 5).

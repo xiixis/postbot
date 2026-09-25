@@ -19,7 +19,7 @@ import config
 
 # Модули, которые нужны функции. Список закрытый нарочно: любой лишний тянет
 # за собой зависимости, а вместе с ними время сборки и размер.
-МОДУЛИ = ["access.py", "api.py", "card.py", "channels.py", "config.py", "content.py",
+МОДУЛИ = ["access.py", "api.py", "card.py", "channels.py", "config.py", "консоль.py", "content.py",
           "crosspost.py", "db.py", "facts.py", "icons.py", "ideas.py", "jobs.py", "markup.py", "publish.py", "repeats.py",
           "storage.py", "stream.py", "telegram.py", "threads.py", "tiktok.py",
           "times.py", "варианты.py", "x.py", "замер.py", "конвейер.py", "площадки.py",
@@ -30,6 +30,8 @@ import config
 requests>=2.31
 python-dotenv>=1.0
 psycopg[binary]>=3.1
+# Часовой пояс в функции: без базы zoneinfo время постов уезжает при переводе часов.
+tzdata
 """
 
 # Vercel заводит функцию по имени файла, то есть на /api/index. Все наши
@@ -68,9 +70,9 @@ def собрать() -> None:
         if файл.is_file() and not файл.name.startswith("_"):
             shutil.copy2(файл, ЦЕЛЬ / "public" / файл.name)
 
-    (ЦЕЛЬ / "requirements.txt").write_text(ТРЕБОВАНИЯ)
-    (ЦЕЛЬ / "vercel.json").write_text(НАСТРОЙКИ)
-    (ЦЕЛЬ / ".vercelignore").write_text("*.session\n.env\n")
+    (ЦЕЛЬ / "requirements.txt").write_text(ТРЕБОВАНИЯ, encoding="utf-8")
+    (ЦЕЛЬ / "vercel.json").write_text(НАСТРОЙКИ, encoding="utf-8")
+    (ЦЕЛЬ / ".vercelignore").write_text("*.session\n.env\n", encoding="utf-8")
 
     print(f"собрано в {ЦЕЛЬ}")
     страниц = len(list((ЦЕЛЬ / "public").iterdir()))

@@ -34,7 +34,7 @@ def поднять(порт: int, ждать: int = 40) -> tuple[str, subprocess
     процесс = subprocess.Popen(
         ["cloudflared", "tunnel", "--url", f"http://localhost:{порт}",
          "--no-autoupdate"],
-        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
 
     найденный: list[str] = []
 

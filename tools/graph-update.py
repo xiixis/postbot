@@ -84,6 +84,11 @@ def укоротить(корень: Path) -> int:
     return правок
 
 
+# Windows без PYTHONUTF8: консоль cp1251, print кириллицы падает — поток в utf-8.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import консоль  # noqa: E402
+
+консоль.в_utf8()
 цель = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
 если_ок = _rebuild_code(цель)
 if если_ок:

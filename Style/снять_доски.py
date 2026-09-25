@@ -82,10 +82,10 @@ def снять(папка: Path, куда: Path | None = None, только=()) 
         путь = куда / f"{д['номер']:02d}-{имя}.png"
         метка = путь.with_suffix(".хэш")
         хэш = hashlib.sha1(html.encode()).hexdigest()
-        if not (путь.exists() and метка.exists() and метка.read_text() == хэш):
+        if not (путь.exists() and метка.exists() and метка.read_text(encoding="utf-8") == хэш):
             if not браузер.снять(html, 1080, 1440, путь):
                 raise SystemExit(f"снимок не вышел: {д['file']}")
-            метка.write_text(хэш)
+            метка.write_text(хэш, encoding="utf-8")
         снимки.append(путь)
     if not только:
         # Доски переименовали или убрали — старые снимки не должны попасть в лист.

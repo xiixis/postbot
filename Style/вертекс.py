@@ -80,7 +80,7 @@ def ключ_сервисного_аккаунта() -> str:
          "from app import cloud;"
          "print(next((с.get('value','') for с in cloud.team_keys()"
          " if (с.get('service') or '').lower() == 'vertex'), ''), end='')"],
-        cwd=str(ПОИСКОВИК), capture_output=True, text=True, env=чужие, timeout=90)
+        cwd=str(ПОИСКОВИК), capture_output=True, text=True, env=чужие, timeout=90, encoding="utf-8", errors="replace")
     if добыча.returncode:
         raise SystemExit("облако не отдало ключ vertex: "
                          + добыча.stderr.strip().splitlines()[-1][:200])

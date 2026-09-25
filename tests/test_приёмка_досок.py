@@ -225,7 +225,7 @@ class Отчёт(unittest.TestCase):
         import subprocess
         папка = холст_из("A-Main", "A-bityi-final-3-stroki")
         р = subprocess.run([sys.executable, str(КОРЕНЬ / "Style" / "приёмка_досок.py"), str(папка.parent),
-                            "--без-снимка"], capture_output=True, text=True)
+                            "--без-снимка"], capture_output=True, text=True, encoding="utf-8", errors="replace")
         self.assertEqual(р.returncode, 1, р.stderr)
         self.assertIn("брак: №2:", р.stdout)
 

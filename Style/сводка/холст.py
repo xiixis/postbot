@@ -146,7 +146,7 @@ def ужать(ис: Path, куда: Path, ширина: int = 640) -> None:
 
 def main():
     файл = Path(sys.argv[1])
-    П = json.loads(файл.read_text())
+    П = json.loads(файл.read_text(encoding="utf-8"))
     исходные = ТУТ / "картинки" / файл.stem
     папка = ТУТ / "холсты" / файл.stem
     папка.mkdir(parents=True, exist_ok=True)
@@ -190,4 +190,8 @@ def main():
 
 
 if __name__ == "__main__":
+    # Windows без PYTHONUTF8: консоль cp1251, print кириллицы и значков падает.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import консоль
+    консоль.в_utf8()
     main()

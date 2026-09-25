@@ -35,10 +35,9 @@ from pathlib import Path
 СТИЛИ_ПАПКА = ПАПКА          # код, посты, референсы и ДНК — в одном месте
 ШАБЛОНЫ = СТИЛИ_ПАПКА
 ЗАМЕР = ШАБЛОНЫ / "замер.py"
-# Внутри окружения питон лежит по-разному: bin/python на маке и линуксе,
-# Scripts/python.exe на Windows.
-ПИТОН = str(КОРЕНЬ / ".venv" / ("Scripts" if sys.platform == "win32" else "bin")
-            / ("python.exe" if sys.platform == "win32" else "python"))
+# Замер запускается тем же питоном, что и этот скрипт: своего .venv у постбота нет,
+# общее окружение лежит в yt-searcher/.venv, и путь к нему на каждой машине свой.
+ПИТОН = sys.executable
 
 # Каждый стиль: откуда списан, чем подтверждается, где чужие кадры, где наши.
 # Адреса и числа отдачи взяты из `пост.json` рядом с кадрами и из разборов,
@@ -253,7 +252,8 @@ def замерить(папка: Path) -> dict:
     if not кадры:
         return {}
     готово = subprocess.run([ПИТОН, str(ЗАМЕР), str(папка)],
-                            capture_output=True, text=True, timeout=300)
+                            capture_output=True, text=True, encoding="utf-8", errors="replace",
+                            timeout=300)
     строки, брак = [], []
     for строка in (готово.stdout or "").splitlines():
         м = re.match(r"(\d+): контраст ([\d.]+):1 \(слабых (\d+)%\) · акцент ([\d.]+)% · "

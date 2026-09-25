@@ -295,7 +295,7 @@ def карточка(п: dict, доля: float) -> str:
 
 def main():
     файл = Path(sys.argv[1])
-    Г = json.loads(файл.read_text())
+    Г = json.loads(файл.read_text(encoding="utf-8"))
     выход = ТУТ / "кадры" / файл.stem
     выход.mkdir(parents=True, exist_ok=True)
     всего = len(Г["проекты"]) + 2
@@ -335,7 +335,7 @@ def main():
     for имя, _ in кадры:
         with Image.open(выход / f"{имя}.png") as к:
             к.convert("RGB").resize((1080, 1440), Image.LANCZOS).save(стол / f"{имя}.jpg", quality=92)
-    (стол / "подпись.txt").write_text(Г["подпись"])
+    (стол / "подпись.txt").write_text(Г["подпись"], encoding="utf-8")
     print("на столе:", стол, flush=True)
 
 

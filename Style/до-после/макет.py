@@ -47,7 +47,7 @@ def телефон(кадр: Path, подпись: str, всего: int) -> str:
 
 def main():
     файл = Path(sys.argv[1])
-    п = json.loads(файл.read_text())
+    п = json.loads(файл.read_text(encoding="utf-8"))
     кадры = ТУТ / "кадры" / файл.stem
     карусель = sorted(кадры.glob("[0-9][0-9].png"))
     обложки = [кадры / "01.png"] + [кадры / f"обложка-{н}.png" for н in (2, 3, 4) if (кадры / f"обложка-{н}.png").exists()]

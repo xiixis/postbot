@@ -7,6 +7,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+# Консоль на Windows без PYTHONUTF8 — cp1251, и print с «✓» или эмодзи падает
+# с UnicodeEncodeError. Config импортируют почти все модули, поэтому поток
+# переводится на utf-8 здесь, до первого print (в том числе в ключи_облака).
+import консоль
+
+консоль.в_utf8()
+
 КОРЕНЬ = Path(__file__).resolve().parent
 load_dotenv(КОРЕНЬ / ".env")
 

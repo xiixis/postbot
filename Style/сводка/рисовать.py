@@ -243,7 +243,7 @@ def финал(доля: float) -> str:
 def main():
     global П
     файл = Path(sys.argv[1])
-    П = json.loads(файл.read_text())
+    П = json.loads(файл.read_text(encoding="utf-8"))
     выход = ТУТ / "картинки" / файл.stem
     выход.mkdir(parents=True, exist_ok=True)
 
@@ -283,7 +283,7 @@ def main():
             continue
         with Image.open(выход / f"{имя}.png") as к:
             к.convert("RGB").resize((1080, 1440), Image.LANCZOS).save(стол / f"{имя}.jpg", quality=92)
-    (стол / "подпись.txt").write_text(П["подпись"] + "\n\n" + " ".join(П["хештеги"]))
+    (стол / "подпись.txt").write_text(П["подпись"] + "\n\n" + " ".join(П["хештеги"]), encoding="utf-8")
     print("на столе:", стол, flush=True)
 
 

@@ -88,7 +88,7 @@ def _поднять() -> int:
     файл = папка / "DevToolsActivePort"
     срок = time.time() + 15
     while time.time() < срок and п.poll() is None:
-        строки = файл.read_text().split() if файл.exists() else []
+        строки = файл.read_text(encoding="utf-8").split() if файл.exists() else []
         if строки:
             _браузер.update(процесс=п, порт=int(строки[0]), папка=папка,
                             поколение=_браузер["поколение"] + 1)

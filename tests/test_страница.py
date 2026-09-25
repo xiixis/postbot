@@ -42,7 +42,7 @@ def _прогнать(выражение: str) -> str:
         raise AssertionError("на странице не нашлось объявления «экр»")
     итог = subprocess.run(
         [NODE, "-e", объявление.group(0) + f"\nconsole.log({выражение});"],
-        capture_output=True, text=True, timeout=20)
+        capture_output=True, text=True, timeout=20, encoding="utf-8", errors="replace")
     if итог.returncode:
         raise AssertionError(итог.stderr.strip())
     return итог.stdout.strip()
@@ -163,7 +163,7 @@ class СинтаксисСтраницы(unittest.TestCase):
                 итог = subprocess.run(
                     [NODE, "--check", "-"],
                     input=(ПАПКА / имя).read_text(encoding="utf-8"),
-                    capture_output=True, text=True, timeout=20)
+                    capture_output=True, text=True, timeout=20, encoding="utf-8", errors="replace")
                 self.assertEqual(итог.returncode, 0, итог.stderr.strip())
 
     def test_модулей_нет(self):

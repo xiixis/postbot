@@ -46,7 +46,7 @@ def фейсы() -> str:
     return "\n".join(css)
 
 
-ТЕЛЕГРАМ = (стиль.ПОСТБОТ / "assets/значки/telegram.svg").read_text()
+ТЕЛЕГРАМ = (стиль.ПОСТБОТ / "assets/значки/telegram.svg").read_text(encoding="utf-8")
 
 
 def свой_кот(имя: str, высота: int, класс: str = "кот", рядом: str = "", **где) -> str:
@@ -271,7 +271,7 @@ def обложка_сцена() -> str:
 def main():
     global П, ТОН
     файл = Path(sys.argv[1])
-    П = json.loads(файл.read_text())
+    П = json.loads(файл.read_text(encoding="utf-8"))
     ТОН = ТОНЫ[П.get("тон", "референс")]
     выход = ТУТ / "кадры" / файл.stem
     выход.mkdir(parents=True, exist_ok=True)
@@ -307,7 +307,7 @@ def main():
     for имя, _ in кадры:
         with Image.open(выход / f"{имя}.png") as к:
             к.convert("RGB").resize((1080, 1440), Image.LANCZOS).save(стол / f"{имя}.jpg", quality=92)
-    (стол / "подпись.txt").write_text(П["подпись"])
+    (стол / "подпись.txt").write_text(П["подпись"], encoding="utf-8")
     print("на столе:", стол, flush=True)
 
 
