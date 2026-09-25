@@ -541,6 +541,42 @@ def запомнить(ключ: str, значение) -> None:
     забыть_кэш()
 
 
+ЗАМОК_СРОК = 600      # секунд: столько держит пост упавший посреди публикации процесс
+
+
+def захватить_публикацию(ид: int, сейчас: float | None = None) -> bool:
+    """Замок на публикацию поста: True — публикуем мы, False — пост уже в руках другого бота.
+
+    Боты на маке и на ПК смотрят в одну базу, и без замка оба видели созревший пост и
+    оба его публиковали. Замок — строка настроек, вставка атомарна: вставить её может
+    только один. Замок упавшего процесса старше ЗАМОК_СРОК перехватывается сравнением
+    с прочитанным значением, так что и перехватить может только один.
+    """
+    ключ = f"публикую_{ид}"
+    сейчас = time.time() if сейчас is None else сейчас
+    значение = json.dumps(сейчас)
+    try:
+        with соединение() as c:
+            if c.execute("INSERT INTO settings (key, value) VALUES (?,?) ON CONFLICT(key) DO NOTHING",
+                         (ключ, значение)).rowcount == 1:
+                return True
+            было = c.execute("SELECT value FROM settings WHERE key=?", (ключ,)).fetchone()
+            if было is None:
+                return False
+            if time.time() - float(json.loads(было["value"])) <= ЗАМОК_СРОК:
+                return False
+            return c.execute("UPDATE settings SET value=? WHERE key=? AND value=?",
+                             (значение, ключ, было["value"])).rowcount == 1
+    finally:
+        забыть_кэш()
+
+
+def отпустить_публикацию(ид: int) -> None:
+    with соединение() as c:
+        c.execute("DELETE FROM settings WHERE key=?", (f"публикую_{ид}",))
+    забыть_кэш()
+
+
 СТАТУСЫ_РЕФЕРЕНСА = ("новая", "в работе", "использована", "отброшена")
 
 
