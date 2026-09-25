@@ -359,7 +359,7 @@ def взять(ид: int):
         return c.execute("SELECT * FROM posts WHERE id=?", (ид,)).fetchone()
 
 
-def отметить_опубликованным(ид: int, message_id: int, канал: str = "") -> None:
+def отметить_опубликованным(ид: int, message_id: int | None, канал: str = "") -> None:
     with соединение() as c:
         c.execute("UPDATE posts SET status='published', published_at=?,"
                   " tg_message_id=?, channel=? WHERE id=?",
@@ -603,7 +603,7 @@ def свежие_публикации(дней: int = 30, канал: str | None
     значения = (порог, канал) if канал else (порог,)
     with соединение() as c:
         return c.execute(
-            "SELECT * FROM posts WHERE status='published' AND tg_message_id IS NOT NULL"
+            "SELECT * FROM posts WHERE status='published' AND tg_message_id > 0"
             f" AND published_at >= ?{условие} ORDER BY id DESC", значения).fetchall()
 
 
