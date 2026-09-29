@@ -1,0 +1,25 @@
+{
+  "name": "postbot-reels",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Вертикальные ролики канала для Reels и TikTok. Собираются кодом в Remotion.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "list": "remotion compositions src/index.ts",
+    "stills": "node tools/stills.mjs",
+    "render": "remotion render src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.482",
+    "@remotion/cli": "4.0.482",
+    "@remotion/google-fonts": "4.0.482",
+    "@remotion/renderer": "4.0.482",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.482"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^5.4.0"
+  }
+}
