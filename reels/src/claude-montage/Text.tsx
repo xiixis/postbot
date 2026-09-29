@@ -43,7 +43,7 @@ export const Hook: React.FC = () => {
   const out = leave(frame, at.prompt - 14, 14);
   if (out >= 1) return null;
   return (
-    <div style={{ position: 'absolute', left: safe.left, top: 520, opacity: 1 - out, transform: `translateY(${-out * 46}px)` }}>
+    <div style={{ position: 'absolute', left: safe.left, top: 214, opacity: 1 - out, transform: `translateY(${-out * 46}px)` }}>
       {HOOK.map((line, i) => (
         <Line key={line} px={size.display} from={-14 + i * 4}>
           {line}{i === HOOK.length - 1 && <Cursor height={size.display * 0.86} />}

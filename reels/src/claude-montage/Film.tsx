@@ -1,18 +1,20 @@
 // Ролик «Этот ролик никто не монтировал»: 15 секунд, 1080×1920, один непрерывный план.
 // Шесть состояний по такту музыки: крючок, просьба, код, кадры, развязка, призыв.
+// Начинается с готовой сцены, как с обложки: первый кадр решает, остановится ли зритель.
 // Склеек нет: каждое состояние вырастает из предыдущего, всё движется в одной манере.
 // Спека: docs/superpowers/specs/2026-09-29-ролик-claude-монтаж-design.md
 import React from 'react';
 import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame } from 'remotion';
 import { Code } from './Code';
 import { CTA, PRESS, Reveal } from './Ending';
-import { Counter, Frames } from './Frames';
-import { KEYS, Prompt, SEND } from './Prompt';
+import { Counter, Frames, UNDO_FROM, UNDO_TO } from './Frames';
+import { KEYS, Prompt, SEND, SPACE } from './Prompt';
 import { Hook, Story } from './Text';
 import { H, W, at, color, enter, leave } from './tokens';
 
-// Какую музыку вшить: a, b, c — или none, когда музыку подкладывают после рендера.
-export type FilmProps = { music: 'a' | 'b' | 'c' | 'none' };
+// Какую музыку вшить: a тёплая, b кино, c ночь, d плавный хип-хоп, e бум-бэп —
+// или none, когда музыку подкладывают после рендера.
+export type FilmProps = { music: 'a' | 'b' | 'c' | 'd' | 'e' | 'none' };
 
 // Земля первых секунд — та же сцена, но не в фокусе: свет и цвет в кадре одни с первого кадра.
 const Ground: React.FC = () => (
@@ -22,12 +24,18 @@ const Ground: React.FC = () => (
   </AbsoluteFill>
 );
 
-// Подложка под подпись на время счёта кадров: бегущие лаймовые клетки проходят и под текстом.
+// Подложка под текст, пока под ним сцена и бегущие лаймовые клетки: в начале под крючком,
+// в середине под подписью.
 const Scrim: React.FC = () => {
   const frame = useCurrentFrame();
-  const t = enter(frame, at.frames - 6, 20) * (1 - leave(frame, at.reveal + 4, 20));
-  if (t <= 0) return null;
-  return <AbsoluteFill style={{ opacity: t, background: 'linear-gradient(180deg, rgba(11,12,9,0.9) 0%, rgba(11,12,9,0.82) 22%, rgba(11,12,9,0) 36%)' }} />;
+  const hook = 1 - leave(frame, UNDO_TO - 8, 16);
+  const story = enter(frame, at.frames - 6, 20) * (1 - leave(frame, at.reveal + 4, 20));
+  return (
+    <>
+      {hook > 0 && <AbsoluteFill style={{ opacity: hook, background: 'linear-gradient(180deg, rgba(11,12,9,0.78) 0%, rgba(11,12,9,0.7) 34%, rgba(11,12,9,0) 50%)' }} />}
+      {story > 0 && <AbsoluteFill style={{ opacity: story, background: 'linear-gradient(180deg, rgba(11,12,9,0.9) 0%, rgba(11,12,9,0.82) 22%, rgba(11,12,9,0) 36%)' }} />}
+    </>
+  );
 };
 
 const Finish: React.FC = () => {
@@ -49,9 +57,12 @@ const Finish: React.FC = () => {
 };
 
 // Звуков мало и они тихие: клавиши, отправка, начало счёта кадров, нажатие кнопки.
+// У клавиш пять разных тонов и своя громкость у каждой, пробел и ввод ниже и глуше:
+// один и тот же щелчок пятнадцать раз подряд звучит как метроном (tools/keys.py).
 const SOUNDS: [number, string, number][] = [
-  ...KEYS.map((k): [number, string, number] => [k, 'tick', 0.22]),
-  [SEND, 'click', 0.4],
+  ...KEYS.map((k, i): [number, string, number] => [k, i === SPACE ? 'key-space' : `key-${((i * 2) % 5) + 1}`, 0.3 + ((i * 37) % 9) / 100]),
+  [UNDO_FROM - 2, 'whoosh', 0.14],
+  [SEND, 'key-space', 0.5],
   [at.frames - 2, 'whoosh', 0.16],
   [PRESS, 'click', 0.45],
 ];

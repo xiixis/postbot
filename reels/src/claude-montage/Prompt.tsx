@@ -6,9 +6,12 @@ import { at, color, column, enter, glide, leave, mix, mono, safe, steady } from 
 
 const ASK = 'смонтируй ролик';
 const TYPE_FROM = at.prompt + 18;
-const TYPE_TO = at.prompt + 50;
 export const SEND = at.prompt + 60;
-export const KEYS = ASK.split('').map((_, i) => Math.round(mix(i / ASK.length, TYPE_FROM, TYPE_TO)));
+// Человек печатает неровно: где-то быстрее, перед пробелом и после него медлит.
+// Числа — сколько кадров проходит перед каждой следующей клавишей.
+const PAUSES = [0, 2, 2, 3, 2, 2, 3, 2, 2, 3, 4, 2, 2, 3, 2];
+export const SPACE = ASK.indexOf(' ');
+export const KEYS = PAUSES.reduce<number[]>((all, p, i) => [...all, (i ? all[i - 1] : TYPE_FROM) + p], []);
 
 export const Prompt: React.FC = () => {
   const frame = useCurrentFrame();
@@ -16,7 +19,7 @@ export const Prompt: React.FC = () => {
   const inn = enter(frame, at.prompt + 2, 26);
   const up = glide(frame, at.code - 4, 24);
   const out = leave(frame, at.frames - 8, 12);
-  const typed = Math.round(steady(frame, TYPE_FROM, TYPE_TO) * ASK.length);
+  const typed = KEYS.filter((k) => frame >= k).length;
   const full = typed === ASK.length;
   const sent = frame >= SEND;
   const press = frame >= SEND - 3 && frame < SEND ? 0.9 : mix(enter(frame, SEND, 10), 0.9, 1);

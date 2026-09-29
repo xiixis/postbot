@@ -35,7 +35,7 @@ export const at = {
 export const safe = { left: 80, right: 900, top: 230, bottom: 1500 } as const;
 export const column = safe.right - safe.left;
 
-export const size = { display: 140, title: 84, body: 54, code: 34 } as const;
+export const size = { display: 132, title: 84, body: 54, code: 34 } as const;
 
 export const sans = loadOnest('normal', { weights: ['500', '700'], subsets: ['latin', 'cyrillic'] }).fontFamily;
 export const mono = loadMono('normal', { weights: ['500'], subsets: ['latin', 'cyrillic'] }).fontFamily;
