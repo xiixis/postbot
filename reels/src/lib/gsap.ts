@@ -11,7 +11,9 @@ import { useCurrentFrame, useVideoConfig } from 'remotion';
 // ищут только в этой сцене: две сцены с одинаковыми классами друг другу не мешают.
 export type Build = (tl: gsap.core.Timeline, root: HTMLElement) => void;
 
-export const useTimeline = (build: Build) => {
+// lead — на сколько секунд таймлайн опережает кадр. Нужен первой сцене ролика: на нулевом
+// кадре движение уже идёт, и первый кадр не выходит пустым.
+export const useTimeline = (build: Build, lead = 0) => {
   const root = useRef<HTMLDivElement>(null);
   const timeline = useRef<gsap.core.Timeline | null>(null);
   const frame = useCurrentFrame();
@@ -34,8 +36,8 @@ export const useTimeline = (build: Build) => {
   }, []);
 
   useLayoutEffect(() => {
-    timeline.current?.seek(frame / fps, false);
-  }, [frame, fps]);
+    timeline.current?.seek(Math.max(0, frame / fps + lead), false);
+  }, [frame, fps, lead]);
 
   return root;
 };
