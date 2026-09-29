@@ -10,7 +10,9 @@ export const SEND = at.prompt + 60;
 // Человек печатает неровно: где-то быстрее, перед пробелом и после него медлит.
 // Числа — сколько кадров проходит перед каждой следующей клавишей.
 const PAUSES = [0, 2, 2, 3, 2, 2, 3, 2, 2, 3, 4, 2, 2, 3, 2];
-export const SPACE = ASK.indexOf(' ');
+// Каким рядом клавиатуры набирается каждая буква: у рядов разный звук.
+const ROW_OF: Record<string, string> = { 'йцукенгшщзхъ': 'r1', 'фывапролджэ': 'r2', 'ячсмитьбю': 'r3', ' ': 'space' };
+export const ROWS = ASK.split('').map((ch) => Object.entries(ROW_OF).find(([keys]) => keys.includes(ch))?.[1] ?? 'r2');
 export const KEYS = PAUSES.reduce<number[]>((all, p, i) => [...all, (i ? all[i - 1] : TYPE_FROM) + p], []);
 
 export const Prompt: React.FC = () => {

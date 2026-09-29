@@ -8,7 +8,7 @@ import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame } from 
 import { Code } from './Code';
 import { CTA, PRESS, Reveal } from './Ending';
 import { Counter, Frames, UNDO_FROM, UNDO_TO } from './Frames';
-import { KEYS, Prompt, SEND, SPACE } from './Prompt';
+import { KEYS, Prompt, ROWS, SEND } from './Prompt';
 import { Hook, Story } from './Text';
 import { H, W, at, color, enter, leave } from './tokens';
 
@@ -57,14 +57,23 @@ const Finish: React.FC = () => {
 };
 
 // Звуков мало и они тихие: клавиши, отправка, начало счёта кадров, нажатие кнопки.
-// У клавиш пять разных тонов и своя громкость у каждой, пробел и ввод ниже и глуше:
-// один и тот же щелчок пятнадцать раз подряд звучит как метроном (tools/keys.py).
+// Клавиши — записи настоящей клавиатуры (переключатели MX Brown, набор kbsim, MIT).
+// Буква звучит своим рядом клавиатуры, у нажатия и отпускания разные записи.
+const LIFT = 3;                         // через сколько кадров клавишу отпускают
 const SOUNDS: [number, string, number][] = [
-  ...KEYS.map((k, i): [number, string, number] => [k, i === SPACE ? 'key-space' : `key-${((i * 2) % 5) + 1}`, 0.3 + ((i * 37) % 9) / 100]),
-  [UNDO_FROM - 2, 'whoosh', 0.14],
-  [SEND, 'key-space', 0.5],
-  [at.frames - 2, 'whoosh', 0.16],
-  [PRESS, 'click', 0.45],
+  ...KEYS.flatMap((k, i): [number, string, number][] => {
+    // Записи выровнены по пику, поэтому отпускание нарочно тише нажатия: так было в исходных записях.
+    const loud = 0.7 + ((i * 37) % 9) / 50;
+    return [
+      [k, `keyboard/press-${ROWS[i]}.wav`, loud],
+      ROWS[i] === 'space' ? [k + LIFT, 'keyboard/release-space.wav', loud * 0.2] : [k + LIFT, 'keyboard/release.wav', loud * 0.4],
+    ];
+  }),
+  [UNDO_FROM - 2, 'whoosh.wav', 0.14],
+  [SEND, 'keyboard/press-enter.wav', 0.9],
+  [SEND + LIFT, 'keyboard/release-enter.wav', 0.45],
+  [at.frames - 2, 'whoosh.wav', 0.16],
+  [PRESS, 'click.wav', 0.45],
 ];
 
 export const Film: React.FC<FilmProps> = ({ music }) => (
@@ -83,7 +92,7 @@ export const Film: React.FC<FilmProps> = ({ music }) => (
     {music !== 'none' && <Audio src={staticFile(`claude-montage/music-${music}.m4a`)} volume={0.92} />}
     {SOUNDS.map(([from, name, volume], i) => (
       <Sequence key={i} from={from} layout="none">
-        <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />
+        <Audio src={staticFile(`sfx/${name}`)} volume={volume} />
       </Sequence>
     ))}
   </AbsoluteFill>
