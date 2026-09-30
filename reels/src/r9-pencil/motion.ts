@@ -15,6 +15,8 @@ export const T = {
 } as const;
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+// рука пишет ровно: для надписей и маркера кривая не нужна
+export const linear = (t: number) => t;
 export const ease = (frame: number, from: number, to: number, easing = curve.both) =>
   interpolate(frame, [from, to], [0, 1], { ...clamp, easing });
 
