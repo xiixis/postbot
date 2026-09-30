@@ -121,7 +121,7 @@ const useScreen = (map: THREE.Texture | null, on: number) => {
 };
 
 const VideoScreen: React.FC<{ on: number }> = ({ on }) => {
-  const map = useOffthreadVideoTexture({ src: staticFile('mock/reel.mp4'), toneMapped: false });
+  const map = useOffthreadVideoTexture({ src: staticFile('r7-chain/screen.mp4'), toneMapped: false });
   const mat = useScreen(map, on);
   return <mesh position={[0, 0, 0.072]} material={mat}><planeGeometry args={[1.38, 2.45]} /></mesh>;
 };
