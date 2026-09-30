@@ -7,6 +7,10 @@ import { ThreeProbe } from './lab/ThreeProbe';
 import { Words } from './v2-words/Words';
 import { Keys } from './v3-keys/Keys';
 import { Desk } from './v4-desk/Desk';
+import { Type } from './r4-type/Type';
+import { Space } from './r5-space/Space';
+import { Voice } from './r6-voice/Voice';
+import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
 
@@ -16,6 +20,11 @@ export const Root = () => (
     <Composition id="ClaudeWords" component={Words} defaultProps={{ music: true }} durationInFrames={450} {...V} />
     <Composition id="ClaudeKeys" component={Keys} defaultProps={{ music: true }} durationInFrames={450} {...V} />
     <Composition id="ClaudeDesk" component={Desk} defaultProps={{ music: true }} durationInFrames={450} {...V} />
+
+    {/* Серия 2: «дал текст, подключил скилы, Claude смонтировал» */}
+    <Composition id="SeriesType" component={Type} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
+    <Composition id="SeriesSpace" component={Space} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
+    <Composition id="SeriesVoice" component={Voice} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
 
     {/* Пробы приёмов: на них ссылаются наши скилы. Это не ролики, а проверенные образцы кода. */}
     <Folder name="lab">

@@ -46,7 +46,7 @@ def свести(видео: Path, сценарий: dict, папка: Path, и�
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(видео), "-i", str(ТУТ / сценарий["музыка"]),
                     "-i", str(ТУТ / "out" / f"{короткое}-sfx.wav"), "-i", str(папка / "голос.wav"),
                     "-filter_complex", граф, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
-                    "-t", "15", "-movflags", "+faststart", str(итог)], check=True)
+                    "-t", str(сценарий.get("длина", 15)), "-movflags", "+faststart", str(итог)], check=True)
     # теми же фильтрами проверка собирает музыку и голос отдельными дорожками
     (папка / "сведение.json").write_text(json.dumps({"музыка": музыка, "голос": голос}, ensure_ascii=False), encoding="utf-8")
     вывод = subprocess.run(["ffmpeg", "-v", "info", "-i", str(итог), "-af", "volumedetect", "-vn", "-f", "null", "-"],
@@ -58,9 +58,11 @@ def main():
     if len(sys.argv) < 2:
         raise SystemExit("нужна папка с готовыми роликами")
     откуда, нужные = Path(sys.argv[1]), sys.argv[2:]
-    for файл in sorted((ТУТ / "voice").glob("v*.json")):
+    for файл in sorted((ТУТ / "voice").glob("[rv]*.json")):
         сценарий = json.loads(файл.read_text(encoding="utf-8"))
         if нужные and сценарий["ролик"] not in нужные:
+            continue
+        if not (ТУТ / "out" / "voice" / сценарий["ролик"]).is_dir():
             continue
         for папка in sorted((ТУТ / "out" / "voice" / сценарий["ролик"]).iterdir()):
             итог = ТУТ / "out" / f"{сценарий['ролик']}-{папка.name}.mp4"
