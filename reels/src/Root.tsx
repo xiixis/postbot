@@ -10,6 +10,10 @@ import { Desk } from './v4-desk/Desk';
 import { Type } from './r4-type/Type';
 import { Space } from './r5-space/Space';
 import { Voice } from './r6-voice/Voice';
+import { MockDots } from './mock/Dots';
+import { WordsLayer } from './mock/WordsLayer';
+import { MockLayers } from './mock/Layers';
+import { MockPencil } from './mock/Pencil';
 import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
@@ -25,6 +29,14 @@ export const Root = () => (
     <Composition id="SeriesType" component={Type} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
     <Composition id="SeriesSpace" component={Space} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
     <Composition id="SeriesVoice" component={Voice} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
+
+    {/* Макеты третьей серии: ключевые кадры, по одному на кадр композиции */}
+    <Folder name="mock">
+      <Composition id="MockDots" component={MockDots} durationInFrames={4} {...V} />
+      <Composition id="WordsLayer" component={WordsLayer} defaultProps={{ layer: 0 }} durationInFrames={1} {...V} />
+      <Composition id="MockLayers" component={MockLayers} durationInFrames={4} {...V} />
+      <Composition id="MockPencil" component={MockPencil} durationInFrames={4} {...V} />
+    </Folder>
 
     {/* Пробы приёмов: на них ссылаются наши скилы. Это не ролики, а проверенные образцы кода. */}
     <Folder name="lab">
