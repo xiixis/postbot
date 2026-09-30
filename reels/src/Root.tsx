@@ -14,6 +14,7 @@ import { MockDots } from './mock/Dots';
 import { WordsLayer } from './mock/WordsLayer';
 import { MockLayers } from './mock/Layers';
 import { MockPencil } from './mock/Pencil';
+import { MockChain } from './mock/Chain';
 import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
@@ -36,6 +37,7 @@ export const Root = () => (
       <Composition id="WordsLayer" component={WordsLayer} defaultProps={{ layer: 0 }} durationInFrames={1} {...V} />
       <Composition id="MockLayers" component={MockLayers} durationInFrames={4} {...V} />
       <Composition id="MockPencil" component={MockPencil} durationInFrames={4} {...V} />
+      <Composition id="MockChain" component={MockChain} durationInFrames={4} {...V} />
     </Folder>
 
     {/* Пробы приёмов: на них ссылаются наши скилы. Это не ролики, а проверенные образцы кода. */}
