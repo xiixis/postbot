@@ -6,7 +6,7 @@
 // телефон, на котором начинается настоящий ролик, а шарик выпадает из трубы на кнопку
 // «Подписаться». В финале камера дугой возвращается к полке, куда прикатывается новый шарик:
 // последний кадр повторяет первый, и ролик замыкается в петлю.
-import React, { useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import { ThreeCanvas, useOffthreadVideoTexture } from '@remotion/three';
 import { useThree } from '@react-three/fiber';
 import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame, useRemotionEnvironment } from 'remotion';
@@ -15,6 +15,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { hit } from '../lib/beat';
 import { color, enter, H, leave, safe, sans, W } from '../lib/brand';
 import { Mask } from '../lib/Mask';
+import { useScreen } from '../lib/screen';
 import { useTextures } from '../lib/textures';
 import { Captions, type Word } from '../series/Captions';
 import { label, letter } from '../v3-keys/legend';
@@ -101,25 +102,6 @@ const Card: React.FC<{ pos: THREE.Vector3; quat: THREE.Quaternion; scale?: numbe
 );
 
 // Экран телефона: при рендере на нём идёт настоящий ролик, в студии стоит кадр обложки.
-// Материал собирается руками: смена текстуры требует пересборки шейдера (needsUpdate).
-// Кадр видео приходит позже, чем ThreeCanvas отрисовал сцену по смене номера кадра,
-// поэтому после подмены карты сцена рисуется ещё раз через advance().
-const useScreen = (map: THREE.Texture | null, on: number) => {
-  const mat = useMemo(() => new THREE.MeshBasicMaterial({ toneMapped: false }), []);
-  const advance = useThree((s) => s.advance);
-  const { isRendering } = useRemotionEnvironment();
-  const last = useRef<THREE.Texture | null>(null);
-  useLayoutEffect(() => {
-    if (map) map.colorSpace = THREE.SRGBColorSpace;
-    mat.map = map;
-    mat.color.setRGB(on, on, on);
-    mat.needsUpdate = true;
-    if (isRendering && map && map !== last.current) advance(performance.now());
-    last.current = map;
-  });
-  return mat;
-};
-
 const VideoScreen: React.FC<{ on: number }> = ({ on }) => {
   const map = useOffthreadVideoTexture({ src: staticFile('r7-chain/screen.mp4'), toneMapped: false });
   const mat = useScreen(map, on);

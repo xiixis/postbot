@@ -17,6 +17,8 @@ import { MockPencil } from './mock/Pencil';
 import { MockChain } from './mock/Chain';
 import { Chain } from './r7-chain/Chain';
 import { LENGTH as CHAIN } from './r7-chain/motion';
+import { LayersReel } from './r8-layers/Layers';
+import { LENGTH as LAYERS_LENGTH } from './r8-layers/motion';
 import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
@@ -35,6 +37,7 @@ export const Root = () => (
 
     {/* Серия 3: три разных мира */}
     <Composition id="Chain" component={Chain} defaultProps={{ music: true }} durationInFrames={CHAIN} {...V} />
+    <Composition id="Layers" component={LayersReel} defaultProps={{ music: true }} durationInFrames={LAYERS_LENGTH} {...V} />
 
     {/* Макеты третьей серии: ключевые кадры, по одному на кадр композиции */}
     <Folder name="mock">

@@ -42,7 +42,7 @@ def свести(видео: Path, сценарий: dict, папка: Path, и�
     голос = f"aresample=48000,highpass=f=90,equalizer=f=3500:t=q:w=1.2:g=3,volume={ГОЛОС}"
     граф = (f"[1:a]{музыка}[m];"
             f"[3:a]{голос},aformat=channel_layouts=stereo[say];"
-            "[2:a][m][say]amix=inputs=3:duration=first:normalize=0,volume=1.2,alimiter=limit=0.74:level=disabled[a]")
+            "[2:a][m][say]amix=inputs=3:duration=first:normalize=0,volume=1.2,alimiter=limit=0.74:level=disabled,afade=t=in:d=0.02[a]")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(видео), "-i", str(ТУТ / сценарий["музыка"]),
                     "-i", str(ТУТ / "out" / f"{короткое}-sfx.wav"), "-i", str(папка / "голос.wav"),
                     "-filter_complex", граф, "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",

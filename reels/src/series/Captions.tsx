@@ -7,11 +7,18 @@ import { color, enter, leave, safe, sans } from '../lib/brand';
 
 export type Word = { w: string; s: number; e: number; line: number };
 
-type Props = { words: Word[]; top?: number; px?: number; hide?: [number, number][]; align?: 'left' | 'center' };
+type Props = { words: Word[]; top?: number; px?: number; hide?: [number, number][]; align?: 'left' | 'center'; tone?: 'dark' | 'light' };
+
+// Тёмный фон: слово крем, текущее лаймом. Светлая страница: слово графит, текущее оливой.
+const TONES = {
+  dark: { now: color.lime, said: color.cream, wait: 'rgba(241,242,234,0.42)', shadow: '0 2px 18px rgba(0,0,0,0.45)' },
+  light: { now: color.olive, said: color.graphite, wait: 'rgba(18,19,15,0.34)', shadow: '0 0 14px rgba(236,234,222,0.95)' },
+};
 
 // Строки субтитров собираются по номеру фразы: одна фраза появляется целиком, слова
 // зажигаются по очереди, фраза уходит через треть секунды после последнего слова.
-export const Captions: React.FC<Props> = ({ words, top = 1290, px = 56, hide = [], align = 'left' }) => {
+export const Captions: React.FC<Props> = ({ words, top = 1290, px = 56, hide = [], align = 'left', tone = 'dark' }) => {
+  const c = TONES[tone];
   const frame = useCurrentFrame();
   const t = frame / 30;
   if (hide.some(([a, z]) => frame >= a && frame < z)) return null;
@@ -35,9 +42,9 @@ export const Captions: React.FC<Props> = ({ words, top = 1290, px = 56, hide = [
         const now = t >= w.s && t < w.e + 0.08;
         return (
           <span key={i} style={{
-            color: now ? color.lime : said ? color.cream : 'rgba(241,242,234,0.42)',
+            color: now ? c.now : said ? c.said : c.wait,
             transform: `scale(${now ? 1.06 : 1})`, transformOrigin: '50% 100%', display: 'inline-block',
-            textShadow: '0 2px 18px rgba(0,0,0,0.45)',
+            textShadow: c.shadow,
           }}>
             {w.w}
           </span>
