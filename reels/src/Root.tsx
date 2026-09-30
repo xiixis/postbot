@@ -15,6 +15,8 @@ import { WordsLayer } from './mock/WordsLayer';
 import { MockLayers } from './mock/Layers';
 import { MockPencil } from './mock/Pencil';
 import { MockChain } from './mock/Chain';
+import { Chain } from './r7-chain/Chain';
+import { LENGTH as CHAIN } from './r7-chain/motion';
 import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
@@ -30,6 +32,9 @@ export const Root = () => (
     <Composition id="SeriesType" component={Type} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
     <Composition id="SeriesSpace" component={Space} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
     <Composition id="SeriesVoice" component={Voice} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
+
+    {/* Серия 3: три разных мира */}
+    <Composition id="Chain" component={Chain} defaultProps={{ music: true }} durationInFrames={CHAIN} {...V} />
 
     {/* Макеты третьей серии: ключевые кадры, по одному на кадр композиции */}
     <Folder name="mock">

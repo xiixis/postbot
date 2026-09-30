@@ -89,6 +89,10 @@ export const label = (text: string, units: number, check = false) => {
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
   const tick = check ? h * 0.5 : 0;
+  // длинная надпись ужимается, чтобы не срезаться краями клавиши
+  const room = (w - tick) * 0.88;
+  const wide = ctx.measureText(text).width;
+  if (wide > room) ctx.font = `800 ${h * 0.46 * (room / wide)}px ${sans}`;
   ctx.fillText(text, (w - tick) * 0.5, h * 0.53);
   if (check) {
     const tw = ctx.measureText(text).width;
