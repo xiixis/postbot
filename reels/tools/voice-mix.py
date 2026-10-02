@@ -50,7 +50,7 @@ def свести(видео: Path, сценарий: dict, папка: Path, и�
     # теми же фильтрами проверка собирает музыку и голос отдельными дорожками
     (папка / "сведение.json").write_text(json.dumps({"музыка": музыка, "голос": голос}, ensure_ascii=False), encoding="utf-8")
     вывод = subprocess.run(["ffmpeg", "-v", "info", "-i", str(итог), "-af", "volumedetect", "-vn", "-f", "null", "-"],
-                           capture_output=True, text=True).stderr
+                           capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
     return [с.split("max_volume:")[1].strip() for с in вывод.splitlines() if "max_volume" in с][0]
 
 

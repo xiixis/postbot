@@ -39,7 +39,7 @@ def окно(с: float, по: float, вниз: float = 0.2, вверх: float = 
 
 
 def громкость(доводы: list[str], что: str = "mean_volume") -> float:
-    вывод = subprocess.run(["ffmpeg", "-v", "info", *доводы, "-vn", "-f", "null", "-"], capture_output=True, text=True).stderr
+    вывод = subprocess.run(["ffmpeg", "-v", "info", *доводы, "-vn", "-f", "null", "-"], capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
     return float(re.search(rf"{что}: (-?[\d.]+) dB", вывод).group(1))
 
 
