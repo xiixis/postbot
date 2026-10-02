@@ -4,7 +4,9 @@
 // в ../ЧТО-УЛУЧШЕНО.md. Коротко: крючок говорит результат, а не перечень; крупное набрано
 // широким Unbounded против ровного Onest; внизу субтитры по словам для тех, кто смотрит без
 // звука; вверху полоса «какой плагин из пяти»; появления идут с разных сторон и с разной
-// скоростью; зерно, блик по стеклу, вспышка на смене света, конфетти на слове «бесплатно».
+// скоростью; блик по стеклу, вспышка на смене света, конфетти на слове «бесплатно».
+// Зерна нет: поверх размытых движущихся карточек оно читалось как плохое сжатие (владелец, 02.10).
+// По той же причине строки крючка до своего слова тусклые, но резкие.
 //
 // Тезис тот же: состояние — одна фраза голоса, движется то, о чём говорят. Характер «дорогой»,
 // но крючок и доказательство в конце резче остального: они работают на остановку и досмотр.
@@ -28,9 +30,10 @@ const TERM = '<svg viewBox="0 0 24 24"><path d="M5 7l5 5-5 5M12.500 17.500H19"/>
 const PLANE = '<svg viewBox="0 0 24 24"><path d="M21.900 3.300 2.700 10.700c-1.300.500-1.300 1.300-.200 1.600l4.900 1.500 1.900 5.800c.200.700.400.900.900.900.400 0 .600-.200.900-.500l2.300-2.300 4.900 3.600c.900.500 1.500.200 1.800-.800l3.200-15.200c.300-1.300-.500-1.900-1.400-2zM8.300 13.500l10-6.300c.500-.300.900-.100.500.200l-8.200 7.400-.300 3.400z"/></svg>';
 
 // Псевдослучайное число по зерну: одно и то же в каждой вкладке рендера.
-// За сколько секунд HyperFrames считает этот ролик на маке владельца. Число звучит в ролике:
-// после правок, меняющих время рендера, его перемеряют и переозвучивают фразу proof.
-export const RENDER_SECONDS = 67;
+// За сколько секунд HyperFrames считает этот ролик на маке владельца: число на экране.
+// Голос говорит «меньше чем за минуту», поэтому от правок зависит только это число:
+// его берут из out/r11-plugins-time.txt после рендера. Перевалит за 59 — фразу proof менять.
+export const RENDER_SECONDS = 54;
 
 const rnd = (seed) => { const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
@@ -312,7 +315,7 @@ ${card(A, PLUGINS[4], 4, true)}
 <div class="sc" id="sc-proof">
   <div class="cap h plbl" style="top:372px;font-size:54px;color:var(--dim)">рендер этого ролика</div>
   <div class="big pnum" style="top:520px"><span class="cnt">0</span></div>
-  <div class="cap h psec" style="top:930px;font-size:92px">секунд</div>
+  <div class="cap h psec" style="top:930px;font-size:92px">секунды</div>
   <div class="rbar" style="top:1110px"><span>готово <b class="pc">0</b>%</span><div class="fill abs" style="inset:0;background:#C7E24B;border-radius:46px"><span style="color:#12130F">готово <b class="pc">0</b>%</span></div></div>
 </div>
 
@@ -455,7 +458,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     const sc = SC.hook;
     tl.fromTo($('.floats', sc), { scale: 1.14 }, { scale: 1, duration: e('hook'), ease: 'power1.out' }, 0);
     [['.k1', w('hook', 0)], ['.k2', w('hook', 2)], ['.k3', w('hook', 4)]].forEach(([k, at]) =>
-      tl.fromTo($(k, sc), { opacity: 0.3, scale: 1.06, filter: 'blur(5px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.24, ease: 'expo.out' }, Math.max(0.06, at - 0.05)));
+      tl.fromTo($(k, sc), { opacity: 0.38, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.24, ease: 'expo.out' }, Math.max(0.06, at - 0.05)));
     tl.fromTo($('.peek', sc), { opacity: 0, y: 140, rotation: 8 }, { opacity: 1, y: 0, rotation: 0, duration: 0.6, ease: 'power3.out' }, 0.4);
   }
 
@@ -678,7 +681,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     waveRun(sc, t, end);
   }
 
-  // Доказательство: за сколько секунд посчитан сам ролик. Число настоящее, см. README.
+  // Доказательство: за сколько секунд посчитан сам ролик. Число настоящее, из замера рендера.
   {
     const sc = SC.proof, t = s('proof'), to = w('proof', 5) + 0.25;
     word($('.plbl', sc), t + 0.2);
@@ -710,7 +713,7 @@ export const buildScenes = (gsap, tl, root, T) => {
   return tl;
 };
 
-/** Слой поверх сцен: знак канала, полоса «какой плагин из пяти», заголовки, субтитры, зерно, вспышка. */
+/** Слой поверх сцен: знак канала, полоса «какой плагин из пяти», заголовки, субтитры, вспышка. */
 export const overlayMarkup = (A, T) => {
   prep(T);
   const lines = new Map();
@@ -720,8 +723,7 @@ export const overlayMarkup = (A, T) => {
 ` + headlines(T).map((h) => `<div class="hl ${h.light ? 'light' : ''}">${[h.l1, h.l2].map((line, k) => line.length ? `<div class="${k ? 'l2' : 'l1'}">${
     line.map(([txt, , cls]) => `<span class="${cls || ''}">${txt}</span>`).join('')}</div>` : '').join('')}</div>`).join('') + `
 <div class="ccs">${[...lines.values()].map((ws) => `<div class="cc"><p>${ws.map((c) => `<span>${c.w}</span>`).join(' ')}</p></div>`).join('')}</div>
-<div class="flash" data-layout-ignore></div>
-<div class="grain" data-layout-ignore><i></i></div>`;
+<div class="flash" data-layout-ignore></div>`;
 };
 
 export const buildOverlay = (gsap, tl, root, T) => {
