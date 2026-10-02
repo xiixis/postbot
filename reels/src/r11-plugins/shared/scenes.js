@@ -3,7 +3,7 @@
 // Основа — сцены r10 (рерайт рилса @chingizkhan_yt). Что изменено и по какому скилу, записано
 // в ../ЧТО-УЛУЧШЕНО.md. Коротко: крючок говорит результат, а не перечень; крупное набрано
 // широким Unbounded против ровного Onest; внизу субтитры по словам для тех, кто смотрит без
-// звука; вверху полоса «какой плагин из пяти»; появления идут с разных сторон и с разной
+// звука; вверху полоса всего ролика по абзацам; появления идут с разных сторон и с разной
 // скоростью; блик по стеклу, вспышка на смене света, конфетти на слове «бесплатно».
 // Зерна нет: поверх размытых движущихся карточек оно читалось как плохое сжатие (владелец, 02.10).
 // По той же причине строки крючка до своего слова тусклые, но резкие.
@@ -713,13 +713,13 @@ export const buildScenes = (gsap, tl, root, T) => {
   return tl;
 };
 
-/** Слой поверх сцен: знак канала, полоса «какой плагин из пяти», заголовки, субтитры, вспышка. */
+/** Слой поверх сцен: знак канала, полоса ролика по абзацам, заголовки, субтитры, вспышка. */
 export const overlayMarkup = (A, T) => {
   prep(T);
   const lines = new Map();
   T.caps.forEach((c) => lines.set(c.line, [...(lines.get(c.line) || []), c]));
   return `<div class="logo"><img src="${A}/logo.png"></div>
-<div class="prog h">${PLUGINS.map(() => '<i><b></b></i>').join('')}</div>
+<div class="prog">${'<i><b></b></i>'.repeat(8)}</div>
 ` + headlines(T).map((h) => `<div class="hl ${h.light ? 'light' : ''}">${[h.l1, h.l2].map((line, k) => line.length ? `<div class="${k ? 'l2' : 'l1'}">${
     line.map(([txt, , cls]) => `<span class="${cls || ''}">${txt}</span>`).join('')}</div>` : '').join('')}</div>`).join('') + `
 <div class="ccs">${[...lines.values()].map((ws) => `<div class="cc"><p>${ws.map((c) => `<span>${c.w}</span>`).join(' ')}</p></div>`).join('')}</div>
@@ -752,12 +752,15 @@ export const buildOverlay = (gsap, tl, root, T) => {
     });
   });
 
-  // Полоса плагинов: отрезок заполняется, пока идёт блок своего плагина. Цвет следует за светом сцены.
+  // Полоса ролика. Цвет следует за светом сцены.
   const prog = root.querySelector('.prog');
   const marks = ['c1', 'c2', 'c3', 'c4', 'c5', 'final'];
-  tl.fromTo(prog, { opacity: 0 }, { opacity: 1, duration: 0.4 }, s('c1'));
+  // Полоса идёт весь ролик: восемь отрезков по абзацам (крючок, пять плагинов, вывод, призыв),
+  // последний заполняется к самому концу. Раньше отрезков было пять, по плагинам, и полоса
+  // кончалась за 13 секунд до конца ролика: зритель мог решить, что ролик кончился (владелец, 03.10).
+  const части = [0, s('c1'), s('c2'), s('c3'), s('c4'), s('c5'), s('final'), s('cta'), T.length - 0.4];
   [...prog.querySelectorAll('b')].forEach((b, i) =>
-    tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: s(marks[i + 1]) - s(marks[i]), ease: 'none' }, s(marks[i])));
+    tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: части[i + 1] - части[i], ease: 'none' }, части[i]));
   marks.forEach((id, i) => {
     const light = i % 2 === 0 && id !== 'final';
     tl.set(prog, { '--pf': light ? '#56690C' : '#C7E24B', '--pt': light ? 'rgba(18,19,15,.16)' : 'rgba(241,242,234,.2)' }, s(id));
