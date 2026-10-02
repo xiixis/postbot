@@ -10,6 +10,8 @@ import { Desk } from './v4-desk/Desk';
 import { Type } from './r4-type/Type';
 import { Space } from './r5-space/Space';
 import { Voice } from './r6-voice/Voice';
+import { Plugins } from './r10-plugins/Plugins';
+import plugins from './r10-plugins/timeline.json';
 import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
@@ -25,6 +27,10 @@ export const Root = () => (
     <Composition id="SeriesType" component={Type} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
     <Composition id="SeriesSpace" component={Space} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
     <Composition id="SeriesVoice" component={Voice} defaultProps={{ music: true }} durationInFrames={LENGTH} {...V} />
+
+    {/* «5 бесплатных плагинов»: один ролик в двух исполнениях здесь, третье в hf/r10-plugins */}
+    <Composition id="Plugins" component={Plugins} defaultProps={{ engine: 'remotion' as const, sound: false }} durationInFrames={plugins.frames} {...V} />
+    <Composition id="PluginsHybrid" component={Plugins} defaultProps={{ engine: 'hybrid' as const, sound: false }} durationInFrames={plugins.frames} {...V} />
 
     {/* Пробы приёмов: на них ссылаются наши скилы. Это не ролики, а проверенные образцы кода. */}
     <Folder name="lab">

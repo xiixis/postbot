@@ -1,2 +1,6 @@
 node_modules
 out
+# проекты HyperFrames собираются из src/<ролик>/shared: node tools/hf-build.mjs <ролик>
+hf
+# сцены, снятые HyperFrames для гибрида: пересобираются рендером
+public/plugins/hf-scenes.mp4
