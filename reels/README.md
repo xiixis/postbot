@@ -324,6 +324,11 @@ H.264, `yuv420p`, диапазон `tv`, `bt709`, `+faststart`; файл в HEVC
 
 Скилы лежат в `4xSoft/.claude/skills`, читать их до сценария.
 
+Чужие наборы (HyperFrames, моушн-скилы, `impeccable`, Эмиль Ковальски, Fish Audio) лежат на складе
+`4xSoft/.claude/склад` и подключаются по слову владельца «подключи скилы»: тогда под ролик берутся
+`hyperframes` с семьёй, `motion-effects`, `vox-explainer`, `review-animations`, `reel-export`, `fish-audio-api`.
+Всё, что нужно для ролика без них, записано в этой памятке.
+
 | Шаг | Скил |
 |---|---|
 | Крючок и рассказ | `hook-generator`, `storytelling-corrector` |
