@@ -24,7 +24,9 @@ const src = path.join(root, 'src', reel);
 const out = path.join(root, 'hf', bare ? `${reel}-scenes` : reel);
 const T = JSON.parse(fs.readFileSync(path.join(src, 'timeline.json'), 'utf8'));
 const scenario = JSON.parse(fs.readFileSync(path.join(root, 'voice', `${reel.split('-')[0]}.json`), 'utf8'));
-const pub = path.join(root, 'public', scenario['звук']);
+// картинки и шрифты могут быть общими у двух версий ролика, а звук у каждой свой
+const pub = path.join(root, 'public', scenario['картинки'] || scenario['звук']);
+const sound = path.join(root, 'public', scenario['звук'], 'sound.m4a');
 
 const code = fs.readFileSync(path.join(src, 'shared', 'scenes.js'), 'utf8');
 const mod = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
@@ -32,7 +34,8 @@ const css = fs.readFileSync(path.join(src, 'shared', 'scenes.css'), 'utf8');
 const fonts = fs.readFileSync(path.join(pub, 'fonts', 'fonts.css'), 'utf8').replaceAll('{{A}}', 'assets');
 
 fs.mkdirSync(path.join(out, 'assets'), { recursive: true });
-fs.cpSync(pub, path.join(out, 'assets'), { recursive: true, filter: (f) => !/hf-scenes\.mp4$|fonts\.css$/.test(f) && (!bare || !/sound\.m4a$/.test(f)) });
+fs.cpSync(pub, path.join(out, 'assets'), { recursive: true, filter: (f) => !/hf-scenes\.mp4$|fonts\.css$|sound\.m4a$|[\\/]v\d+$/.test(f) });
+if (!bare) fs.copyFileSync(sound, path.join(out, 'assets', 'sound.m4a'));
 fs.copyFileSync(path.join(root, 'node_modules', 'gsap', 'dist', 'gsap.min.js'), path.join(out, 'assets', 'gsap.min.js'));
 
 const D = T.length.toFixed(2);
