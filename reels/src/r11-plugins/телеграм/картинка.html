@@ -1,0 +1,55 @@
+<!doctype html>
+<!-- Картинка к посту в Telegram о ролике r11, 1280×720. Снимается tools/tg-card.mjs.
+     В посте шаги (команды), поэтому на картинке результат: настоящий кадр ролика, пять дополнений,
+     и то, чего в тексте нет (рендер меньше минуты). Ни одна фраза не повторяет пост. -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: 'Unbounded'; font-weight: 800; src: url('../../../public/plugins/fonts/Unbounded-cyrillic.woff2') format('woff2'); unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Unbounded'; font-weight: 800; src: url('../../../public/plugins/fonts/Unbounded-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+@font-face { font-family: 'Onest'; font-weight: 400 800; src: url('../../../public/plugins/fonts/Onest-cyrillic.woff2') format('woff2'); unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Onest'; font-weight: 400 800; src: url('../../../public/plugins/fonts/Onest-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 500; src: url('../../../public/plugins/fonts/JetBrainsMono-latin.woff2') format('woff2'); }
+html, body { margin: 0; width: 1280px; height: 720px; overflow: hidden; }
+body { position: relative; background: #0A0B08; color: #F1F2EA; font-family: 'Onest', sans-serif; letter-spacing: -0.02em; }
+.glow { position: absolute; left: 640px; top: -260px; width: 1000px; height: 1000px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(137, 168, 28, 0.55), rgba(86, 105, 12, 0.25) 50%, rgba(86, 105, 12, 0) 72%); }
+.vig { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 70% at 62% 45%, rgba(10, 11, 8, 0) 50%, rgba(10, 11, 8, 0.85) 100%); }
+.logo { position: absolute; left: 64px; top: 56px; width: 76px; height: 76px; border-radius: 22px; background: #12130F;
+  border: 2px solid rgba(241, 242, 234, 0.16); display: grid; place-items: center; }
+.logo img { width: 50px; }
+.tag { position: absolute; left: 64px; top: 176px; font-family: 'JetBrains Mono', monospace; font-size: 24px; letter-spacing: 0; color: #C7E24B; }
+h1 { position: absolute; left: 60px; top: 214px; margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 104px;
+  line-height: 1.02; letter-spacing: -0.05em; text-transform: uppercase; }
+h1 span { color: #C7E24B; }
+.sub { position: absolute; left: 64px; top: 452px; width: 560px; font-size: 32px; line-height: 1.3; font-weight: 500; color: rgba(241, 242, 234, 0.78); }
+.chips { position: absolute; left: 64px; top: 566px; display: flex; gap: 14px; }
+.chip { width: 84px; height: 84px; border-radius: 24px; background: rgba(241, 242, 234, 0.08); border: 2px solid rgba(241, 242, 234, 0.16);
+  display: grid; place-items: center; }
+.chip img { width: 54px; height: 54px; border-radius: 13px; }
+.chip b { font-size: 26px; font-weight: 700; letter-spacing: 0; }
+.phone { position: absolute; left: 760px; top: 58px; width: 326px; height: 606px; border-radius: 52px; overflow: hidden;
+  border: 4px solid rgba(241, 242, 234, 0.22); box-shadow: 0 50px 110px rgba(0, 0, 0, 0.6); transform: rotate(-5deg); background: #0A0B08; }
+.phone img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.cat { position: absolute; left: 1040px; top: 330px; width: 210px; filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.55)); }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="phone"><img src="кадр.jpg"></div>
+<div class="vig"></div>
+<div class="logo"><img src="../../../public/plugins/logo.png"></div>
+<div class="tag">Claude Code + 5 дополнений</div>
+<h1>Собран<br><span>кодом</span></h1>
+<div class="sub">Рендер меньше минуты, ни одной склейки руками</div>
+<div class="chips">
+  <div class="chip"><img src="../../../public/plugins/hyperframes.png"></div>
+  <div class="chip"><img src="../../../public/plugins/remotion.png"></div>
+  <div class="chip"><img src="../../../public/plugins/taste.png"></div>
+  <div class="chip"><img src="../../../public/plugins/impeccable.png"></div>
+  <div class="chip"><b>EK</b></div>
+</div>
+<img class="cat" src="../../../public/plugins/cat-point.png">
+</body>
+</html>
