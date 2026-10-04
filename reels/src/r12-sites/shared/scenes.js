@@ -77,7 +77,7 @@ ${['lime', 'amber', 'violet', 'warm', 'gold', 'blue', 'mint', 'lilac'].map((g) =
   <div class="kbd abs h" data-layout-ignore><div class="keys">${'<i></i>'.repeat(36)}</div></div>
   <div class="morph abs" id="mph">
     ${editor(A, 'ed1', [{ w: 150, img: 'teaser/t1.jpg' }, { w: 220, img: 'lc0.jpg' }, { w: 150, img: 'teaser/t5.jpg' }, { w: 200, img: 'mixkit-ph.jpg' }], true)}
-    <div class="scr abs">${[1, 2, 3, 4, 5, 6, 7].map((k) => `<img class="tz tz${k}" src="${A}/teaser/t${k}.jpg">`).join('')}</div>
+    <div class="scr abs">${[1, 3, 5, 7].map((k) => `<img class="tz tz${k}" src="${A}/teaser/t${k}.jpg">`).join('')}</div>
     <div class="empty abs"></div>
   </div>
   <div class="cpill pill h"><s>${CLAUDE}</s>Claude Code</div>
@@ -354,7 +354,8 @@ export const buildScenes = (gsap, tl, root, T) => {
     tl.fromTo($('#mph', sc), { clipPath: 'inset(80px 0px 90px 0px round 40px)' }, { clipPath: 'inset(0px 270px 0px 270px round 54px)', duration: 0.55, ease: 'power3.inOut' }, morphAt);
     tl.to($('#ed1 .eui', sc), { opacity: 0, scale: 0.9, duration: 0.25 }, morphAt);
     tl.to($('.scr', sc), { opacity: 1, duration: 0.25 }, morphAt + 0.25);
-    const tz = $$('.tz', sc), step = Math.max(0.16, (emptyAt - morphAt - 0.35) / tz.length);
+    // кадры ролика сменяются спокойно: не чаще раза в 0,35 с (владелец 04.10: «слишком быстрый темп»)
+    const tz = $$('.tz', sc), step = Math.max(0.35, (emptyAt - morphAt - 0.35) / tz.length);
     tz.forEach((img, k) => tl.set(img, { opacity: 1 }, morphAt + 0.3 + k * step));
     inn($('.kbd', sc), morphAt + 0.2, { y: 60 }, 0.5);
     pop($('.cpill', sc), w('hook', 8) - 0.12);
@@ -393,12 +394,13 @@ export const buildScenes = (gsap, tl, root, T) => {
     const sc = SC.mix, t = s('mix'), end = e('mix');
     inn($('.mcard', sc), t, { y: 70, scale: 0.94 }, 0.5);
     waveRun(sc, t, end);
-    pop($('.s1', sc), w('mix', 0) - 0.08); spin($('.d1', sc), '1000', w('mix', 0), 0.6);
-    pop($('.s2', sc), w('mix', 1) - 0.08); spin($('.d2', sc), '3000', w('mix', 1), 0.6);
-    tl.to($('.m2', sc), { opacity: 1, duration: 0.3 }, w('mix', 3) - 0.1);
-    inn($('.strip', sc), w('mix', 3) - 0.15, { y: 90 }, 0.45);
+    // одна перемена за раз: счётчики музыки и звуков парой, потом видео и плёнка вместе
+    pop($('.s1', sc), w('mix', 0) - 0.08); spin($('.d1', sc), '1000', w('mix', 0), 0.7);
+    pop($('.s2', sc), w('mix', 0) + 0.04); spin($('.d2', sc), '3000', w('mix', 0) + 0.1, 0.7);
+    tl.to($('.m2', sc), { opacity: 1, duration: 0.4 }, w('mix', 3) - 0.1);
+    inn($('.strip', sc), w('mix', 3) - 0.1, { y: 90 }, 0.5);
     tl.fromTo($('.strip', sc), { x: 0 }, { x: -320, duration: end - t, ease: 'none' }, t);
-    pop($('.s3', sc), w('mix', 4) - 0.05); spin($('.d3', sc), '46000', w('mix', 4), 0.6);
+    pop($('.s3', sc), w('mix', 3) + 0.05); spin($('.d3', sc), '46000', w('mix', 3) + 0.1, 0.7);
   }
 
   // Можно в коммерцию: курсор включает тумблеры на своих словах, вторая строка выезжает.
@@ -440,8 +442,9 @@ export const buildScenes = (gsap, tl, root, T) => {
     };
     // курсор водит по ряду: Vintage, Cross, Noir — и щёлкает Blockbuster
     const X = { 1: 372, 2: 540, 4: 708, 3: 876 };
-    cursorTo($('.cursor', sc), [[900, 1420, t + 0.2], [X[1], 1240, w('luts', 2)], [X[2], 1240, w('luts', 4)], [X[4], 1240, w('luts', 6)], [X[3], 1240, click, true], [940, 1420, click + 0.5]]);
-    name(1, w('luts', 2)); name(2, w('luts', 4)); name(4, w('luts', 6)); name(3, click);
+    // курсор не перебирает весь ряд: один заход на Vintage, потом клик по Blockbuster
+    cursorTo($('.cursor', sc), [[900, 1420, t + 0.3], [X[1], 1240, w('luts', 2)], [X[3], 1240, click, true], [940, 1420, click + 0.6]]);
+    name(1, w('luts', 2)); name(3, click);
     tl.set($('.split', sc), { clipPath: 'inset(0% 100% 0% 0%)' }, 0);
     tl.to($('.split', sc), { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.6, ease: 'power2.inOut' }, click + 0.03);
     tl.fromTo($('.sline', sc), { opacity: 0, x: 0 }, { opacity: 1, duration: 0.06 }, click);
