@@ -568,3 +568,21 @@ export const pictureMarkup = (A) => `<div class="pic">
   <div class="ptab">${list(A, LADDER.slice().reverse())}</div>
   <div class="pfoot">Telegram @FourXtube</div>
 </div>`;
+
+/** Карточки рейтинга для альбома Telegram: 1080×1350, по 2–3 ранга крупно. Одна картинка со всеми 45
+ *  моделями в ленте телефона читается подписями по 7 пунктов (владелец 04.10: «с телефона не читается»),
+ *  поэтому общий вид идёт первой картинкой альбома, а следом ранги крупно. Grok Маска обведён. */
+export const CARDS = [
+  [['SSS', 'SS', 'S'], 'Вершина'], [['A', 'B'], 'Середина'], [['C', 'D'], 'Ниже среднего'], [['E', 'Google'], 'Самый низ'],
+];
+export const cardMarkup = (A, k) => {
+  const [names, title] = CARDS[k];
+  return `<div class="card4">
+  <div class="logo"><img src="${A}/logo.png"></div>
+  <div class="ch4"><b>Рейтинг нейросетей</b><span>${title} · ${k + 1} / ${CARDS.length}</span></div>
+  <div class="cbody">${list(A, names).replace(/class="mt m-grok/g, 'class="mt grk m-grok')}</div>
+  ${names.includes('Google') ? '<div class="cnote">Отдельный ранг так и назвали: <b>Google</b>. Даже букву F пожалели</div>' : ''}
+  <div class="cfoot">Telegram @FourXtube</div>
+</div>`;
+};
+
