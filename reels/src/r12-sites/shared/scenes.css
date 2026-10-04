@@ -534,7 +534,9 @@
 .r10 .drum { display: inline-flex; align-items: flex-start; line-height: 1; }
 .r10 .dcol { display: inline-block; height: 1em; overflow: hidden; }
 .r10 .dstrip { display: block; }
-.r10 .dstrip i { display: block; height: 1em; line-height: 1em; font-style: normal; }
+/* цифры одной ширины и по центру столбца: иначе узкая «1» прижималась влево и «1000» читалось как «1 000» */
+.r10 .dstrip i { display: block; height: 1em; line-height: 1em; font-style: normal; text-align: center; font-variant-numeric: tabular-nums; }
+.r10 .drum { font-variant-numeric: tabular-nums; }
 .r10 .dsep { display: inline-block; width: 0.28em; }
 .r10 .fbig { font-size: 260px; }
 .r10 .pbig { font-size: 200px; display: flex; justify-content: center; }
@@ -561,7 +563,8 @@
 .r10 .wave.mini b { background: #FFFFFF; top: -6px; height: 82px; }
 .r10 .wave.blue i { background: rgba(59, 130, 246, 0.5); }
 .r10 .wave.blue b { background: #3B82F6; }
-.r10 .stat em { font-style: normal; }
+/* «+» вплотную к числу: в карточке между блоками стоит отступ 12 px, у подписи он снят */
+.r10 .stat em { font-style: normal; margin-left: -12px; }
 .r10 .stat .ic { color: #3B82F6; }
 .r10 .ft { position: relative; color: #3B82F6; }
 .r10 .ft u { position: absolute; right: -6px; top: -6px; width: 26px; height: 26px; border-radius: 50%; background: #3B82F6; opacity: 0; box-shadow: 0 0 0 4px #F1F2EA; }

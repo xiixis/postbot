@@ -3,7 +3,6 @@
 // Разбор референса и что заменено: ../РЕФЕРЕНС.md, текст по ролям: ../ОЗВУЧКА.md.
 // Тезис: состояние — одна фраза голоса, движется то, о чём говорят. Рейтинг проходится снизу
 // вверх, как у автора: отдельный ранг Google, E, размазанный Grok, A, S, SS и один SSS на вершине.
-// Внизу кадра идёт бегунок рангов: зритель видит, сколько осталось до вершины, и досматривает.
 // Цвета рангов взяты с тир-листа (это примета темы), всё остальное наше: графит, крем, лайм, олива,
 // Unbounded для крупного, Onest для остального, знак канала в углу, кот в финале.
 // Зерна, вспышек и конфетти нет (README, «Приёмы на пробу»: запреты из чужого вкуса).
@@ -351,12 +350,13 @@ export const buildScenes = (gsap, tl, root, T) => {
     tl.fromTo($('.ph', sc), { y: 40, rotationY: -24, rotationX: 8, transformPerspective: 1400 }, { y: 0, rotationY: 0, rotationX: 0, duration: 1.1, ease: 'power3.out' }, 0);
     // наезд, как у автора: с целого поста на строку «Accurate (for now)» настоящего снимка из X
     tl.set($('.ph .phone', sc), { transformOrigin: '50% 0%' }, 0);
-    tl.fromTo($('.ph .phone', sc), { scale: 1, x: 0, y: 0 }, { scale: 2.2, x: 290, y: -46, duration: 0.6, ease: 'power2.inOut' }, 0.35);
+    tl.fromTo($('.ph .phone', sc), { scale: 1, x: 0, y: 0 }, { scale: 1.8, x: -102, y: -28, duration: 0.6, ease: 'power2.inOut' }, 0.35);   // пост целиком по ширине кадра
     tl.fromTo($('.said', sc), { backgroundColor: 'rgba(199,226,75,0)', boxShadow: '0 0 0 0px rgba(199,226,75,0)' }, { backgroundColor: 'rgba(199,226,75,0.2)', boxShadow: '0 0 0 3px rgba(199,226,75,1)', duration: 0.25, ease: 'power2.out' }, w('hook', 3) - 0.05);
     $$('.floats .flt', sc).forEach((b, i) => tl.fromTo(b, { y: 0 }, { y: -40 - i * 8, duration: go, ease: 'none' }, 0));
     tl.to($('.hk', sc), { opacity: 0, y: -30, filter: 'blur(12px)', duration: 0.3, ease: 'power2.in' }, go - 0.1);
     $$('.hk2 span', sc).forEach((el, k) => word(el, w('hook', [5, 6, 7, 8, 9][k])));
-    tl.to($('.ph', sc), { x: -420, scale: 0.7, opacity: 0, filter: 'blur(14px)', duration: 0.55, ease: 'power3.in' }, go);
+    // телефон гаснет целиком до того, как встаёт сравнение: два движения разом (наезд и уход) ломали кадр
+    tl.to($('.ph', sc), { opacity: 0, filter: 'blur(14px)', duration: 0.3, ease: 'power2.in' }, go - 0.32);
     tl.set($('.vs', sc), { opacity: 1 }, go);
     inn($('.vs1', sc), go + 0.15, { y: -80, scale: 0.9 }, 0.55);
     inn($('.vs2', sc), go + 0.3, { y: 90 }, 0.6);
@@ -375,7 +375,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     // на «семи миллионах» камера наезжает на настоящую строку «7,2 млн Просмотры» под постом и
     // обводит её: подлинность видна в самом снимке, а строка поднимается выше полосы подписи площадки
     tl.set($('.tab', sc), { transformOrigin: '50% 0%' }, 0);
-    tl.to($('.tab', sc), { scale: 1.9, y: -1083, duration: 0.7, ease: 'power2.inOut' }, s('views') - 0.05);
+    tl.to($('.tab', sc), { scale: 1.6, y: -780, duration: 0.7, ease: 'power2.inOut' }, s('views') - 0.05);   // пост целиком по ширине, строка просмотров на ~900
     // верх рейтинга уходит под заголовок — затемняем его, чтобы строки не наползали на картинку
     tl.to($('.vfade', sc), { opacity: 1, duration: 0.5, ease: 'power2.out' }, s('views') + 0.1);
   }
@@ -607,11 +607,10 @@ export const buildScenes = (gsap, tl, root, T) => {
   return tl;
 };
 
-/** Слой поверх сцен: знак канала, полоса ролика, бегунок рангов, заголовки, субтитры. */
+/** Слой поверх сцен: знак канала, полоса ролика, заголовки. */
 export const overlayMarkup = (A, T) => {
   return `<div class="logo"><img src="${A}/logo.png"></div>
 <div class="prog">${'<i><b></b></i>'.repeat(9)}</div>
-<div class="pg" data-layout-ignore><s></s><s class="pf"></s>${LADDER.map((n) => `<i></i>`).join('')}<b class="knob"></b></div>
 ` + headlines(T).map((h) => `<div class="hl ${h.light ? 'light' : ''}">${[h.l1, h.l2].map((line, k) => line.length ? `<div class="${k ? 'l2' : 'l1'}">${
     line.map(([txt, , c]) => `<span class="${c || ''}">${txt}</span>`).join('')}</div>` : '').join('')}</div>`).join('');
 };
@@ -641,22 +640,12 @@ export const buildOverlay = (gsap, tl, root, T) => {
   const части = [старт + 0.3, s('musk'), s('bottom'), s('e'), s('s'), s('fight'), s('race'), s('q'), s('cta'), T.length - 0.4];
   [...prog.querySelectorAll('b')].forEach((b, i) =>
     tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: части[i + 1] - части[i], ease: 'none' }, части[i]));
-  // Цвет полосы и бегунка следует за светом сцены.
-  const pg = root.querySelector('.pg');
+  // Цвет полосы следует за светом сцены.
   [['post', 0], ['google', 1], ['grok', 0], ['siri', 1], ['race', 0]].forEach(([id, light]) =>
-    tl.set([prog, pg], { '--pf': light ? '#56690C' : '#C7E24B', '--pt': light ? 'rgba(18,19,15,.16)' : 'rgba(241,242,234,.2)' }, s(id)));
+    tl.set(prog, { '--pf': light ? '#56690C' : '#C7E24B', '--pt': light ? 'rgba(18,19,15,.16)' : 'rgba(241,242,234,.2)' }, s(id)));
 
-  // Бегунок рангов: от отдельного ранга Google до SSS. Точка встаёт на ранг, когда о нём говорят.
-  const X = (k) => 34 + k * 52;
-  tl.fromTo(pg, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, s('bottom') + 0.2);
-  tl.to(pg, { opacity: 0, duration: 0.3 }, e('fight') - 0.26);
-  const knob = root.querySelector('.knob'), fill = root.querySelector('.pg .pf');
-  tl.set(knob, { x: X(0) }, 0);
-  tl.set(fill, { scaleX: 0 }, 0);
-  [[w('e', 0), 1], [w('grok', 6), 3], [w('grok', 8), 5], [w('s', 1), 6], [w('ss', 1), 7], [w('top', 3), 8]].forEach(([at, k]) => {
-    tl.to(knob, { x: X(k), duration: 0.45, ease: 'power3.inOut' }, at - 0.1);
-    tl.to(fill, { scaleX: k / 8, duration: 0.45, ease: 'power3.inOut' }, at - 0.1);
-  });
+  // Бегунка рангов внизу больше нет (04.10): он стоял неподвижной капсулой посреди кадра с 12-й секунды,
+  // владелец принял его за сломанную полосу. Ход ролика показывает полоса наверху.
   return tl;
 };
 

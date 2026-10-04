@@ -112,11 +112,11 @@ ${['lime', 'amber', 'violet', 'warm', 'gold', 'blue', 'mint', 'lilac'].map((g) =
     ${vid(A, 'sea-v.mp4', S('mix'), E('mix'), 'm2', 'opacity:0;object-fit:cover')}
     <div class="mbar"><div class="play">${ic('play', '', 'b')}</div>${wave(0, 40, 'mini')}</div>
   </div>
-  <div class="stat s1 pill h" style="left:140px;top:960px">${ic('music-note', '', 'b')}${drum('1000', 'd1')}<em>+ треков</em></div>
-  <div class="stat s2 pill h" style="left:560px;top:960px">${ic('waveform', '', 'b')}${drum('3000', 'd2')}<em>+ звуков</em></div>
+  <div class="stat s1 pill h" style="left:140px;top:960px">${ic('music-note', '', 'b')}${drum('1000', 'd1')}<em>+&nbsp;треков</em></div>
+  <div class="stat s2 pill h" style="left:560px;top:960px">${ic('waveform', '', 'b')}${drum('3000', 'd2')}<em>+&nbsp;звуков</em></div>
   <div class="abs" style="left:-80px;top:1080px;width:1240px"><div style="transform:rotate(-3deg)"><div class="film strip h" data-layout-ignore style="height:200px">${
     ['lc0.jpg', 'rezhisser.jpg', 'g3.jpg', 'teaser/t2.jpg', 'g1.jpg', 'lc3.jpg', 'g2.jpg', 'teaser/t6.jpg'].map((f) => `<div class="cell" style="width:240px"><img src="${A}/${f}" style="width:100%;height:100%;object-fit:cover;border-radius:0"></div>`).join('')}</div></div></div>
-  <div class="stat s3 pill h" style="left:290px;top:1330px">${ic('film-strip', '', 'b')}${drum('46000', 'd3')}<em>+ видео</em></div>
+  <div class="stat s3 pill h" style="left:290px;top:1330px">${ic('film-strip', '', 'b')}${drum('46000', 'd3')}<em>+&nbsp;видео</em></div>
 </div>
 
 <div class="sc light" id="sc-mix2">
