@@ -49,6 +49,15 @@ const list = (A, names, extra = '', style = '') => `<div class="tl ${extra}" sty
 // Уменьшенный тир-лист целиком: проверка HyperFrames меряет подписи без учёта масштаба обёртки и видит
 // их в зоне субтитров, которых они в кадре не касаются. Помечаем именно эти подписи, а не сцену.
 const mini = (html) => html.replaceAll('<b>', '<b data-layout-allow-overlap>').replaceAll('class="lb', 'data-layout-allow-overlap class="lb');
+// Закрытая вершина (четвёртая версия): кто первый, зритель узнаёт только на вершине подъёма.
+const MYS = ['???', 'tx:?'];
+const rowMys = (A) => `<div class="tr t-sss solo"><div class="lb" style="background:${T_.SSS[1]}">SSS</div><div class="ts">${tile(A, MYS, 'mys')}</div></div>`;
+// Колонна подъёма: весь рейтинг сверху вниз. На вершине под «?» лежит Opus 5.5, у Google справа пустое место буквы F.
+const column = (A) => `<div class="tl col">${LADDER.slice().reverse().map((n) => {
+  if (n === 'SSS') return `<div class="tr t-sss"><div class="lb" style="background:${T_.SSS[1]}">SSS</div><div class="ts"><div class="flip">${tile(A, T_.SSS[2][0], 'opus')}${tile(A, MYS, 'mys')}</div></div></div>`;
+  if (n === 'Google') return row(A, T_.Google).replace(/<\/div><\/div>$/, `<div class="fslot"><span>F</span><svg viewBox="0 0 104 140"><path class="fstrike" d="M10 112 L94 26" fill="none" stroke="#F08C8C" stroke-width="9" stroke-linecap="round"/></svg></div></div></div>`);
+  return row(A, T_[n]);
+}).join('')}</div>`;
 const label = (n, extra = '', style = '') => `<div class="lbx ${extra}${n === 'Google' ? ' g' : ''}" style="background:${T_[n][1]};${style}">${n}</div>`;
 
 const PLANE = '<svg viewBox="0 0 24 24"><path d="M21.900 3.300 2.700 10.700c-1.300.500-1.300 1.300-.200 1.600l4.900 1.500 1.900 5.800c.200.700.400.900.900.900.400 0 .600-.200.900-.500l2.300-2.300 4.900 3.600c.900.500 1.500.200 1.800-.800l3.200-15.200c.300-1.300-.500-1.900-1.400-2zM8.300 13.500l10-6.300c.500-.300.900-.100.500.200l-8.200 7.400-.300 3.400z"/></svg>';
@@ -75,10 +84,12 @@ export const markup = (A) => `
   <div class="hk hk2"><div class="k1"><span class="h">Grok</span> <span class="h">хуже,</span></div><div class="k3"><span class="h">чем</span> <span class="h">у</span> <span class="h">конкурентов</span></div></div>
   <div class="ph abs" style="left:330px;top:480px"><div class="phone xreal"><img src="${A}/x/app-musk.png"><div class="said"></div></div></div>
   <div class="vs abs h" style="left:0;top:560px;width:1080px">
-    <div class="abs vs1" style="left:419px;top:0">${row(A, T_.SSS, 'solo')}</div>
+    <div class="abs vs1" style="left:419px;top:0">${rowMys(A)}</div>
     <div class="abs" style="left:0;top:250px;width:1080px;text-align:center"><span class="down pill h"><b>↓</b> на 3 ранга ниже</span></div>
     <div class="abs vs2" style="left:124px;top:380px;width:833px;height:286px"><div style="transform:scale(0.9);transform-origin:0 0;width:max-content">${list(A, ['A'], 'cut')}</div></div>
   </div>
+  <div class="abs gptx h" style="left:420px;top:920px;width:240px;height:322px"><div style="transform:scale(2.3);transform-origin:0 0;width:max-content">${tile(A, ['ChatGPT', 'openai'])}</div>
+    <svg viewBox="0 0 198 198" style="position:absolute;left:0;top:-4px;width:240px;height:240px;overflow:visible"><path class="x1" d="M22 22 L176 176" fill="none" stroke="#F08C8C" stroke-width="14" stroke-linecap="round"/><path class="x2" d="M176 22 L22 176" fill="none" stroke="#F08C8C" stroke-width="14" stroke-linecap="round"/></svg></div>
 </div>
 
 <div class="sc" id="sc-post">
@@ -92,65 +103,13 @@ export const markup = (A) => `
   <div class="tr2 pill h" style="position:absolute;left:0;top:900px;width:1080px;background:none;border:none;justify-content:center"><span class="tp">Точно.</span><span class="tp2">Пока что</span></div>
 </div>
 
-<div class="sc" id="sc-look">
-  <div class="clipw abs h" style="left:205px;top:470px;width:670px;height:640px;-webkit-mask-image:none;mask-image:none">
-    <div class="tab abs pan" style="left:0;top:0;width:670px;height:870px"><img src="${A}/x/tierlist.jpg" style="width:664px;display:block"><div class="gring" style="position:absolute;left:0;top:806px;width:664px;height:60px;padding:0;border:5px solid #8EC9F2;border-radius:12px;opacity:0;box-sizing:border-box"></div></div>
-  </div>
-</div>
-
-<div class="sc light" id="sc-google">
-  <div class="gtile abs h" style="left:400px;top:560px">${label('Google', 'big', '')}</div>
-  <div class="ring2 abs h" data-layout-ignore style="left:340px;top:500px;width:400px;height:400px"></div>
-</div>
-
-<div class="sc light" id="sc-gem">
-  ${label('Google', 'h glb', 'left:150px;top:560px;width:250px;height:250px;font-size:56px;border-radius:44px')}
-  <div class="abs" style="left:440px;top:500px"><div class="grid4">${T_.Google[2].map((m) => tile(A, m, 'h')).join('')}</div></div>
-</div>
-
-<div class="sc light" id="sc-f">
-  <div class="abs h grow" style="left:248px;top:500px">${list(A, ['Google'], 'sm')}</div>
-  <div class="fcard abs h" style="left:290px;top:720px;width:500px;height:430px"><span class="fl">F</span>
-    <svg viewBox="0 0 500 430" style="position:absolute;inset:0;width:100%;height:100%"><path class="strike" d="M40 330 L460 110" fill="none" stroke="#2F7FD8" stroke-width="16" stroke-linecap="round"/></svg></div>
-</div>
-
-<div class="sc light" id="sc-e">
-  <div class="abs h ed" style="left:305px;top:520px">${list(A, ['D'], 'dim')}</div>
-  <div class="abs h ee" style="left:230px;top:716px;width:620px;height:222px"><div style="transform:scale(1.32);transform-origin:0 0;width:max-content">${list(A, ['E'])}</div></div>
-  <div class="abs h eg" style="left:248px;top:972px">${list(A, ['Google'], 'dim')}</div>
-</div>
-
-<div class="sc" id="sc-grok">
-  <div class="tilt abs" style="left:124px;top:500px;width:833px;height:603px"><div style="position:relative;width:926px;height:670px;transform:scale(0.9);transform-origin:0 0;width:max-content">
-    <div class="abc abs h" style="left:0;top:0;width:926px;height:670px">${list(A, ['A', 'B', 'C'])}
-      <svg class="gp" viewBox="0 0 922 660" style="position:absolute;left:0;top:0;width:922px;height:660px;overflow:visible"><path class="gpath" d="M290 554 C 380 470, 560 330, 632 210 S 642 92, 632 60" fill="none" stroke="#C7E24B" stroke-width="5" stroke-linecap="round"/></svg>
-    </div>
-  </div></div>
-</div>
-
-<div class="sc" id="sc-a">
-  <div class="abs h arow" style="left:68px;top:560px;width:945px;height:324px"><div style="transform:scale(1.02);transform-origin:0 0;width:max-content">${list(A, ['A'])}</div></div>
-</div>
-
-<div class="sc" id="sc-s">
-  <div class="rays abs" data-layout-ignore style="left:140px;top:420px;width:800px;height:800px"></div>
-  ${label('S', 'h sl', 'left:465px;top:470px;width:150px;height:100px;font-size:56px')}
-  <div class="abs h fb" style="left:405px;top:640px;width:270px;height:364px"><div style="transform:scale(2.6);transform-origin:0 0;width:max-content">${tile(A, T_.S[2][0])}</div></div>
-  <div class="abs h sol" style="left:405px;top:640px;width:270px;height:364px"><div style="transform:scale(2.6);transform-origin:0 0;width:max-content">${tile(A, T_.S[2][1])}</div></div>
-</div>
-
-<div class="sc" id="sc-ss">
-  <div class="abs h ssr" style="left:298px;top:560px;width:484px;height:336px"><div style="transform:scale(2);transform-origin:0 0;width:max-content">${row(A, T_.SS, 'solo')}</div></div>
-  <div class="abs h sbelow" style="left:380px;top:944px;width:320px;height:151px"><div style="transform:scale(0.9);transform-origin:0 0;width:max-content">${row(A, T_.S, 'solo dim')}</div></div>
-  <div class="pod abs h" data-layout-ignore style="left:250px;top:1106px;width:580px;height:46px"></div>
-  <div class="pod abs h" data-layout-ignore style="left:190px;top:1166px;width:700px;height:50px"></div>
-</div>
-
-<div class="sc" id="sc-top">
-  ${Array.from({ length: 14 }, (_, i) => `<i class="spk h" data-layout-ignore style="left:${Math.round(160 + rnd(i + 51) * 760)}px;top:${Math.round(470 + rnd(i + 77) * 640)}px"></i>`).join('')}
-  <div class="abs h sssr" style="left:262px;top:540px;width:557px;height:386px"><div style="transform:scale(2.3);transform-origin:0 0;width:max-content">${row(A, T_.SSS, 'solo')}</div></div>
-  <div class="ell abs h" data-layout-ignore style="left:200px;top:1060px;width:680px;height:120px"></div>
-  <div class="cpill pill h" style="position:absolute;left:0;top:930px;width:1080px;background:none;border:none;justify-content:center"><span class="cl">Claude Opus 5.5</span></div>
+<div class="sc" id="sc-climb">
+  <div class="rays abs" data-layout-ignore style="left:140px;top:470px;width:800px;height:800px"></div>
+  <div class="cam abs" data-layout-ignore style="left:0;top:0;width:926px"><div class="colw" style="position:relative">${mini(column(A))}
+    <svg class="gp" viewBox="0 0 10 10" style="position:absolute;left:0;top:0;width:10px;height:10px;overflow:visible"><path class="gpath" d="M0 0 L1 1" fill="none" stroke="#C7E24B" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+  ${Array.from({ length: 14 }, (_, i) => `<i class="spk h" data-layout-ignore style="left:${Math.round(160 + rnd(i + 51) * 760)}px;top:${Math.round(560 + rnd(i + 77) * 560)}px"></i>`).join('')}
+  <div class="cfade" data-layout-ignore></div>
+  <div class="cpill pill h" style="position:absolute;left:0;top:1150px;width:1080px;background:none;border:none;justify-content:center"><span class="cl">Claude Opus 5.5</span></div>
 </div>
 
 <div class="sc" id="sc-fight">
@@ -169,18 +128,7 @@ export const markup = (A) => `
   </div>
 </div>
 
-<div class="sc" id="sc-race">
-  <div class="fnp pill h" style="position:absolute;left:330px;top:470px"><b>Accurate</b><span>(for now)</span></div>
-  <div class="finish abs" data-layout-ignore style="left:868px;top:590px;height:520px"></div>
-  ${[['claude', 0.93], ['openai', 0.85], ['grok', 0.58], ['gemini', 0.42]].map(([l, p], i) => `<div class="lane2 abs h ln${i}" style="left:150px;top:${600 + i * 128}px;width:740px"><b class="fill2" style="--p:${p}"></b><i class="knob2 ${l === 'claude' ? 'cl' : ''}"><img src="${A}/m/${FILE[l]}"></i></div>`).join('')}
-</div>
-
 <div class="sc" id="sc-q">
-  <div class="abs" style="left:174px;top:520px"><div class="qgrid">${[['Opus 5.5', 'claude'], ['GPT-6<br>Astra', 'openai'], ['Grok 4.7', 'grok'], ['Gemini 3.8<br>Flash', 'gemini'], ['DeepSeek<br>V4.1 Flash', 'deepseek'], ['Kimi K3', 'kimi'], ['Qwen3.8<br>Max', 'qwen'], ['Mistral<br>Medium 3.5', 'mistral']].map((m) => tile(A, m, 'h qt')).join('')}</div></div>
-  <div class="qmark abs h" style="left:0;top:1000px;width:1080px">?</div>
-</div>
-
-<div class="sc" id="sc-com">
   <div class="cbox glass abs h" style="left:150px;top:520px;width:780px;height:560px">
     <div class="inp"><i class="avc"><img src="${A}/cat-face.png"></i><div class="field"><span class="ph2">Мой ранг:</span> ${[...'SSS — Claude'].map((c) => `<span class="ch h">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</div></div>
     <div class="rk">${LADDER.slice().reverse().map((n) => `<span class="rkc h${n === 'SSS' ? ' on' : ''}${n === 'Google' ? ' g' : ''}">${n}</span>`).join('')}</div>
@@ -212,8 +160,8 @@ export const markup = (A) => `
 </div>
 `;
 
-// Какие сцены светлые: группа рангов внизу и Siri. Остальное тёмное, как у автора.
-const LIGHT = ['google', 'gem', 'f', 'e', 'siri'];
+// Светлая только Siri (четвёртая версия): подъём по рейтингу идёт одной тёмной сценой, свет меняет пятно.
+const LIGHT = ['siri'];
 
 /** Заголовок сверху: слово встаёт, когда звучит. Номера слов — по тексту голоса (voice/r13.json). */
 export const headlines = (T) => {
@@ -222,24 +170,19 @@ export const headlines = (T) => {
   const e = (id) => T.scenes[id].e;
   const H = (id, l1, l2 = []) => ({ id, light: LIGHT.includes(id), from: s(id), to: e(id), l1, l2 });
   return [
+    H('tease', [['Первое', w('tease', 1)], ['место', w('tease', 2)]], [['не', w('tease', 5)], ['у', w('tease', 6)], ['ChatGPT', w('tease', 7), 'lm']]),
     { ...H('post', [['Разработчик', w('post', 0)]], [['выложил', w('post', 1)], ['рейтинг', w('post', 2)]]), to: e('views') },
     H('musk', [['Маск', w('musk', 1)], ['ответил', w('musk', 2)]]),
-    H('look', [['Смотри,', w('look', 0)]], [['кто', w('look', 1)], ['где', w('look', 2)]]),
-    H('bottom', [['В', w('bottom', 0)], ['самом', w('bottom', 1)], ['низу', w('bottom', 2)]], [['отдельный', w('bottom', 3)], ['ранг', w('bottom', 4)]]),
-    H('google', [['Ранг', s('google') + 0.12]], [['Google', w('google', 3), 'gg']]),
-    H('gem', [['Там', w('gem', 0)], ['все', w('gem', 1)]], [['Gemini', w('gem', 2)]]),
-    H('f', [['Им', w('f', 0)], ['даже', w('f', 1)]], [['букву', w('f', 2)], ['F', w('f', 3), 'gg'], ['пожалели', w('f', 4)]]),
-    H('e', [['Чуть', w('e', 0)], ['выше', w('e', 1)]], [['Haiku,', w('e', 2)], ['Mistral,', w('e', 3)], ['Nemotron', w('e', 5)]]),
+    H('look', [['Идём', w('look', 0)]], [['снизу', w('look', 1)], ['вверх', w('look', 2), 'lm']]),
+    H('google', [['В', w('google', 0)], ['самом', w('google', 1)], ['низу', w('google', 2)]], [['ранг', w('google', 4)], ['Google', w('google', 9), 'gg']]),
+    H('gem', [['Там', w('gem', 0)], ['все', w('gem', 1)], ['Gemini', w('gem', 2), 'gg']], [['букву', w('gem', 5)], ['F', w('gem', 6), 'gg'], ['пожалели', w('gem', 7)]]),
     H('grok', [['Grok', w('grok', 0)], ['Маска', w('grok', 2)]], [['от', w('grok', 5)], ['C', w('grok', 6), 'lm'], ['до', w('grok', 7)], ['A', w('grok', 8), 'lm']]),
-    H('a', [['В', w('a', 0)], ['A', w('a', 1)], ['ещё', w('a', 2)]], [['DeepSeek,', w('a', 3)], ['Kimi', w('a', 4)]]),
-    H('s', [['В', w('s', 0)], ['S', w('s', 1)]], [['новый', w('s', 2)], ['Fable', w('s', 3)]]),
+    H('s', [['Выше,', w('s', 0)], ['в', w('s', 1)], ['S', w('s', 2), 'lm']], [['Fable', w('s', 4)], ['и', w('s', 7)], ['GPT-6 Sol', w('s', 8)]]),
     H('ss', [['Ещё', w('ss', 0)], ['выше', w('ss', 1)]], [['GPT-6', w('ss', 2)], ['Astra', w('ss', 4)]]),
     H('top', [['На', w('top', 1)], ['вершине', w('top', 3)]], [['только', w('top', 4)], ['один', w('top', 5), 'lm']]),
     H('fight', [['Бьются', w('fight', 2)]], [['за', w('fight', 3)], ['SSS', w('fight', 4), 'lm']]),
     H('siri', [['Ну', w('siri', 0)], ['а', w('siri', 1)], ['Siri', w('siri', 2)]], [['пока', w('siri', 3)], ['что', w('siri', 4)], ['ищет', w('siri', 5)]]),   // владелец 04.10: «ну а Siri, пока что…» — так шутка понятна
-    H('race', [['«Пока', w('race', 2)], ['что»', w('race', 3)]], [['гонка', w('race', 5)], ['не', w('race', 6)], ['закончена', w('race', 7)]]),
-    H('q', [['А', w('q', 0)], ['ты', w('q', 1)]], [['на', w('q', 2)], ['какой?', w('q', 3)]]),
-    H('com', [['Пиши', w('com', 0)], ['в', w('com', 1)], ['комменты', w('com', 2)]], [['свой', w('com', 3)], ['ранг', w('com', 4)]]),
+    H('q', [['А', w('q', 0)], ['ты', w('q', 1)], ['на', w('q', 2)], ['какой?', w('q', 3)]], [['Пиши', w('q', 6)], ['свой', w('q', 9)], ['ранг', w('q', 10), 'lm']]),
     H('share', [['Скинь', w('share', 1)], ['другу', w('share', 2)]]),
   ];
 };
@@ -265,75 +208,67 @@ export const buildScenes = (gsap, tl, root, T) => {
     return tl.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration, ease }, t);
   };
   // Подсветка модели: кольцо лайма и плитка чуть крупнее; остальные в блоке гаснут.
-  const hi = (el, t, scale = 1.12) => {
-    tl.to($('u', el), { opacity: 1, duration: 0.18, ease: 'power2.out' }, t);
-    tl.fromTo(el, { scale: 1 }, { scale, duration: 0.35, ease: 'back.out(1.6)' }, t);
+  // Обводка загорается, плитка стоит на месте: рост плитки с пружиной сдвигал рамку и подписи соседей,
+  // и обводка будто сползала (владелец 04.10).
+  const hi = (el, t) => {
+    tl.to($('u', el), { opacity: 1, duration: 0.2, ease: 'power2.out' }, t);
   };
   const lo = (el, t) => {
     tl.to($('u', el), { opacity: 0, duration: 0.2 }, t);
-    tl.to(el, { scale: 1, duration: 0.3, ease: 'power2.out' }, t);
   };
   const dim = (els, t, to = 0.3) => tl.to(els, { opacity: to, duration: 0.35, ease: 'power2.out' }, t);
   const type = (chars, a, b) => chars.forEach((c, i) => tl.set(c, { opacity: 1 }, a + (i * (b - a)) / Math.max(1, chars.length)));
 
-  // Сцены перетекают из размытия, но приходят с разных сторон и с разной скоростью.
+  // Сцены (четвёртая версия): девять больших кадров вместо двадцати. Рейтинг — одна сцена подъёма
+  // с «идём снизу вверх» до вершины: камера едет по колонне, а не сцены сменяют друг друга.
+  // [ид сцены, первая фраза, последняя фраза]
+  const SCENES = [['hook', 'hook', 'tease'], ['post', 'post', 'views'], ['musk', 'musk', 'musk'], ['climb', 'look', 'top'],
+    ['fight', 'fight', 'fight'], ['siri', 'siri', 'siri'], ['q', 'q', 'q'], ['share', 'share', 'share'], ['cta', 'cta', 'link']];
   const ENTER = {
-    post: [{ y: 110 }, 0.6, 'power3.out'], views: [{ scale: 1.16 }, 0.6, 'expo.out'], musk: [{ x: 110 }, 0.55, 'power4.out'],
-    look: [{ scale: 0.92 }, 0.6, 'power3.out'], bottom: [{ y: -90 }, 0.55, 'power3.out'], google: [{ scale: 1.14 }, 0.5, 'expo.out'],
-    gem: [{ x: 110 }, 0.5, 'power4.out'], f: [{ y: 90 }, 0.5, 'power3.out'], e: [{ y: 110 }, 0.55, 'power4.out'],
-    grok: [{ scale: 1.12 }, 0.6, 'expo.out'], a: [{ x: -110 }, 0.5, 'power4.out'], s: [{ scale: 0.9 }, 0.6, 'expo.out'],
-    ss: [{ y: 110 }, 0.6, 'power3.out'], top: [{ y: 110 }, 0.6, 'power3.out'], fight: [{ scale: 1.14 }, 0.45, 'expo.out'],
-    siri: [{ y: 90 }, 0.55, 'power3.out'], race: [{ x: 110 }, 0.5, 'power4.out'], q: [{ scale: 0.92 }, 0.55, 'power3.out'],
-    com: [{ y: 100 }, 0.55, 'power3.out'], share: [{ x: -110 }, 0.5, 'power4.out'], cta: [{ y: 100 }, 0.6, 'power3.out'],
+    post: [{ y: 110 }, 0.42, 'power3.out'], musk: [{ x: 110 }, 0.42, 'power4.out'], climb: [{ scale: 0.92 }, 0.42, 'power3.out'],
+    fight: [{ scale: 1.14 }, 0.42, 'expo.out'], siri: [{ y: 90 }, 0.42, 'power3.out'], q: [{ y: 100 }, 0.42, 'power3.out'],
+    share: [{ x: -110 }, 0.42, 'power4.out'], cta: [{ y: 100 }, 0.42, 'power3.out'],
   };
-  const order = ['hook', 'post', 'musk', 'look', 'google', 'gem', 'f', 'e', 'grok', 'a', 's', 'ss', 'top', 'fight', 'siri', 'race', 'q', 'com', 'share', 'cta'];
-  // Третья версия (владелец 04.10: «слишком быстрый темп смены кадров»): внутри блока сцены сменяются
-  // мягко, без пролёта камеры; пролёт остаётся только на границе блоков (новость → рейтинг → низ → Grok → верх → Siri → финал).
-  const SOFT = new Set(['musk', 'look', 'gem', 'f', 'e', 'a', 'ss', 'top', 'q', 'com', 'cta']);
   const SC = {};
-  order.forEach((id, n) => {
+  SCENES.forEach(([id, a, b], n) => {
     const el = $('#sc-' + id);
     SC[id] = el;
-    // у призыва две фразы (cta и link): сцена держится до конца ролика
-    const end = id === 'cta' ? L : e({ post: 'views', look: 'bottom' }[id] || id);
-    const [from, dur, ease] = ENTER[id] || [{ scale: 0.955 }, 0.5, 'power3.out'];
+    const end = id === 'cta' ? L : e(b);
+    const [from, dur, ease] = ENTER[id] || [{ scale: 0.955 }, 0.42, 'power3.out'];
     const to = { opacity: 1, filter: 'blur(0px)', duration: dur, ease };
     Object.keys(from).forEach((k) => { to[k] = k === 'scale' ? 1 : 0; });
-    if (n > 0 && id === 'post') {
+    if (id === 'post') {
       // тир-лист появляется сразу, без затухания: тёмные буквы рангов в полупрозрачном кадре
       // проверка контраста считает браком. Вход идёт сдвигом и размытием, крючок уходит поверх.
-      tl.set(el, { opacity: 1 }, s(id));
+      tl.set(el, { opacity: 1 }, s(a));
       const { opacity, filter, ...move } = to;
-      tl.fromTo(el, from, move, s(id));
-    } else if (SOFT.has(id)) tl.fromTo(el, { opacity: 0, filter: 'blur(8px)', scale: 0.985 }, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 0.45, ease: 'power2.out' }, s(id));
-    else if (n > 0) tl.fromTo(el, { opacity: 0, filter: 'blur(16px)', ...from }, to, s(id));
-    const next = order[n + 1];
-    if (id !== 'cta') tl.to(el, SOFT.has(next) ? { opacity: 0, scale: 1.02, filter: 'blur(8px)', duration: 0.3, ease: 'power2.in' }
-      : { opacity: 0, scale: 1.16, filter: 'blur(18px)', duration: 0.24, ease: 'power2.in' }, end - (SOFT.has(next) ? 0.22 : 0.18));
+      tl.fromTo(el, from, move, s(a));
+    // Смена внахлёст: новая сцена начинает проявляться за 0,12 с до смены, старая гаснет поверх неё —
+    // между сценами нет мутного полупустого кадра.
+    } else if (n > 0) tl.fromTo(el, { opacity: 0, filter: 'blur(12px)', ...from }, to, s(a) - 0.12);
+    if (id !== 'cta') tl.to(el, { opacity: 0, scale: 1.1, filter: 'blur(14px)', duration: 0.22, ease: 'power2.in' }, end - (id === 'hook' ? 0.3 : 0.06));
   });
 
-  // Свет блоками, как у автора (вторая версия): синий — новость, светлый — нижние ранги и Google,
-  // янтарный — Grok и A, фиолетовый — S, SS, SSS, светлый — Siri, лайм бренда — финал.
-  // Было: почти везде один лайм, и вершина рейтинга выглядела так же, как начало.
+  // Свет: синий — новость и низ рейтинга, янтарный — Grok, фиолетовый — S, SS, SSS, светлый — Siri,
+  // лайм бренда — финал. В подъёме свет меняется по высоте, как этажи.
   const bgL = $('.bg-light'), vig = $('.vignette');
   const gLime = $('.glow-lime'), gBlue = $('.glow-blue'), gMint = $('.glow-mint'), gWarm = $('.glow-warm');
   const gNews = $('.glow-news'), gAmber = $('.glow-amber'), gViolet = $('.glow-violet');
   const swap = (off, on, at) => { tl.to(off, { opacity: 0, duration: 0.3 }, at - 0.1); tl.to(on, { opacity: 1, duration: 0.55 }, at); };
   const toLight = (at) => { tl.to(bgL, { opacity: 1, duration: 0.4, ease: 'power2.out' }, at - 0.1); tl.to(vig, { opacity: 0, duration: 0.3 }, at - 0.1); };
   const toDark = (at) => { tl.to(bgL, { opacity: 0, duration: 0.4, ease: 'power2.out' }, at - 0.1); tl.to(vig, { opacity: 1, duration: 0.5 }, at); };
-  toLight(s('google')); swap(gNews, gBlue, s('google'));
-  swap(gBlue, gMint, s('e'));
-  toDark(s('grok')); swap(gMint, gAmber, s('grok'));
+  swap(gNews, gBlue, s('google'));
+  swap(gBlue, gAmber, s('grok'));
   swap(gAmber, gViolet, s('s'));
   tl.to(gWarm, { opacity: 1, duration: 0.6 }, s('top'));
   tl.to(gWarm, { opacity: 0, duration: 0.4 }, e('fight') - 0.1);
   toLight(s('siri')); swap(gViolet, gMint, s('siri'));
-  toDark(s('race')); swap(gMint, gLime, s('race'));
-  // фон с буквами рангов — на Grok и ранге A, как у автора
+  toDark(s('q')); swap(gMint, gLime, s('q'));
+  // фон с буквами рангов — на Grok, как у автора
   const ghost = $('.ghostbg');
   tl.fromTo(ghost, { opacity: 0, x: 0 }, { opacity: 1, duration: 0.5 }, s('grok'));
-  tl.to(ghost, { x: -160, duration: e('a') - s('grok'), ease: 'none' }, s('grok'));
-  tl.to(ghost, { opacity: 0, duration: 0.3 }, e('a') - 0.2);
+  tl.to(ghost, { x: -160, duration: e('grok') - s('grok'), ease: 'none' }, s('grok'));
+  tl.to(ghost, { opacity: 0, duration: 0.3 }, e('grok') - 0.2);
   // луч сверху: SS и SSS стоят под светом
   const spot = $('.spot');
   tl.fromTo(spot, { opacity: 0 }, { opacity: 1, duration: 0.6 }, s('ss'));
@@ -363,7 +298,18 @@ export const buildScenes = (gsap, tl, root, T) => {
     pop($('.down', sc), w('hook', 6));
     $$('.vs2 .m-grok46, .vs2 .m-grok47', sc).forEach((el) => hi(el, w('hook', 7)));
     dim($$('.vs2 .mt', sc).filter((m) => !m.classList.contains('m-grok46') && !m.classList.contains('m-grok47')), w('hook', 7), 0.35);
-    hi($('.vs1 .mt', sc), w('hook', 9), 1.08);
+    hi($('.vs1 .mt', sc), w('hook', 9));
+
+    // Петля (четвёртая версия): «первое место вовсе не у ChatGPT». Ряд Grok уходит, закрытая вершина
+    // выходит в центр, снизу подъезжает ChatGPT и зачёркивается. Кто первый — узнаем на вершине подъёма.
+    const tz = s('tease');
+    tl.to([$('.hk2', sc), $('.vs2', sc), $('.down', sc)], { opacity: 0, y: 30, filter: 'blur(10px)', duration: 0.3, ease: 'power2.in' }, tz - 0.15);
+    tl.set($('.vs1', sc), { transformOrigin: '50% 50%' }, 0);
+    tl.to($('.vs1', sc), { scale: 2.1, y: 50, duration: 0.6, ease: 'power3.inOut' }, tz - 0.05);
+    inn($('.gptx', sc), w('tease', 7) - 0.15, { y: 90, scale: 0.85 }, 0.45, 'back.out(1.3)');
+    draw($('.gptx .x1', sc), w('tease', 8) + 0.1, 0.18, 'power2.out');
+    draw($('.gptx .x2', sc), w('tease', 8) + 0.25, 0.18, 'power2.out');
+    tl.to($('.gptx .mt', sc), { opacity: 0.45, duration: 0.3 }, w('tease', 8) + 0.3);
   }
 
   // 2. Тир-лист появляется в рамке планшета.
@@ -372,6 +318,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     tl.set($('.tab', sc), { opacity: 1 }, t);
     tl.fromTo($('.tab', sc), { y: 120, scale: 0.9 }, { y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }, t + 0.05);
     tl.fromTo($('.tab', sc), { rotation: -2 }, { rotation: 0, duration: e('post') - t, ease: 'none' }, t);
+    tl.to($('.tab', sc), { scale: 1.05, duration: e('post') - t - 0.6, ease: 'none' }, t + 0.6);   // пост не стоит мёртвым кадром
     // на «семи миллионах» камера наезжает на настоящую строку «7,2 млн Просмотры» под постом и
     // обводит её: подлинность видна в самом снимке, а строка поднимается выше полосы подписи площадки
     tl.set($('.tab', sc), { transformOrigin: '50% 0%' }, 0);
@@ -396,119 +343,106 @@ export const buildScenes = (gsap, tl, root, T) => {
     inn($('.tr2', sc), w('musk', 3) - 0.05, { y: 30 }, 0.4);
   }
 
-  // 5. Весь рейтинг: камера идёт по списку сверху вниз.
+  // 5. Подъём по рейтингу: одна сцена с «идём снизу вверх» до вершины. Камера (обёртка .cam, точка
+  // отсчёта в левом верхнем углу) на каждой фразе едет к своему рангу и стоит, пока фраза звучит;
+  // на слове загорается обводка. Ранги вне кадра камеры гаснут. Места рядов берутся из вёрстки
+  // (offsetTop/offsetLeft не зависят от преобразований), поэтому колонну можно править в разметке.
   {
-    const sc = SC.look, t = s('look');
-    inn($('.clipw', sc), t + 0.05, { scale: 0.94 }, 0.6);
-    tl.fromTo($('.pan', sc), { y: 0 }, { y: -230, duration: e('bottom') - t - 0.3, ease: 'power1.inOut' }, t + 0.2);
-  }
+    const sc = SC.climb, cam = $('.cam', sc), col = $('.colw', sc);
+    const at = (el) => { let x = 0, y = 0; for (let n = el; n && n !== col; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; } return { x, y, w: el.offsetWidth, h: el.offsetHeight }; };
+    const box = (els) => { const r = els.map(at); const x0 = Math.min(...r.map((b) => b.x)), y0 = Math.min(...r.map((b) => b.y));
+      return { x0, y0, x1: Math.max(...r.map((b) => b.x + b.w)), y1: Math.max(...r.map((b) => b.y + b.h)) }; };
+    const R = (n) => $('.tr.' + cls(n), sc);
+    const rows = $$('.col > .tr', sc);
+    // кадр камеры: середина ранга встаёт в точку (540, CY), масштаб — сколько влезает, но не больше cap.
+    // CY = 930: при 860 нижний ряд (Google) оставлял под собой пустую половину кадра.
+    const CY = 930;
+    const shot = (b, cap, hMax = 760) => { const k = Math.min(cap, 980 / (b.x1 - b.x0), hMax / (b.y1 - b.y0));
+      return { scale: k, x: 540 - k * (b.x0 + b.x1) / 2, y: CY - k * (b.y0 + b.y1) / 2 }; };
+    const go = (b, cap, t, d = 0.7) => tl.to(cam, { ...shot(b, cap), duration: d, ease: 'power3.inOut' }, t);
+    const focus = (on, t) => rows.forEach((r) => tl.to(r, { opacity: on.includes(r) ? 1 : 0.22, duration: 0.45, ease: 'power2.out' }, t));
+    const lead = 0.12;   // камера трогается чуть раньше фразы: к первому ударному слову она уже на месте
 
-  // 6. Отдельный ранг: лестница рангов, под ней пунктир и отдельно Google.
-  {
-    const sc = SC.look, t = s('bottom');
-    tl.fromTo($('.gring', sc), { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out' }, w('bottom', 3) - 0.1);
-    tl.to($('.gring', sc), { boxShadow: '0 0 60px 10px rgba(142,201,242,.6)', duration: 0.4, yoyo: true, repeat: 1 }, w('bottom', 4));
-    void t;
-  }
+    // обзор: вся колонна, вершина закрыта; камера медленно поднимается снизу вверх
+    const all = box(rows);
+    const o = shot(all, 1, 1020);   // обзор крупнее: колонна на всю высоту от заголовка до 1450
+    tl.set(cam, { transformOrigin: '0 0', ...o }, 0);
+    tl.fromTo(cam, { y: o.y + 60 }, { y: o.y - 30, duration: e('look') - s('look') + 0.1, ease: 'sine.inOut' }, s('look') - 0.12);
+    hi($('.t-sss .mys', sc), w('look', 2) - 0.05);
 
-  // 7. Ранг Google крупно.
-  {
-    const sc = SC.google, t = s('google');
-    inn($('.gtile', sc), t + 0.05, { scale: 0.5 }, 0.55, 'back.out(1.3)');
-    tl.fromTo($('.ring2', sc), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1.25, duration: 0.9, ease: 'power2.out' }, w('google', 3) - 0.05);
-    tl.to($('.ring2', sc), { opacity: 0, duration: 0.5 }, w('google', 3) + 0.85);
-  }
+    // Google: камера ныряет на дно
+    const gRow = R('Google');
+    go(box([$('.lb', gRow), $('.fslot', gRow)]), 1.6, s('google') - lead, 0.8);
+    focus([gRow], s('google') - lead);
+    lo($('.t-sss .mys', sc), s('google'));
+    tl.to($('.lb', gRow), { scale: 1.12, duration: 0.25, ease: 'power2.out', yoyo: true, repeat: 1 }, w('google', 9) - 0.05);
+    tl.fromTo($('.lb', gRow), { boxShadow: '0 0 0 0 rgba(142,201,242,0)' }, { boxShadow: '0 0 40px 8px rgba(142,201,242,.7)', duration: 0.35 }, w('google', 9) - 0.05);
+    // все Gemini — обводки по очереди; пустое место F проявляется и зачёркивается
+    const gems = $$('.mt', gRow);
+    gems.forEach((m, k) => hi(m, w('gem', 2) - 0.1 + k * 0.1));
+    tl.fromTo($('.fslot', gRow), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.4)' }, w('gem', 6) - 0.1);
+    draw($('.fstrike', gRow), w('gem', 7), 0.25, 'power2.out');
 
-  // 8. Там все Gemini: четыре плитки встают по одной.
-  {
-    const sc = SC.gem, t = s('gem');
-    inn($('.glb', sc), t + 0.05, { x: 120, scale: 1.3 }, 0.55);
-    $$('.grid4 .mt', sc).forEach((el, k) => pop(el, w('gem', 2) - 0.15 + k * 0.12));
-  }
+    // Grok: камера отъезжает на A–C, Grok загорается трижды, линия ведёт от C до A
+    const abc = [R('A'), R('B'), R('C')];
+    go(box(abc), 1.1, s('grok') - lead, 0.8);
+    focus(abc, s('grok') - lead);
+    gems.forEach((m) => lo(m, s('grok')));
+    const g45 = $('.t-c .m-grok45', sc), g46 = $('.t-a .m-grok46', sc), g47 = $('.t-a .m-grok47', sc);
+    dim($$('.mt', R('A')).concat($$('.mt', R('B')), $$('.mt', R('C'))).filter((m) => ![g45, g46, g47].includes(m)), w('grok', 0), 0.3);
+    [g45, g46, g47].forEach((m) => hi(m, w('grok', 0) - 0.05));
+    const c = (m) => { const b = at($('.ic', m)); return [b.x + b.w / 2, b.y + b.h / 2]; };
+    const [p0, p1, p2] = [c(g45), c(g47), c(g46)];
+    const path = $('.gpath', sc);
+    path.setAttribute('d', `M${p0[0]} ${p0[1]} C ${p0[0] + 120} ${p0[1] - 120}, ${p1[0] - 60} ${p1[1] + 140}, ${p1[0]} ${p1[1]} S ${p2[0] + 80} ${p2[1] + 60}, ${p2[0]} ${p2[1]}`);
+    tl.set(path, { opacity: 1 }, 0);
+    draw(path, w('grok', 5), Math.max(0.5, w('grok', 8) - w('grok', 5) + 0.15), 'power1.inOut');
+    tl.to(path, { opacity: 0, duration: 0.25 }, e('grok') - 0.2);
 
-  // 9. Букву F пожалели: ряд Google наверху, ниже пустая карточка, F зачёркивается.
-  {
-    const sc = SC.f, t = s('f');
-    inn($('.grow', sc), t + 0.05, { y: -60 }, 0.5);
-    inn($('.fcard', sc), t + 0.25, { y: 60, scale: 0.94 }, 0.55);
-    tl.fromTo($('.fl', sc), { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'expo.out' }, w('f', 3) - 0.08);
-    draw($('.strike', sc), w('f', 4), 0.4, 'power3.out');
-  }
+    // S: камера наверх, лучи; Fable и GPT-6 Sol на своих словах
+    const sRow = R('S');
+    go(box([sRow.firstElementChild, ...$$('.mt', sRow)]), 2.15, s('s') - lead);
+    focus([sRow], s('s') - lead);
+    [g45, g46, g47].forEach((m) => lo(m, s('s')));
+    tl.fromTo($('.rays', sc), { opacity: 0, rotation: -20, scale: 0.8 }, { opacity: 1, rotation: 0, scale: 1, duration: 0.8, ease: 'power3.out' }, s('s'));
+    tl.to($('.rays', sc), { rotation: 30, duration: e('top') - s('s'), ease: 'none' }, s('s'));
+    const [fb, sol] = $$('.mt', sRow);
+    hi(fb, w('s', 4) - 0.05);
+    hi(sol, w('s', 8) - 0.05);
 
-  // 10. Чуть выше: ранг E крупно, кольцо идёт по Haiku, Mistral и Nemotron на их словах.
-  {
-    const sc = SC.e, t = s('e');
-    inn($('.ed', sc), t + 0.05, { y: -50 }, 0.5);
-    inn($('.ee', sc), t + 0.12, { scale: 0.9 }, 0.55);
-    inn($('.eg', sc), t + 0.05, { y: 50 }, 0.5);
-    const ms = $$('.ee .mt', sc);
-    [2, 3, 5].forEach((wi, k) => { hi(ms[k], w('e', wi) - 0.05); if (k < 2) lo(ms[k], w('e', [3, 5][k]) - 0.05); });
-  }
+    // SS: ещё выше, под лучом
+    const ssRow = R('SS');
+    go(box([ssRow.firstElementChild, $('.mt', ssRow)]), 2.35, s('ss') - lead);
+    focus([ssRow], s('ss') - lead);
+    [fb, sol].forEach((m) => lo(m, s('ss')));
+    hi($('.mt', ssRow), w('ss', 2) - 0.05);
 
-  // 11. Grok размазан: блок A–C в наклоне, Grok загорается в C и дважды в A, линия соединяет их.
-  {
-    const sc = SC.grok, t = s('grok');
-    tl.set($('.abc', sc), { transformPerspective: 1400, transformOrigin: '50% 100%' }, 0);
-    inn($('.abc', sc), t + 0.05, { y: 80, rotationX: 18 }, 0.7);
-    const g45 = $('.m-grok45', sc), g46 = $('.m-grok46', sc), g47 = $('.m-grok47', sc);
-    dim($$('.abc .mt', sc).filter((m) => m !== g45 && m !== g46 && m !== g47), w('grok', 3), 0.32);
-    hi(g45, w('grok', 3));
-    hi(g47, w('grok', 7) - 0.2);
-    hi(g46, w('grok', 8) - 0.05);
-    draw($('.gpath', sc), w('grok', 5), w('grok', 8) - w('grok', 5) + 0.2, 'power1.inOut');
-    tl.fromTo($('.abc', sc), { x: 0 }, { x: -12, duration: e('grok') - t, ease: 'none' }, t);
-  }
-
-  // 12. Ранг A крупно: DeepSeek, Kimi, потом прошлые Claude.
-  {
-    const sc = SC.a, t = s('a');
-    inn($('.arow', sc), t + 0.05, { x: -80 }, 0.55);
-    const all = $$('.arow .mt', sc);
-    const ds = $('.m-deepseekv41flash', sc), km = $('.m-kimik3', sc), o5 = $('.m-opus5', sc), f5 = $('.m-fable5', sc);
-    dim(all.filter((m) => ![ds, km, o5, f5].includes(m)), w('a', 2), 0.3);
-    dim([o5, f5], w('a', 2), 0.3);
-    hi(ds, w('a', 3) - 0.05);
-    hi(km, w('a', 4) - 0.05);
-    tl.to([o5, f5], { opacity: 1, duration: 0.3 }, w('a', 6) - 0.05);
-    hi(o5, w('a', 7) - 0.1);
-    hi(f5, w('a', 7) - 0.1);
-  }
-
-  // 13. Ранг S: лучи, Fable 5.1 в центре, на «GPT-6 Sol» Fable уходит влево, Sol встаёт справа.
-  {
-    const sc = SC.s, t = s('s'), go = w('s', 6) - 0.1;
-    tl.fromTo($('.rays', sc), { opacity: 0, rotation: -20, scale: 0.8 }, { opacity: 1, rotation: 0, scale: 1, duration: 0.8, ease: 'power3.out' }, t);
-    tl.to($('.rays', sc), { rotation: 18, duration: e('s') - t - 0.8, ease: 'none' }, t + 0.8);
-    pop($('.sl', sc), w('s', 1) - 0.1);
-    inn($('.fb', sc), w('s', 3) - 0.15, { scale: 0.6, y: 20 }, 0.5, 'back.out(1.3)');
-    tl.to($('.fb', sc), { x: -150, duration: 0.5, ease: 'power3.inOut' }, go);
-    tl.fromTo($('.sol', sc), { opacity: 0, x: 320, scale: 0.8 }, { opacity: 1, x: 150, scale: 1, duration: 0.5, ease: 'power3.out' }, go + 0.1);
-  }
-
-  // 14. SS: подиум под лучом, GPT-6 Astra наверху, ниже бледный ранг S.
-  {
-    const sc = SC.ss, t = s('ss');
-    $$('.pod', sc).forEach((el, k) => inn(el, t + 0.1 + k * 0.1, { y: 40 }, 0.5));
-    inn($('.sbelow', sc), t + 0.15, { y: 40 }, 0.5);
-    inn($('.ssr', sc), w('ss', 2) - 0.25, { y: -80, scale: 0.85 }, 0.6, 'power4.out');
-    hi($('.ssr .mt', sc), w('ss', 4) - 0.05, 1.06);
-  }
-
-  // 15. SSS: один Claude Opus 5.5 на вершине, искры, тёплое пятно под ним.
-  {
-    const sc = SC.top, t = s('top');
-    inn($('.ell', sc), t + 0.1, { scaleX: 0.4 }, 0.6);
-    inn($('.sssr', sc), w('top', 4) - 0.2, { y: -120, scale: 0.8 }, 0.7, 'power4.out');
-    hi($('.sssr .mt', sc), w('top', 6) - 0.05, 1.08);
-    pop($('.cpill', sc), w('top', 6) - 0.1);
+    // SSS: вершина. «?» переворачивается — Claude Opus 5.5, искры, подпись
+    const top = R('SSS'), mys = $('.mys', top), opus = $('.opus', top);
+    go(box([top.firstElementChild, $('.flip', top)]), 2.45, s('top') - lead);
+    focus([top], s('top') - lead);
+    lo($('.mt', ssRow), s('top'));
+    hi(mys, w('top', 3) - 0.05);
+    const flip = w('top', 6) - 0.12;
+    tl.set([mys, opus], { transformPerspective: 900 }, 0);
+    tl.set(opus, { opacity: 0 }, 0);
+    tl.to(mys, { rotationY: 90, duration: 0.16, ease: 'power2.in' }, flip);
+    tl.set(mys, { opacity: 0 }, flip + 0.16);
+    tl.fromTo(opus, { opacity: 1, rotationY: -90 }, { rotationY: 0, duration: 0.24, ease: 'back.out(1.6)', immediateRender: false }, flip + 0.16);
+    hi(opus, flip + 0.35);
+    tl.to(rows.filter((r) => r !== top), { opacity: 0, duration: 0.3, ease: 'power2.out' }, flip);
+    pop($('.cpill', sc), flip + 0.3);
     $$('.spk', sc).forEach((el, k) => {
-      const at = w('top', 6) + rnd(k + 3) * 1.2;
-      tl.fromTo(el, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' }, at);
-      tl.to(el, { opacity: 0, scale: 0.4, duration: 0.5, ease: 'power2.in' }, at + 0.3);
+      const a = flip + 0.2 + rnd(k + 3) * 1.1;
+      tl.fromTo(el, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out' }, a);
+      tl.to(el, { opacity: 0, scale: 0.4, duration: 0.5, ease: 'power2.in' }, a + 0.3);
     });
+    // пока звучит «Клод Опус пять и пять», камера медленно подаётся вперёд
+    const k = shot(box([top.firstElementChild, $('.flip', top)]), 2.45);
+    tl.to(cam, { scale: k.scale * 1.06, x: 540 - (540 - k.x) * 1.06, y: CY - (CY - k.y) * 1.06, duration: e('top') - flip - 0.2, ease: 'sine.out' }, flip + 0.2);
   }
 
-  // 16. Бьются за SSS: четыре плитки сходятся к центру и отскакивают, между ними искры.
+  // 6. Бьются за SSS: четыре плитки сходятся к центру и отскакивают, между ними искры.
   {
     const sc = SC.fight, t = s('fight');
     const dir = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
@@ -522,7 +456,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     });
   }
 
-  // 17. Siri: карточка, вопрос про погоду, колесо и «ищу ответ в интернете», полоски поиска мерцают.
+  // 7. Siri: карточка, вопрос про погоду, колесо и «ищу ответ в интернете», полоски поиска мерцают.
   {
     const sc = SC.siri, t = s('siri'), end = e('siri');
     inn($('.siri', sc), t + 0.05, { y: 60, scale: 0.94 }, 0.55);
@@ -532,47 +466,23 @@ export const buildScenes = (gsap, tl, root, T) => {
     $$('.skel i', sc).forEach((el, k) => tl.fromTo(el, { x: -300 }, { x: 700, duration: 1.1, ease: 'power1.inOut', repeat: Math.max(0, Math.floor((end - t) / 1.1) - 1) }, t + 0.3 + k * 0.15));
   }
 
-  // 18. Гонка: дорожки заполняются, Claude впереди, на слове «гонка» Grok догоняет.
+  // 8. Вопрос и комментарий: ранги встают, на «свой ранг» курсор жмёт SSS, текст набирается, «Отправить».
   {
-    const sc = SC.race, t = s('race'), go = w('race', 5) - 0.1;
-    pop($('.fnp', sc), t + 0.15);
-    $$('.lane2', sc).forEach((el, k) => {
-      inn(el, t + 0.1 + k * 0.07, { x: -60 }, 0.45);
-      const p = [0.93, 0.85, 0.58, 0.42][k];
-      tl.fromTo($('.fill2', el), { scaleX: 0.05 }, { scaleX: p, duration: go - t - 0.3, ease: 'power2.out' }, t + 0.3);
-      tl.fromTo($('.knob2', el), { x: 0 }, { x: (740 - 92) * p, duration: go - t - 0.3, ease: 'power2.out' }, t + 0.3);
-    });
-    const g = $('.ln2', sc);
-    tl.to($('.fill2', g), { scaleX: 0.8, duration: 0.8, ease: 'power3.inOut' }, go);
-    tl.to($('.knob2', g), { x: (740 - 92) * 0.8, duration: 0.8, ease: 'power3.inOut' }, go);
-    tl.to($('.knob2', g), { boxShadow: '0 0 40px 8px rgba(199,226,75,.6)', duration: 0.3 }, go + 0.2);
-  }
-
-  // 19. На какой сидишь: плитки моделей встают сеткой, под ними вопрос.
-  {
-    const sc = SC.q, t = s('q');
-    $$('.qt', sc).forEach((el, k) => pop(el, t + 0.1 + k * 0.07));
-    $$('.qt', sc).forEach((el, k) => tl.to(el, { y: -10, duration: 0.6 + (k % 3) * 0.15, ease: 'sine.inOut', yoyo: true, repeat: 1 }, t + 0.8 + k * 0.05));
-    inn($('.qmark', sc), w('q', 3) - 0.1, { scale: 1.4, filter: 'blur(14px)' }, 0.4, 'expo.out');
-  }
-
-  // 20. Комментарий: ранги встают, курсор жмёт SSS, текст набирается, «Отправить».
-  {
-    const sc = SC.com, t = s('com'), end = e('com');
+    const sc = SC.q, t = s('q'), end = e('q');
     inn($('.cbox', sc), t + 0.05, { y: 50, scale: 0.95 }, 0.5);
     $$('.rkc', sc).forEach((el, k) => pop(el, t + 0.3 + k * 0.04));
     inn($('.sendb', sc), t + 0.5, { y: 20 }, 0.35);
-    const cur = $('.cur', sc), tap = w('com', 3) - 0.1;
+    const cur = $('.cur', sc), tap = w('q', 9) - 0.1;
     tl.fromTo(cur, { opacity: 0, x: 760, y: 1200 }, { opacity: 1, x: 296, y: 768, duration: tap - t - 0.2, ease: 'power2.inOut' }, t + 0.2);
     tl.to(cur, { scale: 0.75, duration: 0.1, yoyo: true, repeat: 1 }, tap);
     tl.to($('.rkc.on', sc), { backgroundColor: '#C7E24B', color: '#12130F', scale: 1.1, duration: 0.2 }, tap + 0.05);
-    type($$('.ch', sc), tap + 0.15, w('com', 4) + 0.3);
+    type($$('.ch', sc), tap + 0.15, w('q', 10) + 0.35);
     tl.to(cur, { x: 540, y: 976, duration: 0.35, ease: 'power2.inOut' }, end - 0.75);
     tl.to(cur, { scale: 0.75, duration: 0.1, yoyo: true, repeat: 1 }, end - 0.4);
     tl.to($('.sendb', sc), { scale: 0.94, duration: 0.1, yoyo: true, repeat: 1 }, end - 0.4);
   }
 
-  // 21. Скинь другу: выбрать друга, набрать «Siri, какая погода?», отправить.
+  // 9. Скинь другу: выбрать друга, набрать «Siri, какая погода?», отправить.
   {
     const sc = SC.share, t = s('share'), end = e('share');
     inn($('.sbox', sc), t + 0.05, { x: -60 }, 0.5);
@@ -589,7 +499,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     tl.to($('.sendb', sc), { scale: 0.94, duration: 0.1, yoyo: true, repeat: 1 }, end - 0.42);
   }
 
-  // 22. Призыв: весь рейтинг одной картинкой, потом знак Telegram, кот показывает на него. В конце «сохрани».
+  // 10. Призыв: весь рейтинг одной картинкой, потом знак Telegram, кот показывает на него. В конце «сохрани».
   {
     const sc = SC.cta, tg = w('cta', 6) - 0.25;
     inn($('.mini2', sc), s('cta') + 0.1, { y: 60, scale: 0.9 }, 0.55);
@@ -637,11 +547,11 @@ export const buildOverlay = (gsap, tl, root, T) => {
   const старт = s('post');
   [...prog.querySelectorAll('i')].forEach((el, i) =>
     tl.fromTo(el, { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: 'expo.out' }, старт + 0.1 + i * 0.05));
-  const части = [старт + 0.3, s('musk'), s('bottom'), s('e'), s('s'), s('fight'), s('race'), s('q'), s('cta'), T.length - 0.4];
+  const части = [старт + 0.3, s('musk'), s('look'), s('grok'), s('s'), s('top'), s('fight'), s('q'), s('cta'), T.length - 0.4];
   [...prog.querySelectorAll('b')].forEach((b, i) =>
     tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: части[i + 1] - части[i], ease: 'none' }, части[i]));
   // Цвет полосы следует за светом сцены.
-  [['post', 0], ['google', 1], ['grok', 0], ['siri', 1], ['race', 0]].forEach(([id, light]) =>
+  [['post', 0], ['siri', 1], ['q', 0]].forEach(([id, light]) =>
     tl.set(prog, { '--pf': light ? '#56690C' : '#C7E24B', '--pt': light ? 'rgba(18,19,15,.16)' : 'rgba(241,242,234,.2)' }, s(id)));
 
   // Бегунка рангов внизу больше нет (04.10): он стоял неподвижной капсулой посреди кадра с 12-й секунды,

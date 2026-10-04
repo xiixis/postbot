@@ -59,7 +59,10 @@
 .r10 .mt .ic.tx { font-family: var(--disp); font-weight: 800; font-size: 30px; letter-spacing: -0.03em; color: #F1F2EA; }
 .r10 .mt b { display: block; margin-top: 6px; font-size: 15.5px; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; text-align: center;
   color: #F1F2EA; white-space: nowrap; }
-.r10 .mt u { position: absolute; left: -7px; top: -7px; width: 106px; height: 106px; border-radius: 26px; border: 5px solid var(--lime); opacity: 0;
+/* Рамка обводки стоит по центру значка: значок 92 px лежит посередине плитки 104 px, а рамка раньше
+   отсчитывалась от левого края плитки (−7 px) и сидела левее на 6 px, в крупных рядах — на 12–16 px
+   (владелец 04.10: «обводка сползает»). */
+.r10 .mt u { position: absolute; left: calc(50% - 53px); top: -7px; width: 106px; height: 106px; border-radius: 26px; border: 5px solid var(--lime); opacity: 0;
   box-shadow: 0 0 30px rgba(199, 226, 75, 0.65), inset 0 0 16px rgba(199, 226, 75, 0.35); }
 .r10 .tl { display: inline-flex; flex-direction: column; gap: 8px; }
 .r10 .tr { display: flex; background: #0B0C08; border-radius: 18px; overflow: hidden; border: 2px solid rgba(241, 242, 234, 0.1); }
@@ -279,3 +282,15 @@
   background: rgba(199, 226, 75, 0.18); opacity: 0; }
 .r10 .vfade { position: absolute; left: 0; top: 0; width: 1080px; height: 760px; pointer-events: none; opacity: 0;
   background: linear-gradient(#0A0B08 0%, #0A0B08 52%, rgba(10,11,8,0) 100%); }
+
+/* Четвёртая версия: закрытая вершина, подъём камеры по колонне рейтинга, пустое место буквы F. */
+.r10 .mt.mys .ic { font-size: 56px; color: var(--lime); background: #1A1F0C; border-color: rgba(199, 226, 75, 0.45); }
+.r10 .flip { position: relative; width: 104px; height: 140px; flex: none; }
+.r10 .flip .mys { position: absolute; left: 0; top: 0; }
+.r10 .fslot { position: relative; width: 104px; height: 140px; flex: none; opacity: 0; }
+.r10 .fslot span { display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto; border: 3px dashed rgba(241, 242, 234, 0.4);
+  border-radius: 20px; font-family: var(--disp); font-weight: 800; font-size: 44px; color: rgba(241, 242, 234, 0.7); }
+.r10 .fslot svg { position: absolute; left: 0; top: 0; width: 104px; height: 140px; overflow: visible; }
+.r10 .colw .tr { background: #0B0C08; }
+.r10 .cfade { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(#0A0B08 0, #0A0B08 380px, rgba(10, 11, 8, 0) 500px, rgba(10, 11, 8, 0) 1360px, #0A0B08 1560px); }
