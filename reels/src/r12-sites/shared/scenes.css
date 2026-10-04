@@ -490,7 +490,96 @@
 
 /* Длинные первые строки заголовка («Эффекты и анимации», «Можно в коммерцию») шли впритык к краям. */
 .r10 .hl .l1 { font-size: 58px; }
-.r10 .stat span { display: inline-flex; }
 
 /* Строки крючка до своего слова светлее, чем в r11: первый кадр работает обложкой. */
 .r10 .kt > div { opacity: 0.62; }
+
+/* ── r12, вторая версия ───────────────────────────────────────────────────────────────────────── */
+/* Свет по сайтам: у автора у каждого сайта свой цвет, это держит ритм. Тёмные блоки — крупное пятно,
+   светлые — мягкое размытое. */
+.r10 .glow-amber i { background: radial-gradient(closest-side, rgba(242, 160, 60, 0.6), rgba(170, 95, 20, 0.3) 46%, rgba(170, 95, 20, 0) 72%); }
+.r10 .glow-violet i { background: radial-gradient(closest-side, rgba(140, 90, 255, 0.55), rgba(80, 40, 170, 0.3) 46%, rgba(80, 40, 170, 0) 72%); }
+.r10 .glow-gold i { background: radial-gradient(closest-side, rgba(255, 190, 80, 0.6), rgba(150, 90, 20, 0.32) 46%, rgba(150, 90, 20, 0) 72%); }
+.r10 .glow-blue i, .r10 .glow-mint i, .r10 .glow-lilac i { left: -470px; top: -470px; width: 940px; height: 940px; filter: blur(18px); }
+.r10 .glow-blue i { background: radial-gradient(closest-side, rgba(90, 150, 255, 0.6), rgba(90, 150, 255, 0.28) 52%, rgba(90, 150, 255, 0) 74%); }
+.r10 .glow-mint i { background: radial-gradient(closest-side, rgba(60, 220, 180, 0.55), rgba(60, 220, 180, 0.25) 52%, rgba(60, 220, 180, 0) 74%); }
+.r10 .glow-lilac i { background: radial-gradient(closest-side, rgba(170, 130, 255, 0.55), rgba(170, 130, 255, 0.25) 52%, rgba(170, 130, 255, 0) 74%); }
+
+/* Заголовок — он же субтитры: фраза кусками. Первое слово ролика крупнее и стоит с нулевого кадра. */
+.r10 .hl .l2 { font-size: 64px; }
+.r10 .hl.first .l1 { font-size: 84px; }
+.r10 .hl.first .l1 span:first-child { opacity: 1; }
+.r10 .hl.nm .l1 { display: flex; justify-content: center; align-items: center; gap: 22px; font-size: 76px; }
+.r10 .nmi { width: 88px; height: 88px; border-radius: 26px; background: #FFFFFF; display: grid !important; place-items: center; margin: 0 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25); }
+.r10 .nmi img { width: 58px; height: 58px; object-fit: contain; border-radius: 12px; }
+
+/* Крючок: одна форма — монтажный стол становится телефоном. */
+/* Блок охватывает и стол (860×470), и телефон (320×640); видимую форму задаёт маска clip-path. */
+.r10 .morph { left: 110px; top: 520px; width: 860px; height: 640px; clip-path: inset(80px 0px 90px 0px round 40px);
+  background: rgba(241, 242, 234, 0.08); }
+.r10 #ed1 { left: 0; top: 80px; width: 860px; height: 470px; padding: 26px 30px; border: none; background: none; }
+.r10 #ed1 .eui { position: relative; height: 100%; }
+.r10 #ed1 .trk { height: 104px; }
+.r10 #ed1 .trk.v2 { height: 80px; }
+.r10 .morph .scr { left: 270px; top: 0; width: 320px; height: 640px; opacity: 0; background: #0A0B08; }
+.r10 .tz { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.r10 .morph .empty { left: 284px; top: 14px; width: 292px; height: 612px; border-radius: 42px; border: 3px dashed rgba(199, 226, 75, 0.5); opacity: 0; }
+.r10 .kbd { top: 1180px; }
+.r10 .cpill { top: 452px; }
+.r10 .tray { left: 140px; top: 1200px; width: 800px; height: 170px; border-radius: 40px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+.r10 .slot2 { width: 120px; height: 120px; border-radius: 30px; border: 3px dashed rgba(199, 226, 75, 0.45); display: grid; place-items: center; font-size: 58px; color: var(--lime); }
+
+/* Барабан цифр. */
+.r10 .drum { display: inline-flex; align-items: flex-start; line-height: 1; }
+.r10 .dcol { display: inline-block; height: 1em; overflow: hidden; }
+.r10 .dstrip { display: block; }
+.r10 .dstrip i { display: block; height: 1em; line-height: 1em; font-style: normal; }
+.r10 .dsep { display: inline-block; width: 0.28em; }
+.r10 .fbig { font-size: 260px; }
+.r10 .pbig { font-size: 200px; display: flex; justify-content: center; }
+.r10 .pbig .plus { color: #C9A8FF; }
+
+/* Пять: окно браузера со вкладками сайтов. */
+.r10 .brw .tabs { display: flex; gap: 8px; padding: 12px 12px 0; background: #DCDDD1; }
+.r10 .tab { flex: 1; height: 52px; border-radius: 14px 14px 0 0; background: rgba(255, 255, 255, 0.55); display: flex; align-items: center; gap: 8px;
+  padding: 0 10px; font-size: 18px; font-weight: 600; letter-spacing: 0; color: #3A3E2D; white-space: nowrap; overflow: hidden; }
+.r10 .tab img { width: 26px; height: 26px; object-fit: contain; border-radius: 6px; flex: none; }
+.r10 .brwimg { height: 330px; }
+
+/* Живое видео в плитках, карточке, кадре. */
+.r10 .vd { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+.r10 .vt { position: absolute; border-radius: 30px; overflow: hidden; filter: blur(2px); box-shadow: 0 30px 70px rgba(30, 60, 140, 0.25); }
+.r10 .vt img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .phone .scroll { width: 100%; height: auto; object-fit: initial; }
+.r10 .mcard { border-radius: 44px; overflow: hidden; box-shadow: 0 50px 110px rgba(30, 60, 140, 0.3); background: #0A0B08; }
+.r10 .mbar { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; display: flex; align-items: center; gap: 22px; padding: 0 30px;
+  background: linear-gradient(rgba(10, 11, 8, 0), rgba(10, 11, 8, 0.75)); }
+.r10 .mbar .play { background: #3B82F6; flex: none; }
+.r10 .wave.mini { position: relative; left: 0; top: 0; width: 600px; height: 70px; gap: 5px; }
+.r10 .wave.mini i { background: rgba(255, 255, 255, 0.7); width: 7px; }
+.r10 .wave.mini b { background: #FFFFFF; top: -6px; height: 82px; }
+.r10 .wave.blue i { background: rgba(59, 130, 246, 0.5); }
+.r10 .wave.blue b { background: #3B82F6; }
+.r10 .stat em { font-style: normal; }
+.r10 .stat .ic { color: #3B82F6; }
+.r10 .ft { position: relative; color: #3B82F6; }
+.r10 .ft u { position: absolute; right: -6px; top: -6px; width: 26px; height: 26px; border-radius: 50%; background: #3B82F6; opacity: 0; box-shadow: 0 0 0 4px #F1F2EA; }
+.r10 .trow .ti { color: #3B82F6; }
+.r10 .lscr .lsimg { height: 116%; }
+.r10 .photo .split { opacity: 1; inset: 0; }
+.r10 .photo .vd { width: 860px; height: 574px; }
+.r10 .gc u { border-color: #F2B24A; }
+.r10 .lname s { color: #F2B24A; }
+.r10 .lgrid { padding: 34px; }
+.r10 .lt { color: #0F8F6F; }
+.r10 .comm .ic { color: #14B88F; }
+.r10 .search .ic, .r10 .tag2 .ic { color: #7B52E0; }
+.r10 .wcat { color: #C9A8FF; }
+.r10 .frame .vd { object-position: 50% 50%; }
+.r10 .ftitle { font-size: 84px; }
+.r10 .sline { height: 574px; }
+
+/* Полоса цветов под ноутбуком FreshLUTs крупнее: в первой версии она читалась точками. */
+.r10 #sc-c2 .swatches { top: 1180px; gap: 16px; }
+.r10 #sc-c2 .sw { width: 150px; height: 84px; border-radius: 20px; }

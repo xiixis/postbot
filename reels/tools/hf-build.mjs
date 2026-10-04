@@ -43,6 +43,10 @@ if (!bare) fs.copyFileSync(sound, path.join(out, 'assets', 'sound.m4a'));
 fs.copyFileSync(path.join(root, 'node_modules', 'gsap', 'dist', 'gsap.min.js'), path.join(out, 'assets', 'gsap.min.js'));
 
 const D = T.length.toFixed(2);
+// У <video> время задаётся на самом теге, и HyperFrames запрещает видео внутри размеченного временем
+// предка (lint: video_nested_in_timed_element; кадры берутся не те, клип пропадает посреди окна).
+// Поэтому, если в сценах есть видео, слой сцен остаётся простым блоком без времени.
+const stageTimed = !/<video[\s>]/.test(mod.markup('assets', T));
 const html = `<!doctype html>
 <html lang="ru" data-resolution="portrait">
   <head>
@@ -59,8 +63,8 @@ ${css}
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="${D}" data-width="1080" data-height="1920" data-fps="${T.fps}">
-      <div id="stage" class="r10 clip" data-start="0" data-duration="${D}" data-track-index="0">
-${mod.markup('assets')}
+      <div id="stage" class="r10${stageTimed ? ' clip" data-start="0" data-duration="' + D + '" data-track-index="0"' : '"'}>
+${mod.markup('assets', T)}
 ${bare ? '' : `<div id="overlay">${mod.overlayMarkup('assets', T)}</div>`}
       </div>
 ${bare ? '' : `      <audio id="sound" data-start="0" data-duration="${D}" data-track-index="1" data-volume="1" src="assets/sound.m4a"></audio>`}
