@@ -1,0 +1,496 @@
+/* Вид ролика «5 бесплатных сайтов» (r12, HyperFrames). Основа — стили r11 (общие классы: свет, стекло, телефон,
+   плёнка, заголовок, полоса, субтитры), новое для r12 — в конце файла. Кадр 1080×1920, цвета наши. */
+.r10 { position: absolute; inset: 0; overflow: hidden; background: #0A0B08; color: #F1F2EA;
+  font-family: 'Onest', system-ui, sans-serif; font-weight: 600; letter-spacing: -0.02em;
+  --ink: #0A0B08; --gr: #12130F; --cream: #F1F2EA; --lime: #C7E24B; --olive: #56690C; --claude: #D97757;
+  --dim: rgba(241, 242, 234, 0.56); --line: rgba(241, 242, 234, 0.16); --glass: rgba(241, 242, 234, 0.07); }
+.r10 * { box-sizing: border-box; }
+.r10 img { display: block; }
+.r10 .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 500; letter-spacing: 0; }
+.r10 .h { opacity: 0; }
+
+/* Фон: тёмная и светлая страницы и пятна света. Меняются по группам сцен. */
+.r10 .bg { position: absolute; inset: 0; }
+.r10 .bg-light { background: #F1F2EA; opacity: 0; }
+.r10 .glow { position: absolute; left: 540px; top: 760px; width: 0; height: 0; opacity: 0; }
+.r10 .glow i { position: absolute; left: -620px; top: -620px; width: 1240px; height: 1240px; border-radius: 50%; display: block; }
+.r10 .glow-lime i { background: radial-gradient(closest-side, rgba(137, 168, 28, 0.62), rgba(86, 105, 12, 0.34) 46%, rgba(86, 105, 12, 0) 72%); }
+.r10 .glow-warm i { background: radial-gradient(closest-side, rgba(217, 119, 87, 0.5), rgba(160, 84, 40, 0.26) 46%, rgba(160, 84, 40, 0) 72%); }
+.r10 .glow-mint i { left: -470px; top: -470px; width: 940px; height: 940px;
+  background: radial-gradient(closest-side, rgba(199, 226, 75, 0.78), rgba(199, 226, 75, 0.36) 52%, rgba(199, 226, 75, 0) 74%); filter: blur(18px); }
+.r10 .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 78% 52% at 50% 40%, rgba(10, 11, 8, 0) 46%, rgba(10, 11, 8, 0.9) 100%); }
+
+.r10 .sc { position: absolute; inset: 0; opacity: 0; }
+.r10 .abs { position: absolute; }
+.r10 .p3 { perspective: 1600px; position: absolute; }
+.r10 .light { color: var(--gr); --dim: #5A5E4B; --line: rgba(18, 19, 15, 0.12); --glass: rgba(255, 255, 255, 0.66); }
+
+/* Ряд значков: пять плагинов, текущий подсвечен. */
+.r10 .chips { position: absolute; left: 0; width: 1080px; display: flex; justify-content: center; gap: 22px; }
+.r10 .chip { width: 96px; height: 96px; border-radius: 26px; background: rgba(241, 242, 234, 0.08); border: 2px solid var(--line);
+  display: grid; place-items: center; overflow: hidden; position: relative; }
+.r10 .chip img { width: 60px; height: 60px; border-radius: 14px; }
+.r10 .chip b { font-size: 30px; font-weight: 700; letter-spacing: 0; }
+.r10 .light .chip { background: rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(40, 50, 10, 0.12); }
+.r10 .chip u { position: absolute; inset: -2px; border-radius: 26px; border: 4px solid var(--lime); opacity: 0;
+  box-shadow: 0 0 34px rgba(199, 226, 75, 0.6); }
+.r10 .light .chip u { border-color: var(--olive); box-shadow: 0 0 30px rgba(137, 168, 28, 0.5); }
+.r10 .chips.sm { gap: 16px; justify-content: flex-start; }
+.r10 .chips.sm .chip { width: 72px; height: 72px; border-radius: 20px; }
+.r10 .chips.sm .chip img { width: 46px; height: 46px; border-radius: 11px; }
+.r10 .chips.sm .chip b { font-size: 22px; }
+
+/* Карточка-окно репозитория. */
+.r10 .repo { width: 740px; border-radius: 44px; overflow: hidden; background: var(--glass); border: 2px solid var(--line);
+  box-shadow: 0 50px 110px rgba(0, 0, 0, 0.42); backdrop-filter: blur(18px); }
+.r10 .light .repo { box-shadow: 0 50px 100px rgba(60, 74, 12, 0.2); border-color: rgba(255, 255, 255, 0.9); }
+.r10 .bar { height: 76px; display: flex; align-items: center; gap: 10px; padding: 0 30px; background: rgba(18, 20, 13, 0.86); }
+.r10 .light .bar { background: rgba(255, 255, 255, 0.94); }
+.r10 .bar i { width: 13px; height: 13px; border-radius: 50%; background: var(--line); display: block; }
+.r10 .url { margin-left: 18px; height: 48px; padding: 0 22px; border-radius: 24px; background: rgba(127, 127, 120, 0.16);
+  display: flex; align-items: center; gap: 12px; font-size: 25px; font-weight: 500; letter-spacing: 0; color: var(--dim); }
+.r10 .url svg { width: 26px; height: 26px; fill: currentColor; }
+.r10 .hero { height: 380px; display: flex; align-items: center; justify-content: center; gap: 30px; position: relative; overflow: hidden; }
+.r10 .hero.cream { background: #ECEBDD; color: #12130F; }
+.r10 .hero.white { background: #FFFFFF; color: #12130F; }
+.r10 .hero.black { background: #0D0E0A; color: #F1F2EA; }
+.r10 .hero img { width: 150px; height: 150px; border-radius: 34px; }
+.r10 .hero .wm { font-size: 78px; font-weight: 800; letter-spacing: -0.04em; line-height: 0.95; }
+.r10 .hero .wm small { display: block; font-size: 40px; font-weight: 700; }
+.r10 .foot { padding: 34px 0 44px; text-align: center; background: linear-gradient(rgba(199, 226, 75, 0), rgba(199, 226, 75, 0.16)); }
+.r10 .light .foot { background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(214, 235, 120, 0.72)); }
+.r10 .name { font-size: 78px; line-height: 1.05; white-space: nowrap; }
+.r10 .stars { display: inline-flex; align-items: center; gap: 14px; margin-top: 22px; height: 64px; padding: 0 30px; border-radius: 32px;
+  background: rgba(241, 242, 234, 0.1); font-size: 38px; font-weight: 700; letter-spacing: 0; }
+.r10 .light .stars { background: rgba(255, 255, 255, 0.86); }
+.r10 .stars svg { width: 32px; height: 32px; fill: var(--lime); }
+.r10 .light .stars svg { fill: var(--olive); }
+.r10 .codebg { position: absolute; left: 70px; top: 262px; width: 1100px; font-size: 30px; line-height: 1.6; white-space: pre;
+  color: rgba(241, 242, 234, 0.22); }
+.r10 .light .codebg { color: rgba(86, 105, 12, 0.34); }
+.r10 .codebg em { font-style: normal; color: rgba(217, 119, 87, 0.5); }
+
+/* Стекло, плашки, телефоны. */
+.r10 .glass { background: var(--glass); border: 2px solid var(--line); border-radius: 40px; backdrop-filter: blur(20px); }
+.r10 .pill { display: inline-flex; align-items: center; gap: 12px; height: 62px; padding: 0 28px; border-radius: 31px; font-size: 32px;
+  background: rgba(241, 242, 234, 0.1); border: 2px solid var(--line); white-space: nowrap; }
+.r10 .light .pill { background: rgba(255, 255, 255, 0.9); }
+.r10 .tag { display: inline-block; padding: 6px 24px 10px; border-radius: 18px; background: var(--lime); color: var(--gr); }
+.r10 .phone { width: 340px; height: 690px; border-radius: 56px; overflow: hidden; background: #0D0E0A; border: 3px solid rgba(241, 242, 234, 0.16);
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.55); position: relative; }
+.r10 .phone img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .phone.cream { background: #ECEBDD; border-color: rgba(255, 255, 255, 0.9); box-shadow: 0 50px 100px rgba(60, 74, 12, 0.3); }
+.r10 .wave { position: absolute; left: 190px; width: 700px; height: 90px; display: flex; align-items: center; gap: 6px; }
+.r10 .wave i { display: block; width: 6px; border-radius: 3px; background: rgba(241, 242, 234, 0.34); }
+.r10 .wave b { position: absolute; left: 0; top: -12px; width: 6px; height: 114px; border-radius: 3px; background: var(--cream); display: block; }
+
+/* Плёнка. */
+.r10 .film { height: 250px; background: #1A1B16; display: flex; align-items: center; gap: 18px; padding: 0 18px; position: relative;
+  border-top: 26px solid #1A1B16; border-bottom: 26px solid #1A1B16; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45); }
+.r10 .film::before, .r10 .film::after { content: ''; position: absolute; left: 0; right: 0; height: 12px;
+  background: repeating-linear-gradient(90deg, rgba(241, 242, 234, 0.72) 0 16px, transparent 16px 40px); }
+.r10 .film::before { top: -19px; }
+.r10 .film::after { bottom: -19px; }
+.r10 .cell { flex: none; height: 100%; border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
+.r10 .cell img { width: 62%; height: auto; border-radius: 18%; }
+
+/* Сцены. Числа — координаты в кадре 1080×1920. */
+.r10 .float { position: absolute; border-radius: 34px; overflow: hidden; filter: blur(7px); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5); }
+.r10 .float img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .tile { position: absolute; left: 280px; top: 400px; width: 520px; height: 520px; border-radius: 120px; display: grid; place-items: center;
+  background: linear-gradient(160deg, rgba(137, 168, 28, 0.42), rgba(60, 74, 12, 0.5)); border: 3px solid rgba(214, 235, 120, 0.3);
+  backdrop-filter: blur(22px); box-shadow: 0 60px 130px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2); }
+.r10 .num { font-size: 390px; font-weight: 700; line-height: 1; letter-spacing: -0.04em;
+  background: linear-gradient(#FFFFFF 30%, #C9D2A4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.r10 .cap { position: absolute; left: 0; width: 1080px; text-align: center; font-size: 70px; line-height: 1.1; }
+.r10 .cap span { display: inline-block; }
+
+.r10 .win { position: absolute; left: 150px; top: 590px; width: 780px; height: 470px; }
+.r10 .win .ttl { flex: 1; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 0; margin-right: 80px; }
+.r10 .win .ttl s { text-decoration: none; color: var(--claude); margin-right: 10px; }
+.r10 .prompt { position: absolute; left: 56px; top: 108px; font-size: 54px; font-weight: 500; white-space: pre; }
+.r10 .prompt em { font-style: normal; color: var(--lime); margin-right: 26px; }
+.r10 .prompt u { display: inline-block; width: 5px; height: 58px; background: var(--lime); vertical-align: -10px; margin-left: 8px; }
+.r10 .track { position: absolute; left: 56px; right: 56px; height: 12px; border-radius: 6px; background: rgba(241, 242, 234, 0.14); overflow: hidden; }
+.r10 .track i { display: block; width: 100%; height: 100%; border-radius: 6px; background: var(--lime); transform-origin: 0 50%; }
+.r10 .tline { position: absolute; left: 150px; top: 1200px; width: 780px; height: 132px; padding: 14px; display: flex; gap: 12px; border-radius: 30px; }
+.r10 .tline .cell { width: 132px; border-radius: 16px; }
+
+.r10 .labels { position: absolute; left: 0; right: 0; bottom: 96px; display: grid; justify-items: center; gap: 14px; font-size: 46px; }
+.r10 .labels span { position: relative; padding: 4px 22px 8px; }
+.r10 .labels span u { position: absolute; inset: 0; border-radius: 16px; background: var(--lime); opacity: 0; }
+.r10 .labels span b { position: relative; font-weight: 600; }
+.r10 .orb { width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle at 36% 30%, #FFFFFF, #C7E24B 34%, #56690C);
+  box-shadow: 0 0 70px 26px rgba(199, 226, 75, 0.55); position: absolute; }
+
+.r10 .code { border-radius: 34px; padding: 28px 34px; font-size: 25px; line-height: 1.62; white-space: pre; overflow: hidden; }
+.r10 .code.paper { background: #FFFFFF; color: #2C3016; box-shadow: 0 50px 100px rgba(60, 74, 12, 0.24); }
+.r10 .code.paper em { font-style: normal; color: #B4532F; }
+.r10 .code.paper b { font-weight: 500; color: #56690C; }
+.r10 .code.night { background: rgba(20, 22, 15, 0.86); color: rgba(241, 242, 234, 0.8); border: 2px solid var(--line); }
+.r10 .code.night em { font-style: normal; color: #E39A80; }
+.r10 .code.night b { font-weight: 500; color: var(--lime); }
+.r10 .code .fn { display: block; font-family: 'Onest', sans-serif; font-weight: 700; font-size: 24px; margin-bottom: 14px; opacity: 0.6; letter-spacing: 0; }
+
+.r10 .big { position: absolute; left: 0; width: 1080px; text-align: center; font-size: 210px; font-weight: 700; line-height: 1; letter-spacing: -0.045em; white-space: nowrap; }
+.r10 .ghmark { position: absolute; left: -120px; top: 330px; width: 1320px; height: 1320px; fill: #D4D6C8; }
+.r10 .star { position: absolute; fill: var(--olive); }
+.r10 .chart { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+
+.r10 .rbar { position: absolute; left: 190px; top: 420px; width: 700px; height: 92px; border-radius: 46px; background: rgba(241, 242, 234, 0.1);
+  overflow: hidden; border: 2px solid var(--line); }
+.r10 .rbar span { position: absolute; inset: 0; display: block; text-align: center; line-height: 88px; font-size: 36px; font-weight: 700; letter-spacing: 0; color: var(--cream); }
+.r10 .gridp { background-color: #14160F; border: 2px solid var(--line); border-radius: 34px;
+  background-image: linear-gradient(var(--line) 2px, transparent 2px), linear-gradient(90deg, var(--line) 2px, transparent 2px); background-size: 74px 74px; overflow: hidden; }
+.r10 .users { display: flex; justify-content: center; gap: 18px; }
+.r10 .users i { width: 100px; height: 100px; border-radius: 28px; background: rgba(199, 226, 75, 0.12); border: 2px solid rgba(199, 226, 75, 0.4); display: grid; place-items: center; }
+.r10 .users svg { width: 56px; height: 56px; fill: none; stroke: var(--lime); stroke-width: 2.4; }
+
+.r10 .slopwrap { position: absolute; left: -520px; top: -160px; width: 2100px; height: 2100px; perspective: 1900px; }
+.r10 .slopgrid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 380px); gap: 34px; align-content: start;
+  transform: rotateX(52deg) rotateZ(-20deg); transform-origin: 50% 50%; }
+.r10 .slop { height: 270px; border-radius: 30px; background: linear-gradient(135deg, #7B3FF2, #D946EF 70%, #F472B6); color: #FFFFFF;
+  display: grid; place-items: center; align-content: center; gap: 10px; text-align: center; letter-spacing: 0; box-shadow: 0 20px 40px rgba(90, 30, 160, 0.3); }
+.r10 .slop b { font-size: 36px; font-weight: 700; }
+.r10 .slop small { font-size: 20px; font-weight: 500; opacity: 0.85; }
+.r10 .slop span { font-size: 19px; font-weight: 700; padding: 8px 22px; border-radius: 20px; background: #FFFFFF; color: #8B3FE8; }
+.r10 .slop svg { width: 34px; height: 34px; fill: #FDE68A; }
+.r10 .lens { position: absolute; width: 380px; height: 380px; border-radius: 50%; overflow: hidden; border: 5px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 30px 70px rgba(70, 20, 130, 0.45), inset 0 0 40px rgba(255, 255, 255, 0.5); display: grid; place-items: center; background: #9B45F0; }
+.r10 .lens .slop { width: 470px; height: 330px; flex: none; }
+.r10 .lens .slop b { font-size: 46px; }
+.r10 .site { position: absolute; left: 150px; top: 520px; width: 780px; border-radius: 34px; overflow: hidden; background: #FFFFFF; box-shadow: 0 60px 120px rgba(40, 50, 10, 0.32); }
+.r10 .site .bar { height: 64px; color: #12130F; --line: rgba(18, 19, 15, 0.16); }
+.r10 .page { height: 600px; background: #0D0E0A; color: #F1F2EA; position: relative; overflow: hidden; }
+.r10 .page h4 { margin: 0; position: absolute; left: 44px; top: 56px; font-size: 62px; font-weight: 500; line-height: 0.98; letter-spacing: -0.04em; }
+.r10 .page h4 i { font-weight: 400; font-style: italic; color: var(--lime); }
+.r10 .page p { margin: 0; position: absolute; left: 44px; top: 206px; width: 300px; font-size: 19px; font-weight: 400; line-height: 1.4; letter-spacing: 0; opacity: 0.6; }
+.r10 .page .hero-img { position: absolute; right: 0; top: 0; width: 380px; height: 380px; object-fit: cover; object-position: 70% 60%; }
+.r10 .page .thumbs { position: absolute; left: 44px; right: 44px; bottom: 40px; display: flex; gap: 18px; }
+.r10 .page .thumbs img { flex: 1; width: 0; height: 170px; object-fit: cover; border-radius: 14px; }
+.r10 .page .cta-s { position: absolute; left: 44px; top: 306px; padding: 10px 24px; border-radius: 22px; background: #F1F2EA; color: #12130F; font-size: 19px; letter-spacing: 0; }
+
+.r10 .ring { position: absolute; left: 540px; top: 610px; width: 0; height: 0; }
+.r10 .ring span { position: absolute; font-size: 30px; white-space: nowrap; color: rgba(241, 242, 234, 0.5); }
+.r10 .n24 { font-size: 330px; }
+.r10 .n24 .cnt { background: linear-gradient(#FFFFFF 30%, #C9D2A4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.r10 .list { position: absolute; left: 260px; top: 1010px; width: 560px; padding: 14px; border-radius: 34px; }
+.r10 .list div { position: relative; height: 78px; display: flex; align-items: center; gap: 22px; padding: 0 26px; font-size: 40px; }
+.r10 .list div u { position: absolute; inset: 0; border-radius: 22px; background: rgba(199, 226, 75, 0.2); border: 2px solid rgba(199, 226, 75, 0.5); opacity: 0; }
+.r10 .list div s { text-decoration: none; opacity: 0.5; font-size: 30px; position: relative; }
+.r10 .list div b { font-weight: 500; position: relative; }
+.r10 .slopcard { border: 3px solid #E0409A; border-radius: 8px; padding: 34px 40px; text-align: center; position: relative; background: rgba(20, 16, 24, 0.6); }
+.r10 .slopcard b { font-size: 58px; letter-spacing: 0; background: linear-gradient(90deg, #A855F7, #EC4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.r10 .slopcard small { display: block; font-size: 24px; font-weight: 400; color: #E879B8; letter-spacing: 0; margin-top: 8px; }
+.r10 .slopcard span { position: absolute; left: -3px; top: -44px; height: 44px; padding: 0 18px; background: #E0409A; color: #FFFFFF; font-size: 22px; display: flex; align-items: center; letter-spacing: 0; }
+.r10 .guides { position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(241, 242, 234, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(241, 242, 234, 0.1) 2px, transparent 2px);
+  background-size: 108px 108px; background-position: 0 86px; -webkit-mask-image: radial-gradient(ellipse 80% 46% at 50% 42%, #000 40%, transparent 100%); mask-image: radial-gradient(ellipse 80% 46% at 50% 42%, #000 40%, transparent 100%); }
+.r10 .wf { position: absolute; left: 190px; top: 560px; width: 700px; height: 560px; border-radius: 36px; padding: 44px; }
+.r10 .wf.bad { background: #5B21B6; }
+.r10 .wf.good { background: #24261D; border: 2px solid var(--line); }
+.r10 .wf h5 { margin: 0; font-size: 50px; font-weight: 600; letter-spacing: 0; white-space: nowrap; }
+.r10 .wf.bad h5 { color: #F0ABFC; }
+.r10 .wf .blk { position: absolute; border-radius: 22px; }
+.r10 .wf.bad .blk { background: #7C3AED; }
+.r10 .wf.bad .blk.in { background: #9D5CF5; }
+.r10 .wf.good .blk { background: #3B3E30; }
+.r10 .wf.good .blk.in { background: #55584A; }
+.r10 .wf .ln { position: absolute; height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.5); }
+.r10 .mark { position: absolute; border: 4px solid var(--lime); border-radius: 26px; box-shadow: 0 0 26px rgba(199, 226, 75, 0.45); }
+.r10 .wipe { position: absolute; top: 520px; left: 190px; width: 5px; height: 640px; background: #FFFFFF; box-shadow: 0 0 30px rgba(255, 255, 255, 0.9); }
+.r10 .slots { position: absolute; left: 190px; top: 1270px; width: 700px; display: flex; gap: 16px; }
+.r10 .slots i { flex: 1; height: 130px; border-radius: 18px; border: 2px dashed rgba(241, 242, 234, 0.22); display: block; }
+
+.r10 .emil { height: 100%; width: 100%; display: grid; place-items: center; }
+.r10 .emil div { border: 2px solid rgba(120, 150, 255, 0.4); border-radius: 22px; padding: 26px 44px; font-size: 38px; font-weight: 500; letter-spacing: 0; display: flex; gap: 26px; }
+.r10 .emil div b { font-weight: 500; color: #7C96FF; border-left: 2px solid rgba(241, 242, 234, 0.2); padding-left: 26px; }
+.r10 .toast { position: absolute; width: 380px; height: 96px; border-radius: 26px; background: rgba(255, 255, 255, 0.92); box-shadow: 0 24px 50px rgba(60, 74, 12, 0.18); }
+.r10 .toast::before { content: ''; position: absolute; left: 30px; top: 30px; width: 36px; height: 36px; border-radius: 50%; background: var(--olive); }
+.r10 .toast::after { content: ''; position: absolute; left: 90px; top: 34px; width: 220px; height: 10px; border-radius: 5px; background: rgba(18, 19, 15, 0.16); box-shadow: 0 20px 0 rgba(18, 19, 15, 0.1); }
+.r10 .lane { position: absolute; left: 190px; width: 700px; height: 124px; border-radius: 34px; background: rgba(255, 255, 255, 0.72); box-shadow: 0 20px 50px rgba(60, 74, 12, 0.14); }
+.r10 .lane i { position: absolute; top: 40px; width: 44px; height: 44px; border-radius: 50%; background: rgba(86, 105, 12, 0.22); display: block; opacity: 0; }
+.r10 .lane b { position: absolute; left: 30px; top: 34px; width: 56px; height: 56px; border-radius: 50%; background: var(--olive); display: block; box-shadow: 0 0 0 8px rgba(199, 226, 75, 0.6); }
+.r10 .rule { width: 700px; height: 132px; border-radius: 36px; background: rgba(255, 255, 255, 0.8); box-shadow: 0 24px 60px rgba(60, 74, 12, 0.18);
+  display: flex; align-items: center; justify-content: center; font-size: 54px; position: absolute; left: 190px; }
+.r10 .rule svg { position: absolute; left: 40px; top: 36px; width: 60px; height: 60px; fill: none; stroke: var(--olive); stroke-width: 3; }
+.r10 .ecard { position: absolute; width: 640px; height: 250px; border-radius: 34px; background: #14160F; }
+
+.r10 .tg { position: absolute; width: 280px; height: 280px; border-radius: 50%; background: linear-gradient(160deg, #5BC1F5, #1F8FE0);
+  box-shadow: 0 40px 90px rgba(20, 110, 200, 0.5), inset 0 3px 0 rgba(255, 255, 255, 0.4); display: grid; place-items: center; }
+.r10 .tg svg { width: 150px; height: 150px; fill: #FFFFFF; margin-right: 14px; }
+.r10 .ghost { position: absolute; font-size: 560px; font-weight: 800; color: transparent; -webkit-text-stroke: 2px rgba(241, 242, 234, 0.09); letter-spacing: -0.05em; white-space: nowrap; }
+.r10 .row { position: absolute; left: 190px; width: 700px; height: 120px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+.r10 .row s { position: absolute; left: 34px; text-decoration: none; color: var(--lime); font-size: 36px; }
+.r10 .ibox { position: absolute; left: 480px; top: 380px; width: 120px; height: 120px; border-radius: 34px; display: grid; place-items: center; }
+.r10 .ibox svg { width: 62px; height: 62px; fill: none; stroke: var(--lime); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.r10 .go { position: absolute; left: 0; width: 1080px; text-align: center; }
+.r10 .go span { display: inline-block; font-size: 62px; padding: 20px 50px 26px; border-radius: 50px; background: var(--lime); color: var(--gr);
+  box-shadow: 0 30px 70px rgba(199, 226, 75, 0.3); }
+
+/* Слой поверх сцен: заголовок по словам, знак канала, кот. В гибриде его рисует Remotion. */
+.r10 .hl { position: absolute; left: 60px; width: 960px; top: 236px; text-align: center; font-size: 82px; line-height: 1.14; }
+.r10 .hl div { white-space: nowrap; }
+.r10 .hl span { display: inline-block; margin: 0 0.13em; opacity: 0; }
+.r10 .hl .l2 { color: var(--dim); }
+.r10 .hl .cl { color: var(--claude); }
+.r10 .logo { position: absolute; left: 72px; top: 132px; width: 92px; height: 92px; border-radius: 26px; background: #12130F; display: grid; place-items: center;
+  border: 2px solid rgba(241, 242, 234, 0.14); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3); }
+.r10 .logo img { width: 60px; height: 60px; }
+.r10 .cat { position: absolute; opacity: 0; }
+.r10 .cat img { width: 100%; height: auto; filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.45)); }
+
+/* ── r11: что добавлено к виду r10 ─────────────────────────────────────────────────────────── */
+/* Крупное набрано широким Unbounded, остальное ровным Onest: контраст по ширине, а не два похожих шрифта. */
+.r10 { --disp: 'Unbounded', 'Onest', sans-serif; }
+.r10 .num, .r10 .big, .r10 .freeb, .r10 .ctat, .r10 .kt { font-family: var(--disp); font-weight: 800; letter-spacing: -0.045em; }
+.r10 .num { font-size: 330px; }
+.r10 #sc-five .tile { top: 446px; }
+.r10 .big { font-size: 168px; }
+.r10 .n24 { font-size: 280px; }
+.r10 .pnum { font-size: 330px; color: var(--lime); }
+.r10 .name { font-family: var(--disp); font-weight: 700; font-size: 58px; letter-spacing: -0.04em; }
+.r10 .hl { top: 240px; }
+.r10 .hl .l1 { font-family: var(--disp); font-weight: 800; font-size: 66px; letter-spacing: -0.045em; line-height: 1.2; }
+.r10 .hl .l2 { font-size: 74px; font-weight: 600; }
+.r10 .kt { position: absolute; left: 40px; top: 400px; width: 1000px; text-align: center; text-transform: uppercase; font-weight: 900; line-height: 1.22; }
+.r10 .kt .k1 { font-size: 100px; }
+.r10 .kt .k2 { font-size: 126px; }
+.r10 .kt .k3 { font-size: 97px; color: var(--lime); }
+.r10 .kt span { display: inline-block; }
+.r10 .light .cl { color: #A8481F; }
+
+/* Блик по стеклу (из каталога HyperFrames, shimmer-sweep): положение ведёт таймлайн. */
+.r10 .shim { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; mix-blend-mode: overlay;
+  background: linear-gradient(115deg, transparent calc(var(--sp, -25%) - 14%), rgba(255, 255, 255, 0.75) var(--sp, -25%), transparent calc(var(--sp, -25%) + 14%)); }
+.r10 .repo, .r10 .go span { position: relative; }
+.r10 .go span { overflow: hidden; }
+
+/* Конфетти. */
+.r10 .cf { position: absolute; left: -9px; top: -14px; width: 18px; height: 28px; border-radius: 5px; display: block; opacity: 0; }
+
+/* Финал: «сохрани». */
+.r10 .save { position: absolute; left: 0; width: 1080px; text-align: center; }
+.r10 .save span { display: inline-flex; align-items: center; gap: 18px; font-size: 44px; padding: 18px 40px 22px; border-radius: 44px;
+  background: rgba(241, 242, 234, 0.1); border: 2px solid rgba(241, 242, 234, 0.3); }
+.r10 .save svg { width: 40px; height: 40px; fill: var(--lime); }
+
+/* Полоса ролика: восемь отрезков по абзацам. Ролик начинается на тёмном, цвета по умолчанию под него. */
+.r10 .prog { position: absolute; left: 196px; top: 172px; width: 812px; display: flex; gap: 10px; --pf: #C7E24B; --pt: rgba(241, 242, 234, 0.2); }
+.r10 .prog i { flex: 1; height: 10px; border-radius: 5px; background: var(--pt); overflow: hidden; display: block; opacity: 0; transform-origin: 0 50%; }
+.r10 .prog b { display: block; width: 100%; height: 100%; border-radius: 5px; background: var(--pf); transform-origin: 0 50%; }
+
+/* Субтитры по словам: для тех, кто смотрит без звука. Тёмная плашка читается на любом фоне. */
+.r10 .ccs { position: absolute; left: 90px; top: 1368px; width: 900px; height: 150px; }
+.r10 .cc { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: center; opacity: 0; }
+.r10 .cc p { margin: 0; padding: 14px 34px 18px; border-radius: 30px; background: rgba(10, 11, 8, 0.84); border: 2px solid rgba(241, 242, 234, 0.14);
+  font-size: 44px; font-weight: 700; line-height: 1.22; letter-spacing: -0.01em; text-align: center; color: rgba(241, 242, 234, 0.5); max-width: 900px; }
+
+/* Вспышка на смене света. */
+.r10 .flash { position: absolute; inset: 0; background: #F1F2EA; opacity: 0; pointer-events: none; }
+
+/* ── r12: что добавлено ──────────────────────────────────────────────────────────────────────── */
+.r10 .ic { width: 1em; height: 1em; display: block; flex: none; }
+.r10 .cur { width: 64px; height: 64px; display: block; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45)); }
+.r10 .cursor { width: 64px; height: 64px; z-index: 5; }
+
+/* Крючок: три строки капсом, последняя лаймом и уже. */
+.r10 .kt { top: 330px; }
+.r10 .kt .k1 { font-size: 92px; }
+.r10 .kt .k2 { font-size: 104px; }
+.r10 .kt .k3 { font-size: 76px; color: var(--lime); }
+
+/* Монтажный стол: таймкод, дорожки, волна, бегунок. */
+.r10 .editor { position: absolute; left: 150px; width: 780px; height: 440px; padding: 22px 24px; border-radius: 40px; overflow: hidden; }
+.r10 #ed1 { top: 760px; }
+.r10 #ed2 { top: 780px; }
+.r10 .ebar { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
+.r10 .eic { font-size: 34px; color: var(--dim); }
+.r10 .tc { font-size: 28px; padding: 8px 20px; border-radius: 20px; background: rgba(241, 242, 234, 0.1); }
+.r10 .trk { display: flex; gap: 8px; margin-top: 14px; height: 92px; }
+.r10 .trk.v2 { height: 70px; opacity: 0.75; }
+.r10 .clip { flex: none; height: 100%; border-radius: 14px; overflow: hidden; position: relative; background: #1A1B16; border: 2px solid rgba(241, 242, 234, 0.14); }
+.r10 .clip img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .clip span { position: absolute; left: 10px; bottom: 6px; font-size: 18px; font-weight: 700; color: #F1F2EA; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); white-space: nowrap; }
+.r10 .clip.ins { border-color: var(--claude); }
+.r10 .trk.a { height: 80px; align-items: center; gap: 4px; padding: 0 4px; border-radius: 14px; background: rgba(199, 226, 75, 0.08); }
+.r10 .trk.a i { flex: 1; border-radius: 3px; background: var(--lime); opacity: 0.8; display: block; }
+.r10 #ed2 .trk.a { background: rgba(217, 119, 87, 0.1); }
+.r10 #ed2 .trk.a i { background: var(--claude); }
+.r10 .editor .head { position: absolute; left: 60px; top: 84px; bottom: 22px; width: 0; }
+.r10 .editor .head b { position: absolute; left: -11px; top: -6px; width: 22px; height: 22px; border-radius: 6px; background: var(--cream); display: block; }
+.r10 .editor .head i { position: absolute; left: -2px; top: 0; bottom: 0; width: 4px; background: var(--cream); display: block; box-shadow: 0 0 16px rgba(241, 242, 234, 0.7); }
+
+/* Телефон «этот ролик собрал Claude», клавиатура под ним и пустые места вокруг. */
+.r10 .cpill { position: absolute; left: 50%; top: 460px; transform: translateX(-50%); font-size: 34px; font-weight: 700; letter-spacing: 0; }
+.r10 .cpill s, .r10 .prompt2 s { text-decoration: none; width: 34px; height: 34px; display: block; }
+.r10 .cpill svg, .r10 .prompt2 svg { width: 100%; height: 100%; fill: var(--claude); }
+.r10 .kbd { left: 170px; top: 1160px; width: 740px; height: 170px; border-radius: 36px; background: rgba(241, 242, 234, 0.06); border: 2px solid var(--line); padding: 22px 30px; }
+.r10 .kbd .keys { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; }
+.r10 .kbd .keys i { height: 34px; border-radius: 8px; background: rgba(241, 242, 234, 0.08); display: block; }
+.r10 .ph1 .scr { position: absolute; inset: 0; }
+.r10 .ph1 .empty { inset: 18px; border-radius: 40px; border: 3px dashed rgba(199, 226, 75, 0.45); opacity: 0; }
+.r10 .ph1 .rend { left: 34px; right: 34px; bottom: 34px; height: 12px; border-radius: 6px; background: rgba(241, 242, 234, 0.25); overflow: hidden; }
+.r10 .ph1 .rend i { display: block; width: 100%; height: 100%; background: var(--lime); transform-origin: 0 50%; }
+.r10 .slot { width: 170px; height: 170px; }
+.r10 .slotin { width: 100%; height: 100%; border-radius: 40px; border: 3px dashed rgba(199, 226, 75, 0.5); display: grid; place-items: center; font-size: 78px; color: var(--lime); background: rgba(199, 226, 75, 0.06); }
+
+/* Пятёрка: плитка, вкладки, окно браузера. */
+.r10 #sc-five .tile { top: 300px; width: 440px; height: 440px; left: 320px; border-radius: 104px; }
+.r10 #sc-five .num { font-size: 290px; }
+.r10 .chip img { object-fit: contain; }
+.r10 .brw { border-radius: 34px; overflow: hidden; background: #FFFFFF; box-shadow: 0 50px 110px rgba(0, 0, 0, 0.5); }
+.r10 .brw .bar { height: 62px; background: #ECEBDD; }
+.r10 .brw .url { color: #3A3E2D; font-size: 24px; }
+.r10 .brwimg { height: 236px; overflow: hidden; }
+.r10 .brwimg img { width: 100%; }
+
+/* Плашка счёта сайтов «N / 5». */
+.r10 .num-pill { position: absolute; left: 50%; top: 340px; transform: translateX(-50%); font-size: 30px; font-weight: 700; letter-spacing: 0.02em;
+  padding: 8px 24px 10px; border-radius: 24px; background: rgba(241, 242, 234, 0.1); border: 2px solid var(--line); color: var(--dim); white-space: nowrap; }
+.r10 .num-pill b { color: var(--lime); }
+.r10 .light .num-pill { background: rgba(255, 255, 255, 0.8); }
+.r10 .light .num-pill b { color: var(--olive); }
+
+/* Mixkit: телефон со страницей, плавающие кадры, проигрыватель, счётчики, тумблеры. */
+.r10 .phone.white { background: #FFFFFF; border-color: rgba(255, 255, 255, 0.95); box-shadow: 0 50px 100px rgba(60, 74, 12, 0.3); }
+.r10 .phone .scroll { width: 100%; display: block; }
+.r10 .float.lf { filter: blur(3px); box-shadow: 0 30px 70px rgba(60, 74, 12, 0.25); }
+.r10 .player { position: absolute; height: 270px; padding: 30px; border-radius: 40px; }
+.r10 .player .wave { left: 40px; width: 700px; }
+.r10 .player .wave i { background: rgba(86, 105, 12, 0.5); }
+.r10 .player .wave b { background: var(--olive); }
+.r10 .pl-top { display: flex; align-items: center; gap: 24px; }
+.r10 .play { width: 96px; height: 96px; border-radius: 50%; background: var(--olive); color: #F1F2EA; display: grid; place-items: center; font-size: 46px; }
+.r10 .pl-t b { display: block; font-size: 44px; }
+.r10 .pl-t small { display: block; font-size: 26px; color: var(--dim); font-weight: 500; letter-spacing: 0; }
+.r10 .stat { position: absolute; font-size: 38px; font-weight: 700; color: var(--gr); height: 76px; padding: 0 30px; }
+.r10 .stat .ic { font-size: 36px; color: var(--olive); }
+.r10 .bezel { padding: 10px; border-radius: 48px; background: rgba(255, 255, 255, 0.45); border: 2px solid rgba(255, 255, 255, 0.9); box-shadow: 0 50px 100px rgba(60, 74, 12, 0.22); }
+.r10 .bezel .core { border-radius: 38px; background: rgba(255, 255, 255, 0.92); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9); padding: 36px; position: relative; }
+.r10 .mlogo { width: 300px; margin: 0 auto 26px; }
+.r10 .trow { height: 110px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-radius: 30px; background: #F4F4EC; margin-top: 12px; font-size: 40px; color: var(--gr); }
+.r10 .trow .ti { font-size: 44px; color: var(--olive); }
+.r10 .trow span { flex: 1; }
+.r10 .tog { width: 110px; height: 58px; border-radius: 29px; background: #C9CBBE; position: relative; flex: none; }
+.r10 .tog i { position: absolute; left: 4px; top: 4px; width: 50px; height: 50px; border-radius: 50%; background: #FFFFFF; display: block; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18); }
+.r10 .ftypes { position: absolute; left: 0; top: 1020px; width: 1080px; display: flex; justify-content: center; gap: 22px; }
+.r10 .ft { width: 120px; height: 120px; border-radius: 32px; background: rgba(255, 255, 255, 0.85); display: grid; place-items: center; font-size: 56px; color: var(--olive); box-shadow: 0 16px 40px rgba(60, 74, 12, 0.14); }
+
+/* FreshLUTs: знак на кремовой плашке, ноутбук, полоса цветов. */
+.r10 .logoplate { width: 400px; height: 120px; border-radius: 30px; background: #F1F2EA; display: grid; place-items: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); }
+.r10 .logoplate img { width: 300px; }
+.r10 .laptop { width: 860px; }
+.r10 .lscr { width: 860px; height: 540px; border-radius: 30px 30px 8px 8px; overflow: hidden; border: 14px solid #1A1B16; background: #0D0E0A; box-shadow: 0 50px 110px rgba(0, 0, 0, 0.5); }
+.r10 .lscr img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; }
+.r10 .lbase { width: 960px; height: 34px; margin-left: -50px; border-radius: 0 0 30px 30px; background: linear-gradient(#3A3C32, #1A1B16); }
+.r10 .lbase.light { background: linear-gradient(#E4E5DA, #B9BBAE); }
+.r10 .swatches { position: absolute; left: 0; top: 1220px; width: 1080px; display: flex; justify-content: center; gap: 14px; }
+.r10 .sw { width: 120px; height: 34px; border-radius: 17px; overflow: hidden; border: 2px solid rgba(241, 242, 234, 0.2); }
+.r10 .sw img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .dl { position: absolute; font-size: 32px; font-weight: 700; color: var(--cream); }
+.r10 .dl .ic { font-size: 32px; color: var(--lime); }
+#sc-c2 .dl { top: 1290px !important; }
+
+/* Цвет: кадр, название таблицы, ряд вариантов, шторка, кривая. */
+.r10 .photo { border-radius: 34px; overflow: hidden; box-shadow: 0 50px 110px rgba(0, 0, 0, 0.55); border: 2px solid rgba(241, 242, 234, 0.18); }
+.r10 .photo img, .r10 .photo .split img { position: absolute; left: 0; top: 0; width: 860px; height: 573px; object-fit: cover; }
+.r10 .photo .split { inset: 0; opacity: 0; }
+.r10 .sline { left: 0; top: 0; width: 4px; height: 573px; background: #FFFFFF; box-shadow: 0 0 24px rgba(255, 255, 255, 0.9); }
+.r10 .curve { right: 22px; bottom: 22px; width: 220px; height: 150px; padding: 10px; border-radius: 24px; background: rgba(10, 11, 8, 0.6); opacity: 0; }
+.r10 .curve svg { width: 100%; height: 100%; }
+.r10 .lname { position: absolute; left: 50%; top: 1098px; transform: translateX(-50%); font-size: 32px; font-weight: 700; color: var(--cream); min-width: 360px; justify-content: center; }
+.r10 .lname s { text-decoration: none; color: var(--claude); font-size: 32px; }
+.r10 .lname { display: inline-grid; grid-template-columns: auto auto; }
+.r10 .lname b { grid-column: 2; grid-row: 1; white-space: nowrap; }
+.r10 .chiprow { position: absolute; left: 0; top: 1190px; width: 1080px; display: flex; justify-content: center; gap: 18px; }
+.r10 .gc { width: 150px; height: 100px; border-radius: 18px; overflow: hidden; position: relative; border: 2px solid rgba(241, 242, 234, 0.2); }
+.r10 .gc img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .gc u { position: absolute; inset: 0; border-radius: 16px; border: 5px solid var(--claude); opacity: 0; }
+
+/* LottieFiles: карточка с плитками и путь за ней, три плитки с анимациями, дорожка ключей. */
+.r10 .lgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 120px 34px 34px; }
+.r10 .llogo { position: absolute; left: 50%; top: 22px; width: 76px; height: 76px; border-radius: 20px; transform: translateX(-50%); }
+.r10 .lt { height: 116px; border-radius: 28px; background: color-mix(in srgb, var(--c) 34%, #FFFFFF); display: grid; place-items: center; font-size: 56px; color: var(--olive); }
+.r10 .lotpath { opacity: 0.9; }
+.r10 .tiles { position: absolute; left: 0; top: 560px; width: 1080px; display: flex; justify-content: center; gap: 30px; }
+.r10 .tl { width: 250px; height: 250px; border-radius: 56px; background: rgba(255, 255, 255, 0.9); box-shadow: 0 30px 70px rgba(60, 74, 12, 0.18), inset 0 0 0 2px rgba(255, 255, 255, 0.95); display: grid; place-items: center; }
+.r10 .lot { width: 190px; height: 190px; }
+.r10 .keys2 { position: absolute; left: 190px; top: 900px; width: 700px; height: 96px; border-radius: 48px; background: rgba(255, 255, 255, 0.86); box-shadow: 0 20px 50px rgba(60, 74, 12, 0.14); }
+.r10 .krail i { position: absolute; top: 36px; width: 24px; height: 24px; border-radius: 5px; background: #C9CBBE; transform: rotate(45deg); display: block; }
+.r10 .kph { position: absolute; left: 30px; top: 16px; width: 5px; height: 64px; border-radius: 3px; background: var(--olive); display: block; }
+.r10 .comm { position: absolute; font-size: 34px; font-weight: 700; color: var(--gr); }
+.r10 .comm .ic { font-size: 34px; color: var(--olive); }
+
+/* Phosphor: сетка, поиск, карточка, счёт, шесть начертаний. */
+.r10 .pgrid { position: absolute; left: 60px; top: 560px; width: 960px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 34px 0; justify-items: center; }
+.r10 .pg { font-size: 64px; color: #8A8D7C; opacity: 0; }
+.r10 .search { position: absolute; width: 680px; font-size: 32px; color: var(--gr); gap: 18px; }
+.r10 .search .ic { font-size: 32px; color: var(--olive); }
+.r10 .search span { flex: 1; color: var(--dim); font-weight: 500; }
+.r10 .search em { font-style: normal; font-size: 26px; padding: 4px 16px; border-radius: 16px; background: #E8E9DD; color: var(--gr); }
+.r10 .pname { font-family: var(--disp); font-weight: 800; font-size: 44px; margin-top: 26px; letter-spacing: -0.04em; }
+.r10 .purl { font-size: 26px; color: var(--dim); font-weight: 500; letter-spacing: 0; margin-top: 8px; }
+.r10 .pbig { font-size: 210px; }
+.r10 .pbig .plus { color: var(--lime); }
+.r10 #sc-ph .cap { font-size: 66px; }
+.r10 .wbox { position: absolute; left: 390px; top: 730px; width: 300px; height: 300px; border-radius: 70px; display: grid; place-items: center; }
+.r10 .wcat { position: absolute; left: 60px; top: 60px; width: 180px; height: 180px; color: var(--lime); opacity: 0; }
+.r10 .wnames { position: absolute; left: 0; top: 1062px; width: 1080px; display: flex; justify-content: center; gap: 22px; font-size: 30px; font-weight: 600; letter-spacing: 0; }
+.r10 .dgrid { position: absolute; left: 90px; top: 0; width: 900px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 22px 0; justify-items: center; transform: rotateX(50deg); transform-origin: 50% 0; }
+.r10 .dg { font-size: 54px; color: rgba(241, 242, 234, 0.6); opacity: 0; }
+
+/* React Bits: плитки эффектов, кадр с буквами из размытия, бликом и искрами. */
+.r10 .fx { position: absolute; left: 0; top: 1150px; width: 1080px; display: flex; justify-content: center; gap: 20px; }
+.r10 .fxt { width: 170px; height: 110px; border-radius: 26px; background-size: 200% 200% !important; box-shadow: 0 20px 40px rgba(60, 74, 12, 0.2); }
+.r10 .frame { left: 300px; top: 500px; width: 480px; height: 720px; border-radius: 48px; overflow: hidden; box-shadow: 0 60px 120px rgba(40, 50, 10, 0.35); }
+.r10 .frame > img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 50%; }
+.r10 .fshade { inset: 0; background: linear-gradient(rgba(10, 11, 8, 0) 40%, rgba(10, 11, 8, 0.75)); }
+.r10 .ftitle { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font-family: var(--disp); font-weight: 800; font-size: 62px; color: #F1F2EA; letter-spacing: -0.04em; overflow: hidden; }
+.r10 .ftitle .ch { display: inline-block; opacity: 0; }
+.r10 .shine { inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.8) 50%, transparent 70%); mix-blend-mode: overlay; }
+.r10 .sparks { inset: 0; }
+.r10 .spk { position: absolute; display: block; opacity: 0; background: #F6FFC8; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); filter: drop-shadow(0 0 6px #C7E24B); }
+.r10 .tags { position: absolute; inset: 0; z-index: 3; }
+.r10 .tag2 { position: absolute; font-size: 30px; font-weight: 700; color: var(--gr); }
+.r10 .tag2 .ic { font-size: 30px; color: var(--olive); }
+.r10 .tag2.t0 { left: 90px; top: 600px; }
+.r10 .tag2.t1 { left: 640px; top: 800px; }
+.r10 .tag2.t2 { left: 110px; top: 1060px; }
+
+/* «Отдал Claude»: строка промпта и файл. */
+.r10 .prompt2 { position: absolute; left: 150px; top: 500px; width: 780px; height: 110px; display: flex; align-items: center; gap: 22px; padding: 0 34px; border-radius: 34px; font-size: 44px; font-weight: 500; }
+.r10 .prompt2 .ch { opacity: 0; }
+.r10 .prompt2 .ptext { white-space: pre; }
+.r10 .prompt2 u { width: 4px; height: 50px; background: var(--claude); display: block; }
+.r10 .file { position: absolute; left: 560px; top: 650px; font-size: 32px; font-weight: 700; color: var(--cream); }
+.r10 .file .ic { font-size: 34px; color: var(--claude); }
+
+/* «Перешли другу»: кот с самолётиком, лист «Поделиться». */
+.r10 .scat img { filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.5)); }
+.r10 .sheet2 { position: absolute; left: 520px; top: 640px; width: 400px; padding: 30px; border-radius: 40px; }
+.r10 .sh-t { height: 60px; font-size: 34px; font-weight: 700; text-align: center; }
+.r10 .who { height: 104px; margin-top: 12px; display: flex; align-items: center; gap: 18px; padding: 0 18px; border-radius: 26px; background: rgba(241, 242, 234, 0.07); font-size: 28px; font-weight: 600; letter-spacing: 0; }
+.r10 .who > i { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 34px; color: #12130F; flex: none; }
+.r10 .who span { flex: 1; white-space: nowrap; }
+.r10 .who .ok { width: 44px; height: 44px; border-radius: 50%; background: var(--lime); color: #12130F; display: grid; place-items: center; font-size: 26px; opacity: 0; }
+.r10 .send { height: 92px; margin-top: 16px; border-radius: 46px; background: var(--lime); color: #12130F; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 36px; font-weight: 700; }
+.r10 .send .ic { font-size: 36px; }
+.r10 .plane { left: 330px; top: 860px; font-size: 110px; color: #F1F2EA; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4)); }
+
+/* Сундук, лучи, знаки сайтов и Telegram. */
+.r10 .rays { left: -460px; top: -260px; width: 2000px; height: 2000px; background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255, 200, 110, 0.07) 0deg 8deg, transparent 8deg 22deg);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0, transparent 46%); mask-image: radial-gradient(circle at 50% 50%, #000 0, transparent 46%); }
+.r10 .chest img { filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.55)); }
+.r10 .tgc { position: absolute; width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(160deg, #5BC1F5, #1F8FE0); display: grid; place-items: center; font-size: 96px; color: #FFFFFF;
+  box-shadow: 0 30px 70px rgba(20, 110, 200, 0.5), inset 0 3px 0 rgba(255, 255, 255, 0.4); }
+.r10 .fly { position: absolute; left: 0; top: 0; width: 120px; height: 120px; border-radius: 32px; background: rgba(241, 242, 234, 0.94); display: grid; place-items: center; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45); }
+.r10 .fly img { width: 76px; height: 76px; object-fit: contain; border-radius: 14px; }
+.r10 .hl .tgw { color: #5BC1F5; }
+
+/* Длинные первые строки заголовка («Эффекты и анимации», «Можно в коммерцию») шли впритык к краям. */
+.r10 .hl .l1 { font-size: 58px; }
+.r10 .stat span { display: inline-flex; }
+
+/* Строки крючка до своего слова светлее, чем в r11: первый кадр работает обложкой. */
+.r10 .kt > div { opacity: 0.62; }

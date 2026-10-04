@@ -28,7 +28,11 @@ const scenario = JSON.parse(fs.readFileSync(path.join(root, 'voice', `${reel.spl
 const pub = path.join(root, 'public', scenario['картинки'] || scenario['звук']);
 const sound = path.join(root, 'public', scenario['звук'], 'sound.m4a');
 
-const code = fs.readFileSync(path.join(src, 'shared', 'scenes.js'), 'utf8');
+// Данные сцен (иконки, анимации Lottie) могут лежать отдельно, в shared/data.js: они идут перед
+// сценами одним модулем. Импортов между файлами нет: модуль собирается строкой.
+const dataFile = path.join(src, 'shared', 'data.js');
+const code = (fs.existsSync(dataFile) ? `${fs.readFileSync(dataFile, 'utf8')}\n` : '')
+  + fs.readFileSync(path.join(src, 'shared', 'scenes.js'), 'utf8');
 const mod = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
 const css = fs.readFileSync(path.join(src, 'shared', 'scenes.css'), 'utf8');
 const fonts = fs.readFileSync(path.join(pub, 'fonts', 'fonts.css'), 'utf8').replaceAll('{{A}}', 'assets');
