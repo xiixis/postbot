@@ -61,16 +61,6 @@ const SAVE = '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.500L6 21z"/></sv
 // Псевдослучайное число по зерну: одно и то же в каждой вкладке рендера.
 const rnd = (seed) => { const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
-// Пост Маска в телефоне. Фото не ставим: инициалы на круге.
-const xpost = () => `<div class="xp">
-  <div class="sbar"><b>15:09</b><span>●●● ▮</span></div>
-  <div class="xh"><span>←</span><b>Пост</b><span>···</span></div>
-  <div class="who"><i class="av">EM</i><div><b>Elon Musk ${BADGE}</b><small>@elonmusk</small></div><span class="xl">𝕏</span></div>
-  <div class="said">Accurate (for now)</div>
-  <div class="quote"><div class="qh"><i></i><b>AI tier list</b><small>· 7,2 млн просмотров</small></div>
-    <div class="mini">${TIERS.map((t, k) => `<div><i style="background:${t[1]}"></i>${t[2].slice(0, 7).map(() => '<s></s>').join('')}</div>`).join('')}</div></div>
-</div>`;
-
 /** Разметка всех сцен. A — адрес папки с картинками. */
 export const markup = (A) => `
 <div class="bg bg-light"></div>
@@ -84,7 +74,7 @@ export const markup = (A) => `
     `<div class="flt ${l === 'claude' ? 'cl' : ''}" style="left:${x}px;top:${y}px;transform:rotate(${r}deg)"><img src="${A}/m/${FILE[l]}"></div>`).join('')}</div>
   <div class="hk"><div class="k1">Илон Маск</div><div class="k2">сам признал</div></div>
   <div class="hk hk2"><div class="k1"><span class="h">Grok</span> <span class="h">хуже,</span></div><div class="k3"><span class="h">чем</span> <span class="h">у</span> <span class="h">конкурентов</span></div></div>
-  <div class="ph abs" style="left:330px;top:480px"><div class="phone">${xpost()}</div></div>
+  <div class="ph abs" style="left:330px;top:480px"><div class="phone xreal"><img src="${A}/x/musk-full.jpg"><div class="said"></div></div></div>
   <div class="vs abs h" style="left:0;top:560px;width:1080px">
     <div class="abs vs1" style="left:419px;top:0">${row(A, T_.SSS, 'solo')}</div>
     <div class="abs" style="left:0;top:250px;width:1080px;text-align:center"><span class="down pill h"><b>↓</b> на 3 ранга ниже</span></div>
@@ -93,40 +83,22 @@ export const markup = (A) => `
 </div>
 
 <div class="sc" id="sc-post">
-  <div class="tab abs h" style="left:316px;top:470px;width:449px;height:817px"><div style="transform:scale(0.46);transform-origin:0 0;width:max-content">${mini(list(A, LADDER.slice().reverse()))}</div></div>
-</div>
-
-<div class="sc" id="sc-views">
-  <div class="big72" style="top:520px"><span class="odo"><span class="col">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7</span></span><span class="dec h">,2</span></div>
-  <div class="cap" style="top:830px;font-size:64px"><span class="h">млн</span> <span class="h">просмотров</span></div>
-  <div class="src pill h" style="position:absolute;left:390px;top:950px">${EYE}пост в 𝕏</div>
-  <div class="vcard glass abs h" style="left:190px;top:1050px;width:700px;height:230px">
-    <svg viewBox="0 0 700 230" style="width:100%;height:100%"><path class="vfill" d="M30 196 C 150 192, 230 184, 320 160 S 500 70, 660 34 L 660 206 L 30 206 Z" fill="rgba(199,226,75,.12)"/>
-      <path class="vline" d="M30 196 C 150 192, 230 184, 320 160 S 500 70, 660 34" fill="none" stroke="#C7E24B" stroke-width="7" stroke-linecap="round"/>
-      <circle class="vdot" cx="660" cy="34" r="14" fill="#F1F2EA"/><circle class="vdot2" cx="660" cy="34" r="30" fill="none" stroke="#C7E24B" stroke-width="4"/></svg>
-  </div>
+  <div class="tab abs h xreal2" style="left:290px;top:440px;width:500px;height:686px"><img src="${A}/x/deepstarts-full.jpg"></div>
+  <div class="big72 h vbig" style="left:470px;width:600px;top:560px;font-size:210px"><span class="odo"><span class="col">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7</span></span><span class="dec h">,2</span></div>
+  <div class="cap" style="left:470px;width:600px;top:790px;font-size:56px"><span class="h">млн</span> <span class="h">просмотров</span></div>
+  <div class="src pill h" style="position:absolute;left:640px;top:890px">${EYE}пост в 𝕏</div>
 </div>
 
 <div class="sc" id="sc-musk">
-  <div class="card glass abs h" style="left:150px;top:520px;width:780px;height:300px">
-    <div class="who" style="left:44px;top:40px"><i class="av">EM</i><div><b>Elon Musk ${BADGE}</b><small>@elonmusk</small></div></div>
-    <div class="acc"><span class="h">Accurate</span> <span class="fn h">(for now)</span></div>
-  </div>
-  <div class="tr2 pill h" style="position:absolute;left:0;top:880px;width:1080px;background:none;border:none;justify-content:center"><span class="tp">Точно.</span><span class="tp2">Пока что</span></div>
-  <div class="bars abs" data-layout-ignore style="left:190px;top:1020px;width:700px;height:200px">${Array.from({ length: 26 }, (_, i) =>
-    `<i style="left:${i * 27}px;height:${Math.round(18 + Math.pow(i / 25, 1.6) * 170)}px;opacity:${(0.25 + 0.75 * i / 25).toFixed(2)}"></i>`).join('')}</div>
+  <div class="card glass abs h" style="left:110px;top:480px;width:860px;height:182px;padding:0;overflow:hidden"><img src="${A}/x/musk-head.jpg" style="width:860px;display:block"></div>
+  <div class="acc" style="left:0;top:720px;width:1080px;text-align:center;font-size:96px"><span class="h">Accurate</span> <span class="fn h">(for now)</span></div>
+  <div class="tr2 pill h" style="position:absolute;left:0;top:900px;width:1080px;background:none;border:none;justify-content:center"><span class="tp">Точно.</span><span class="tp2">Пока что</span></div>
 </div>
 
 <div class="sc" id="sc-look">
-  <div class="clipw abs h" style="left:205px;top:470px;width:670px;height:770px">
-    <div class="tab abs pan" style="left:0;top:0;width:670px;height:1222px"><div style="transform:scale(0.69);transform-origin:0 0;width:max-content">${mini(list(A, LADDER.slice().reverse()))}</div></div>
+  <div class="clipw abs h" style="left:205px;top:470px;width:670px;height:640px;-webkit-mask-image:none;mask-image:none">
+    <div class="tab abs pan" style="left:0;top:0;width:670px;height:870px"><img src="${A}/x/tierlist.jpg" style="width:664px;display:block"><div class="gring" style="position:absolute;left:0;top:806px;width:664px;height:60px;padding:0;border:5px solid #8EC9F2;border-radius:12px;opacity:0;box-sizing:border-box"></div></div>
   </div>
-</div>
-
-<div class="sc light" id="sc-bottom">
-  <div class="ladder abs" style="left:430px;top:500px;width:220px">${LADDER.slice(1).reverse().map((n, k) => label(n, 'h rung', `top:${k * 66}px`)).join('')}</div>
-  <div class="dash abs h" data-layout-ignore style="left:380px;top:1046px;width:320px"></div>
-  ${label('Google', 'h gb', 'left:430px;top:1086px;width:220px;height:110px;font-size:40px')}
 </div>
 
 <div class="sc light" id="sc-google">
@@ -244,7 +216,7 @@ export const markup = (A) => `
 `;
 
 // Какие сцены светлые: группа рангов внизу и Siri. Остальное тёмное, как у автора.
-const LIGHT = ['bottom', 'google', 'gem', 'f', 'e', 'siri'];
+const LIGHT = ['google', 'gem', 'f', 'e', 'siri'];
 
 /** Заголовок сверху: слово встаёт, когда звучит. Номера слов — по тексту голоса (voice/r13.json). */
 export const headlines = (T) => {
@@ -317,13 +289,16 @@ export const buildScenes = (gsap, tl, root, T) => {
     siri: [{ y: 90 }, 0.55, 'power3.out'], race: [{ x: 110 }, 0.5, 'power4.out'], q: [{ scale: 0.92 }, 0.55, 'power3.out'],
     com: [{ y: 100 }, 0.55, 'power3.out'], share: [{ x: -110 }, 0.5, 'power4.out'], cta: [{ y: 100 }, 0.6, 'power3.out'],
   };
-  const order = ['hook', 'post', 'views', 'musk', 'look', 'bottom', 'google', 'gem', 'f', 'e', 'grok', 'a', 's', 'ss', 'top', 'fight', 'siri', 'race', 'q', 'com', 'share', 'cta'];
+  const order = ['hook', 'post', 'musk', 'look', 'google', 'gem', 'f', 'e', 'grok', 'a', 's', 'ss', 'top', 'fight', 'siri', 'race', 'q', 'com', 'share', 'cta'];
+  // Третья версия (владелец 04.10: «слишком быстрый темп смены кадров»): внутри блока сцены сменяются
+  // мягко, без пролёта камеры; пролёт остаётся только на границе блоков (новость → рейтинг → низ → Grok → верх → Siri → финал).
+  const SOFT = new Set(['musk', 'look', 'gem', 'f', 'e', 'a', 'ss', 'top', 'q', 'com', 'cta']);
   const SC = {};
   order.forEach((id, n) => {
     const el = $('#sc-' + id);
     SC[id] = el;
     // у призыва две фразы (cta и link): сцена держится до конца ролика
-    const end = id === 'cta' ? L : e(id);
+    const end = id === 'cta' ? L : e({ post: 'views', look: 'bottom' }[id] || id);
     const [from, dur, ease] = ENTER[id] || [{ scale: 0.955 }, 0.5, 'power3.out'];
     const to = { opacity: 1, filter: 'blur(0px)', duration: dur, ease };
     Object.keys(from).forEach((k) => { to[k] = k === 'scale' ? 1 : 0; });
@@ -333,8 +308,11 @@ export const buildScenes = (gsap, tl, root, T) => {
       tl.set(el, { opacity: 1 }, s(id));
       const { opacity, filter, ...move } = to;
       tl.fromTo(el, from, move, s(id));
-    } else if (n > 0) tl.fromTo(el, { opacity: 0, filter: 'blur(16px)', ...from }, to, s(id));
-    if (id !== 'cta') tl.to(el, { opacity: 0, scale: 1.16, filter: 'blur(18px)', duration: 0.24, ease: 'power2.in' }, end - 0.18);
+    } else if (SOFT.has(id)) tl.fromTo(el, { opacity: 0, filter: 'blur(8px)', scale: 0.985 }, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 0.45, ease: 'power2.out' }, s(id));
+    else if (n > 0) tl.fromTo(el, { opacity: 0, filter: 'blur(16px)', ...from }, to, s(id));
+    const next = order[n + 1];
+    if (id !== 'cta') tl.to(el, SOFT.has(next) ? { opacity: 0, scale: 1.02, filter: 'blur(8px)', duration: 0.3, ease: 'power2.in' }
+      : { opacity: 0, scale: 1.16, filter: 'blur(18px)', duration: 0.24, ease: 'power2.in' }, end - (SOFT.has(next) ? 0.22 : 0.18));
   });
 
   // Свет блоками, как у автора (вторая версия): синий — новость, светлый — нижние ранги и Google,
@@ -346,7 +324,7 @@ export const buildScenes = (gsap, tl, root, T) => {
   const swap = (off, on, at) => { tl.to(off, { opacity: 0, duration: 0.3 }, at - 0.1); tl.to(on, { opacity: 1, duration: 0.55 }, at); };
   const toLight = (at) => { tl.to(bgL, { opacity: 1, duration: 0.4, ease: 'power2.out' }, at - 0.1); tl.to(vig, { opacity: 0, duration: 0.3 }, at - 0.1); };
   const toDark = (at) => { tl.to(bgL, { opacity: 0, duration: 0.4, ease: 'power2.out' }, at - 0.1); tl.to(vig, { opacity: 1, duration: 0.5 }, at); };
-  toLight(s('bottom')); swap(gNews, gBlue, s('bottom'));
+  toLight(s('google')); swap(gNews, gBlue, s('google'));
   swap(gBlue, gMint, s('e'));
   toDark(s('grok')); swap(gMint, gAmber, s('grok'));
   swap(gAmber, gViolet, s('s'));
@@ -393,24 +371,21 @@ export const buildScenes = (gsap, tl, root, T) => {
     const sc = SC.post, t = s('post');
     tl.set($('.tab', sc), { opacity: 1 }, t);
     tl.fromTo($('.tab', sc), { y: 120, scale: 0.9 }, { y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }, t + 0.05);
-    tl.fromTo($('.tab', sc), { rotation: -2 }, { rotation: 1, duration: e('post') - t, ease: 'none' }, t);
+    tl.fromTo($('.tab', sc), { rotation: -2 }, { rotation: 0, duration: e('post') - t, ease: 'none' }, t);
+    // на «семи миллионах» пост уезжает влево и уменьшается, справа встаёт счёт — одна вещь меняется
+    tl.to($('.tab', sc), { x: -220, scale: 0.8, transformOrigin: '50% 0%', duration: 0.6, ease: 'power3.inOut' }, s('views') - 0.05);
   }
 
   // 3. Семь и два миллиона: число досчитывает, шарики насыпаются горкой.
   {
-    const sc = SC.views, t = s('views');
+    const sc = SC.post, t = s('views');
+    inn($('.vbig', sc), t - 0.05, { x: 60 }, 0.4);
     // число крутится барабаном, на ходу размыто, как у автора
     tl.fromTo($('.odo .col', sc), { yPercent: 0, filter: 'blur(6px)' }, { yPercent: -87.5, filter: 'blur(0px)', duration: 0.75, ease: 'power3.out' }, t + 0.05);
     tl.fromTo($('.big72', sc), { scale: 0.84 }, { scale: 1, duration: 0.8, ease: 'power3.out' }, t + 0.05);
     pop($('.dec', sc), t + 0.75);
     $$('.cap span', sc).forEach((el, k) => word(el, w('views', 2 + k)));
     pop($('.src', sc), w('views', 3) + 0.2);
-    inn($('.vcard', sc), t + 0.2, { y: 60 }, 0.5);
-    { const ln = $('.vline', sc), len = ln.getTotalLength();
-      tl.fromTo(ln, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: e('views') - t - 0.9, ease: 'power2.in' }, t + 0.35); }
-    tl.fromTo($('.vfill', sc), { opacity: 0 }, { opacity: 1, duration: 0.6 }, e('views') - 1.0);
-    pop($('.vdot', sc), e('views') - 0.55);
-    tl.fromTo($('.vdot2', sc), { opacity: 0.9, scale: 0.5, transformOrigin: '50% 50%' }, { opacity: 0, scale: 1.6, duration: 0.7, ease: 'power2.out' }, e('views') - 0.5);
   }
 
   // 4. Ответ Маска: «Accurate», потом плашка «(for now)», ниже перевод и растущий график.
@@ -421,24 +396,21 @@ export const buildScenes = (gsap, tl, root, T) => {
     pop($('.acc .fn', sc), w('musk', 4) - 0.1);
     tl.fromTo($('.acc .fn', sc), { boxShadow: '0 0 0 0 rgba(199,226,75,0)' }, { boxShadow: '0 0 40px 6px rgba(199,226,75,.45)', duration: 0.4 }, w('musk', 4));
     inn($('.tr2', sc), w('musk', 3) - 0.05, { y: 30 }, 0.4);
-    $$('.bars i', sc).forEach((b, i) => tl.fromTo(b, { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: 'power3.out' }, t + 0.3 + i * 0.035));
   }
 
   // 5. Весь рейтинг: камера идёт по списку сверху вниз.
   {
     const sc = SC.look, t = s('look');
     inn($('.clipw', sc), t + 0.05, { scale: 0.94 }, 0.6);
-    tl.fromTo($('.pan', sc), { y: 0 }, { y: -450, duration: e('look') - t + 0.2, ease: 'power1.inOut' }, t + 0.2);
+    tl.fromTo($('.pan', sc), { y: 0 }, { y: -230, duration: e('bottom') - t - 0.3, ease: 'power1.inOut' }, t + 0.2);
   }
 
   // 6. Отдельный ранг: лестница рангов, под ней пунктир и отдельно Google.
   {
-    const sc = SC.bottom, t = s('bottom');
-    $$('.rung', sc).forEach((el, k) => inn(el, t + 0.05 + k * 0.05, { y: -30 }, 0.4));
-    dim($$('.rung', sc), w('bottom', 2), 0.35);
-    inn($('.dash', sc), w('bottom', 3) - 0.1, { scaleX: 0.2 }, 0.4);
-    pop($('.gb', sc), w('bottom', 3));
-    tl.fromTo($('.gb', sc), { boxShadow: '0 0 0 0 rgba(142,201,242,0)' }, { boxShadow: '0 0 80px 20px rgba(142,201,242,.7)', duration: 0.5 }, w('bottom', 4));
+    const sc = SC.look, t = s('bottom');
+    tl.fromTo($('.gring', sc), { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out' }, w('bottom', 3) - 0.1);
+    tl.to($('.gring', sc), { boxShadow: '0 0 60px 10px rgba(142,201,242,.6)', duration: 0.4, yoyo: true, repeat: 1 }, w('bottom', 4));
+    void t;
   }
 
   // 7. Ранг Google крупно.
@@ -673,7 +645,7 @@ export const buildOverlay = (gsap, tl, root, T) => {
     tl.fromTo(b, { scaleX: 0 }, { scaleX: 1, duration: части[i + 1] - части[i], ease: 'none' }, части[i]));
   // Цвет полосы и бегунка следует за светом сцены.
   const pg = root.querySelector('.pg');
-  [['post', 0], ['bottom', 1], ['grok', 0], ['siri', 1], ['race', 0]].forEach(([id, light]) =>
+  [['post', 0], ['google', 1], ['grok', 0], ['siri', 1], ['race', 0]].forEach(([id, light]) =>
     tl.set([prog, pg], { '--pf': light ? '#56690C' : '#C7E24B', '--pt': light ? 'rgba(18,19,15,.16)' : 'rgba(241,242,234,.2)' }, s(id)));
 
   // Бегунок рангов: от отдельного ранга Google до SSS. Точка встаёт на ранг, когда о нём говорят.

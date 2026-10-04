@@ -261,3 +261,10 @@
 .r10 .big72 .odo .col { display: block; line-height: 1; background: linear-gradient(#FFFFFF 25%, #C7E24B) 0 0 / 100% 1em repeat-y;
   -webkit-background-clip: text; background-clip: text; color: transparent; }
 .r10 .xp .said { border-radius: 12px; padding: 2px 6px; margin-left: -6px; white-space: nowrap; display: inline-block; }
+
+/* Третья версия: настоящие снимки постов X (официальное встраивание, public/rating/x/ИСТОЧНИКИ.md). */
+.r10 .xreal { background: #15202B; padding-top: 34px; }
+.r10 .xreal img { width: 100%; height: auto; display: block; }
+.r10 .xreal .said { position: absolute; left: 6px; top: 62px; width: 132px; height: 26px; border-radius: 8px; }
+.r10 .xreal2 { overflow: hidden; border-radius: 34px; }
+.r10 .xreal2 img { width: 100%; display: block; }
