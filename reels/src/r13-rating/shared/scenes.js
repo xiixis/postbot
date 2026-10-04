@@ -60,9 +60,6 @@ const SAVE = '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.500L6 21z"/></sv
 
 // Псевдослучайное число по зерну: одно и то же в каждой вкладке рендера.
 const rnd = (seed) => { const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-// Шарики в цветах бренда: у автора разноцветные, у нас лайм, крем, олива и терракота Claude.
-const BALL = ['#C7E24B', '#F1F2EA', '#89A81C', '#D97757', '#56690C', '#E4ECB8'];
-const ball = (i, x, y, r, extra = '', style = '') => `<i class="ball ${extra}" style="left:${x}px;top:${y}px;width:${r}px;height:${r}px;--c:${BALL[i % BALL.length]};${style}"></i>`;
 
 // Пост Маска в телефоне. Фото не ставим: инициалы на круге.
 const xpost = () => `<div class="xp">
@@ -83,7 +80,8 @@ export const markup = (A) => `
 <div class="spot" data-layout-ignore></div>
 
 <div class="sc" id="sc-hook" style="opacity:1">
-  <div class="abs balls" data-layout-ignore style="inset:0">${[[60, 560, 70], [930, 640, 54], [120, 1180, 96], [860, 1090, 84], [300, 1320, 40], [760, 470, 34]].map(([x, y, r], i) => ball(i, x, y, r, 'soft')).join('')}</div>
+  <div class="abs floats" data-layout-ignore style="inset:0">${[['claude', 40, 560, -9], ['openai', 880, 610, 8], ['gemini', 90, 1150, 7], ['grok', 850, 1080, -7], ['deepseek', 300, 1330, 5], ['kimi', 720, 1350, -5]].map(([l, x, y, r]) =>
+    `<div class="flt ${l === 'claude' ? 'cl' : ''}" style="left:${x}px;top:${y}px;transform:rotate(${r}deg)"><img src="${A}/m/${FILE[l]}"></div>`).join('')}</div>
   <div class="hk"><div class="k1">Илон Маск</div><div class="k2">согласился</div></div>
   <div class="hk hk2"><div class="k1"><span class="h">Grok</span> <span class="h">хуже,</span></div><div class="k3"><span class="h">чем</span> <span class="h">у</span> <span class="h">конкурентов</span></div></div>
   <div class="ph abs" style="left:330px;top:480px"><div class="phone">${xpost()}</div></div>
@@ -102,10 +100,11 @@ export const markup = (A) => `
   <div class="big72" style="top:520px"><span class="c7">0</span><span class="dec h">,2</span></div>
   <div class="cap" style="top:830px;font-size:64px"><span class="h">млн</span> <span class="h">просмотров</span></div>
   <div class="src pill h" style="position:absolute;left:390px;top:950px">${EYE}пост в 𝕏</div>
-  <div class="heap abs" data-layout-ignore style="left:300px;top:1060px;width:480px;height:200px">${Array.from({ length: 16 }, (_, i) => {
-    const r = 56 + Math.round(rnd(i + 7) * 26); const x = Math.round(rnd(i + 2) * 400); const y = Math.round(90 - Math.sin((x / 400) * Math.PI) * 80 + rnd(i + 9) * 50);
-    return ball(i, x, y, r, 'h');
-  }).join('')}</div>
+  <div class="vcard glass abs h" style="left:190px;top:1050px;width:700px;height:230px">
+    <svg viewBox="0 0 700 230" style="width:100%;height:100%"><path class="vfill" d="M30 196 C 150 192, 230 184, 320 160 S 500 70, 660 34 L 660 206 L 30 206 Z" fill="rgba(199,226,75,.12)"/>
+      <path class="vline" d="M30 196 C 150 192, 230 184, 320 160 S 500 70, 660 34" fill="none" stroke="#C7E24B" stroke-width="7" stroke-linecap="round"/>
+      <circle class="vdot" cx="660" cy="34" r="14" fill="#F1F2EA"/><circle class="vdot2" cx="660" cy="34" r="30" fill="none" stroke="#C7E24B" stroke-width="4"/></svg>
+  </div>
 </div>
 
 <div class="sc" id="sc-musk">
@@ -214,7 +213,7 @@ export const markup = (A) => `
 
 <div class="sc" id="sc-com">
   <div class="cbox glass abs h" style="left:150px;top:520px;width:780px;height:560px">
-    <div class="inp"><i class="ball" style="position:relative;left:0;top:0;width:66px;height:66px;--c:#C7E24B"></i><div class="field"><span class="ph2">Мой ранг:</span> ${[...'SSS — Claude'].map((c) => `<span class="ch h">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</div></div>
+    <div class="inp"><i class="avc"><img src="${A}/cat-face.png"></i><div class="field"><span class="ph2">Мой ранг:</span> ${[...'SSS — Claude'].map((c) => `<span class="ch h">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</div></div>
     <div class="rk">${LADDER.slice().reverse().map((n) => `<span class="rkc h${n === 'SSS' ? ' on' : ''}${n === 'Google' ? ' g' : ''}">${n}</span>`).join('')}</div>
     <div class="sendb h">${SEND}Отправить</div>
   </div>
@@ -224,7 +223,7 @@ export const markup = (A) => `
 <div class="sc" id="sc-share">
   <div class="sbox glass abs h" style="left:150px;top:520px;width:780px;height:560px">
     <div class="st">Поделиться</div>
-    <div class="avs">${[0, 1, 2, 3].map((i) => `<i class="ball av2 h" style="position:relative;left:0;top:0;width:110px;height:110px;--c:${['#F1F2EA', '#89A81C', '#D97757', '#C7E24B'][i]}">${i === 3 ? '<u></u>' : ''}</i>`).join('')}</div>
+    <div class="avs">${[0, 1, 2, 3].map((i) => `<i class="av2 avp h" style="--c:${['#F1F2EA', '#89A81C', '#D97757', '#C7E24B'][i]}"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4.2" fill="currentColor"/><path d="M3.8 21c.9-4.300 4.300-6.400 8.200-6.400s7.300 2.100 8.200 6.400z" fill="currentColor"/></svg>${i === 3 ? '<u></u>' : ''}</i>`).join('')}</div>
     <div class="msg"><span class="ph3">Сообщение</span>${[...'Siri, какая погода?'].map((c) => `<span class="ch h">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</div>
     <div class="sendb h" style="top:440px">${SEND}Отправить</div>
   </div>
@@ -375,7 +374,7 @@ export const buildScenes = (gsap, tl, root, T) => {
     const sc = SC.hook, go = w('hook', 4) - 0.15;
     tl.fromTo($('.hk', sc), { scale: 1.04 }, { scale: 1, duration: 0.6, ease: 'expo.out' }, 0);
     tl.fromTo($('.ph', sc), { y: 40 }, { y: 0, duration: 0.8, ease: 'power3.out' }, 0);
-    $$('.balls .ball', sc).forEach((b, i) => tl.fromTo(b, { y: 0 }, { y: -40 - i * 8, duration: go, ease: 'none' }, 0));
+    $$('.floats .flt', sc).forEach((b, i) => tl.fromTo(b, { y: 0 }, { y: -40 - i * 8, duration: go, ease: 'none' }, 0));
     tl.to($('.hk', sc), { opacity: 0, y: -30, filter: 'blur(12px)', duration: 0.3, ease: 'power2.in' }, go - 0.1);
     $$('.hk2 span', sc).forEach((el, k) => word(el, w('hook', [4, 5, 6, 7, 8][k])));
     tl.to($('.ph', sc), { x: -420, scale: 0.7, opacity: 0, filter: 'blur(14px)', duration: 0.55, ease: 'power3.in' }, go);
@@ -404,7 +403,12 @@ export const buildScenes = (gsap, tl, root, T) => {
     pop($('.dec', sc), t + 0.75);
     $$('.cap span', sc).forEach((el, k) => word(el, w('views', 2 + k)));
     pop($('.src', sc), w('views', 3) + 0.2);
-    $$('.heap .ball', sc).forEach((b, i) => tl.fromTo(b, { opacity: 0, y: -520 - i * 30 }, { opacity: 1, y: 0, duration: 0.55, ease: 'bounce.out' }, t + 0.25 + i * 0.05));
+    inn($('.vcard', sc), t + 0.2, { y: 60 }, 0.5);
+    { const ln = $('.vline', sc), len = ln.getTotalLength();
+      tl.fromTo(ln, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: e('views') - t - 0.9, ease: 'power2.in' }, t + 0.35); }
+    tl.fromTo($('.vfill', sc), { opacity: 0 }, { opacity: 1, duration: 0.6 }, e('views') - 1.0);
+    pop($('.vdot', sc), e('views') - 0.55);
+    tl.fromTo($('.vdot2', sc), { opacity: 0.9, scale: 0.5, transformOrigin: '50% 50%' }, { opacity: 0, scale: 1.6, duration: 0.7, ease: 'power2.out' }, e('views') - 0.5);
   }
 
   // 4. Ответ Маска: «Accurate», потом плашка «(for now)», ниже перевод и растущий график.

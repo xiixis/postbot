@@ -238,3 +238,16 @@
 .r10 .cc { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: center; opacity: 0; }
 .r10 .cc p { margin: 0; padding: 14px 34px 18px; border-radius: 30px; background: rgba(10, 11, 8, 0.84); border: 2px solid rgba(241, 242, 234, 0.14);
   font-size: 44px; font-weight: 700; line-height: 1.22; letter-spacing: -0.01em; text-align: center; color: rgba(241, 242, 234, 0.5); max-width: 900px; }
+
+/* 04.10: шары убраны (владелец: «шарики выглядят странно»). Вместо них то, что работает на смысл:
+   в крючке плавают знаки самих моделей, под «7,2 млн» — линия роста просмотров, в комментарии и в
+   «скинь другу» — аватарки, а не цветные сферы. */
+.r10 .flt { position: absolute; width: 150px; height: 150px; border-radius: 38px; background: #15160F; border: 2px solid rgba(241, 242, 234, 0.12);
+  display: grid; place-items: center; filter: blur(4px); opacity: 0.6; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45); }
+.r10 .flt.cl { background: #D97757; }
+.r10 .flt img { width: 84px; height: 84px; }
+.r10 .vcard { border-radius: 40px; padding: 0; overflow: hidden; }
+.r10 .avc { width: 66px; height: 66px; border-radius: 50%; background: #12130F; border: 2px solid rgba(199, 226, 75, 0.5); display: grid; place-items: center; overflow: hidden; flex: none; }
+.r10 .avc img { width: 52px; height: 52px; object-fit: contain; }
+.r10 .avp { position: relative; width: 110px; height: 110px; border-radius: 50%; background: var(--c); display: grid; place-items: center; color: #12130F; }
+.r10 .avp svg { width: 58px; height: 58px; }
