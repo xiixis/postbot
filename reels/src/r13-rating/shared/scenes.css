@@ -251,3 +251,13 @@
 .r10 .avc img { width: 52px; height: 52px; object-fit: contain; }
 .r10 .avp { position: relative; width: 110px; height: 110px; border-radius: 50%; background: var(--c); display: grid; place-items: center; color: #12130F; }
 .r10 .avp svg { width: 58px; height: 58px; }
+
+/* Вторая версия: свет блоками (синий — новость, янтарный — Grok и A, фиолетовый — вершина),
+   барабан числа и подсветка строки Маска в крючке. Нижних субтитров нет. */
+.r10 .glow-news i { background: radial-gradient(closest-side, rgba(47, 107, 255, 0.5), rgba(30, 60, 160, 0.26) 46%, rgba(30, 60, 160, 0) 72%); }
+.r10 .glow-amber i { background: radial-gradient(closest-side, rgba(240, 160, 60, 0.42), rgba(160, 90, 20, 0.22) 46%, rgba(160, 90, 20, 0) 72%); }
+.r10 .glow-violet i { background: radial-gradient(closest-side, rgba(140, 90, 255, 0.55), rgba(80, 40, 170, 0.3) 46%, rgba(80, 40, 170, 0) 72%); }
+.r10 .big72 .odo { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; background: none; -webkit-background-clip: border-box; background-clip: border-box; color: inherit; }
+.r10 .big72 .odo .col { display: block; line-height: 1; background: linear-gradient(#FFFFFF 25%, #C7E24B) 0 0 / 100% 1em repeat-y;
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+.r10 .xp .said { border-radius: 12px; padding: 2px 6px; margin-left: -6px; white-space: nowrap; display: inline-block; }

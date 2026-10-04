@@ -74,7 +74,7 @@ const xpost = () => `<div class="xp">
 /** Разметка всех сцен. A — адрес папки с картинками. */
 export const markup = (A) => `
 <div class="bg bg-light"></div>
-<div class="glow glow-lime" data-layout-ignore style="opacity:1"><i></i></div><div class="glow glow-blue" data-layout-ignore><i></i></div><div class="glow glow-mint" data-layout-ignore><i></i></div><div class="glow glow-warm" data-layout-ignore><i></i></div>
+<div class="glow glow-lime" data-layout-ignore><i></i></div><div class="glow glow-news" data-layout-ignore style="opacity:1"><i></i></div><div class="glow glow-amber" data-layout-ignore><i></i></div><div class="glow glow-violet" data-layout-ignore><i></i></div><div class="glow glow-blue" data-layout-ignore><i></i></div><div class="glow glow-mint" data-layout-ignore><i></i></div><div class="glow glow-warm" data-layout-ignore><i></i></div>
 <div class="vignette" style="opacity:1"></div>
 <div class="ghostbg" data-layout-ignore><div class="gl">ABCABCA</div><div class="gl" style="margin-left:-260px">CBACBAC</div><div class="gl">BCACEAB</div></div>
 <div class="spot" data-layout-ignore></div>
@@ -82,7 +82,7 @@ export const markup = (A) => `
 <div class="sc" id="sc-hook" style="opacity:1">
   <div class="abs floats" data-layout-ignore style="inset:0">${[['claude', 40, 560, -9], ['openai', 880, 610, 8], ['gemini', 90, 1150, 7], ['grok', 850, 1080, -7], ['deepseek', 300, 1330, 5], ['kimi', 720, 1350, -5]].map(([l, x, y, r]) =>
     `<div class="flt ${l === 'claude' ? 'cl' : ''}" style="left:${x}px;top:${y}px;transform:rotate(${r}deg)"><img src="${A}/m/${FILE[l]}"></div>`).join('')}</div>
-  <div class="hk"><div class="k1">Илон Маск</div><div class="k2">согласился</div></div>
+  <div class="hk"><div class="k1">Илон Маск</div><div class="k2">сам признал</div></div>
   <div class="hk hk2"><div class="k1"><span class="h">Grok</span> <span class="h">хуже,</span></div><div class="k3"><span class="h">чем</span> <span class="h">у</span> <span class="h">конкурентов</span></div></div>
   <div class="ph abs" style="left:330px;top:480px"><div class="phone">${xpost()}</div></div>
   <div class="vs abs h" style="left:0;top:560px;width:1080px">
@@ -97,7 +97,7 @@ export const markup = (A) => `
 </div>
 
 <div class="sc" id="sc-views">
-  <div class="big72" style="top:520px"><span class="c7">0</span><span class="dec h">,2</span></div>
+  <div class="big72" style="top:520px"><span class="odo"><span class="col">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7</span></span><span class="dec h">,2</span></div>
   <div class="cap" style="top:830px;font-size:64px"><span class="h">млн</span> <span class="h">просмотров</span></div>
   <div class="src pill h" style="position:absolute;left:390px;top:950px">${EYE}пост в 𝕏</div>
   <div class="vcard glass abs h" style="left:190px;top:1050px;width:700px;height:230px">
@@ -266,8 +266,8 @@ export const headlines = (T) => {
     H('s', [['В', w('s', 0)], ['S', w('s', 1)]], [['новый', w('s', 2)], ['Fable', w('s', 3)]]),
     H('ss', [['Ещё', w('ss', 0)], ['выше', w('ss', 1)]], [['GPT-6', w('ss', 2)], ['Astra', w('ss', 4)]]),
     H('top', [['На', w('top', 1)], ['вершине', w('top', 3)]], [['только', w('top', 4)], ['один', w('top', 5), 'lm']]),
-    H('fight', [['Бьются', w('fight', 1)]], [['за', w('fight', 2)], ['SSS', w('fight', 3), 'lm']]),
-    H('siri', [['А', w('siri', 0)], ['Siri', w('siri', 1)]], [['ищет', w('siri', 4)], ['в', w('siri', 6)], ['интернете', w('siri', 7)]]),
+    H('fight', [['Бьются', w('fight', 2)]], [['за', w('fight', 3)], ['SSS', w('fight', 4), 'lm']]),
+    H('siri', [['А', s('siri') + 0.02], ['Siri', w('siri', 0)]], [['ищет', w('siri', 3)], ['в', w('siri', 5)], ['интернете', w('siri', 6)]]),
     H('race', [['«Пока', w('race', 2)], ['что»', w('race', 3)]], [['гонка', w('race', 5)], ['не', w('race', 6)], ['закончена', w('race', 7)]]),
     H('q', [['А', w('q', 0)], ['ты', w('q', 1)]], [['на', w('q', 2)], ['какой?', w('q', 3)]]),
     H('com', [['Пиши', w('com', 0)], ['в', w('com', 1)], ['комменты', w('com', 2)]], [['свой', w('com', 3)], ['ранг', w('com', 4)]]),
@@ -334,28 +334,26 @@ export const buildScenes = (gsap, tl, root, T) => {
       const { opacity, filter, ...move } = to;
       tl.fromTo(el, from, move, s(id));
     } else if (n > 0) tl.fromTo(el, { opacity: 0, filter: 'blur(16px)', ...from }, to, s(id));
-    if (id !== 'cta') tl.to(el, { opacity: 0, scale: 1.05, filter: 'blur(16px)', duration: 0.34, ease: 'power2.in' }, end - 0.24);
+    if (id !== 'cta') tl.to(el, { opacity: 0, scale: 1.16, filter: 'blur(18px)', duration: 0.24, ease: 'power2.in' }, end - 0.18);
   });
 
-  // Фон: светлая группа рангов внизу и светлая сцена Siri. Пятна света: лайм на тёмном,
-  // голубое на ранге Google (цвет ранга с тир-листа), мятное на светлых.
+  // Свет блоками, как у автора (вторая версия): синий — новость, светлый — нижние ранги и Google,
+  // янтарный — Grok и A, фиолетовый — S, SS, SSS, светлый — Siri, лайм бренда — финал.
+  // Было: почти везде один лайм, и вершина рейтинга выглядела так же, как начало.
   const bgL = $('.bg-light'), vig = $('.vignette');
   const gLime = $('.glow-lime'), gBlue = $('.glow-blue'), gMint = $('.glow-mint'), gWarm = $('.glow-warm');
-  [['bottom', 'grok', gBlue], ['siri', 'race', gMint]].forEach(([a, b, g]) => {
-    tl.to(bgL, { opacity: 1, duration: 0.45, ease: 'power2.out' }, s(a) - 0.1);
-    tl.to([gLime, vig], { opacity: 0, duration: 0.3 }, s(a) - 0.1);
-    tl.to(g, { opacity: 1, duration: 0.6 }, s(a));
-    tl.to(bgL, { opacity: 0, duration: 0.45, ease: 'power2.out' }, s(b) - 0.1);
-    tl.to(g, { opacity: 0, duration: 0.3 }, s(b) - 0.1);
-    tl.to([gLime, vig], { opacity: 1, duration: 0.5 }, s(b));
-  });
-  // на ранге E голубое пятно сменяется мятным
-  tl.to(gBlue, { opacity: 0, duration: 0.4 }, s('e') - 0.1);
-  tl.to(gMint, { opacity: 1, duration: 0.5 }, s('e'));
-  tl.to(gMint, { opacity: 0, duration: 0.3 }, s('grok') - 0.1);
-  // вершина: тёплое пятно Claude под SSS
+  const gNews = $('.glow-news'), gAmber = $('.glow-amber'), gViolet = $('.glow-violet');
+  const swap = (off, on, at) => { tl.to(off, { opacity: 0, duration: 0.3 }, at - 0.1); tl.to(on, { opacity: 1, duration: 0.55 }, at); };
+  const toLight = (at) => { tl.to(bgL, { opacity: 1, duration: 0.4, ease: 'power2.out' }, at - 0.1); tl.to(vig, { opacity: 0, duration: 0.3 }, at - 0.1); };
+  const toDark = (at) => { tl.to(bgL, { opacity: 0, duration: 0.4, ease: 'power2.out' }, at - 0.1); tl.to(vig, { opacity: 1, duration: 0.5 }, at); };
+  toLight(s('bottom')); swap(gNews, gBlue, s('bottom'));
+  swap(gBlue, gMint, s('e'));
+  toDark(s('grok')); swap(gMint, gAmber, s('grok'));
+  swap(gAmber, gViolet, s('s'));
   tl.to(gWarm, { opacity: 1, duration: 0.6 }, s('top'));
   tl.to(gWarm, { opacity: 0, duration: 0.4 }, e('fight') - 0.1);
+  toLight(s('siri')); swap(gViolet, gMint, s('siri'));
+  toDark(s('race')); swap(gMint, gLime, s('race'));
   // фон с буквами рангов — на Grok и ранге A, как у автора
   const ghost = $('.ghostbg');
   tl.fromTo(ghost, { opacity: 0, x: 0 }, { opacity: 1, duration: 0.5 }, s('grok'));
@@ -371,20 +369,23 @@ export const buildScenes = (gsap, tl, root, T) => {
   // 1. Крючок: заголовок читается с нулевого кадра. На слове «Grok» телефон уходит,
   // встаёт сравнение: SSS у Claude и Grok тремя рангами ниже.
   {
-    const sc = SC.hook, go = w('hook', 4) - 0.15;
+    const sc = SC.hook, go = w('hook', 5) - 0.15;
     tl.fromTo($('.hk', sc), { scale: 1.04 }, { scale: 1, duration: 0.6, ease: 'expo.out' }, 0);
-    tl.fromTo($('.ph', sc), { y: 40 }, { y: 0, duration: 0.8, ease: 'power3.out' }, 0);
+    // телефон стоит в наклоне и выпрямляется, камера наезжает; строка Маска загорается на «признал»
+    tl.fromTo($('.ph', sc), { y: 40, rotationY: -24, rotationX: 8, transformPerspective: 1400 }, { y: 0, rotationY: 0, rotationX: 0, duration: 1.1, ease: 'power3.out' }, 0);
+    tl.fromTo($('.ph .phone', sc), { scale: 1 }, { scale: 1.08, duration: go, ease: 'none' }, 0);
+    tl.fromTo($('.said', sc), { backgroundColor: 'rgba(199,226,75,0)', boxShadow: '0 0 0 0px rgba(199,226,75,0)' }, { backgroundColor: 'rgba(199,226,75,0.2)', boxShadow: '0 0 0 3px rgba(199,226,75,1)', duration: 0.25, ease: 'power2.out' }, w('hook', 3) - 0.05);
     $$('.floats .flt', sc).forEach((b, i) => tl.fromTo(b, { y: 0 }, { y: -40 - i * 8, duration: go, ease: 'none' }, 0));
     tl.to($('.hk', sc), { opacity: 0, y: -30, filter: 'blur(12px)', duration: 0.3, ease: 'power2.in' }, go - 0.1);
-    $$('.hk2 span', sc).forEach((el, k) => word(el, w('hook', [4, 5, 6, 7, 8][k])));
+    $$('.hk2 span', sc).forEach((el, k) => word(el, w('hook', [5, 6, 7, 8, 9][k])));
     tl.to($('.ph', sc), { x: -420, scale: 0.7, opacity: 0, filter: 'blur(14px)', duration: 0.55, ease: 'power3.in' }, go);
     tl.set($('.vs', sc), { opacity: 1 }, go);
     inn($('.vs1', sc), go + 0.15, { y: -80, scale: 0.9 }, 0.55);
     inn($('.vs2', sc), go + 0.3, { y: 90 }, 0.6);
-    pop($('.down', sc), w('hook', 5));
-    $$('.vs2 .m-grok46, .vs2 .m-grok47', sc).forEach((el) => hi(el, w('hook', 6)));
-    dim($$('.vs2 .mt', sc).filter((m) => !m.classList.contains('m-grok46') && !m.classList.contains('m-grok47')), w('hook', 6), 0.35);
-    hi($('.vs1 .mt', sc), w('hook', 8), 1.08);
+    pop($('.down', sc), w('hook', 6));
+    $$('.vs2 .m-grok46, .vs2 .m-grok47', sc).forEach((el) => hi(el, w('hook', 7)));
+    dim($$('.vs2 .mt', sc).filter((m) => !m.classList.contains('m-grok46') && !m.classList.contains('m-grok47')), w('hook', 7), 0.35);
+    hi($('.vs1 .mt', sc), w('hook', 9), 1.08);
   }
 
   // 2. Тир-лист появляется в рамке планшета.
@@ -398,7 +399,8 @@ export const buildScenes = (gsap, tl, root, T) => {
   // 3. Семь и два миллиона: число досчитывает, шарики насыпаются горкой.
   {
     const sc = SC.views, t = s('views');
-    tl.fromTo($('.c7', sc), { textContent: 0 }, { textContent: 7, duration: 0.7, ease: 'power2.out', snap: { textContent: 1 } }, t + 0.05);
+    // число крутится барабаном, на ходу размыто, как у автора
+    tl.fromTo($('.odo .col', sc), { yPercent: 0, filter: 'blur(6px)' }, { yPercent: -87.5, filter: 'blur(0px)', duration: 0.75, ease: 'power3.out' }, t + 0.05);
     tl.fromTo($('.big72', sc), { scale: 0.84 }, { scale: 1, duration: 0.8, ease: 'power3.out' }, t + 0.05);
     pop($('.dec', sc), t + 0.75);
     $$('.cap span', sc).forEach((el, k) => word(el, w('views', 2 + k)));
@@ -542,11 +544,11 @@ export const buildScenes = (gsap, tl, root, T) => {
     const dir = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
     $$('.fgt', sc).forEach((el, i) => {
       inn(el, t + 0.05 + i * 0.06, { x: -dir[i][0] * 120, y: -dir[i][1] * 80, scale: 0.8 }, 0.45);
-      tl.to(el, { x: dir[i][0] * 18, y: dir[i][1] * 14, rotation: dir[i][0] * 5, duration: 0.22, ease: 'power2.in', yoyo: true, repeat: 3 }, Math.max(w('fight', 1) - 0.1, t + 0.75) + i * 0.03);
+      tl.to(el, { x: dir[i][0] * 18, y: dir[i][1] * 14, rotation: dir[i][0] * 5, duration: 0.22, ease: 'power2.in', yoyo: true, repeat: 3 }, Math.max(w('fight', 2) - 0.1, t + 0.75) + i * 0.03);
     });
     $$('.spark', sc).forEach((el, k) => {
-      tl.fromTo(el, { opacity: 0, scaleX: 0.2 }, { opacity: 1, scaleX: 1, duration: 0.12 }, w('fight', 1) + 0.1 + (k % 3) * 0.44);
-      tl.to(el, { opacity: 0, duration: 0.2 }, w('fight', 1) + 0.25 + (k % 3) * 0.44);
+      tl.fromTo(el, { opacity: 0, scaleX: 0.2 }, { opacity: 1, scaleX: 1, duration: 0.12 }, w('fight', 2) + 0.1 + (k % 3) * 0.44);
+      tl.to(el, { opacity: 0, duration: 0.2 }, w('fight', 2) + 0.25 + (k % 3) * 0.44);
     });
   }
 
@@ -629,22 +631,19 @@ export const buildScenes = (gsap, tl, root, T) => {
     inn($('.point', sc), w('cta', 7), { x: 160 }, 0.5, 'power3.out');
     inn($('.go', sc), w('link', 0) - 0.1, { y: 40, scale: 0.9 }, 0.45, 'back.out(1.2)');
     tl.fromTo($('.go .shim', sc), { '--sp': '-25%' }, { '--sp': '125%', duration: 0.9, ease: 'power2.inOut' }, w('link', 0) + 0.3);
-    inn($('.save', sc), w('link', 3) - 0.1, { y: 40, scale: 0.9 }, 0.45, 'back.out(1.2)');
-    tl.to($('.save span', sc), { scale: 1.06, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, w('link', 3) + 0.5);
+    inn($('.save', sc), w('link', 2) + 0.3, { y: 40, scale: 0.9 }, 0.45, 'back.out(1.2)');
+    tl.to($('.save span', sc), { scale: 1.06, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, w('link', 2) + 0.9);
   }
   return tl;
 };
 
 /** Слой поверх сцен: знак канала, полоса ролика, бегунок рангов, заголовки, субтитры. */
 export const overlayMarkup = (A, T) => {
-  const lines = new Map();
-  T.caps.forEach((c) => lines.set(c.line, [...(lines.get(c.line) || []), c]));
   return `<div class="logo"><img src="${A}/logo.png"></div>
 <div class="prog">${'<i><b></b></i>'.repeat(9)}</div>
 <div class="pg" data-layout-ignore><s></s><s class="pf"></s>${LADDER.map((n) => `<i></i>`).join('')}<b class="knob"></b></div>
 ` + headlines(T).map((h) => `<div class="hl ${h.light ? 'light' : ''}">${[h.l1, h.l2].map((line, k) => line.length ? `<div class="${k ? 'l2' : 'l1'}">${
-    line.map(([txt, , c]) => `<span class="${c || ''}">${txt}</span>`).join('')}</div>` : '').join('')}</div>`).join('') + `
-<div class="ccs">${[...lines.values()].map((ws) => `<div class="cc"><p>${ws.map((c) => `<span>${c.w}</span>`).join(' ')}</p></div>`).join('')}</div>`;
+    line.map(([txt, , c]) => `<span class="${c || ''}">${txt}</span>`).join('')}</div>` : '').join('')}</div>`).join('');
 };
 
 export const buildOverlay = (gsap, tl, root, T) => {
@@ -655,24 +654,13 @@ export const buildOverlay = (gsap, tl, root, T) => {
     const box = root.querySelectorAll('.hl')[n];
     const spans = [...box.querySelectorAll('span')];
     [...h.l1, ...h.l2].forEach(([, at], i) =>
-      tl.fromTo(spans[i], { opacity: 0, y: 24, filter: 'blur(12px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: i === 0 ? 0.3 : 0.38, ease: i === 0 ? 'expo.out' : 'power3.out' }, Math.max(h.from, at - 0.06)));
+      tl.fromTo(spans[i], { opacity: 0, y: 24, filter: 'blur(12px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: i === 0 ? 0.3 : 0.38, ease: i === 0 ? 'expo.out' : 'power3.out' },
+        // в быстром темпе последнее слово звучит у самого конца сцены: встаёт не позже, чем за 0,6 с до ухода
+        Math.max(h.from, Math.min(at - 0.06, h.to - 0.6))));
     tl.to(spans, { opacity: 0, filter: 'blur(12px)', duration: 0.24, ease: 'power2.in' }, h.to - 0.26);
   });
 
-  // Субтитры: фраза целиком, слово загорается, когда звучит, сказанное остаётся светлым.
-  const lines = new Map();
-  T.caps.forEach((c) => lines.set(c.line, [...(lines.get(c.line) || []), c]));
-  const groups = [...lines.values()];
-  [...root.querySelectorAll('.cc')].forEach((box, n) => {
-    const ws = groups[n], next = groups[n + 1];
-    const from = Math.max(0, ws[0].s - 0.14), to = next ? next[0].s - 0.16 : T.length - 0.3;
-    tl.fromTo(box, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.2, ease: 'power3.out' }, from);
-    tl.to(box, { opacity: 0, duration: 0.12, ease: 'power2.in' }, Math.max(from + 0.3, to - 0.12));
-    [...box.querySelectorAll('span')].forEach((sp, i) => {
-      tl.set(sp, { color: '#C7E24B' }, ws[i].s);
-      if (ws[i + 1]) tl.set(sp, { color: '#F1F2EA' }, ws[i + 1].s);
-    });
-  });
+  // Нижних субтитров нет (вторая версия): заголовок сверху показывает фразу по словам, как у автора.
 
   // Полоса ролика: на заставке её нет, она прорисовывается на смене первого кадра и идёт до самого
   // конца девятью отрезками по абзацам (README, «Ролик с голосом»).
