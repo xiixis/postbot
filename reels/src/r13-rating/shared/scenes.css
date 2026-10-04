@@ -268,3 +268,13 @@
 .r10 .xreal .said { position: absolute; left: 6px; top: 62px; width: 132px; height: 26px; border-radius: 8px; }
 .r10 .xreal2 { overflow: hidden; border-radius: 34px; }
 .r10 .xreal2 img { width: 100%; display: block; }
+
+/* 04.10: настоящие снимки поста из приложения X (русский интерфейс, тёмная тема) и наезд камеры на
+   строку «Accurate (for now)» и на «7,2 млн Просмотры», как у автора. */
+.r10 .xreal { background: #000000; }
+.r10 .xreal .said { left: 10px; top: 51px; width: 134px; height: 30px; }
+.r10 .xreal2 { background: #000000; padding-top: 34px; box-sizing: border-box; border: 3px solid rgba(241, 242, 234, 0.18); }
+.r10 .vring { position: absolute; left: 184px; top: 758px; width: 132px; height: 32px; border-radius: 10px; border: 3px solid #C7E24B;
+  background: rgba(199, 226, 75, 0.18); opacity: 0; }
+.r10 .vfade { position: absolute; left: 0; top: 0; width: 1080px; height: 760px; pointer-events: none; opacity: 0;
+  background: linear-gradient(#0A0B08 0%, #0A0B08 52%, rgba(10,11,8,0) 100%); }

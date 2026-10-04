@@ -74,7 +74,7 @@ export const markup = (A) => `
     `<div class="flt ${l === 'claude' ? 'cl' : ''}" style="left:${x}px;top:${y}px;transform:rotate(${r}deg)"><img src="${A}/m/${FILE[l]}"></div>`).join('')}</div>
   <div class="hk"><div class="k1">Илон Маск</div><div class="k2">сам признал</div></div>
   <div class="hk hk2"><div class="k1"><span class="h">Grok</span> <span class="h">хуже,</span></div><div class="k3"><span class="h">чем</span> <span class="h">у</span> <span class="h">конкурентов</span></div></div>
-  <div class="ph abs" style="left:330px;top:480px"><div class="phone xreal"><img src="${A}/x/musk-full.jpg"><div class="said"></div></div></div>
+  <div class="ph abs" style="left:330px;top:480px"><div class="phone xreal"><img src="${A}/x/app-musk.png"><div class="said"></div></div></div>
   <div class="vs abs h" style="left:0;top:560px;width:1080px">
     <div class="abs vs1" style="left:419px;top:0">${row(A, T_.SSS, 'solo')}</div>
     <div class="abs" style="left:0;top:250px;width:1080px;text-align:center"><span class="down pill h"><b>↓</b> на 3 ранга ниже</span></div>
@@ -83,14 +83,12 @@ export const markup = (A) => `
 </div>
 
 <div class="sc" id="sc-post">
-  <div class="tab abs h xreal2" style="left:290px;top:440px;width:500px;height:686px"><img src="${A}/x/deepstarts-full.jpg"></div>
-  <div class="big72 h vbig" style="left:470px;width:600px;top:560px;font-size:210px"><span class="odo"><span class="col">0<br>1<br>2<br>3<br>4<br>5<br>6<br>7</span></span><span class="dec h">,2</span></div>
-  <div class="cap" style="left:470px;width:600px;top:790px;font-size:56px"><span class="h">млн</span> <span class="h">просмотров</span></div>
-  <div class="src pill h" style="position:absolute;left:640px;top:890px">${EYE}пост в 𝕏</div>
+  <div class="tab abs h xreal2" style="left:290px;top:430px;width:500px;height:860px"><img src="${A}/x/app-deep.png"><div class="vring"></div></div>
+  <div class="vfade" data-layout-ignore></div>
 </div>
 
 <div class="sc" id="sc-musk">
-  <div class="card glass abs h" style="left:110px;top:480px;width:860px;height:182px;padding:0;overflow:hidden"><img src="${A}/x/musk-head.jpg" style="width:860px;display:block"></div>
+  <div class="card glass abs h" style="left:110px;top:480px;width:860px;height:182px;padding:0;overflow:hidden"><img src="${A}/x/app-musk-head.png" style="width:860px;display:block;background:#000"></div>
   <div class="acc" style="left:0;top:720px;width:1080px;text-align:center;font-size:96px"><span class="h">Accurate</span> <span class="fn h">(for now)</span></div>
   <div class="tr2 pill h" style="position:absolute;left:0;top:900px;width:1080px;background:none;border:none;justify-content:center"><span class="tp">Точно.</span><span class="tp2">Пока что</span></div>
 </div>
@@ -351,7 +349,9 @@ export const buildScenes = (gsap, tl, root, T) => {
     tl.fromTo($('.hk', sc), { scale: 1.04 }, { scale: 1, duration: 0.6, ease: 'expo.out' }, 0);
     // телефон стоит в наклоне и выпрямляется, камера наезжает; строка Маска загорается на «признал»
     tl.fromTo($('.ph', sc), { y: 40, rotationY: -24, rotationX: 8, transformPerspective: 1400 }, { y: 0, rotationY: 0, rotationX: 0, duration: 1.1, ease: 'power3.out' }, 0);
-    tl.fromTo($('.ph .phone', sc), { scale: 1 }, { scale: 1.08, duration: go, ease: 'none' }, 0);
+    // наезд, как у автора: с целого поста на строку «Accurate (for now)» настоящего снимка из X
+    tl.set($('.ph .phone', sc), { transformOrigin: '50% 0%' }, 0);
+    tl.fromTo($('.ph .phone', sc), { scale: 1, x: 0, y: 0 }, { scale: 2.2, x: 290, y: -46, duration: 0.6, ease: 'power2.inOut' }, 0.35);
     tl.fromTo($('.said', sc), { backgroundColor: 'rgba(199,226,75,0)', boxShadow: '0 0 0 0px rgba(199,226,75,0)' }, { backgroundColor: 'rgba(199,226,75,0.2)', boxShadow: '0 0 0 3px rgba(199,226,75,1)', duration: 0.25, ease: 'power2.out' }, w('hook', 3) - 0.05);
     $$('.floats .flt', sc).forEach((b, i) => tl.fromTo(b, { y: 0 }, { y: -40 - i * 8, duration: go, ease: 'none' }, 0));
     tl.to($('.hk', sc), { opacity: 0, y: -30, filter: 'blur(12px)', duration: 0.3, ease: 'power2.in' }, go - 0.1);
@@ -372,20 +372,18 @@ export const buildScenes = (gsap, tl, root, T) => {
     tl.set($('.tab', sc), { opacity: 1 }, t);
     tl.fromTo($('.tab', sc), { y: 120, scale: 0.9 }, { y: 0, scale: 1, duration: 0.7, ease: 'power3.out' }, t + 0.05);
     tl.fromTo($('.tab', sc), { rotation: -2 }, { rotation: 0, duration: e('post') - t, ease: 'none' }, t);
-    // на «семи миллионах» пост уезжает влево и уменьшается, справа встаёт счёт — одна вещь меняется
-    tl.to($('.tab', sc), { x: -220, scale: 0.8, transformOrigin: '50% 0%', duration: 0.6, ease: 'power3.inOut' }, s('views') - 0.05);
+    // на «семи миллионах» камера наезжает на настоящую строку «7,2 млн Просмотры» под постом и
+    // обводит её: подлинность видна в самом снимке, а строка поднимается выше полосы подписи площадки
+    tl.set($('.tab', sc), { transformOrigin: '50% 0%' }, 0);
+    tl.to($('.tab', sc), { scale: 1.9, y: -1083, duration: 0.7, ease: 'power2.inOut' }, s('views') - 0.05);
+    // верх рейтинга уходит под заголовок — затемняем его, чтобы строки не наползали на картинку
+    tl.to($('.vfade', sc), { opacity: 1, duration: 0.5, ease: 'power2.out' }, s('views') + 0.1);
   }
 
   // 3. Семь и два миллиона: число досчитывает, шарики насыпаются горкой.
   {
     const sc = SC.post, t = s('views');
-    inn($('.vbig', sc), t - 0.05, { x: 60 }, 0.4);
-    // число крутится барабаном, на ходу размыто, как у автора
-    tl.fromTo($('.odo .col', sc), { yPercent: 0, filter: 'blur(6px)' }, { yPercent: -87.5, filter: 'blur(0px)', duration: 0.75, ease: 'power3.out' }, t + 0.05);
-    tl.fromTo($('.big72', sc), { scale: 0.84 }, { scale: 1, duration: 0.8, ease: 'power3.out' }, t + 0.05);
-    pop($('.dec', sc), t + 0.75);
-    $$('.cap span', sc).forEach((el, k) => word(el, w('views', 2 + k)));
-    pop($('.src', sc), w('views', 3) + 0.2);
+    tl.fromTo($('.vring', sc), { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(1.6)' }, w('views', 1));
   }
 
   // 4. Ответ Маска: «Accurate», потом плашка «(for now)», ниже перевод и растущий график.
