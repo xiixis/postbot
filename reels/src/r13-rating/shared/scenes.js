@@ -559,9 +559,12 @@ export const buildOverlay = (gsap, tl, root, T) => {
   return tl;
 };
 
-/** Картинка рейтинга для Telegram (ролик её обещает): весь тир-лист, заголовок, знак канала. 1080×1350. */
+/** Картинка рейтинга для Telegram (ролик её обещает): весь тир-лист на всю ширину, заголовок, знак канала.
+ *  Кадр 1080 в ширину, высота по содержимому; снимок с двойной плотностью (картинка.mjs).
+ *  Было: тир-лист ужат до 0,6 в колонку 584 px — подписи по 9 px, с телефона не читались (владелец 04.10). */
 export const pictureMarkup = (A) => `<div class="pic">
-  <div class="logo" style="left:64px;top:56px"><img src="${A}/logo.png"></div>
-  <div class="pt"><b>Рейтинг нейросетей</b><span>Маск ответил: «Accurate (for now)»</span></div>
-  <div class="tab abs" style="left:248px;top:250px;width:584px;height:1064px"><div style="transform:scale(0.6);transform-origin:0 0;width:max-content">${list(A, LADDER.slice().reverse())}</div></div>
+  <div class="logo" style="left:40px;top:44px"><img src="${A}/logo.png"></div>
+  <div class="pt"><b>Рейтинг нейросетей</b><span>Маск ответил: «Accurate (for now)» — точно, пока что</span></div>
+  <div class="ptab">${list(A, LADDER.slice().reverse())}</div>
+  <div class="pfoot">Telegram @FourXtube</div>
 </div>`;
