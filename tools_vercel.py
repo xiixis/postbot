@@ -46,11 +46,14 @@ tzdata
 # ignoreCommand сравнивает папку с последней успешной выкаткой, а не с
 # предыдущим коммитом. Прежнее правило в кабинете смотрело только HEAD^..HEAD:
 # 05.10.2026 ушла пачка из 20 коммитов, правка vercel/ была в одном из ранних,
-# последний папку не трогал, и Vercel дважды отменил сборку. Нет прежней
-# выкатки или её коммита в клоне — команда падает, и сборка идёт.
+# последний папку не трогал, и Vercel дважды отменил сборку. Коды Vercel:
+# 0 — пропустить, 1 — собирать, любой другой — ошибка выкатки. Поэтому сбой
+# сравнения (нет прежней выкатки, её коммита нет в неглубоком клоне: git
+# отвечает 128) сводится к 1 — сборка идёт.
 НАСТРОЙКИ = json.dumps({
-    "ignoreCommand": '[ -n "$VERCEL_GIT_PREVIOUS_SHA" ] && '
-                     'git diff --quiet "$VERCEL_GIT_PREVIOUS_SHA" HEAD -- .',
+    "ignoreCommand": 'if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ] && git diff --quiet '
+                     '"$VERCEL_GIT_PREVIOUS_SHA" HEAD -- . 2>/dev/null; '
+                     'then exit 0; else exit 1; fi',
     "regions": ["dub1"],
     "rewrites": [
         {"source": "/api/:route*", "destination": "/api/index?route=:route*"},
