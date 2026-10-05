@@ -33,9 +33,9 @@ def shift(d, sec):
     return off
 
 cmd, src, dst, *args = sys.argv[1:]
-d = json.load(open(src))
+d = json.load(open(src, encoding='utf-8'))
 if cmd == 'recolor':
     print('перекрашено мест:', recolor(d, [a.split('=') for a in args]))
 elif cmd == 'shift':
     print('сдвиг кадров:', shift(d, float(args[0])))
-json.dump(d, open(dst, 'w'), separators=(',', ':'))
+json.dump(d, open(dst, 'w', encoding='utf-8'), separators=(',', ':'))
