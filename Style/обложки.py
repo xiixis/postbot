@@ -26,8 +26,12 @@ from typing import Callable
 import стиль
 import дизайн_холст as дх
 
-# От самого файла, а не от дома: на ПК проект лежит в C:\4xSoft, и ~/4xSoft там нет.
-СЦЕНЫ = Path(__file__).resolve().parents[2] / ".claude/маскот/сцены"
+# От самого файла, а не от дома: на ПК проект лежит в C:\4xSoft, и ~/4xSoft там нет. Поиском
+# вверх, а не parents[2]: в изолированной копии (postbot/.claude/worktrees/<имя>) два уровня
+# выше — папка worktrees, и сцены «пропадали» (09.10.2026).
+СЦЕНЫ = next((п / ".claude/маскот/сцены" for п in Path(__file__).resolve().parents
+              if (п / ".claude/маскот/сцены").is_dir()),
+             Path(__file__).resolve().parents[2] / ".claude/маскот/сцены")
 КРАСНЫЙ = "#FF3B30"                 # зачёркивают красным и от руки (правка владельца 24.09)
 ПРИГЛУШИТЬ = "filter: brightness(.45) saturate(1.4);"   # логотип на светлом грунте
 
