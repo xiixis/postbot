@@ -239,18 +239,41 @@ def заголовок_с_лапой(строка: str) -> str:
 
 
 def обложка_постер(о: dict) -> str:
-    """Постер, как у автора: заголовок капсом сверху, герой по центру — наш кот-«мажор» сценой."""
+    """Постер, как у автора: заголовок капсом сверху, герой по центру — наш кот-«мажор» сценой.
+
+    Вторая версия (слово владельца 09.10.2026: «кот топ, заголовок топ, но обложку улучшить»).
+    Кот и заголовок те же. Добавлено по `КРЮЧКИ.md` и `cover-art-4x`: число на обложке
+    (наклейка «3 шага» — приём 3), сцена для героя (лаймовый круг за котом), подпись тёмной
+    плашкой — вторая ступень после заголовка. Кот впечатан в картинку сцены, поэтому слои такие:
+    сцена → круг → вырезанный кот (`<сцена>-cut.webp`, rembg isnet). Смешение `multiply` не
+    годится: кот тёмно-серый, а не чёрный, и в круге становился оливковым.
+    """
     к = обложки.карточка(о["сцена"])
     x0, y0, x1, y1 = к["пусто"]
-    кегль = обложки.кегль([с.replace("🐾", "Ж") for с in о["строки"]], x1 - x0, 150)
+    кегль = обложки.кегль([с.replace("🐾", "Ж") for с in о["строки"]], x1 - x0, 134)
     строки = "<br>".join(заголовок_с_лапой(с) if "🐾" in с else маркер(с) for с in о["строки"])
-    return (f'<img src="{о["сцена"]}.jpg" style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; object-fit: cover;">'
+    круг = (f'<div style="position: absolute; left: 268px; top: 520px; width: 540px; height: 540px; border-radius: 50%; '
+            f'background: {ЛАЙМ}; pointer-events: none;"></div>')
+    наклейка = ''
+    if о.get("число"):
+        цифра, слово = о["число"].split(" ", 1)
+        наклейка = (f'<div data-рядом="кот-сцены" style="position: absolute; left: 700px; top: 498px; width: 196px; height: 196px; '
+                    f'border-radius: 50%; background: {ГРАФ}; border: 5px solid {ЛИСТ}; box-sizing: border-box; transform: rotate(-10deg); '
+                    f'box-shadow: 0 14px 30px rgba(18,19,14,.22); display: flex; flex-direction: column; align-items: center; '
+                    f'justify-content: center; {КРУП} text-align: center;">'
+                    f'<div style="font-size: 92px; line-height: .86; color: {ЛАЙМ};">{цифра}</div>'
+                    f'<div style="font-size: 36px; line-height: 1; color: {стиль.СВЕТЛЫЙ};">{слово}</div></div>')
+    сцена = f'position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; object-fit: cover;'
+    return (f'<img src="{о["сцена"]}.jpg" style="{сцена}">' + круг
+            + f'<img src="{о["сцена"]}-cut.webp" style="{сцена} pointer-events: none;">'
             + обложки.кот_сцены(к)
+            + наклейка
             + f'<div style="position: absolute; left: {x0}px; top: {y0}px; width: {x1 - x0}px; display: flex; flex-direction: column; '
-              f'align-items: center; gap: 22px; text-align: center;">'
+              f'align-items: center; gap: 24px; text-align: center;">'
               f'<div style="{КРУП} font-size: {кегль}px; line-height: .96; color: {ЧЕРН};">{строки}</div>'
-              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 54px; line-height: 1.1; color: {ЧЕРН};">'
-              f'{claude("<br>".join(о["под"]))}</div></div>'
+              f'<div style="display: inline-block; padding: 12px 30px 16px; border-radius: 22px; background: {ГРАФ}; {ТЕКСТ} '
+              f'font-weight: 700; font-size: 42px; line-height: 1.15; color: {стиль.СВЕТЛЫЙ};">'
+              f'{claude(" ".join(о["под"]))}</div></div>'
             + низ())
 
 
@@ -288,7 +311,8 @@ def main():
     значки_пр = значки_превращения(врем)
     файлы = list(ШРИФТЫ) + [дх.логотип(врем), дх.кот(пост["финал"]["поза"], врем)]
     файлы += обложки.файлы(пост.get("запасные", {}), врем)
-    файлы += [обложки.СЦЕНЫ / f'{пост["обложка"]["сцена"]}.jpg'] + [з["путь"] for з in значки_пр]
+    файлы += [обложки.СЦЕНЫ / f'{пост["обложка"]["сцена"]}.jpg', обложки.СЦЕНЫ / f'{пост["обложка"]["сцена"]}-cut.webp']
+    файлы += [з["путь"] for з in значки_пр]
     файлы += [ТУТ / "картинки" / "oblozhki" / ф for ф in пост["доказательство"]["обложки"]]
     нет = [ф for ф in файлы if not ф.exists()]
     if нет:
