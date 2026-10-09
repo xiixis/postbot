@@ -62,31 +62,52 @@ def подложка() -> str:
     return f'<div style="position: absolute; inset: 0; {ФОН} pointer-events: none;"></div>'
 
 
-def шапка(номер: str, заголовок: str, кегль: int = 84) -> str:
+def шапка(номер: str, заголовок: str, кегль: int = 92) -> str:
     """«Шаг N.» лаймовой капсулой и заголовок шага под ней — как «Шаг 1. Создай Проект» у автора."""
-    return (f'<div style="position: absolute; left: 80px; top: 70px; {КРУП} font-size: 54px; line-height: 1;">{маркер(номер)}</div>'
-            f'<div style="position: absolute; left: 80px; top: 160px; width: 920px; {КРУП} font-size: {кегль}px; '
-            f'line-height: 1.02; color: {ЧЕРН};">{заголовок}</div>')
+    return (f'<div style="position: absolute; left: 80px; top: 64px; {КРУП} font-size: 60px; line-height: 1;">{маркер(номер)}</div>'
+            f'<div style="position: absolute; left: 80px; top: 156px; width: 920px; {КРУП} font-size: {кегль}px; '
+            f'line-height: 1.0; color: {ЧЕРН};">{заголовок}</div>')
 
 
 def столбик(top: int, блоки: list[str], gap: int = 20, width: int = 920) -> str:
     """Текст под картинкой одной колонкой: при переносе строки блоки сдвигаются, а не наезжают."""
     return (f'<div style="position: absolute; left: 80px; top: {top}px; width: {width}px; display: flex; '
-            f'flex-direction: column; gap: {gap}px;">' + "".join(блоки) + '</div>')
+            f'flex-direction: column; align-items: flex-start; gap: {gap}px;">' + "".join(блоки) + '</div>')
 
 
-def абзац(текст: str, кегль: int = 36, жирно: bool = False) -> str:
-    return (f'<div style="{ТЕКСТ} font-size: {кегль}px; line-height: 1.28; color: {ЧЕРН}; '
+def абзац(текст: str, кегль: int = 40, жирно: bool = False) -> str:
+    return (f'<div style="{ТЕКСТ} font-size: {кегль}px; line-height: 1.25; color: {ЧЕРН}; '
             f'{"font-weight: 700;" if жирно else ""}">{текст}</div>')
 
 
-def список(пункты: list[str], значок_: str, кегль: int = 34) -> str:
+def вывод(текст: str, кегль: int = 40, значок_: str = "", лайм: bool = False) -> str:
+    """Главная мысль кадра — тёмной плашкой с лаймом (правка владельца 09.10.2026: «слабо
+    расставлены акценты»). Тот же приём, что у призыва в финале: ловит взгляд с расстояния
+    ленты и держит контраст 16:1. Лаймом — часть в `[…]`.
+
+    `лайм` — плашка-выворот: лаймовая заливка, тёмный текст, часть в `[…]` — графитовой
+    капсулой с лаймом. На кадрах, где лайм иначе только в мелких чипах (акцент 1,7%).
+    """
+    if лайм:
+        текст = текст.replace("[", f'<span style="display: inline-block; padding: 0 .18em .06em; border-radius: .2em; '
+                              f'background: {ГРАФ}; color: {ЛАЙМ};">').replace("]", "</span>")
+        return (f'<div style="box-sizing: border-box; max-width: 920px; padding: 22px 32px 26px; border-radius: 24px; '
+                f'background: {ЛАЙМ}; {КРУП} font-size: {кегль}px; line-height: 1.2; color: {ЧЕРН};">{текст}</div>')
+    текст = claude(текст).replace("[", f'<span style="color: {ЛАЙМ};">').replace("]", "</span>")
+    знак = (значок(значок_, ЛАЙМ, кегль).replace("display: block;", "display: inline-block; vertical-align: -0.12em; "
+                                                                    "margin-right: 14px;") if значок_ else "")
+    return (f'<div style="box-sizing: border-box; max-width: 920px; padding: 22px 32px 26px; border-radius: 24px; '
+            f'background: {ГРАФ}; {КРУП} font-size: {кегль}px; line-height: 1.15; color: {стиль.СВЕТЛЫЙ};">{знак}{текст}</div>')
+
+
+def список(пункты: list[str], значок_: str, кегль: int = 38) -> str:
     """Четыре пункта сеткой 2×2 с лаймовой плиткой-значком: у автора — столбик с эмодзи."""
     ячейки = "".join(
-        f'<div style="display: flex; align-items: center; gap: 16px; {ТЕКСТ} font-size: {кегль}px; line-height: 1.15; color: {ЧЕРН};">'
-        f'<div style="width: 46px; height: 46px; border-radius: 12px; background: {ЛАЙМ}; display: flex; align-items: center; '
-        f'justify-content: center; flex-shrink: 0;">{значок(значок_, ЧЕРН, 26)}</div>{п}</div>' for п in пункты)
-    return f'<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px;">{ячейки}</div>'
+        f'<div style="display: flex; align-items: center; gap: 16px; {ТЕКСТ} font-weight: 700; font-size: {кегль}px; '
+        f'line-height: 1.12; color: {ЧЕРН};">'
+        f'<div style="width: 52px; height: 52px; border-radius: 14px; background: {ЛАЙМ}; display: flex; align-items: center; '
+        f'justify-content: center; flex-shrink: 0;">{значок(значок_, ЧЕРН, 30)}</div>{п}</div>' for п in пункты)
+    return f'<div style="width: 920px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px;">{ячейки}</div>'
 
 
 # ── Кадры ────────────────────────────────────────────────────────────────────
@@ -94,119 +115,114 @@ def список(пункты: list[str], значок_: str, кегль: int = 
 def открытие(о: dict) -> str:
     """«В Claude есть функция… — ПРОЕКТЫ»: крупное слово, боковая панель с обведённым пунктом."""
     return (подложка()
-            + f'<div style="position: absolute; left: 80px; top: 70px; width: 920px; text-align: center; {ТЕКСТ} font-weight: 700; '
-              f'font-size: 34px; line-height: 1.2; color: {ЧЕРН};">{claude(о["над"])}</div>'
-            + f'<div style="position: absolute; left: 80px; top: 150px; width: 920px; text-align: center; {КРУП} font-size: 124px; '
+            + f'<div style="position: absolute; left: 80px; top: 60px; width: 920px; text-align: center; {ТЕКСТ} font-weight: 700; '
+              f'font-size: 36px; line-height: 1.2; color: {ЧЕРН};">{claude(о["над"])}</div>'
+            + f'<div style="position: absolute; left: 80px; top: 128px; width: 920px; text-align: center; {КРУП} font-size: 132px; '
               f'line-height: 1;">{маркер(о["крупно"])}</div>'
-            + ок.боковая(300, 300, 480, ЗНАЧКИ, обвести=True)
-            + ок.стрелка(110, 420, 200, 240, "M30 10 C 0 110, 50 196, 180 202")
-            + столбик(784, [абзац(о["абзац"]),
-                            абзац(claude(о["список_над"]), 38, жирно=True),
+            + ок.боковая(300, 296, 480, ЗНАЧКИ, обвести=True, строка=56)
+            + ок.стрелка(110, 400, 200, 240, "M30 10 C 0 110, 50 196, 180 196")
+            + столбик(752, [абзац(claude(о["список_над"]), 40, жирно=True),
                             список(о["список"], "check"),
-                            абзац(о["итог"], 40, жирно=True)], gap=16)
+                            вывод(о["итог"])], gap=20)
             + низ())
 
 
 def шаг1(ш: dict) -> str:
     """Шаг 1: окно «Create a personal project», кнопка обведена, наклейка «бесплатно»."""
-    наклейка = (f'<div style="position: absolute; left: 640px; top: 72px; padding: 10px 22px 12px; border-radius: 16px; '
-                f'background: {ЛАЙМ}; transform: rotate(4deg); box-shadow: 0 10px 24px rgba(60,74,12,.22); {КРУП} '
-                f'font-size: 26px; color: {ЧЕРН}; z-index: 2;">{ш["сноска"]}</div>')
+    наклейка = (f'<div style="position: absolute; left: 540px; top: 64px; padding: 10px 24px 14px; border-radius: 16px; '
+                f'background: {ЛАЙМ}; border: 3px solid {ГРАФ}; transform: rotate(4deg); box-shadow: 0 10px 24px rgba(18,19,15,.22); '
+                f'{КРУП} font-size: 30px; color: {ЧЕРН}; z-index: 2;">{ш["сноска"]}</div>')
     return (подложка() + шапка(ш["номер"], ш["заголовок"])
             + ок.новый_проект(80, 300, 820, ш["проект"], ш["цель"], обвести=True)
             + наклейка
             + ок.стрелка(840, 470, 120, 240, "M90 10 C 130 90, 110 170, 44 220")
-            + столбик(836, [абзац(ш["абзац"]),
-                            абзац(claude(f'{ш["итог"].split(" всё")[0]} ') + маркер("всё") + ш["итог"].split(" всё", 1)[1], 40, жирно=True)])
+            + столбик(836, [абзац(ш["абзац"], 40, жирно=True), вывод(ш["итог"], 38, лайм=True)], gap=22)
             + низ())
 
 
 def шаг2(ш: dict) -> str:
     """Шаг 2: файлы проекта и инструкции двумя наложенными листами, лаймовый плюс между ними."""
-    плюс = (f'<div class=окно data-рядом=окно style="position: absolute; left: 470px; top: 442px; width: 64px; height: 64px; border-radius: 32px; '
-            f'background: {ЛАЙМ}; box-shadow: 0 0 0 6px {ЛИСТ}; display: flex; align-items: center; justify-content: center; '
-            f'z-index: 3;">{значок("plus", ЧЕРН, 34)}</div>')
-    итог = f'{ш["итог"][0]}{маркер(ш["итог"][1])}'
-    return (подложка() + шапка(ш["номер"], ш["заголовок"], кегль=76)
-            + ок.файлы(86, 282, 456, ш["файлы"], ЗНАЧКИ)
-            + ок.инструкции(500, 314, 400, ш["инструкция"], "Посты-карусели", ЗНАЧКИ)
+    плюс = (f'<div class=окно data-рядом=окно style="position: absolute; left: 466px; top: 448px; width: 72px; height: 72px; '
+            f'border-radius: 36px; background: {ЛАЙМ}; box-shadow: 0 0 0 6px {ЛИСТ}, 0 0 0 9px {ГРАФ}; display: flex; '
+            f'align-items: center; justify-content: center; z-index: 3;">{значок("plus", ЧЕРН, 38)}</div>')
+    return (подложка() + шапка(ш["номер"], ш["заголовок"], кегль=84)
+            + ок.файлы(86, 292, 456, ш["файлы"], ЗНАЧКИ)
+            + ок.инструкции(500, 324, 400, ш["инструкция"], "Посты-карусели", ЗНАЧКИ)
             + плюс
-            + столбик(798, [абзац(ш["список_над"], 38, жирно=True),
-                            список(ш["список"], "folder-simple", 32),
-                            абзац(итог, 36, жирно=True)], gap=16)
+            + столбик(808, [абзац(ш["список_над"], 40, жирно=True),
+                            список(ш["список"], "folder-simple", 36),
+                            вывод(ш["итог"], 36, лайм=True)], gap=16)
             + низ())
 
 
 def узел(н: str, текст: str, left: int, top: int) -> str:
-    return (f'<div style="position: absolute; left: {left}px; top: {top}px; width: 290px; height: 66px; box-sizing: border-box; '
-            f'padding-left: 70px; border-radius: 33px; background: #FFFFFF; border: 2px solid rgba(18,19,14,.12); box-shadow: {ТЕНЬ}; '
-            f'display: flex; align-items: center; {ТЕКСТ} font-weight: 700; font-size: 32px; color: {ЧЕРН};">'
-            f'<div style="position: absolute; left: 8px; top: 8px; min-width: 50px; height: 50px; box-sizing: border-box; padding: 0 8px; '
-            f'border-radius: 25px; background: {ЛАЙМ}; {КРУП} font-size: 22px; line-height: 50px; text-align: center;">{н}</div>'
+    return (f'<div style="position: absolute; left: {left}px; top: {top}px; width: 300px; height: 78px; box-sizing: border-box; '
+            f'padding-left: 84px; border-radius: 39px; background: #FFFFFF; border: 3px solid {ГРАФ}; box-shadow: {ТЕНЬ}; '
+            f'display: flex; align-items: center; {ТЕКСТ} font-weight: 700; font-size: 36px; color: {ЧЕРН};">'
+            f'<div style="position: absolute; left: 7px; top: 7px; min-width: 58px; height: 58px; box-sizing: border-box; padding: 0 9px; '
+            f'border-radius: 29px; background: {ЛАЙМ}; {КРУП} font-size: 26px; line-height: 58px; text-align: center;">{н}</div>'
             f'{текст}</div>')
 
 
 def колонка(к: dict, left: int, top: int, значок_: str) -> str:
     """Зигзаг узлов как у автора: нечётные сдвинуты вправо, дуги-стрелки от узла к узлу."""
-    шаг, сдвиг = 104, 80
+    шаг, сдвиг = 112, 70
     out = (f'<div style="position: absolute; left: {left}px; top: {top}px; display: flex; align-items: center; gap: 14px; '
-           f'{КРУП} font-size: 54px; line-height: 1; color: {ЧЕРН};">{значок(значок_, ОЛИВА, 46)}{к["название"]}</div>')
+           f'{КРУП} font-size: 64px; line-height: 1; color: {ЧЕРН};">'
+           f'<div style="width: 64px; height: 64px; border-radius: 18px; background: {ГРАФ}; display: flex; align-items: center; '
+           f'justify-content: center;">{значок(значок_, ЛАЙМ, 38)}</div>{к["название"]}</div>')
     for i, (н, текст) in enumerate(к["узлы"]):
         х = left + (сдвиг if i % 2 else 0)
-        у = top + 86 + i * шаг
+        у = top + 96 + i * шаг
         out += узел(н, текст, х, у)
         if i + 1 < len(к["узлы"]):
             # дуга от края узла к следующему: вправо-вниз или влево-вниз
             if i % 2 == 0:
-                out += ок.стрелка(х + 230, у + 60, 80, 50, "M8 6 C 40 8, 60 20, 62 44", ОЛИВА)
+                out += ок.стрелка(х + 250, у + 70, 70, 44, "M6 4 C 36 6, 54 16, 56 38")
             else:
-                out += ок.стрелка(х - 30, у + 60, 80, 50, "M60 6 C 24 8, 8 22, 14 44", ОЛИВА)
+                out += ок.стрелка(х - 26, у + 70, 70, 44, "M54 4 C 22 6, 6 18, 12 38")
     return out
 
 
 def схема(с: dict) -> str:
-    совет = (f'<div style="position: absolute; left: 80px; top: 990px; display: flex; align-items: center; gap: 16px; '
-             f'padding: 14px 26px 16px 18px; border-radius: 20px; background: rgba(199,226,75,.35); {ТЕКСТ} font-weight: 700; '
-             f'font-size: 34px; color: {ЧЕРН};">{значок("lightbulb", ЧЕРН, 36)}{с["совет"]}</div>')
     к1, к2 = с["колонки"]
-    return (подложка() + шапка(с["номер"], с["заголовок"])
-            + f'<div style="position: absolute; left: 80px; top: 268px; {ТЕКСТ} font-size: 36px; color: {ЧЕРН};">{с["над"]}</div>'
-            + колонка(к1, 80, 360, "sparkle") + колонка(к2, 530, 360, "chat-text")
-            + совет + низ())
+    return (подложка() + шапка(с["номер"], с["заголовок"], кегль=88)
+            + f'<div style="position: absolute; left: 80px; top: 280px; {ТЕКСТ} font-weight: 700; font-size: 38px; color: {ЧЕРН};">{с["над"]}</div>'
+            + колонка(к1, 80, 364, "sparkle") + колонка(к2, 530, 364, "chat-text")
+            + столбик(1004, [вывод(f'[{с["совет"]}]', 34, "lightbulb")])
+            + низ())
 
 
 def доказательство(д: dict) -> str:
     """Стена из девяти наших обложек: у автора три макета постов с его цифрами."""
-    ш, в, зазор = 170, 226, 18
+    ш, в, зазор = 192, 256, 14
     левый = (1080 - 3 * ш - 2 * зазор) // 2
     плитки = ""
     for i, файл in enumerate(д["обложки"][:9]):
-        х, у = левый + i % 3 * (ш + зазор), 380 + i // 3 * (в + зазор)
-        плитки += (f'<img class=плитка data-рядом=плитка src="{файл}" style="position: absolute; left: {х}px; top: {у}px; width: {ш}px; height: {в}px; '
-                   f'object-fit: cover; border-radius: 14px; border: 3px solid #FFFFFF; box-shadow: {ТЕНЬ};">')
+        х, у = левый + i % 3 * (ш + зазор), 300 + i // 3 * (в + зазор)
+        плитки += (f'<img class=плитка data-рядом=плитка src="{файл}" style="position: absolute; left: {х}px; top: {у}px; '
+                   f'width: {ш}px; height: {в}px; object-fit: cover; border-radius: 16px; border: 4px solid {ГРАФ}; box-shadow: {ТЕНЬ};">')
     return (подложка()
-            + f'<div style="position: absolute; left: 80px; top: 70px; width: 920px; {КРУП} font-size: 84px; line-height: 1.04; '
+            + f'<div style="position: absolute; left: 80px; top: 64px; width: 920px; {КРУП} font-size: 92px; line-height: 1.02; '
               f'color: {ЧЕРН};">{д["строки"][0]}<br>{маркер(д["строки"][1])}</div>'
-            + f'<div style="position: absolute; left: 80px; top: 290px; width: 920px; {ТЕКСТ} font-weight: 700; font-size: 36px; '
-              f'color: {ВТОР};">{д["под"]}</div>'
             + плитки + низ())
 
 
 def финал(ф: dict) -> str:
     """Заголовок, карточка «что сохраняешь» с галочками, кот, тёмная плашка-призыв."""
     пункты = "".join(
-        f'<div style="display: flex; align-items: center; gap: 18px; {ТЕКСТ} font-weight: 700; font-size: 36px; color: {ЧЕРН};">'
-        f'<div style="width: 48px; height: 48px; border-radius: 24px; background: {ЛАЙМ}; display: flex; align-items: center; '
-        f'justify-content: center; flex-shrink: 0;">{значок("check", ЧЕРН, 28)}</div>{п}</div>' for п in ф["пункты"])
+        f'<div style="display: flex; align-items: center; gap: 18px; {ТЕКСТ} font-weight: 700; font-size: 38px; color: {ЧЕРН};">'
+        f'<div style="width: 52px; height: 52px; border-radius: 26px; background: {ЛАЙМ}; display: flex; align-items: center; '
+        f'justify-content: center; flex-shrink: 0;">{значок("check", ЧЕРН, 30)}</div>{п}</div>' for п in ф["пункты"])
     return (подложка()
-            + f'<div style="position: absolute; left: 80px; top: 70px; width: 920px; {КРУП} font-size: 100px; line-height: 1.02; '
+            + f'<div style="position: absolute; left: 80px; top: 64px; width: 920px; {КРУП} font-size: 104px; line-height: 1.0; '
               f'color: {ЧЕРН};">{ф["строки"][0]}<br>{ф["строки"][1]}<br>{маркер(ф["акцент"])}</div>'
-            + f'<div style="position: absolute; left: 80px; top: 440px; width: 560px; box-sizing: border-box; padding: 34px 34px; '
-              f'border-radius: 28px; background: #FFFFFF; box-shadow: {ТЕНЬ}; display: flex; flex-direction: column; gap: 22px;">'
-              f'{пункты}</div>'
-            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" data-кот style="position: absolute; left: 676px; top: 400px; height: 300px;">'
+            + f'<div style="position: absolute; left: 80px; top: 440px; width: 580px; box-sizing: border-box; padding: 34px 34px; '
+              f'border-radius: 28px; background: #FFFFFF; border: 3px solid {ГРАФ}; box-shadow: {ТЕНЬ}; display: flex; '
+              f'flex-direction: column; gap: 22px;">{пункты}</div>'
+            + f'<img src="kot-{стиль.латиницей(ф["поза"])}.webp" data-кот style="position: absolute; left: 686px; top: 400px; height: 300px;">'
             + f'<div style="position: absolute; left: 80px; top: 780px; width: 820px; box-sizing: border-box; padding: 36px 40px 40px; '
-              f'border-radius: 30px; background: {ГРАФ}; {КРУП} font-size: 50px; line-height: 1.1; color: {стиль.СВЕТЛЫЙ};">'
+              f'border-radius: 30px; background: {ГРАФ}; {КРУП} font-size: 52px; line-height: 1.1; color: {стиль.СВЕТЛЫЙ};">'
               f'<span style="color: {ЛАЙМ};">{ф["призыв"].split(" —")[0]}</span> —{ф["призыв"].split(" —", 1)[1]}</div>'
             + низ())
 
@@ -227,13 +243,13 @@ def обложка_постер(о: dict) -> str:
     к = обложки.карточка(о["сцена"])
     x0, y0, x1, y1 = к["пусто"]
     кегль = обложки.кегль([с.replace("🐾", "Ж") for с in о["строки"]], x1 - x0, 150)
-    строки = "<br>".join(заголовок_с_лапой(с) for с in о["строки"])
+    строки = "<br>".join(заголовок_с_лапой(с) if "🐾" in с else маркер(с) for с in о["строки"])
     return (f'<img src="{о["сцена"]}.jpg" style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; object-fit: cover;">'
             + обложки.кот_сцены(к)
             + f'<div style="position: absolute; left: {x0}px; top: {y0}px; width: {x1 - x0}px; display: flex; flex-direction: column; '
               f'align-items: center; gap: 22px; text-align: center;">'
               f'<div style="{КРУП} font-size: {кегль}px; line-height: .96; color: {ЧЕРН};">{строки}</div>'
-              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 50px; line-height: 1.12; color: {ЧЕРН};">'
+              f'<div style="{ТЕКСТ} font-weight: 700; font-size: 54px; line-height: 1.1; color: {ЧЕРН};">'
               f'{claude("<br>".join(о["под"]))}</div></div>'
             + низ())
 

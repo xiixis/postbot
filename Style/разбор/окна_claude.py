@@ -17,7 +17,9 @@ HTML, поэтому чёткое при снимке ×1,5, правится н
 ЗАСЕЧКИ = "font-family: Cormorant, Georgia, serif; font-weight: 700;"
 UI = "font-family: Golos, 'Helvetica Neue', Arial, sans-serif;"
 ТЕНЬ = "0 2px 4px rgba(20,20,19,.06), 0 24px 60px rgba(20,20,19,.16)"
-ОЛИВА_ШТРИХ = "#3F4D08"   # рукописные пометки поверх окна: обводка и стрелка
+# Рукописные пометки поверх окна — лайм с графитовым контуром (правка владельца 09.10.2026:
+# оливковый штрих 7 px в ленте терялся). Лайм один по светлому — 1,7:1, контур даёт ему края.
+ЛАЙМ_ШТРИХ, КОНТУР = "#C7E24B", "#12130F"
 
 
 def _иконка(svg: str, цвет: str, размер: int) -> str:
@@ -25,21 +27,22 @@ def _иконка(svg: str, цвет: str, размер: int) -> str:
                                  f'display: block; flex-shrink: 0;" ', 1)
 
 
-def боковая(x: int, y: int, w: int, значки: dict, выделить: str = "Projects", обвести: bool = False) -> str:
+def боковая(x: int, y: int, w: int, значки: dict, выделить: str = "Projects", обвести: bool = False,
+            строка: int = 60) -> str:
     """Боковая панель Claude: знак, пункты меню, выделенный пункт подложкой.
 
-    Строки ровно по 60 px с зазором 4: строка i стоит на y + 100 + 64·i — по этому числу
-    кадр целит стрелку. Обводка рисуется внутри строки и едет вместе с ней.
+    Строки ровно по `строка` px с зазором 4: строка i стоит на y + 100 + (строка + 4)·i — по
+    этому числу кадр целит стрелку. Обводка рисуется внутри строки и едет вместе с ней.
     """
     пункты = [("plus", "New chat"), ("magnifying-glass", "Search"), ("chats-circle", "Chats"),
               ("folders", "Projects"), ("squares-four", "Artifacts")]
     строки = ""
     for значок, имя in пункты:
         своя = имя == выделить
-        фон = "background: #EDEAE0;" if своя else ""
+        фон = f"background: {ЛАЙМ_ШТРИХ};" if своя else ""
         жирно = "font-weight: 700;" if своя else ""
-        круг = обводка(-18, -14, w - 44 + 36, 88) if своя and обвести else ""
-        строки += (f'<div style="position: relative; height: 60px; display: flex; align-items: center; gap: 22px; padding: 0 22px; '
+        круг = обводка(-18, -14, w - 44 + 36, строка + 28) if своя and обвести else ""
+        строки += (f'<div style="position: relative; height: {строка}px; display: flex; align-items: center; gap: 22px; padding: 0 22px; '
                    f'border-radius: 14px; {фон}">{_иконка(значки[значок], ЧЕРН, 34)}'
                    f'<span style="{UI} font-size: 34px; color: {ЧЕРН}; {жирно}">{имя}</span>{круг}</div>')
     return (f'<div style="position: absolute; left: {x}px; top: {y}px; width: {w}px; box-sizing: border-box; padding: 30px 22px 26px; '
@@ -103,7 +106,7 @@ def инструкции(x: int, y: int, w: int, строки: list[str], наз
             f'within {название}</div></div>')
 
 
-def обводка(x: int, y: int, w: int, h: int, цвет: str = ОЛИВА_ШТРИХ, во_весь: bool = False) -> str:
+def обводка(x: int, y: int, w: int, h: int, цвет: str = ЛАЙМ_ШТРИХ, во_весь: bool = False) -> str:
     """Овал «от руки» вокруг элемента окна: неровный замкнутый штрих, как маркером.
 
     `во_весь` — овал на весь родительский блок с выносом x/y наружу: размер кнопки заранее
@@ -114,27 +117,32 @@ def обводка(x: int, y: int, w: int, h: int, цвет: str = ОЛИВА_Ш
     # ширина и высота заданы явно от родителя.
     где = (f"left: {x}px; top: {y}px; width: calc(100% + {-2 * x}px); height: calc(100% + {-2 * y}px);" if во_весь
            else f"left: {x}px; top: {y}px; width: {w}px; height: {h}px;")
-    return (f'<svg viewBox="0 0 {ш} {в}" preserveAspectRatio="none" fill="none" style="position: absolute; {где} '
-            f'overflow: visible; pointer-events: none;">'
-            f'<path d="M{ш * .52:.1f} {в * .04:.1f} C{ш * .9:.1f} {в * .02:.1f} {ш * 1.01:.1f} {в * .3:.1f} {ш * .99:.1f} {в * .55:.1f} '
+    путь = (f'M{ш * .52:.1f} {в * .04:.1f} C{ш * .9:.1f} {в * .02:.1f} {ш * 1.01:.1f} {в * .3:.1f} {ш * .99:.1f} {в * .55:.1f} '
             f'C{ш * .97:.1f} {в * .92:.1f} {ш * .62:.1f} {в * 1.02:.1f} {ш * .38:.1f} {в * .97:.1f} '
             f'C{ш * .08:.1f} {в * .92:.1f} {-ш * .02:.1f} {в * .62:.1f} {ш * .03:.1f} {в * .36:.1f} '
-            f'C{ш * .08:.1f} {в * .1:.1f} {ш * .34:.1f} {в * .0:.1f} {ш * .6:.1f} {в * .08:.1f}" '
-            f'stroke="{цвет}" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>')
+            f'C{ш * .08:.1f} {в * .1:.1f} {ш * .34:.1f} {в * .0:.1f} {ш * .6:.1f} {в * .08:.1f}')
+    return (f'<svg viewBox="0 0 {ш} {в}" preserveAspectRatio="none" fill="none" style="position: absolute; {где} '
+            f'overflow: visible; pointer-events: none;">' + _штрих(путь, цвет, масштаб=False) + '</svg>')
 
 
-def стрелка(x: int, y: int, w: int, h: int, путь: str, цвет: str = ОЛИВА_ШТРИХ) -> str:
+def _штрих(путь: str, цвет: str, масштаб: bool = True) -> str:
+    """Два прохода одного пути: графитовый контур 15 px и лайм 9 px поверх."""
+    без = "" if масштаб else ' vector-effect="non-scaling-stroke"'
+    return (f'<path d="{путь}" stroke="{КОНТУР}" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"{без}/>'
+            f'<path d="{путь}" stroke="{цвет}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"{без}/>')
+
+
+def стрелка(x: int, y: int, w: int, h: int, путь: str, цвет: str = ЛАЙМ_ШТРИХ) -> str:
     """Рукописная стрелка: кривая `путь` в системе w×h и наконечник на её конце (последние две точки)."""
+    import math
     import re
     числа = [float(ч) for ч in re.findall(r"-?\d+\.?\d*", путь)]
     кх, ку, пх, пу = числа[-2], числа[-1], числа[-4], числа[-3]
-    import math
     угол = math.atan2(ку - пу, кх - пх)
-    кр = 26
+    кр = min(26, max(w, h) * .4)
     л = (кх - кр * math.cos(угол - .5), ку - кр * math.sin(угол - .5))
     п = (кх - кр * math.cos(угол + .5), ку - кр * math.sin(угол + .5))
+    наконечник = f"M{л[0]:.0f} {л[1]:.0f} L{кх:.0f} {ку:.0f} L{п[0]:.0f} {п[1]:.0f}"
     return (f'<svg viewBox="0 0 {w} {h}" fill="none" style="position: absolute; left: {x}px; top: {y}px; width: {w}px; '
             f'height: {h}px; overflow: visible; pointer-events: none;">'
-            f'<path d="{путь}" stroke="{цвет}" stroke-width="7" stroke-linecap="round"/>'
-            f'<path d="M{л[0]:.0f} {л[1]:.0f} L{кх:.0f} {ку:.0f} L{п[0]:.0f} {п[1]:.0f}" stroke="{цвет}" stroke-width="7" '
-            f'stroke-linecap="round" stroke-linejoin="round"/></svg>')
+            + _штрих(f"{путь} {наконечник}", цвет) + '</svg>')
