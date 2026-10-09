@@ -248,6 +248,43 @@ def обложка(о: dict) -> str:
             + низ())
 
 
+def обложка_постер(о: dict) -> str:
+    """Постер из варианта А в тёмной гамме (слово владельца 09.10.2026: «нужно поменять по цвету,
+    она сейчас не сочетается»). Тот же кот, заголовок с лапой, круг и «3 шага»; сцена не нужна —
+    кот вырезан (`<сцена>-cut.webp`), поэтому фон графитовый, а под лапами лаймовый отсвет пола:
+    чёрный кот за краем круга иначе пропадает на графите.
+    """
+    к = обложки.карточка(о["сцена"])
+    x0, y0, x1, y1 = к["пусто"]
+    кегль = обложки.кегль([с.replace("🐾", "Ж") for с in о["строки"]], x1 - x0, 134)
+    лапа = св.заголовок_с_лапой
+    строки = "<br>".join(лапа(с).replace(f"color: {ЧЕРН};", f"color: {СВЕТ};") if "🐾" in с
+                         else дх.маркер(с, чернила=ЧЕРН) for с in о["строки"])
+    цифра, слово = о["число"].split(" ", 1)
+    наклейка = (f'<div data-рядом="кот-сцены" style="position: absolute; left: 700px; top: 498px; width: 196px; height: 196px; '
+                f'border-radius: 50%; background: {ГРАФ}; border: 5px solid {СВЕТ}; box-sizing: border-box; transform: rotate(-10deg); '
+                f'box-shadow: 0 14px 30px rgba(0,0,0,.45); display: flex; flex-direction: column; align-items: center; '
+                f'justify-content: center; {КРУП} text-align: center;">'
+                f'<div style="font-size: 92px; line-height: .86; color: {ЛАЙМ};">{цифра}</div>'
+                f'<div style="font-size: 36px; line-height: 1; color: {СВЕТ};">{слово}</div></div>')
+    return (подложка()
+            + f'<div style="position: absolute; left: 268px; top: 520px; width: 540px; height: 540px; border-radius: 50%; '
+              f'background: {ЛАЙМ}; pointer-events: none;"></div>'
+            + f'<div style="position: absolute; left: 330px; top: 1080px; width: 420px; height: 70px; border-radius: 50%; '
+              f'background: radial-gradient(closest-side, rgba(199,226,75,.45), rgba(199,226,75,0)); pointer-events: none;"></div>'
+            + f'<img src="{о["сцена"]}-cut.webp" style="position: absolute; left: 0; top: 0; width: 1080px; height: 1440px; '
+              f'object-fit: cover; pointer-events: none;">'
+            + обложки.кот_сцены(к)
+            + наклейка
+            + f'<div style="position: absolute; left: {x0}px; top: {y0}px; width: {x1 - x0}px; display: flex; flex-direction: column; '
+              f'align-items: center; gap: 24px; text-align: center;">'
+              f'<div style="{КРУП} font-size: {кегль}px; line-height: .96; color: {СВЕТ};">{строки}</div>'
+              f'<div style="display: inline-block; padding: 12px 30px 16px; border-radius: 22px; background: {КАРТА}; '
+              f'border: 3px solid {ЛАЙМ}; {ТЕКСТ} font-weight: 700; font-size: 42px; line-height: 1.15; color: {СВЕТ};">'
+              f'{claude(" ".join(о["под"]))}</div></div>'
+            + низ())
+
+
 def доски_кадров(пост: dict) -> list[tuple[str, str, str]]:
     н = пост["ночь"]
     кадры = [("Открытие", открытие({**пост["открытие"], **н["открытие"]})),
@@ -276,7 +313,7 @@ def main():
     # но обложка из варианта А»), иначе ночная обложка с папкой.
     if пост.get("главная") == "постер":
         сц = пост["обложка"]["сцена"]
-        файлы += [обложки.СЦЕНЫ / f"{сц}.jpg", обложки.СЦЕНЫ / f"{сц}-cut.webp"]
+        файлы += [обложки.СЦЕНЫ / f"{сц}-cut.webp"]
     else:
         файлы += [обложки.СЦЕНЫ / f'{пост["ночь"]["обложка"]["сцена"]}.jpg']
     файлы += [ТУТ / "картинки" / "oblozhki" / ф for ф in пост["доказательство"]["обложки"]]
@@ -284,7 +321,7 @@ def main():
     if нет:
         print("для снабженца (snabzhenets):\n  " + "\n  ".join(str(ф) for ф in нет))
         raise SystemExit(2)
-    своя = (("постер", св.ЛИСТ, св.обложка_постер(пост["обложка"])) if пост.get("главная") == "постер"
+    своя = (("постер", ГРАФ, обложка_постер(пост["обложка"])) if пост.get("главная") == "постер"
             else ("ночь", ГРАФ, обложка(пост["ночь"]["обложка"])))
     обл = обложки.доски_обложек(пост, своя, ТЕМА, {}, CSS)
     доски = обл[:1] + доски_кадров(пост) + обл[1:]
