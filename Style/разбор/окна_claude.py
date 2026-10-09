@@ -90,9 +90,9 @@ def файлы(x: int, y: int, w: int, имена: list[str], значки: dict
             f'{_иконка(значки["paperclip"], "#FFFFFF", 28)}Add files</div></div>')
 
 
-def инструкции(x: int, y: int, w: int, строки: list[str], название: str, значки: dict, наклон: float = 3) -> str:
+def инструкции(x: int, y: int, w: int, строки: list[str], название: str, значки: dict, наклон: float = 3, маркер: str = "—") -> str:
     """Лист «Instructions»: правила проекта списком и подсказка Claude под ними."""
-    пункты = "".join(f'<div style="{UI} font-size: 28px; line-height: 1.3; color: {ЧЕРН}; margin-bottom: 10px;">— {с}</div>'
+    пункты = "".join(f'<div style="{UI} font-size: 28px; line-height: 1.3; color: {ЧЕРН}; margin-bottom: 10px;">{маркер} {с}</div>'
                      for с in строки)
     return (f'<div class=окно data-рядом=окно style="position: absolute; left: {x}px; top: {y}px; width: {w}px; box-sizing: border-box; padding: 30px 30px 28px; '
             f'border-radius: 28px; background: {КРЕМ_ОКНА}; border: 1px solid {РАМКА}; box-shadow: {ТЕНЬ}; transform: rotate({наклон}deg); z-index: 2;">'

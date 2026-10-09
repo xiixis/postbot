@@ -33,5 +33,20 @@ class Шаги(unittest.TestCase):
         self.assertTrue(html.startswith("ХИТРО") and html.endswith("ОПАЯ"))
 
 
+НОЧЬ = json.loads((ТУТ.parent / "разбор" / "посты" / "проекты-claude-ночь.json").read_text(encoding="utf-8"))
+
+
+class ШагиНочь(unittest.TestCase):
+    def test_шесть_кадров_со_знаком_и_без_тире(self):
+        import re
+        import шаги_ночь
+        доски = шаги_ночь.доски_кадров(НОЧЬ)
+        self.assertEqual([и for и, _, _ in доски], [f"Kadr{н:02d}.dc.html" for н in range(2, 8)])
+        for имя, _, html in доски:
+            self.assertIn('src="logo.png"', html, f"{имя}: нет знака канала")
+            текст = re.sub(r"<[^>]+>", " ", html.split("<x-dc>")[1])
+            self.assertNotIn("—", текст, f"{имя}: длинное тире в тексте кадра (запрет genjutsu)")
+
+
 if __name__ == "__main__":
     unittest.main()
