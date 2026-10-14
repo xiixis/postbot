@@ -19,10 +19,11 @@ const REGULAR = ['chat-circle', 'user', 'heart', 'cursor-click', 'paper-plane-ti
   'arrow-up-right', 'bookmark-simple', 'telegram-logo', 'hand-palm', 'lightbulb', 'microphone', 'film-slate',
   'magnifying-glass', 'play', 'text-t', 'users-three', 'arrow-counter-clockwise', 'scissors', 'arrow-bend-down-left'];
 const FILL = ['heart', 'telegram-logo', 'check-circle', 'x-circle', 'bookmark-simple', 'play', 'sparkle', 'lightbulb', 'hand-palm',
-  'folder-simple', 'user'];
+  'folder-simple', 'user', 'question-mark', 'cursor', 'clock', 'puzzle-piece', 'plug', 'users-three', 'gear', 'arrow-up-right', 'eye',
+  'film-strip', 'pencil-simple-line', 'microphone', 'paper-plane-tilt', 'check', 'x'];
 const BOLD = ['check', 'x', 'arrow-up-right', 'arrow-bend-down-left', 'pencil-simple-line', 'palette', 'film-strip', 'waveform', 'eye',
   'puzzle-piece', 'plug', 'gear', 'users-three', 'microphone', 'lightbulb', 'film-slate', 'magnifying-glass', 'clock',
-  'arrow-counter-clockwise'];
+  'arrow-counter-clockwise', 'question-mark'];
 
 const icons = Object.fromEntries(REGULAR.map((n) => [n, svgInner('regular', n)]));
 const fill = Object.fromEntries(FILL.map((n) => [n, svgInner('fill', n)]));

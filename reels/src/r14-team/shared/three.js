@@ -1,49 +1,47 @@
-// Объём ролика r14: одна сцена Three.js под вёрсткой, кадр считается из времени (событие hf-seek), не из часов.
+// Объём ролика r14, третья версия: один мир — светлая студия-мастерская (выбор владельца 14.10.2026, проба «А»).
 //
-// Сквозной герой — настоящий знак Claude (контур из public/team/brand/claude-color.svg), выдавленный с фаской:
-// он приходит ответом на вопрос, «пишет» код, едет по дорожке монтажа, стоит в центре команды, поднимается
-// по ступеням процесса и в финале ныряет в Telegram. Остальные предметы живут в своих окнах времени и
-// появляются/уходят вместе со сценами вёрстки (те же 0,42 с входа и 0,26 с ухода).
-// Координаты задаются в пикселях кадра 1080×1920 (P): камера с углом 30° на расстоянии 14 видит 256 px на единицу.
+// Почему так: владелец сказал «дизайн не выглядит целостным». Разбор референсов (Apple «Wonderful Tools» — Buck,
+// Vercel Ship — basement, DeepMind «Visualising AI», лучшие ролики Opus 5.5 на skillry: @twoclipping, @heyiamnick)
+// дал общее правило: один фон, один материал, один свет, одна сквозная нить, переход — движение, а не растворение.
+// Отсюда: 15 станций стоят в одной студии рядком по оси X, камера переезжает между ними на смене сцены, внутри
+// станции только чуть наезжает. Всё матовое, как глина: фигуры графит, постаменты крем, инструменты олива; лайм —
+// только «задача» и активное; терракота — только Claude. Сквозной герой — настоящий знак Claude.
+// Кадр — чистая функция времени (событие hf-seek), без часов и случайных чисел.
 
 export const buildThree = async (THREE, X, canvas, T, A) => {
-  const { SVGLoader, RoomEnvironment, RoundedBoxGeometry } = X;
-  // надписи на холсте рисуются только загруженным шрифтом
-  await Promise.all(['800 64px Unbounded', '700 40px Onest', '800 40px Onest'].map((f) => document.fonts.load(f)));
+  const { SVGLoader, RoundedBoxGeometry } = X;
+  await Promise.all(['800 64px Unbounded', '700 40px Onest', '800 40px Onest', '600 40px Onest', '500 40px "JetBrains Mono"'].map((f) => document.fonts.load(f)));
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  // ── Палитра и мир ─────────────────────────────────────────────────────────────────────────────────
+  const C = { bg: 0xE7E8DD, fig: 0x2A2B24, ped: 0xF6F7EF, tool: 0x56690C, lime: 0xC7E24B, claude: 0xD97757, cream: 0xF1F2EA, stone: 0xD3D4C8 };
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1);
   renderer.setSize(1080, 1920, false);
-  renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 0.95;
+  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
+  renderer.shadowMap.type = THREE.VSMShadowMap;
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.45;
-  const camera = new THREE.PerspectiveCamera(30, 1080 / 1920, 0.1, 200);
-  const U = 256;
-  const P = (x, y, z = 0) => new THREE.Vector3((x - 540) / U, (960 - y) / U, z);
-
-  scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-  const key = new THREE.DirectionalLight(0xffffff, 2.3);
-  key.position.set(-4, 7, 8);
+  scene.background = new THREE.Color(C.bg);
+  scene.fog = new THREE.Fog(C.bg, 15, 30);
+  const camera = new THREE.PerspectiveCamera(34, 1080 / 1920, 0.1, 120);
+  scene.add(new THREE.HemisphereLight(0xFFF6E8, 0xBFC0B2, 1.4));
+  const key = new THREE.DirectionalLight(0xFFF3E0, 2.0);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
-  Object.assign(key.shadow.camera, { left: -6, right: 6, top: 8, bottom: -8, near: 0.5, far: 40 });
-  key.shadow.bias = -0.0005;
-  scene.add(key);
-  const rim = new THREE.PointLight(0xC7E24B, 55, 30);
-  rim.position.set(3, 3, -5);
-  scene.add(rim);
-  const fill = new THREE.PointLight(0xFFE2D0, 18, 30);
-  fill.position.set(-4, -3, 5);
-  scene.add(fill);
+  key.shadow.radius = 14;
+  key.shadow.blurSamples = 24;
+  Object.assign(key.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 40 });
+  scene.add(key, key.target);
 
-  // время сценария
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const clay = (c, r = 0.82, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0, ...o });
+  const mesh = (geo, mat, parent) => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; if (parent) parent.add(m); return m; };
+  const rbox = (w, h, d, r = 0.06, seg = 4) => new RoundedBoxGeometry(w, h, d, seg, Math.min(r, w / 2 - 0.001, h / 2 - 0.001, d / 2 - 0.001));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 60), clay(C.bg, 1));
+  floor.rotation.x = -Math.PI / 2; floor.position.x = 110; floor.receiveShadow = true; scene.add(floor);
+
+  // ── Время сценария ────────────────────────────────────────────────────────────────────────────────
   const s = (id) => T.scenes[id].s, e = (id) => T.scenes[id].e, w = (id, i) => T.w[id][i];
   const cl = (x) => Math.max(0, Math.min(1, x));
   const pr = (t, a, d) => cl((t - a) / d);
@@ -51,480 +49,787 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
   const eExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
   const eIO = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
   const eIn = (x) => x * x * x;
+  // пружина без перелёта (критическое затухание): 1 − (1 + ωt)·e^(−ωt)
+  const spring = (t, a, wgt = 16) => (t <= a ? 0 : 1 - (1 + wgt * (t - a)) * Math.exp(-wgt * (t - a)));
   const lerp = (a, b, x) => a + (b - a) * x;
-  const vlerp = (a, b, x) => a.clone().lerp(b, x);
-  // окно сцены: вход 0,42 с, уход 0,26 с — как у вёрстки
-  const win = (t, a, b, last = false) => eOut(pr(t, a - 0.04, 0.42)) * (last ? 1 : 1 - eIn(pr(t, b - 0.22, 0.26)));
+  const vl = (a, b, x) => a.clone().lerp(b, x);
+  const hop = (x, hgt) => Math.sin(Math.PI * cl(x)) * hgt;
 
-  // материалы и прозрачность
-  const mats = [];
-  const M = (o) => { const m = new THREE.MeshPhysicalMaterial({ transparent: true, ...o }); m.userData.op = o.opacity ?? 1; mats.push(m); return m; };
-  const fade = (obj, o) => {
-    obj.visible = o > 0.003;
-    obj.traverse((n) => {
-      const list = n.material ? (Array.isArray(n.material) ? n.material : [n.material]) : [];
-      list.forEach((m) => { if (m.userData.op === undefined) m.userData.op = m.opacity; m.opacity = m.userData.op * o; m.transparent = true; });
-    });
-  };
-  const shadowed = (mesh) => { mesh.castShadow = true; return mesh; };
-
-  // текстуры: значки Phosphor контурами Path2D, надписи — загруженным шрифтом
-  const icon = (name, set = 'b') => (set === 'f' ? FILL : set === 'r' ? ICONS : BOLD)[name];
-  const pathsOf = (svg) => [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => m[1]);
+  // ── Текстуры: надписи шрифтом канала, значки Phosphor контурами ────────────────────────────────────
+  const PPU = 266;                                       // пикселей кадра на единицу мира у центра станции
   const tex = (cv) => { const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
-  const iconTex = (name, fg, set = 'b', size = 256) => {
-    const cv = document.createElement('canvas'); cv.width = cv.height = size;
-    const g = cv.getContext('2d');
-    g.fillStyle = fg;
-    g.scale(size / 256, size / 256);
-    pathsOf(icon(name, set)).forEach((d) => g.fill(new Path2D(d)));
-    return tex(cv);
+  const pathsOf = (svg) => [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => m[1]);
+  const icon = (name, set = 'f') => (set === 'f' ? FILL : set === 'b' ? BOLD : ICONS)[name];
+  const drawIcon = (g, name, x, y, size, color, set = 'f') => {
+    g.save(); g.translate(x, y); g.scale(size / 256, size / 256); g.fillStyle = color;
+    pathsOf(icon(name, set)).forEach((d) => g.fill(new Path2D(d))); g.restore();
   };
-  const textTex = (text, font, color, h = 96) => {
-    const cv = document.createElement('canvas');
-    const g0 = cv.getContext('2d'); g0.font = font;
-    const wpx = Math.ceil(g0.measureText(text).width) + 40;
-    cv.width = wpx; cv.height = h;
-    const g = cv.getContext('2d');
-    g.font = font; g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(text, wpx / 2, h / 2 + 2);
-    return { map: tex(cv), w: wpx, h };
+  const measure = (text, font) => { const g = document.createElement('canvas').getContext('2d'); g.font = font; return g.measureText(text).width; };
+  const card = (wpx, hpx, draw) => { const cv = document.createElement('canvas'); cv.width = wpx * 2; cv.height = hpx * 2; const g = cv.getContext('2d'); g.scale(2, 2); draw(g, wpx, hpx); return cv; };
+  const face = (cv, wu, parent, z) => {
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(wu, (wu * cv.height) / cv.width), new THREE.MeshBasicMaterial({ map: tex(cv), transparent: true, toneMapped: false }));
+    p.position.z = z; if (parent) parent.add(p); return p;
   };
-  const label = (text, color = '#F1F2EA', px = 34, weight = 700) => {
-    const { map, w: tw, h } = textTex(text, `${weight} ${px * 2}px Onest`, color, Math.round(px * 2.8));
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map, transparent: true, depthWrite: false }));
-    sp.scale.set(tw / 2 / U, h / 2 / U, 1);
-    return sp;
+  const roundRect = (g, x, y, w2, h2, r) => { g.beginPath(); g.roundRect(x, y, w2, h2, r); g.fill(); };
+
+  // пузырь сообщения: плита со скруглением и надписью
+  const bubble = (text, { px = 30, bg = 0xFAFAF4, fg = '#12130F', weight = 700, depth = 0.08 } = {}) => {
+    const font = `${weight} ${px}px Onest`;
+    const wpx = Math.ceil(measure(text, font)) + px * 1.6, hpx = Math.round(px * 2.1);
+    const g = new THREE.Group();
+    mesh(rbox(wpx / PPU, hpx / PPU, depth, hpx / PPU / 2 - 0.004), clay(bg, 0.7), g);
+    face(card(wpx, hpx, (c) => { c.font = font; c.fillStyle = fg; c.textBaseline = 'middle'; c.textAlign = 'center'; c.fillText(text, wpx / 2, hpx / 2 + 1); }), wpx / PPU, g, depth / 2 + 0.002);
+    return g;
   };
+  // выдавливание контура SVG (viewBox vbw×vbh), размер по ширине
+  const extrude = (ds, vbw, vbh, width, depthK = 0.18, bevelK = 0.03) => {
+    const svg = `<svg viewBox="0 0 ${vbw} ${vbh}">${ds.map((d) => `<path d="${d}"/>`).join('')}</svg>`;
+    const shapes = new SVGLoader().parse(svg).paths.flatMap((p) => SVGLoader.createShapes(p));
+    const k = Math.max(vbw, vbh);
+    const geo = new THREE.ExtrudeGeometry(shapes, { depth: k * depthK, bevelEnabled: true, bevelThickness: k * bevelK, bevelSize: k * bevelK * 0.6, bevelSegments: 5, curveSegments: 14 });
+    geo.center();
+    geo.rotateX(Math.PI);                                // SVG сверху вниз: поворот, а не масштаб −1 (тот выворачивает грани)
+    geo.scale(width / vbw, width / vbw, width / vbw);
+    geo.computeVertexNormals();
+    return geo;
+  };
+
+  // ── Станции ───────────────────────────────────────────────────────────────────────────────────────
+  // Каждая станция — группа в своей точке X. Камера: p — где стоит, l — куда смотрит, относительно станции.
+  const GAP = 5;                                        // соседняя станция въезжает в кадр по ходу переезда: пустых кадров нет
+  const ST = [
+    { name: 'msg', ids: ['hook', 'who'], p: V(0, 3.6, 9.6), l: V(0, 1.65, 0.3) },
+    { name: 'code', ids: ['code', 'self'], p: V(0, 4.6, 8.8), l: V(0, 1.2, 0) },
+    { name: 'hype', ids: ['hype'], p: V(0, 3.0, 9.6), l: V(0, 1.5, 0.3) },
+    { name: 'try', ids: ['try'], p: V(0, 3.6, 9.2), l: V(0, 1.75, 0.3) },
+    { name: 'slop', ids: ['slop'], p: V(0, 6.8, 7.0), l: V(0, 0.45, 0.1) },
+    { name: 'stop', ids: ['stop', 'why'], p: V(0, 3.2, 9.4), l: V(0, 1.55, 0.3) },
+    { name: 'team', ids: ['team', 'roles', 'skills', 'much'], p: V(0, 5.2, 10.6), l: V(0, 0.65, 0.4) },
+    { name: 'same', ids: ['same', 'same2'], p: V(0, 3.0, 9.4), l: V(0, 1.3, 0) },
+    { name: 'refs', ids: ['refs'], p: V(0, 4.0, 9.2), l: V(0, 1.35, 0) },
+    { name: 'design', ids: ['design'], p: V(0, 3.2, 9.2), l: V(-0.2, 1.45, 0.2) },
+    { name: 'uniq', ids: ['uniq'], p: V(0, 3.0, 9.6), l: V(0, 1.5, 0) },
+    { name: 'check', ids: ['check'], p: V(0, 4.2, 9.4), l: V(0, 1.2, 0) },
+    { name: 'path', ids: ['path'], p: V(0, 3.6, 10.2), l: V(0, 1.45, 0) },
+    { name: 'pack', ids: ['pack'], p: V(0, 5.0, 9.0), l: V(0, 1.3, 0.2) },
+    { name: 'cta', ids: ['cta'], p: V(0, 3.2, 9.6), l: V(0, 1.55, 0.4) },
+  ];
+  ST.forEach((st, k) => { st.x = k * GAP; st.g = new THREE.Group(); st.g.position.x = st.x; scene.add(st.g); st.a = s(st.ids[0]); st.b = e(st.ids[st.ids.length - 1]); });
+  const S = Object.fromEntries(ST.map((st) => [st.name, st]));
+  const W = (st, x, y, z) => V(st.x + x, y, z);       // точка станции в мире
+
+  // общие предметы
+  const pedestal = (r, h, parent, c = C.ped) => { const m = mesh(new THREE.CylinderGeometry(r, r * 1.06, h, 64), clay(c), parent); m.position.y = h / 2; return m; };
+  const sparkGeo = extrude([BRAND.spark], 24, 24, 1, 0.07, 0.016);
+  const sparkMat = () => clay(C.claude, 0.45, { emissive: C.claude, emissiveIntensity: 0.16 });
+  const T_ = clay(C.tool);
+  const TOOLS = {
+    pen: () => { const g = new THREE.Group(); mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.42, 16), T_, g); const tip = mesh(new THREE.ConeGeometry(0.035, 0.08, 16), clay(C.lime), g); tip.position.y = -0.25; tip.rotation.x = Math.PI; g.rotation.z = 0.5; return g; },
+    palette: () => { const g = new THREE.Group(); const d = mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.035, 32), T_, g); d.rotation.x = Math.PI / 2.4; [[0.06, 0.05, C.lime], [-0.06, 0.06, C.fig], [0, -0.07, C.cream]].forEach(([a, b, c]) => { const sp = mesh(new THREE.SphereGeometry(0.035, 16, 12), clay(c, 0.5), g); sp.position.set(a, b, 0.04); }); return g; },
+    film: () => { const g = new THREE.Group(); mesh(rbox(0.32, 0.22, 0.04, 0.02), T_, g); mesh(rbox(0.22, 0.13, 0.05, 0.01), clay(C.lime), g); return g; },
+    phones: () => { const g = new THREE.Group(); mesh(new THREE.TorusGeometry(0.14, 0.025, 12, 32, Math.PI), T_, g); [-0.14, 0.14].forEach((x) => { const c = mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.06, 20), clay(C.lime), g); c.rotation.z = Math.PI / 2; c.position.set(x, -0.01, 0); }); return g; },
+    loupe: () => { const g = new THREE.Group(); mesh(new THREE.TorusGeometry(0.1, 0.025, 12, 32), T_, g); const h = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.18, 12), T_, g); h.position.set(0.1, -0.13, 0); h.rotation.z = 0.7; return g; },
+  };
+  // агент: одна форма на всех, разница только в инструменте (приём Buck и DeepMind)
+  const agent = (tool, parent) => {
+    const g = new THREE.Group();
+    const ped = mesh(new THREE.CylinderGeometry(0.42, 0.46, 0.16, 48), clay(C.ped), g); ped.position.y = 0.08;
+    const body = new THREE.Group(); g.add(body);
+    mesh(new THREE.CapsuleGeometry(0.22, 0.32, 8, 24), clay(C.fig), body).position.y = 0.54;
+    [-0.08, 0.08].forEach((ex) => { const eye = mesh(new THREE.CapsuleGeometry(0.028, 0.05, 4, 8), clay(C.cream, 0.4), body); eye.position.set(ex, 0.68, 0.205); });
+    if (tool) { const t = TOOLS[tool](); t.position.set(0.3, 0.42, 0.12); body.add(t); }
+    if (parent) parent.add(g);
+    return { g, ped, body };
+  };
+  // настоящий кадр ролика: телефон с текстурой
   const loader = new THREE.TextureLoader();
   const img = async (file) => { const t = await loader.loadAsync(`${A}/${file}`); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
-  const [fan1, fan2, fan3, ...strip] = await Promise.all(['fan1', 'fan2', 'fan3', 's1', 's2', 's4', 's6', 's5', 's3', 's7'].map((f) => img(`real/${f}.jpg`)));
+  const REAL = Object.fromEntries(await Promise.all(['fan1', 'fan2', 'fan3', 's1', 's2', 's3', 's4', 's5', 's6', 's7'].map(async (f) => [f, await img(`real/${f}.jpg`)])));
+  const phone = (map, wd, ht, parent, body = C.fig) => {
+    const g = new THREE.Group();
+    mesh(rbox(wd, ht, 0.09, 0.08), clay(body, 0.5), g);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(wd - 0.07, ht - 0.07), new THREE.MeshBasicMaterial({ map, toneMapped: false }));
+    scr.position.z = 0.047; g.add(scr);
+    if (parent) parent.add(g);
+    return { g, scr };
+  };
 
-  // ── Герой: знак Claude ─────────────────────────────────────────────────────────────────────────────
-  const sparkShapes = new SVGLoader().parse(`<svg viewBox="0 0 24 24"><path d="${BRAND.spark}"/></svg>`).paths.flatMap((p) => SVGLoader.createShapes(p));
-  const sparkGeo = new THREE.ExtrudeGeometry(sparkShapes, { depth: 1.1, bevelEnabled: true, bevelThickness: 0.35, bevelSize: 0.22, bevelSegments: 8, curveSegments: 10 });
-  sparkGeo.center();
-  sparkGeo.scale(1 / 24, -1 / 24, 1 / 24);
-  sparkGeo.computeVertexNormals();
-  const sparkMat = () => M({ color: 0xD97757, roughness: 0.38, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.2 });
-  const hero = shadowed(new THREE.Mesh(sparkGeo, sparkMat()));
-  scene.add(hero);
+  // ── 1–2. Сообщения: из телефона вылетают вопросы, приходит главный, ответ «Никто», на постамент падает Claude ──
+  const MSG = S.msg;
+  const msgPhone = phone(tex(card(260, 500, (g, W2, H2) => {
+    g.fillStyle = '#F1F2EA'; g.fillRect(0, 0, W2, H2);
+    g.fillStyle = '#DADBD0'; [[24, 70, 150], [86, 140, 150], [24, 210, 120], [70, 280, 166], [24, 350, 140]].forEach(([x, y, ww]) => roundRect(g, x, y, ww, 46, 23));
+  })), 1.2, 2.3, MSG.g);
+  msgPhone.g.position.set(0, 1.18, -0.4);
+  const QS = [['как ты делаешь такие ролики?', V(0.05, 3.05, 0.5)], ['это нейросеть?', V(1.05, 2.45, 0.9)], ['скинь программу', V(-1.05, 2.05, 1.0)],
+    ['чем монтируешь?', V(1.1, 1.55, 1.3)], ['научи так же', V(-1.15, 1.1, 1.3)], ['сколько стоит монтаж?', V(0.35, 0.45, 1.7)]].map(([text, at], k) => {
+    const b = bubble(text, { px: 32 }); MSG.g.add(b); return { b, at, k };
+  });
+  const ask = bubble('кто монтирует эти ролики?', { px: 44, bg: C.lime, weight: 800 }); MSG.g.add(ask);
+  const nobody = bubble('Никто.', { px: 58, bg: C.fig, fg: '#F1F2EA', weight: 800, depth: 0.1 }); MSG.g.add(nobody);
+  const whoPed = pedestal(0.62, 0.42, MSG.g);
+  const codePlate = new THREE.Group(); MSG.g.add(codePlate);
+  mesh(rbox(1.55, 0.36, 0.08, 0.17), clay(C.fig, 0.6), codePlate);
+  face(card(412, 96, (g) => {
+    g.save(); g.translate(28, 22); g.scale(52 / 24, 52 / 24); g.fillStyle = '#D97757'; g.fill(new Path2D(BRAND.code), 'evenodd'); g.restore();
+    g.font = '800 40px Onest'; g.fillStyle = '#F1F2EA'; g.textBaseline = 'middle'; g.fillText('Claude Code', 100, 50);
+  }), 1.55, codePlate, 0.042);
 
-  // ── Сердца хайпа ──────────────────────────────────────────────────────────────────────────────────
+  // ── 3–4. Код и монтаж ──────────────────────────────────────────────────────────────────────────────
+  const CODE = S.code;
+  const genPivot = new THREE.Group(); genPivot.position.set(-0.2, 0, -0.5); CODE.g.add(genPivot);
+  const gen = new THREE.Group(); genPivot.add(gen); gen.position.y = 0.95;
+  mesh(rbox(2.5, 1.6, 0.12, 0.1), clay(C.fig, 0.5), gen);
+  face(card(640, 410, (g, W2, H2) => {
+    const gr = g.createRadialGradient(W2 * 0.45, H2 * 0.4, 20, W2 * 0.5, H2 * 0.5, W2 * 0.6);
+    gr.addColorStop(0, '#CFC8E0'); gr.addColorStop(0.6, '#8A86A0'); gr.addColorStop(1, '#4C4A58');
+    g.fillStyle = gr; roundRect(g, 0, 0, W2, H2, 22);
+    g.fillStyle = 'rgba(255,255,255,.28)'; g.beginPath(); g.arc(W2 / 2, H2 / 2 - 20, 54, 0, Math.PI * 2); g.fill();
+    drawIcon(g, 'play', W2 / 2 - 24, H2 / 2 - 44, 48, '#FFFFFF');
+    g.fillStyle = 'rgba(0,0,0,.3)'; roundRect(g, 30, H2 - 88, W2 - 60, 58, 29);
+    drawIcon(g, 'sparkle', 50, H2 - 78, 38, '#FFFFFF');
+    g.font = '600 30px Onest'; g.fillStyle = '#FFFFFF'; g.textBaseline = 'middle'; g.fillText('генерирую видео…', 100, H2 - 58);
+  }), 2.4, gen, 0.062);
+  const strikeBar = mesh(rbox(3.3, 0.16, 0.16, 0.07), clay(C.fig, 0.6), CODE.g);
+  // первая строка кода разбита на части: проверка HyperFrames принимает её текст за второй таймлайн ролика
+  const CODE_LINES = [['const', ' tl = gsap.' + 'timeline();'], ['', 'tl.from(card, { y: 140 }, 0.4);'], ['', 'tl.to(title, { opacity: 1 }, 1.2);'],
+    ['', "spin(drum, '1200', 2.0);"], ['//', ' голос, музыка, звуки'], ['', 'render({ fps: 30 });']];
+  const codeCv = document.createElement('canvas'); codeCv.width = 1400; codeCv.height = 880;
+  const codeTex = tex(codeCv);
+  let codeShown = -1;
+  const drawCode = (n, frac) => {
+    const key2 = n * 100 + Math.floor(frac * 40);
+    if (key2 === codeShown) return; codeShown = key2;
+    const g = codeCv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0);
+    g.fillStyle = '#15160F'; g.fillRect(0, 0, 700, 440);
+    g.font = '500 30px "JetBrains Mono"'; g.textBaseline = 'top';
+    CODE_LINES.forEach(([k0, rest], i) => {
+      if (i > n) return;
+      const full = k0 + rest, len = i < n ? full.length : Math.floor(full.length * frac);
+      const shown = full.slice(0, len);
+      const kw = shown.slice(0, Math.min(len, k0.length)), tail = shown.slice(kw.length);
+      g.fillStyle = k0 === '//' ? 'rgba(241,242,234,.45)' : '#C7E24B'; g.fillText(kw, 36, 40 + i * 62);
+      g.fillStyle = k0 === '//' ? 'rgba(241,242,234,.45)' : '#F1F2EA'; g.fillText(tail, 36 + g.measureText(kw).width, 40 + i * 62);
+    });
+    codeTex.needsUpdate = true;
+  };
+  const tablet = new THREE.Group(); CODE.g.add(tablet);
+  mesh(rbox(2.7, 1.72, 0.1, 0.1), clay(C.fig, 0.5), tablet);
+  const tabFace = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.634), new THREE.MeshBasicMaterial({ map: codeTex, toneMapped: false })); tabFace.position.z = 0.052; tablet.add(tabFace);
+  // стол монтажа: дорожки, клипы, бегунок, превью
+  const board = new THREE.Group(); CODE.g.add(board);
+  mesh(rbox(3.7, 0.1, 2.0, 0.08), clay(C.ped), board).position.y = 0.05;
+  const LANE_Z = [-0.65, -0.22, 0.22, 0.65];
+  [[-1.35, 0.9, C.cream], [-0.35, 1.05, C.lime], [0.75, 0.8, C.cream]].forEach(([x, wd, c]) => { mesh(rbox(wd, 0.07, 0.32, 0.04), clay(c, 0.6), board).position.set(x, 0.14, LANE_Z[0]); });
+  ['s1', 's2', 's3', 's4'].forEach((f, k) => {
+    const clip = mesh(rbox(0.82, 0.07, 0.32, 0.04), clay(C.fig, 0.6), board); clip.position.set(-1.3 + k * 0.88, 0.14, LANE_Z[1]);
+    const top = new THREE.Mesh(new THREE.PlaneGeometry(0.76, 0.28), new THREE.MeshBasicMaterial({ map: REAL[f], toneMapped: false }));
+    top.rotation.x = -Math.PI / 2; top.position.set(-1.3 + k * 0.88, 0.177, LANE_Z[1]); board.add(top);
+  });
+  for (let i = 0; i < 46; i++) { const hgt = 0.04 + 0.16 * Math.abs(Math.sin(i * 0.61) * Math.cos(i * 0.23)); mesh(rbox(0.045, hgt, 0.045, 0.015), clay(C.tool), board).position.set(-1.65 + i * 0.072, 0.1 + hgt / 2, LANE_Z[2]); }
+  for (let i = 0; i < 6; i++) { const d = mesh(rbox(0.13, 0.13, 0.13, 0.03), clay(C.lime, 0.6), board); d.position.set(-1.4 + i * 0.56, 0.18, LANE_Z[3]); d.rotation.y = Math.PI / 4; }
+  const playhead = mesh(rbox(0.05, 0.42, 1.9, 0.02), clay(C.fig, 0.5), board); playhead.position.y = 0.3;
+  const preview = phone(REAL.s1, 0.86, 1.53, CODE.g); preview.g.position.set(0, 1.0, -1.45);
+  const doneP = bubble('ролик собран', { px: 34, bg: C.lime, weight: 800 }); CODE.g.add(doneP);
+
+  // ── 5. Хайп: Claude на постаменте, настоящая надпись Claude объёмом, поднимаются сердца ────────────────
+  const HYPE = S.hype;
+  pedestal(0.8, 0.55, HYPE.g);
+  const word = mesh(extrude(BRAND.text, 97, 24, 2.2, 0.14, 0.02), clay(C.fig, 0.6), HYPE.g); word.position.set(0, 0.36, 1.35);
   const hs = new THREE.Shape();
   hs.moveTo(0.25, 0.25); hs.bezierCurveTo(0.25, 0.25, 0.2, 0, 0, 0); hs.bezierCurveTo(-0.3, 0, -0.3, 0.35, -0.3, 0.35);
   hs.bezierCurveTo(-0.3, 0.55, -0.1, 0.77, 0.25, 0.95); hs.bezierCurveTo(0.6, 0.77, 0.8, 0.55, 0.8, 0.35);
   hs.bezierCurveTo(0.8, 0.35, 0.8, 0, 0.5, 0); hs.bezierCurveTo(0.35, 0, 0.25, 0.25, 0.25, 0.25);
-  const heartGeo = new THREE.ExtrudeGeometry(hs, { depth: 0.22, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.06, bevelSegments: 6, curveSegments: 16 });
-  heartGeo.center(); heartGeo.rotateZ(Math.PI); heartGeo.scale(0.9, 0.9, 0.9);
+  const heartGeo = new THREE.ExtrudeGeometry(hs, { depth: 0.22, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.06, bevelSegments: 5, curveSegments: 16 });
+  heartGeo.center(); heartGeo.rotateZ(Math.PI); heartGeo.computeVertexNormals();
   const rnd = (k) => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
-  const HEART_COL = [0xD97757, 0x56690C, 0x2A2B24, 0xD97757, 0xC7E24B];
-  const hearts = new THREE.Group(); scene.add(hearts);
-  const HEARTS = Array.from({ length: 14 }, (_, k) => {
-    const m = shadowed(new THREE.Mesh(heartGeo, M({ color: HEART_COL[k % HEART_COL.length], roughness: 0.32, clearcoat: 0.7, clearcoatRoughness: 0.2 })));
-    hearts.add(m);
-    const side = k % 2 ? 1 : -1;
-    return { m, x: 540 + side * (220 + rnd(k + 3) * 260), d: rnd(k + 9), size: 70 + rnd(k + 17) * 70, z: -0.5 + rnd(k + 21) * 1.4, spin: (rnd(k + 5) - 0.5) * 3 };
-  });
+  const HEARTS = Array.from({ length: 12 }, (_, k) => ({ m: mesh(heartGeo, clay([C.claude, C.lime, C.fig][k % 3], 0.6), HYPE.g), x: (k % 2 ? 1 : -1) * (0.9 + rnd(k + 3) * 0.75), z: -0.6 + rnd(k + 7) * 1.2, d: rnd(k + 9), sz: 0.22 + rnd(k + 11) * 0.16 }));
 
-  // ── Нейрослоп: девять одинаковых плиток с одинаковым шаром ───────────────────────────────────────────
-  const slop = new THREE.Group(); scene.add(slop);
-  slop.position.copy(P(540, 930)); slop.rotation.x = 0.9;
-  const tileGeo = new RoundedBoxGeometry(0.82, 0.16, 0.82, 4, 0.06);
-  const blobGeo = new THREE.SphereGeometry(0.25, 48, 32);
-  const SLOP = [];
+  // ── 6. «Сделай ролик»: строка ввода, курсор отправляет, ожидание ──────────────────────────────────────
+  const TRY = S.try;
+  const inpCv = document.createElement('canvas'); inpCv.width = 1800; inpCv.height = 380;
+  const inpTex = tex(inpCv);
+  let inpShown = -1;
+  const drawInput = (n, caret) => {
+    const k2 = n * 2 + (caret ? 1 : 0); if (k2 === inpShown) return; inpShown = k2;
+    const g = inpCv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0);
+    g.clearRect(0, 0, 900, 190);
+    g.save(); g.translate(40, 61); g.scale(68 / 24, 68 / 24); g.fillStyle = '#D97757'; g.fill(new Path2D(BRAND.spark)); g.restore();
+    g.font = '700 62px Onest'; g.fillStyle = '#12130F'; g.textBaseline = 'middle';
+    const txt = 'сделай ролик'.slice(0, n); g.fillText(txt, 140, 97);
+    if (caret) { g.fillRect(146 + g.measureText(txt).width, 62, 5, 70); }
+    inpTex.needsUpdate = true;
+  };
+  const inp = new THREE.Group(); TRY.g.add(inp);
+  mesh(rbox(3.4, 0.72, 0.16, 0.34), clay(0xFBFBF6, 0.6), inp);
+  const inpFace = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 0.718), new THREE.MeshBasicMaterial({ map: inpTex, transparent: true, toneMapped: false })); inpFace.position.z = 0.082; inp.add(inpFace);
+  const send = new THREE.Group(); inp.add(send); send.position.set(1.32, 0, 0.1);
+  const sendBody = mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.12, 40), clay(C.fig, 0.5), send); sendBody.rotation.x = Math.PI / 2;
+  face(card(120, 120, (g) => drawIcon(g, 'paper-plane-tilt', 22, 22, 76, '#C7E24B')), 0.3, send, 0.065);
+  const cursorGeo = extrude(pathsOf(FILL.cursor), 256, 256, 0.42, 0.08, 0.02);
+  const cursor3 = mesh(cursorGeo, clay(C.fig, 0.5), TRY.g);
+  const wait = new THREE.Group(); TRY.g.add(wait);
+  mesh(rbox(2.6, 1.3, 0.1, 0.12), clay(C.stone, 0.8), wait);
+  const spinner = mesh(new THREE.TorusGeometry(0.22, 0.04, 12, 48, Math.PI * 1.4), clay(C.fig, 0.5), wait); spinner.position.z = 0.1;
+
+  // ── 7. Нейрослоп: девять одинаковых плиток с одинаковым шаром, штамп ─────────────────────────────────
+  const SLOP = S.slop;
+  const tileGeo = rbox(0.82, 0.14, 0.82, 0.06), blobGeo = new THREE.SphereGeometry(0.25, 48, 32);
+  const SLOPS = [];
   for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
-    const g = new THREE.Group();
-    g.position.set((c - 1) * 0.98, 0, (r - 1) * 0.98);
-    const tile = shadowed(new THREE.Mesh(tileGeo, M({ color: 0xBFBEB6, roughness: 0.7 })));
-    tile.receiveShadow = true;
-    const blob = shadowed(new THREE.Mesh(blobGeo, M({ color: 0xBDB6D6, roughness: 0.45, clearcoat: 0.5 })));
-    blob.scale.set(1, 0.85, 1);
-    g.add(tile, blob);
-    slop.add(g);
-    SLOP.push({ g, blob, k: r + c });
+    const g = new THREE.Group(); g.position.set((c - 1) * 0.98, 0, (r - 1) * 0.98); SLOP.g.add(g);
+    mesh(tileGeo, clay(C.ped), g).position.y = 0.07;
+    const blob = mesh(blobGeo, clay(0xBDB6D6, 0.5), g); blob.scale.set(1, 0.85, 1);
+    SLOPS.push({ g, blob, k: r + c });
   }
-  const floor = (w2, h2, op = 0.22) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w2, h2), new THREE.ShadowMaterial({ opacity: op, transparent: true })); m.receiveShadow = true; return m; };
-  const slopFloor = floor(6, 6); slopFloor.rotation.x = -Math.PI / 2; slopFloor.position.y = -0.085; slop.add(slopFloor);
+  const stamp = new THREE.Group(); SLOP.g.add(stamp);
+  mesh(rbox(2.7, 0.7, 0.14, 0.14), clay(C.fig, 0.55), stamp);
+  face(card(700, 182, (g) => { g.font = '800 82px Unbounded'; g.fillStyle = '#C7E24B'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('нейрослоп', 350, 96); }), 2.6, stamp, 0.072);
 
-  // ── Команда: кольцо вокруг Claude, пять ролей, скилы и MCP ─────────────────────────────────────────
-  const team = new THREE.Group(); scene.add(team);
-  const RING_R = 1.3;
-  const ringPts = Array.from({ length: 241 }, (_, i) => { const a = (i / 240) * Math.PI * 2; return new THREE.Vector3(Math.cos(a) * RING_R, Math.sin(a) * RING_R, 0); });
-  const ringLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: 0xC7E24B, transparent: true, opacity: 0.55 }));
-  const orbit = new THREE.Group(); orbit.rotation.x = 0.85; orbit.position.copy(P(540, 940)); orbit.add(ringLine); team.add(orbit);
-  const nodeGeo = new RoundedBoxGeometry(0.54, 0.54, 0.54, 4, 0.11);
-  const ROLES = [['pencil-simple-line', 'сценарист'], ['palette', 'дизайнер'], ['film-strip', 'монтажёр'], ['waveform', 'звукорежиссёр'], ['eye', 'проверяющий']];
-  const NODES = ROLES.map(([ic, name]) => {
-    const g = new THREE.Group();
-    const box = shadowed(new THREE.Mesh(nodeGeo, M({ color: 0x24251E, roughness: 0.35, clearcoat: 0.6 })));
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.36), new THREE.MeshBasicMaterial({ map: iconTex(ic, '#12130F'), transparent: true, opacity: 0, toneMapped: false }));
-    face.position.z = 0.276;
-    const lab = label(name);
-    lab.position.set(0, -0.5, 0.3);
-    g.add(box, face, lab);
-    team.add(g);
-    return { g, box, face, lab };
+  // ── 8–9. Стоп: объёмная ладонь бьёт сверху, «Claude Opus 5.5» перечёркнут; потом «?» ──────────────────
+  const STOP = S.stop;
+  const hand = mesh(extrude(pathsOf(FILL['hand-palm']), 256, 256, 1.7, 0.1, 0.025), clay(C.fig, 0.55), STOP.g);
+  const model = new THREE.Group(); STOP.g.add(model);
+  mesh(rbox(2.9, 0.62, 0.12, 0.29), clay(0xFBFBF6, 0.6), model);
+  face(card(770, 164, (g) => {
+    g.save(); g.translate(40, 44); g.scale(76 / 24, 76 / 24); g.fillStyle = '#D97757'; g.fill(new Path2D(BRAND.spark)); g.restore();
+    g.font = '800 62px Onest'; g.fillStyle = '#12130F'; g.textBaseline = 'middle'; g.fillText('Claude Opus 5.5', 140, 84);
+  }), 2.9, model, 0.062);
+  const mark = mesh(rbox(3.2, 0.12, 0.1, 0.05), clay(C.fig, 0.5), STOP.g);
+  const qm = mesh(extrude(pathsOf(BOLD['question-mark']), 256, 256, 2.3, 0.12, 0.02), clay(C.fig, 0.55), STOP.g);
+
+  // ── 10–13. Команда: Claude в центре, пять агентов, «задача» переходит от одного к другому ────────────
+  const TEAM = S.team;
+  pedestal(0.62, 0.42, TEAM.g);
+  const R = 1.18;
+  const ROLE_TOOLS = ['pen', 'palette', 'film', 'phones', 'loupe'];
+  const AG = ROLE_TOOLS.map((tl, k) => {
+    const a = agent(tl, TEAM.g);
+    const ang = -Math.PI / 2 + (k * Math.PI * 2) / 5 + Math.PI;
+    a.g.position.set(Math.cos(ang) * R, 0, Math.sin(ang) * R);
+    a.g.rotation.y = Math.atan2(-a.g.position.x, -a.g.position.z) + Math.PI;
+    return a;
   });
-  const PLUGS = [['puzzle-piece', 'скилы', P(370, 1370)], ['plug', 'MCP', P(710, 1370)]].map(([ic, name, at]) => {
-    const g = new THREE.Group();
-    const box = shadowed(new THREE.Mesh(new RoundedBoxGeometry(0.46, 0.46, 0.46, 4, 0.1), M({ color: 0xC7E24B, roughness: 0.35, clearcoat: 0.6 })));
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.3), new THREE.MeshBasicMaterial({ map: iconTex(ic, '#12130F'), transparent: true, toneMapped: false }));
-    face.position.z = 0.236;
-    const lab = label(name, '#F1F2EA', 32); lab.position.set(0, -0.42, 0.3);
-    g.add(box, face, lab);
-    g.position.copy(at);
-    team.add(g);
-    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([at.clone().add(new THREE.Vector3(0, 0.26, 0)), P(540, 940)]),
-      new THREE.LineBasicMaterial({ color: 0xC7E24B, transparent: true, opacity: 0.7 }));
-    team.add(line);
-    return { g, at, line };
+  const threadMat = new THREE.MeshBasicMaterial({ color: C.claude });
+  const THREADS = AG.map((a) => {
+    const p = a.g.position;
+    const curve = new THREE.QuadraticBezierCurve3(V(0, 0.3, 0), V(p.x * 0.5, 0.05, p.z * 0.5), V(p.x * 0.82, 0.05, p.z * 0.82));
+    const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 48, 0.013, 8), threadMat); TEAM.g.add(m); return m;
+  });
+  const task = mesh(rbox(0.32, 0.32, 0.32, 0.07), clay(C.lime, 0.6, { emissive: C.lime, emissiveIntensity: 0.12 }), TEAM.g);
+  const PLUGS = [['puzzle-piece', V(-0.85, 0.2, 2.15)], ['plug', V(0.85, 0.2, 2.15)]].map(([ic, at]) => {
+    const g = new THREE.Group(); TEAM.g.add(g);
+    mesh(rbox(0.46, 0.46, 0.46, 0.1), clay(C.lime, 0.6), g);
+    face(card(160, 160, (c) => drawIcon(c, ic, 20, 20, 120, '#12130F')), 0.34, g, 0.232);
+    const curve = new THREE.QuadraticBezierCurve3(at.clone().add(V(0, 0.1, -0.2)), V(at.x * 0.4, 0.05, 1.0), V(0, 0.25, 0.55));
+    const thread = new THREE.Mesh(new THREE.TubeGeometry(curve, 48, 0.013, 8), threadMat); TEAM.g.add(thread);
+    return { g, at, thread };
   });
 
-  // ── Одинаковые ролики: три одинаковых телефона ─────────────────────────────────────────────────────
-  const phoneScreen = (lime) => {
-    const cv = document.createElement('canvas'); cv.width = 420; cv.height = 760;
-    const g = cv.getContext('2d');
-    const gr = g.createLinearGradient(0, 0, 0, 760); gr.addColorStop(0, '#3A3B33'); gr.addColorStop(1, '#22231C');
-    g.fillStyle = gr; g.fillRect(0, 0, 420, 760);
-    g.fillStyle = 'rgba(241,242,234,.82)';
-    g.beginPath(); g.arc(210, 270, 72, 0, Math.PI * 2); g.fill();
-    g.beginPath(); g.roundRect(100, 360, 220, 230, [110, 110, 20, 20]); g.fill();
-    g.fillStyle = lime ? '#C7E24B' : '#FFFFFF';
-    g.beginPath(); g.roundRect(46, 610, 328, 96, 22); g.fill();
-    g.fillStyle = '#8E9080';
-    g.beginPath(); g.roundRect(76, 636, 268, 16, 8); g.fill();
-    g.beginPath(); g.roundRect(76, 664, 170, 16, 8); g.fill();
-    g.fillStyle = '#E8C468'; g.scale(0.36, 0.36); g.translate(860, 90);
-    pathsOf(icon('sparkle', 'f')).forEach((d) => g.fill(new Path2D(d)));
-    return tex(cv);
-  };
-  const scrA = phoneScreen(false), scrB = phoneScreen(true);
-  const phoneGeo = (wd, ht) => new RoundedBoxGeometry(wd, ht, 0.09, 4, 0.07);
-  const makePhone = (map, wd, ht) => {
-    const g = new THREE.Group();
-    const body = shadowed(new THREE.Mesh(phoneGeo(wd, ht), M({ color: 0x15160F, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.1 })));
-    const scr = new THREE.Mesh(new THREE.PlaneGeometry(wd - 0.07, ht - 0.07), new THREE.MeshBasicMaterial({ map, transparent: true, toneMapped: false }));
-    scr.position.z = 0.047;
-    g.add(body, scr);
-    return { g, scr };
-  };
-  const same = new THREE.Group(); scene.add(same);
-  const SAME = [270, 540, 810].map((x) => { const p = makePhone(scrA, 0.92, 1.66); p.g.position.copy(P(x, 790)); same.add(p.g); return p; });
-  const sameWall = floor(8, 6, 0.2); sameWall.position.set(0, P(0, 790).y, -0.7); same.add(sameWall);
+  // ── 14–15. Одинаковые ролики: три одинаковых телефона двигаются разом ───────────────────────────────
+  const SAME = S.same;
+  const sameScreen = (lime) => tex(card(210, 380, (g, W2, H2) => {
+    const gr = g.createLinearGradient(0, 0, 0, H2); gr.addColorStop(0, '#3A3B33'); gr.addColorStop(1, '#22231C');
+    g.fillStyle = gr; g.fillRect(0, 0, W2, H2);
+    g.fillStyle = 'rgba(241,242,234,.82)'; g.beginPath(); g.arc(105, 135, 36, 0, Math.PI * 2); g.fill();
+    roundRect(g, 50, 180, 110, 115, [55, 55, 10, 10]);
+    g.fillStyle = lime ? '#C7E24B' : '#FFFFFF'; roundRect(g, 23, 305, 164, 48, 11);
+    g.fillStyle = '#8E9080'; roundRect(g, 38, 318, 134, 8, 4); roundRect(g, 38, 332, 85, 8, 4);
+    drawIcon(g, 'sparkle', 160, 18, 34, '#E8C468');
+  }));
+  const scrA = sameScreen(false), scrB = sameScreen(true);
+  const PH3 = [-1.0, 0, 1.0].map((x) => { const p = phone(scrA, 0.84, 1.52, SAME.g); p.g.position.set(x, 0.8, 0); return p; });
 
-  // ── Веер: три настоящих ролика канала ──────────────────────────────────────────────────────────────
-  const uniq = new THREE.Group(); scene.add(uniq);
-  const FAN = [fan1, fan2, fan3].map((map) => { const p = makePhone(map, 1.2, 2.13); uniq.add(p.g); return p; });
-  const uniqWall = floor(9, 7, 0.18); uniqWall.position.set(0, P(0, 860).y, -1.1); uniq.add(uniqWall);
-
-  // ── Проверка: лента кадров на конвейере, рамка-сканер, галочки и крест ──────────────────────────────
-  const check = new THREE.Group(); scene.add(check);
-  const CARDS = strip.map((map) => { const p = makePhone(map, 0.74, 1.32); check.add(p.g); return p; });
-  const gate = new THREE.Group();
-  const gm = new THREE.MeshBasicMaterial({ color: 0xC7E24B, transparent: true, toneMapped: false });
-  [[0.96, 0.05, 0, 0.78], [0.96, 0.05, 0, -0.78], [0.05, 1.6, 0.46, 0], [0.05, 1.6, -0.46, 0]].forEach(([a, b, x, y]) => {
-    const m = new THREE.Mesh(new RoundedBoxGeometry(a, b, 0.05, 2, 0.02), gm); m.position.set(x, y, 0.15); gate.add(m);
+  // ── 16. Референсы: наклонная доска с плитками листается, часы ───────────────────────────────────────
+  const REFS = S.refs;
+  const refBoard = new THREE.Group(); REFS.g.add(refBoard); refBoard.position.set(0, 1.2, -0.3); refBoard.rotation.x = -0.55; refBoard.scale.setScalar(0.84);
+  mesh(rbox(3.3, 3.6, 0.1, 0.12), clay(C.ped), refBoard).position.z = -0.06;
+  const RCOL = ['#2A2B24', '#56690C', '#B9B9AE', '#8C8E7E', '#E2E2D8', '#3F4A1C'];
+  const REFT = Array.from({ length: 18 }, (_, k) => {
+    const bg = RCOL[Math.floor(rnd(k + 3) * RCOL.length)], fg = RCOL[(RCOL.indexOf(bg) + 1 + Math.floor(rnd(k + 7) * 4)) % RCOL.length];
+    const t0 = Math.floor(rnd(k + 11) * 4);
+    const cv = card(200, 250, (g, W2, H2) => {
+      g.fillStyle = bg; roundRect(g, 0, 0, W2, H2, 18); g.fillStyle = fg;
+      if (t0 === 0) { g.beginPath(); g.arc(100, 125, 62, 0, Math.PI * 2); g.fill(); }
+      if (t0 === 1) { g.fillRect(0, 130, 200, 120); g.fillStyle = '#F1F2EA'; g.beginPath(); g.arc(100, 80, 40, 0, Math.PI * 2); g.fill(); }
+      if (t0 === 2) { g.beginPath(); g.moveTo(0, 0); g.lineTo(200, 0); g.lineTo(0, 250); g.fill(); }
+      if (t0 === 3) { roundRect(g, 26, 34, 148, 24, 12); roundRect(g, 26, 76, 100, 24, 12); g.globalAlpha = 0.6; roundRect(g, 26, 140, 148, 80, 14); }
+    });
+    const tile = new THREE.Group(); refBoard.add(tile);
+    mesh(rbox(0.92, 1.15, 0.06, 0.07), clay(C.ped), tile);
+    face(cv, 0.86, tile, 0.032);
+    return { tile, k };
   });
-  const scanBar = new THREE.Mesh(new THREE.PlaneGeometry(0.86, 0.025), gm); scanBar.position.z = 0.16; gate.add(scanBar);
-  gate.position.copy(P(540, 1030)); check.add(gate);
-  const badge = (name, bg) => {
-    const cv = document.createElement('canvas'); cv.width = cv.height = 160;
-    const g = cv.getContext('2d'); g.fillStyle = bg; g.beginPath(); g.arc(80, 80, 76, 0, Math.PI * 2); g.fill();
-    g.fillStyle = bg === '#C7E24B' ? '#12130F' : '#FFFFFF'; g.translate(28, 28); g.scale(104 / 256, 104 / 256);
-    pathsOf(icon(name, 'b')).forEach((d) => g.fill(new Path2D(d)));
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex(cv), transparent: true, depthWrite: false }));
-    sp.scale.set(0.3, 0.3, 1);
-    return sp;
-  };
+  const clock = new THREE.Group(); REFS.g.add(clock);
+  const clockFace = mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.12, 64), clay(0xFBFBF6, 0.6), clock); clockFace.rotation.x = Math.PI / 2;
+  const rim = mesh(new THREE.TorusGeometry(0.5, 0.05, 16, 64), clay(C.fig, 0.5), clock); rim.position.z = 0.02;
+  const handM = mesh(rbox(0.05, 0.36, 0.04, 0.02), clay(C.fig, 0.5), clock); handM.geometry.translate(0, 0.15, 0); handM.position.z = 0.09;
+  const handH = mesh(rbox(0.06, 0.24, 0.04, 0.02), clay(C.tool, 0.5), clock); handH.geometry.translate(0, 0.1, 0); handH.position.z = 0.1;
+
+  // ── 17. Дизайнер-агент переворачивает карточку: «ролик» в четырёх обликах ────────────────────────────
+  const DES = S.design;
+  const designer = agent('palette', DES.g); designer.g.position.set(-1.05, 0, 0.75); designer.g.rotation.y = 0.5;
+  const dCard = new THREE.Group(); DES.g.add(dCard); dCard.position.set(0.35, 1.3, 0);
+  mesh(rbox(1.75, 2.35, 0.08, 0.12), clay(C.ped), dCard);
+  const STYLE = [
+    (g, W2, H2) => { g.fillStyle = '#F1F2EA'; roundRect(g, 0, 0, W2, H2, 30); g.font = '800 84px Onest'; g.fillStyle = '#12130F'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('РОЛИК', W2 / 2, H2 / 2 - 10); g.fillStyle = '#56690C'; roundRect(g, 70, H2 / 2 + 50, W2 - 140, 12, 6); },
+    (g, W2, H2) => { g.fillStyle = '#12130F'; roundRect(g, 0, 0, W2, H2, 80); g.font = '800 78px Unbounded'; g.fillStyle = '#C7E24B'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('ролик', W2 / 2, H2 / 2); },
+    (g, W2, H2) => { g.fillStyle = '#C7E24B'; roundRect(g, 0, 0, W2, H2, 12); g.font = '500 58px "JetBrains Mono"'; g.fillStyle = '#12130F'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('<ролик/>', W2 / 2, H2 / 2); },
+    (g, W2, H2) => { g.fillStyle = '#1B2108'; roundRect(g, 0, 0, W2, H2, 200); g.strokeStyle = '#C7E24B'; g.lineWidth = 5; g.beginPath(); g.ellipse(W2 / 2, H2 / 2, 150, 92, 0, 0, Math.PI * 2); g.stroke(); g.font = 'italic 800 86px Onest'; g.fillStyle = '#F1F2EA'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('ролик', W2 / 2, H2 / 2); },
+  ].map((f) => tex(card(420, 565, f)));
+  const dFace = new THREE.Mesh(new THREE.PlaneGeometry(1.68, 2.26), new THREE.MeshBasicMaterial({ map: STYLE[0], transparent: true, toneMapped: false })); dFace.position.z = 0.042; dCard.add(dFace);
+
+  // ── 18. Веер: три настоящих ролика канала ──────────────────────────────────────────────────────────
+  const UNIQ = S.uniq;
+  const FAN = ['fan1', 'fan2', 'fan3'].map((f) => phone(REAL[f], 1.2, 2.13, UNIQ.g));
+  const made = new THREE.Group(); UNIQ.g.add(made);
+  mesh(rbox(2.6, 0.42, 0.08, 0.2), clay(0xFBFBF6, 0.6), made);
+  face(card(700, 112, (g) => {
+    g.font = '700 44px Onest'; g.textBaseline = 'middle'; g.fillStyle = '#12130F'; g.fillText('собрано в', 70, 58);
+    const x0 = 70 + g.measureText('собрано в ').width;
+    g.save(); g.translate(x0, 34); g.scale(48 / 24, 48 / 24); g.fillStyle = '#D97757'; g.fill(new Path2D(BRAND.code), 'evenodd'); g.restore();
+    g.fillStyle = '#D97757'; g.fillText('Claude', x0 + 62, 58); g.fillStyle = '#12130F'; g.fillText('Code', x0 + 62 + g.measureText('Claude ').width, 58);
+  }), 2.6, made, 0.042);
+
+  // ── 19. Проверка: конвейер, рамка-сканер, агент с лупой, брак падает с ленты ─────────────────────────
+  const CHK = S.check;
+  mesh(rbox(4.6, 0.18, 1.1, 0.08), clay(C.fig, 0.6), CHK.g).position.set(0, 0.09, 0);
+  const gate = new THREE.Group(); CHK.g.add(gate);
+  [[-0.62, 1.0], [0.62, 1.0]].forEach(([x, hgt]) => mesh(rbox(0.12, 2.0, 0.12, 0.05), clay(C.fig, 0.5), gate).position.set(x, hgt, 0));
+  mesh(rbox(1.36, 0.12, 0.12, 0.05), clay(C.fig, 0.5), gate).position.set(0, 2.0, 0);
+  const scan = mesh(rbox(1.1, 0.05, 0.5, 0.02), clay(C.lime, 0.5, { emissive: C.lime, emissiveIntensity: 0.25 }), gate);
+  const inspector = agent('loupe', CHK.g); inspector.g.position.set(1.25, 0, -0.85); inspector.g.rotation.y = -0.5;
+  const STRIP = ['s1', 's2', 's4', 's6', 's5', 's3', 's7'];
   const BAD = 3;
-  const BADGES = CARDS.map((c, k) => { const b = badge(k === BAD ? 'x' : 'check', k === BAD ? '#E5544B' : '#C7E24B'); b.position.set(0.3, 0.6, 0.12); c.g.add(b); return b; });
-
-  // ── Путь: пять ступеней, знак Claude поднимается по ним ─────────────────────────────────────────────
-  const path = new THREE.Group(); scene.add(path);
-  const STEPS = ['lightbulb', 'pencil-simple-line', 'microphone', 'film-strip', 'eye'];
-  const STEP_Y = (k) => 1320 - k * 175;
-  const stepGeo = new RoundedBoxGeometry(0.64, 0.64, 0.64, 4, 0.1);
-  const STEP = STEPS.map((ic, k) => {
-    const g = new THREE.Group();
-    const box = shadowed(new THREE.Mesh(stepGeo, M({ color: 0x2B3620, roughness: 0.4, clearcoat: 0.5 })));
-    box.receiveShadow = true;
-    const off = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), new THREE.MeshBasicMaterial({ map: iconTex(ic, 'rgba(241,242,234,0.55)'), transparent: true, toneMapped: false }));
-    const on = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), new THREE.MeshBasicMaterial({ map: iconTex(ic, '#12130F'), transparent: true, opacity: 0, toneMapped: false }));
-    off.position.z = on.position.z = 0.326;
-    g.add(box, off, on);
-    g.position.copy(P(300, STEP_Y(k)));
-    g.rotation.set(-0.18, 0.5, 0);
-    path.add(g);
-    return { g, box, off, on };
+  const CARDS = STRIP.map((f, k) => {
+    const p = phone(REAL[f], 0.66, 1.17, CHK.g);
+    const b = new THREE.Group(); p.g.add(b); b.position.set(0, 0.78, 0.05);
+    mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.06, 32), clay(k === BAD ? C.fig : C.lime, 0.5), b).rotation.x = Math.PI / 2;
+    face(card(80, 80, (c) => drawIcon(c, k === BAD ? 'x' : 'check', 12, 12, 56, k === BAD ? '#F1F2EA' : '#12130F', 'b')), 0.2, b, 0.035);
+    return { ...p, badge: b };
   });
 
-  // ── Папка: агенты, скилы и настройки улетают в коробку «система» ────────────────────────────────────
-  const pack = new THREE.Group(); scene.add(pack);
-  const boxG = new THREE.Group(); boxG.position.copy(P(540, 1190)); boxG.rotation.set(0.38, -0.42, 0); pack.add(boxG);
-  const olive = () => M({ color: 0x56690C, roughness: 0.55, clearcoat: 0.3 });
-  const BW = 1.7, BH = 0.95, BD = 1.25, TH = 0.06;
+  // ── 20. Путь: пять ступеней, Claude поднимается по ним ────────────────────────────────────────────
+  const PATH = S.path;
+  const STEPS = [['lightbulb', 'Идея'], ['pencil-simple-line', 'Сценарий'], ['microphone', 'Голос'], ['film-strip', 'Монтаж'], ['eye', 'Проверка']];
+  const STEP = STEPS.map(([ic, name], k) => {
+    const hgt = 0.32 + k * 0.34;
+    const g = new THREE.Group(); PATH.g.add(g); g.position.set(-1.12 + k * 0.6, 0, 0.3 - k * 0.12);
+    const box = mesh(rbox(0.58, hgt, 0.8, 0.05), clay(C.ped), g); box.position.y = hgt / 2;
+    const top = mesh(rbox(0.55, 0.04, 0.77, 0.02), clay(C.lime, 0.6), g); top.position.y = hgt + 0.01;
+    const f = face(card(210, 120, (c) => { drawIcon(c, ic, 75, 6, 60, '#12130F'); c.font = '800 30px Unbounded'; c.fillStyle = '#12130F'; c.textAlign = 'center'; c.fillText(name, 105, 104); }), 0.56, g, 0.403);
+    f.position.y = Math.max(0.22, hgt - 0.24);
+    return { g, hgt, top };
+  });
+
+  // ── 21. Коробка «система»: агенты, скилы и настройки улетают внутрь, крышка закрывается ──────────────
+  const PACK = S.pack;
+  const boxG = new THREE.Group(); PACK.g.add(boxG); boxG.position.set(0, 0.5, 0.2); boxG.rotation.y = -0.38;
+  const BW = 1.8, BH = 1.0, BD = 1.3, TH = 0.07;
+  const olive = clay(C.tool, 0.7);
   [[BW, TH, BD, 0, -BH / 2, 0], [BW, BH, TH, 0, 0, BD / 2], [BW, BH, TH, 0, 0, -BD / 2], [TH, BH, BD, BW / 2, 0, 0], [TH, BH, BD, -BW / 2, 0, 0]]
-    .forEach(([a, b, c, x, y, z]) => { const m = shadowed(new THREE.Mesh(new RoundedBoxGeometry(a, b, c, 2, 0.025), olive())); m.position.set(x, y, z); m.receiveShadow = true; boxG.add(m); });
+    .forEach(([a, b, c, x, y, z]) => mesh(rbox(a, b, c, 0.025, 2), olive, boxG).position.set(x, y, z));
   const lidPivot = new THREE.Group(); lidPivot.position.set(0, BH / 2, -BD / 2); boxG.add(lidPivot);
-  const lid = shadowed(new THREE.Mesh(new RoundedBoxGeometry(BW + 0.06, TH, BD + 0.04, 2, 0.025), olive())); lid.position.set(0, 0, BD / 2); lidPivot.add(lid);
-  const sysTex = textTex('система', '800 120px Unbounded', '#F1F2EA', 170);
-  const sysFace = new THREE.Mesh(new THREE.PlaneGeometry(sysTex.w / 470, sysTex.h / 470), new THREE.MeshBasicMaterial({ map: sysTex.map, transparent: true, opacity: 0, toneMapped: false }));
-  sysFace.position.set(0, 0, BD / 2 + 0.036); boxG.add(sysFace);
-  const packFloor = floor(8, 8, 0.2); packFloor.rotation.x = -Math.PI / 2; packFloor.position.y = -BH / 2 - 0.03; boxG.add(packFloor);
-  const ITEMS = [['users-three', 'агенты', P(300, 620)], ['puzzle-piece', 'скилы', P(780, 620)], ['gear', 'настройки', P(540, 800)]].map(([ic, name, at]) => {
-    const g = new THREE.Group();
-    const box = shadowed(new THREE.Mesh(new RoundedBoxGeometry(0.5, 0.5, 0.5, 4, 0.1), M({ color: 0xC7E24B, roughness: 0.35, clearcoat: 0.6 })));
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(0.32, 0.32), new THREE.MeshBasicMaterial({ map: iconTex(ic, '#12130F'), transparent: true, toneMapped: false }));
-    face.position.z = 0.256;
-    const lab = label(name, '#12130F', 32, 800); lab.position.set(0, -0.44, 0.3);
-    g.add(box, face, lab);
-    g.position.copy(at);
-    pack.add(g);
-    return { g, at, lab };
+  mesh(rbox(BW + 0.06, TH, BD + 0.05, 0.025, 2), olive, lidPivot).position.set(0, 0, BD / 2);
+  const sys = face(card(400, 110, (c) => { c.font = '800 70px Unbounded'; c.fillStyle = '#F1F2EA'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('система', 200, 58); }), 1.45, boxG, BD / 2 + 0.04);
+  const ITEMS = [['users-three', 'агенты', V(-1.05, 2.05, 0.7)], ['puzzle-piece', 'скилы', V(1.05, 2.05, 0.7)], ['gear', 'настройки', V(0, 2.45, 0.5)]].map(([ic, name, at]) => {
+    const g = new THREE.Group(); PACK.g.add(g);
+    mesh(rbox(0.5, 0.5, 0.5, 0.1), clay(C.lime, 0.6), g);
+    face(card(160, 160, (c) => drawIcon(c, ic, 20, 20, 120, '#12130F')), 0.36, g, 0.252);
+    const lb = bubble(name, { px: 26, bg: 0xFBFBF6, weight: 800, depth: 0.05 }); lb.position.set(0, -0.45, 0.1); g.add(lb);
+    return { g, at, lb };
   });
-  const boxMouth = P(540, 1190).add(new THREE.Vector3(0, 0.25, 0));
+  const mouth = V(0, 1.05, 0.2);
 
-  // ── Герой по времени ──────────────────────────────────────────────────────────────────────────────
-  const hide = () => { hero.visible = false; };
-  const put = (pos, sizePx, ry, rx = 0.12, op = 1) => {
-    hero.visible = op > 0.003;
-    hero.position.copy(pos);
-    hero.scale.setScalar(sizePx / U);
-    hero.rotation.set(rx, ry, 0);
-    fade(hero, op);
-  };
-  // бегунок дорожки: плоский x 268…958, но дорожки наклонены (rotateX 24° у .t-edit), верх уходит вглубь: ×0,952 к центру
-  const headX = (t) => { const a = s('self') + 0.35, b = e('self') - 0.45; return 540 + (268 + 690 * cl((t - a) / (b - a)) - 540) * 0.952; };
+  // ── 22. Финал: настоящий логотип Telegram объёмом, Claude ныряет в него, «ссылка в профиле», «сохрани», кот ──
+  const CTA = S.cta;
+  pedestal(0.75, 0.5, CTA.g);
+  const tg = mesh(extrude([BRAND.tg], 24, 24, 1.55, 0.12, 0.02), clay(0x26A5E4, 0.5), CTA.g); tg.position.set(0, 1.42, 0);
+  const link = new THREE.Group(); CTA.g.add(link);
+  mesh(rbox(2.9, 0.6, 0.14, 0.29), clay(C.fig, 0.55), link);
+  face(card(770, 160, (g) => {
+    g.font = '800 54px Onest'; g.fillStyle = '#C7E24B'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('ссылка в профиле', 360, 82);
+    drawIcon(g, 'arrow-up-right', 640, 52, 60, '#C7E24B', 'b');
+  }), 2.9, link, 0.072);
+  const bookmark = mesh(extrude(pathsOf(FILL['bookmark-simple']), 256, 256, 0.62, 0.12, 0.02), clay(C.lime, 0.55), CTA.g);
+  const saveB = bubble('сохрани', { px: 34, bg: C.fig, fg: '#C7E24B', weight: 800 }); CTA.g.add(saveB);
+  const catTex = await img('cat-point.png');
+  const cat = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 1.25 * 799 / 578), new THREE.MeshBasicMaterial({ map: catTex, transparent: true, alphaTest: 0.5, toneMapped: false }));
+  CTA.g.add(cat);
+  const cursorB = mesh(cursorGeo, clay(C.fig, 0.5), CTA.g);
+
+  // ── Герой: настоящий знак Claude ─────────────────────────────────────────────────────────────────
+  const hero = mesh(sparkGeo, sparkMat()); scene.add(hero);
+  const put = (pos, size, ry = 0, rx = 0, sq = 1) => { hero.visible = size > 0.004; hero.position.copy(pos); hero.scale.set(size * (2 - sq), size * sq, size); hero.rotation.set(rx, ry, 0); };
   const heroAt = (t) => {
-    const tw = w('who', 2) - 0.15;
-    if (t < tw) return hide();
-    const sway = 0.28 * Math.sin(t * 1.1);
-    // 2. ответ: знак прилетает из глубины, крутясь, и встаёт над надписью Claude
-    const whoPos = P(540, 1060);
-    if (t < s('code') - 0.25) {
-      const x = eExpo(pr(t, tw, 0.9));
-      return put(vlerp(P(540, 1060, -30), whoPos, x), 300, lerp(-7, 0, x) + sway, 0.15 * Math.sin(t * 0.8));
+    const sway = 0.4 * Math.sin(t * 1.1);
+    const tw = w('who', 2) - 0.2;
+    const landWho = W(MSG, 0.95, 1.15, 0.75);
+    if (t < tw) return put(landWho, 0);
+    if (t < s('code') - 0.05) {                                 // падает с неба на постамент, чуть сплющивается при посадке
+      const x = eIn(pr(t, tw, 0.42));
+      const sq = 1 - 0.18 * Math.sin(Math.PI * pr(t, tw + 0.42, 0.24));
+      return put(vl(W(MSG, 0.95, 7, 0.75), landWho, x), 1.05, sway, 0, sq);
     }
-    // 3. «пишет код»: знак уходит в угол карточки и на «Он пишет» быстро крутится
-    const codePos = P(910, 520);
-    if (t < s('self') - 0.15) {
-      const x = eIO(pr(t, s('code') - 0.25, 0.6));
-      const spin = eIO(pr(t, w('code', 7), 1.4)) * Math.PI * 4;
-      const bob = 0.05 * Math.sin(t * 6) * pr(t, w('code', 7), 0.2);
-      return put(vlerp(whoPos, codePos, x).add(new THREE.Vector3(0, bob, 0)), lerp(300, 130, x), sway * (1 - x) + spin, 0.12);
+    const watch = W(CODE, 1.45, 2.25, 0.2);
+    if (t < s('self') - 0.1) {                                  // летит со станцией, садится на угол, на «пишет» крутится
+      const x = eIO(pr(t, s('code') - 0.05, 0.7));
+      const spin = eIO(pr(t, w('code', 7), 1.3)) * Math.PI * 4;
+      return put(vl(landWho, watch, x).add(V(0, 0.05 * Math.sin(t * 5), 0)), lerp(1.05, 0.55, x), sway + spin, 0.1);
     }
-    // 4. едет по дорожке монтажа вместе с бегунком
-    if (t < s('hype') - 0.25) {
-      const x = eIO(pr(t, s('self') - 0.15, 0.5));
-      return put(vlerp(codePos, P(headX(t), 995), x), lerp(130, 84, x), 0.6 * Math.sin(t * 3), 0.1);
+    const a = s('self') + 0.35, b = e('self') - 0.45;
+    const headX = (-1.55 + 3.15 * cl((t - a) / (b - a))) * 0.8;
+    const onHead = W(CODE, headX, 0.7, 0.35);
+    if (t < s('hype') - 0.05) {                                 // едет на бегунке
+      const x = eIO(pr(t, s('self') - 0.1, 0.5));
+      return put(vl(watch, onHead, x), lerp(0.55, 0.36, x), 0.5 * Math.sin(t * 3), 0);
     }
-    // 5. хайп: крупно в центре, вращается
-    if (t < e('hype')) {
-      const x = eIO(pr(t, s('hype') - 0.25, 0.6));
-      const op = 1 - eIn(pr(t, e('hype') - 0.22, 0.26));
-      return put(vlerp(P(headX(t), 995), P(540, 640), x), lerp(84, 400, x), 0.55 * Math.sin(t * 0.9), 0.18 * Math.sin(t * 0.9), op);
+    const onPed = W(HYPE, 0, 1.55, 0.05);
+    if (t < s('try') - 0.05) {                                  // хайп: крупно на постаменте
+      const x = eIO(pr(t, s('hype') - 0.05, 0.7));
+      return put(vl(onHead, onPed, x).add(V(0, hop(x, 1.2), 0)), lerp(0.36, 1.55, x), sway, 0.08);
     }
-    // 10–13. команда: выходит из точки «?» в центр кольца
-    if (t >= s('team') - 0.1 && t < e('much')) {
-      const x = eExpo(pr(t, s('team') - 0.1, 0.8));
-      const op = 1 - eIn(pr(t, e('much') - 0.22, 0.26));
-      return put(P(540, 940, lerp(-1.5, 0, x)), lerp(40, 205, x), 0.5 * Math.sin(t * 0.7), 0.15, op * cl(x * 3));
+    if (t < s('team') - 0.05) return put(onPed, 0);
+    const center = W(TEAM, 0, 0.98, 0.05);
+    if (t < e('much')) {                                        // команда: вырастает в центре кольца из точки «?»
+      const x = spring(t, s('team') - 0.05, 9);
+      return put(center, 0.95 * x, sway * 0.8, 0.08);
     }
-    // 20. путь: стоит на ступени и прыгает на следующую на её слове
-    if (t >= s('path') - 0.04 && t < e('path')) {
-      const top = (k) => P(160, STEP_Y(k), 0.45);
-      let k = 0;
-      for (let i = 1; i < 5; i++) if (t >= w('path', i) - 0.3) k = i;
+    if (t < s('path') - 0.05) return put(center, 0);
+    if (t < e('path')) {                                        // путь: стоит на ступени, на её слове прыгает на следующую
+      const topOf = (k) => W(PATH, -1.12 + k * 0.6, STEP[k].hgt + 0.32, 0.3 - k * 0.12);
+      let k = 0; for (let i = 1; i < 5; i++) if (t >= w('path', i) - 0.3) k = i;
       const at = k ? w('path', k) - 0.3 : s('path');
-      const x = k ? eIO(pr(t, at, 0.36)) : 1;
-      const from = top(Math.max(0, k - 1)), to = top(k);
-      const pos = vlerp(from, to, x).add(new THREE.Vector3(0, Math.sin(Math.PI * x) * (k ? 0.45 : 0), 0));
-      const op = win(t, s('path'), e('path'));
-      return put(pos, 110, 0.45 * Math.sin(t * 1.5) + (k ? Math.PI * 2 * x : 0), 0.12, op);
+      const x = k ? eIO(pr(t, at, 0.36)) : spring(t, s('path') - 0.05, 12);
+      const pos = k ? vl(topOf(k - 1), topOf(k), x).add(V(0, hop(x, 0.5), 0)) : topOf(0);
+      return put(pos, k ? 0.46 : 0.46 * x, sway + (k ? Math.PI * 2 * x : 0), 0.05);
     }
-    // 22. финал: знак падает сверху и ныряет в значок Telegram на карточке
-    if (t >= s('cta') - 0.1 && t < s('cta') + 0.75) {
-      const x1 = eExpo(pr(t, s('cta') - 0.1, 0.35)), x2 = eIn(pr(t, s('cta') + 0.25, 0.45));
-      const pos = vlerp(vlerp(P(540, 300, 2), P(540, 900), x1), P(236, 616, -0.3), x2);
-      return put(pos, lerp(lerp(160, 320, x1), 30, x2), t * 3, 0.15, 1 - pr(t, s('cta') + 0.62, 0.1));
-    }
-    return hide();
+    if (t < s('cta') - 0.05) return put(center, 0);
+    const into = W(CTA, 0, 1.42, 0.1);                           // финал: падает сверху и ныряет в логотип Telegram
+    const x1 = eExpo(pr(t, s('cta') + 0.05, 0.4)), x2 = eIn(pr(t, s('cta') + 0.4, 0.38));
+    return put(vl(vl(W(CTA, 0, 6, 0.6), W(CTA, 0, 3.1, 0.6), x1), into, x2), lerp(lerp(0.6, 0.9, x1), 0, x2), t * 2.5, 0.1);
   };
 
-  // ── Кадр ──────────────────────────────────────────────────────────────────────────────────────────
-  const BASE_CAM = new THREE.Vector3(0, 0, 14);
-  const ORIGIN = new THREE.Vector3(0, 0, 0);
-  return (t) => {
-    // камера: на месте; в команде медленно облетает кольцо, на «Зачем столько?» отъезжает; в веере — наезд
-    camera.position.copy(BASE_CAM);
-    let look = ORIGIN.clone();
-    if (t > s('team') - 0.3 && t < e('much') + 0.1) {
-      const k = t - s('team');
-      const back = eIO(pr(t, s('much') - 0.05, 0.7));
-      const c = P(540, 940);
-      camera.position.set(c.x + 0.9 * Math.sin(k * 0.22), c.y + 0.25 + back * 1.1, 14 + back * 4.5);
-      look = c.clone();
+  // ── Камера: стоит у станции, на смене переезжает к следующей, внутри станции чуть наезжает ──────────
+  const pose = (st, t) => {
+    const punch = 1 - 0.05 * pr(t, st.a, st.b - st.a);
+    let p = st.p.clone(), l = st.l.clone();
+    if (st.name === 'code') { const up = eIO(pr(t, s('self') - 0.1, 0.6)); p = vl(p, V(0, 7.0, 6.4), up); l = vl(l, V(0, 0.45, 0.3), up); }
+    if (st.name === 'msg') { const x = eIO(pr(t, s('who') - 0.05, 0.6)); p.x += 0.35 * x; l.x += 0.35 * x; }
+    if (st.name === 'team') { const back = eIO(pr(t, s('much') - 0.05, 0.75)); p = vl(p, V(0, 8.6, 13.5), back); l = vl(l, V(0, 0.2, 0), back); p.x += 0.5 * Math.sin((t - st.a) * 0.25); }
+    p = l.clone().add(p.sub(l).multiplyScalar(punch));
+    return { p: p.add(V(st.x, 0, 0)), l: l.add(V(st.x, 0, 0)) };
+  };
+  const placeCamera = (t) => {
+    let k = 0; ST.forEach((st, i) => { if (t >= st.a - 0.05) k = i; });
+    const cur = pose(ST[k], t);
+    let p = cur.p, l = cur.l;
+    if (k > 0) {
+      const x = eIO(pr(t, ST[k].a - 0.05, 0.5));
+      if (x < 1) { const prev = pose(ST[k - 1], t); p = vl(prev.p, p, x); l = vl(prev.l, l, x); }
     }
-    if (t > s('uniq') - 0.3 && t < e('uniq') + 0.1) camera.position.z = 14 - 0.8 * eIO(pr(t, s('uniq'), e('uniq') - s('uniq')));
-    camera.lookAt(look);
-    camera.updateMatrixWorld();
-    orbit.updateMatrixWorld();
+    camera.position.copy(p); camera.lookAt(l);
+    key.position.copy(l).add(V(-3, 8, 8)); key.target.position.copy(l);
+    return k;
+  };
 
+  // ── Кадр ─────────────────────────────────────────────────────────────────────────────────────────
+  return (t) => {
+    const k = placeCamera(t);
+    ST.forEach((st, i) => { st.g.visible = Math.abs(i - k) <= 1; });
     heroAt(t);
 
-    // 5. сердца поднимаются вокруг знака
+    // 1–2. сообщения
+    {
+      const up = s('who');
+      const out = eIO(pr(t, up, 0.55));
+      QS.forEach(({ b, at, k: n }) => {
+        const appear = n < 3 ? 1 : spring(t, 0.15 + (n - 3) * 0.32, 14);
+        const from = V(0, 1.4, -0.3);
+        b.position.copy(vl(from, V(at.x * 0.72, at.y, at.z), appear)).add(V(0, 0.04 * Math.sin(t * 1.6 + n), 0));
+        b.position.add(V(at.x * 0.4 * out, -0.9 * out, -1.6 * out));          // старые вопросы уходят вниз и вглубь, не в заголовок
+        b.scale.setScalar(Math.max(0.001, (0.4 + 0.6 * appear) * (1 - 0.7 * out)));
+        b.rotation.set(-0.08, -at.x * 0.12, 0);
+      });
+      const a = spring(t, w('hook', 3) - 0.14, 13);
+      ask.position.copy(vl(V(0, 1.4, -0.3), V(0, 0.95, 1.9), a)).add(V(0, 1.15 * out, -0.4 * out));
+      ask.scale.setScalar(Math.max(0.001, a * (1 - 0.18 * out)));
+      ask.rotation.set(-0.1, 0, 0);
+      msgPhone.g.position.set(-1.3 * out, 1.18, -0.4 - 0.4 * out); msgPhone.g.rotation.y = 0.12 + 0.45 * out;
+      const nb = spring(t, w('who', 1) - 0.08, 15);
+      nobody.position.set(-0.45 + 0.1 * (1 - nb), 1.55, 1.5); nobody.scale.setScalar(Math.max(0.001, nb)); nobody.rotation.set(-0.08, 0.1, 0);
+      const pd = spring(t, w('who', 2) - 0.45, 12);
+      whoPed.position.set(0.95, 0.21 - 0.6 * (1 - pd), 0.75); whoPed.visible = pd > 0.01;
+      const cp = spring(t, w('who', 3) - 0.05, 13);
+      codePlate.position.set(0.95, 0.3 + 0.25 * cp, 1.55); codePlate.rotation.x = -0.35; codePlate.scale.setScalar(Math.max(0.001, cp));
+    }
+
+    // 3–4. код и монтаж
+    {
+      const t0 = s('code'), sw = w('code', 7) - 0.1, sel = s('self');
+      const g0 = spring(t, t0 - 0.05, 12);
+      gen.scale.setScalar(Math.max(0.001, g0));
+      const hit = pr(t, w('code', 5) - 0.12, 0.3);
+      strikeBar.visible = hit > 0;
+      const fall = eIn(pr(t, w('code', 6) - 0.05, 0.5));
+      strikeBar.position.set(lerp(3.6, -0.15, eOut(hit)), lerp(2.6, 0.95, eOut(hit)) - fall * 0.7, 0.05 - 0.5 + fall * 0.3);
+      strikeBar.rotation.set(0, 0, lerp(1.1, 0.55, eOut(hit)) + fall * 0.4);
+      genPivot.rotation.x = -1.48 * fall;
+      if (t > sel + 0.4) { gen.visible = false; strikeBar.visible = false; } else gen.visible = true;
+      // планшет с кодом встаёт из пола; строки печатаются; на «сам собирает» ложится и уступает место столу
+      const rise = spring(t, sw, 10);
+      const lie = eIO(pr(t, sel - 0.15, 0.55));
+      tablet.visible = rise > 0.01 && lie < 0.98;
+      tablet.position.set(0, lerp(-1.0, 1.15, rise) - lie * 1.0, 0.1 + lie * 0.4);
+      tablet.rotation.set(-0.12 - lie * 1.4, 0, 0);
+      tablet.scale.setScalar(1 - 0.4 * lie);
+      const typed = (t - (sw + 0.25)) / 0.13;
+      drawCode(Math.max(-1, Math.min(5, Math.floor(typed))), cl(typed - Math.floor(typed)));
+      const bd = spring(t, sel + 0.05, 11);
+      board.visible = bd > 0.01; board.scale.setScalar(Math.max(0.001, bd * 0.8)); board.position.set(0, 0, 0.35);
+      const a = sel + 0.35, b = e('self') - 0.45;
+      playhead.position.x = -1.55 + 3.15 * cl((t - a) / (b - a));
+      const pv = spring(t, sel + 0.15, 11);
+      preview.g.visible = false; preview.g.scale.setScalar(Math.max(0.001, pv));
+      preview.scr.material.map = t < a + (b - a) * 0.36 ? REAL.s1 : t < a + (b - a) * 0.7 ? REAL.s2 : REAL.s3;
+      const dn = spring(t, b - 0.05, 14);
+      doneP.visible = dn > 0.01; doneP.scale.setScalar(Math.max(0.001, dn)); doneP.position.set(0, 0.55, 1.3); doneP.rotation.x = -0.9;
+    }
+
+    // 5. хайп
     {
       const a = s('hype'), b = e('hype');
-      const op = win(t, a, b);
-      fade(hearts, op);
+      const wd = spring(t, a + 0.2, 11);
+      word.scale.setScalar(Math.max(0.001, wd)); word.rotation.set(-0.25 - (1 - wd) * 1.2, 0, 0);
       HEARTS.forEach((h) => {
-        const st = a + 0.05 + h.d * (b - a - 0.9);
-        const x = pr(t, st, 1.6);
-        h.m.visible = op > 0.003 && x > 0 && x < 1;
-        h.m.position.copy(P(h.x, lerp(1560, 560, eOut(x)), h.z));
-        h.m.scale.setScalar((h.size / U) * (0.6 + 0.4 * eExpo(x * 3)));
-        h.m.rotation.set(0.3 * Math.sin(t * 2 + h.d * 6), h.spin * t, 0.25 * Math.sin(t * 1.5 + h.d * 3));
+        const st = a + 0.05 + h.d * (b - a - 1.0);
+        const x = pr(t, st, 1.7);
+        h.m.visible = x > 0 && x < 1;
+        h.m.position.set(h.x, lerp(0.2, 3.6, eOut(x)), h.z);
+        h.m.scale.setScalar(Math.max(0.001, h.sz * (0.5 + 0.5 * eExpo(x * 4)) * (1 - eIn(pr(x, 0.8, 0.2)))));
+        h.m.rotation.set(0.3 * Math.sin(t * 2 + h.d * 6), Math.sin(t * 1.3 + h.d * 4) * 0.8, 0.2 * Math.sin(t * 1.5));
       });
     }
 
-    // 7. нейрослоп: плитки встают каскадом, шары качаются разом, на «одинаково» подпрыгивают все вместе
+    // 6. «сделай ролик»
     {
-      const a = s('slop'), b = e('slop');
-      fade(slop, win(t, a, b));
-      slop.rotation.y = 0.35 * Math.sin((t - a) * 0.6) - 0.15;
+      const a0 = s('try'), ta = w('try', 4), tb = w('try', 6) + 0.35, click = w('try', 7);
+      const i0 = spring(t, a0, 12);
+      inp.position.set(0, lerp(1.4, 2.25, i0), 0.4); inp.rotation.x = -0.22; inp.scale.setScalar(Math.max(0.001, i0 * 0.82));
+      const n = Math.max(0, Math.min(12, Math.floor(((t - ta) / (tb - ta)) * 12)));
+      drawInput(t < ta ? 0 : n, t < click && Math.floor(t * 2) % 2 === 0);
+      const press = Math.sin(Math.PI * pr(t, click - 0.04, 0.16));
+      send.position.z = 0.1 - 0.06 * press;
+      const c1 = eIO(pr(t, tb - 0.25, Math.max(0.2, click - tb + 0.2)));
+      cursor3.visible = t > tb - 0.3;
+      cursor3.position.copy(vl(V(2.0, 0.6, 1.6), V(1.16, 2.1, 0.62), c1)).add(V(0, 0, -0.08 * press));
+      cursor3.rotation.set(-0.3, 0, 0.35);
+      const wt = spring(t, click + 0.15, 11);
+      wait.visible = wt > 0.01; wait.scale.setScalar(Math.max(0.001, wt * 0.85)); wait.position.set(0, 0.85, 0.2); wait.rotation.x = -0.15;
+      spinner.rotation.z = -(t - click) * 6;
+    }
+
+    // 7. нейрослоп
+    {
+      const a = s('slop');
+      SLOP.g.rotation.y = 0.18 * Math.sin((t - a) * 0.6);
       const jump = Math.sin(Math.PI * pr(t, w('slop', 3) - 0.08, 0.42));
-      SLOP.forEach((o) => {
-        const x = eExpo(pr(t, a + o.k * 0.05, 0.5));
+      SLOPS.forEach((o) => {
+        const x = spring(t, a + o.k * 0.05, 12);
         o.g.scale.setScalar(Math.max(0.001, x));
-        o.blob.position.y = 0.32 + 0.04 * Math.sin(t * 4) + jump * 0.45;
+        o.blob.position.y = 0.39 + 0.03 * Math.sin(t * 4) + jump * 0.5;
         o.blob.rotation.y = t * 1.5 + jump * Math.PI;
       });
+      const sl = eIn(pr(t, w('slop', 0) - 0.22, 0.22));
+      stamp.visible = t > w('slop', 0) - 0.25;
+      stamp.position.set(0, lerp(5, 0.85, sl), lerp(0.5, 0.35, sl)); stamp.rotation.set(-0.95, 0, -0.12);
+      const sq = Math.sin(Math.PI * pr(t, w('slop', 0) - 0.01, 0.16));
+      stamp.scale.set(1 + 0.04 * sq, 1 - 0.1 * sq, 1);
     }
 
-    // 10–13. команда: кольцо рисуется, места встают на «команда», роли заполняются по словам, снизу скилы и MCP
+    // 8–9. стоп и «?»
     {
-      const a = s('team'), b = e('much');
-      const op = win(t, a, b) * (1 - 0.55 * eIO(pr(t, s('much') - 0.05, 0.7)));
-      fade(team, op);
-      ringLine.geometry.setDrawRange(0, Math.floor(241 * eIO(pr(t, a + 0.15, 1.0))));
-      const turn = (t - a) * 0.18;
-      const fillAt = [w('roles', 0), w('roles', 1), w('roles', 2), w('roles', 3), w('roles', 5)];
-      NODES.forEach((n, k) => {
-        const ang = Math.PI / 2 + (k * Math.PI * 2) / 5 + turn;
-        const local = new THREE.Vector3(Math.cos(ang) * RING_R, Math.sin(ang) * RING_R, 0);
-        n.g.position.copy(local.applyMatrix4(orbit.matrixWorld));
-        n.g.quaternion.copy(camera.quaternion);
-        n.g.rotateY(0.25 * Math.sin(t * 1.3 + k));
-        const pop = eExpo(pr(t, w('team', 7) - 0.1 + k * 0.07, 0.5));
-        n.g.scale.setScalar(Math.max(0.001, pop));
-        const f = eExpo(pr(t, fillAt[k] - 0.06, 0.35));
-        n.box.material.color.set(0x24251E).lerp(new THREE.Color(0xC7E24B), f);
-        n.box.material.emissive.set(0xC7E24B).multiplyScalar(0.12 * f);
-        n.face.material.opacity = f * op;
-        n.lab.material.opacity = eOut(pr(t, fillAt[k], 0.3)) * op;
-      });
-      PLUGS.forEach((p, k) => {
-        const at = w('skills', k ? 4 : 2) - 0.1;
-        const x = eExpo(pr(t, at, 0.55));
-        p.g.visible = x > 0.003 && op > 0.003;
-        p.g.position.copy(p.at).add(new THREE.Vector3(0, -1.2 * (1 - x), 0));
-        p.g.rotation.set(0.15, 0.4 * Math.sin(t * 1.2 + k), 0);
-        p.line.geometry.setDrawRange(0, pr(t, at + 0.25, 0.3) > 0 ? 2 : 0);
-        p.line.material.opacity = 0.7 * pr(t, at + 0.25, 0.3) * op;
-      });
-      orbit.updateMatrixWorld();
+      const a = s('stop'), q = s('why');
+      const sl = eIn(pr(t, a - 0.05, 0.26));
+      const sink = eIn(pr(t, q - 0.05, 0.4));
+      hand.visible = t > a - 0.08 && sink < 1;
+      const sq = Math.sin(Math.PI * pr(t, a + 0.21, 0.18));
+      hand.position.set(0, lerp(6, 1.95, sl) - sink * 3.2, -0.2); hand.scale.set(1 + 0.05 * sq, 1 - 0.08 * sq, 1);
+      const m0 = spring(t, w('stop', 1) - 0.1, 12);
+      model.visible = m0 > 0.01 && sink < 1; model.position.set(0, lerp(0.2, 0.7, m0) - sink * 2, 1.15); model.rotation.x = -0.3; model.scale.setScalar(Math.max(0.001, m0));
+      const mk = eOut(pr(t, w('stop', 4) - 0.06, 0.3));
+      mark.visible = mk > 0 && sink < 1; mark.position.set(lerp(-3.4, 0, mk), 0.7 - sink * 2, 1.27); mark.rotation.set(-0.3, 0, -0.05);
+      const qa = spring(t, q + 0.02, 11), qs = eIn(pr(t, e('why') + 0.45, 0.3));   // «?» уезжает с переездом, а не тает заранее: без пустого кадра
+      qm.visible = qa > 0.01 && qs < 0.999;
+      qm.position.set(0, 1.45, 0.2); qm.scale.setScalar(Math.max(0.001, qa * (1 - qs))); qm.rotation.set(0, (1 - qa) * -1.4 + qs * 3, 0);
     }
 
-    // 14–15. три одинаковых телефона двигаются разом: качаются, подпрыгивают, субтитры мигают, крутятся
+    // 10–13. команда
     {
-      const a = s('same'), b = e('same2');
-      fade(same, win(t, a, b));
+      const a = s('team');
+      const draw = eIO(pr(t, a + 0.25, 0.8));
+      THREADS.forEach((m) => { m.geometry.setDrawRange(0, Math.floor((m.geometry.index.count * draw) / 6) * 6); });
+      AG.forEach((ag, i) => {
+        const pop = spring(t, w('team', 7) - 0.12 + i * 0.07, 13);
+        ag.body.scale.set(1, Math.max(0.001, pop), 1); ag.body.visible = pop > 0.01;
+        ag.ped.scale.setScalar(0.6 + 0.4 * spring(t, a + 0.1 + i * 0.05, 12));
+      });
+      // «задача» переходит к агенту на слове его роли; принявший подпрыгивает, его постамент загорается лаймом
+      const ROLE_T = [w('roles', 0), w('roles', 1), w('roles', 2), w('roles', 3), w('roles', 5)];
+      let cur = -1; ROLE_T.forEach((rt, i) => { if (t >= rt - 0.3) cur = i; });
+      const above = (i) => (i < 0 ? V(0, 1.75, 0.05) : AG[i].g.position.clone().add(V(0, 1.15, 0)));
+      if (cur < 0) {
+        const x = spring(t, ROLE_T[0] - 0.9, 12);
+        task.visible = x > 0.01; task.position.copy(above(-1)); task.scale.setScalar(Math.max(0.001, x));
+      } else {
+        const x = eIO(pr(t, ROLE_T[cur] - 0.3, 0.32));
+        task.visible = true; task.scale.setScalar(1);
+        task.position.copy(vl(above(cur - 1), above(cur), x)).add(V(0, hop(x, 0.6), 0));
+      }
+      task.rotation.set(t * 0.9, t * 1.3, 0);
+      AG.forEach((ag, i) => {
+        const got = i <= cur ? eOut(pr(t, ROLE_T[i] - 0.02, 0.25)) : 0;
+        ag.ped.material.color.set(C.ped).lerp(new THREE.Color(C.lime), got);
+        ag.body.position.y = hop(pr(t, ROLE_T[i] - 0.02, 0.3), 0.18);
+      });
+      PLUGS.forEach((p, i) => {
+        const at = w('skills', i ? 4 : 2) - 0.1;
+        const x = spring(t, at, 12);
+        p.g.visible = x > 0.01; p.g.position.copy(p.at).add(V(0, 0, 1.2 * (1 - x))); p.g.rotation.set(0.3, 0.6 * Math.sin(t + i), 0);
+        const dr = eIO(pr(t, at + 0.25, 0.35));
+        p.thread.visible = dr > 0; p.thread.geometry.setDrawRange(0, Math.floor((p.thread.geometry.index.count * dr) / 6) * 6);
+      });
+    }
+
+    // 14–15. одинаковые ролики
+    {
+      const a = s('same');
       const jump = Math.sin(Math.PI * pr(t, w('same2', 2) - 0.08, 0.4));
       const flash = pr(t, w('same2', 6) - 0.05, 0.05) * (1 - pr(t, w('same2', 6) + 0.45, 0.05));
       const spin = eIO(pr(t, w('same2', 8) - 0.05, 0.7)) * Math.PI * 2;
-      SAME.forEach((p, k) => {
-        const x = eExpo(pr(t, a + k * 0.1, 0.6));
-        p.g.position.copy(P([270, 540, 810][k], 790 + (1 - x) * 300)).add(new THREE.Vector3(0, jump * 0.35, 0));
-        p.g.rotation.set(0.08 + (1 - x) * 0.6, 0.38 * Math.sin((t - a) * 1.6) + spin, 0);
+      PH3.forEach((p, i) => {
+        const x = spring(t, a + i * 0.08, 11);
+        p.g.position.set([-1.0, 0, 1.0][i], 0.8 + jump * 0.35 - (1 - x) * 1.6, 0);
+        p.g.rotation.set(0, 0.35 * Math.sin((t - a) * 1.6) + spin, 0);
         p.scr.material.map = flash > 0.5 ? scrB : scrA;
       });
     }
 
-    // 18. веер: три настоящих ролика встают стопкой и расходятся в пространстве
+    // 16. референсы
     {
-      const a = s('uniq'), b = e('uniq');
-      fade(uniq, win(t, a, b));
+      const a = s('refs');
+      const scroll = (t - a) * 0.9;
+      REFT.forEach(({ tile, k: n }) => {
+        const col = n % 3, row = Math.floor(n / 3);
+        let y = 1.75 - row * 1.25 + scroll;
+        y = (((y + 2.6) % 7.5) + 7.5) % 7.5 - 2.6;                 // по кругу, как бесконечная лента
+        tile.position.set((col - 1) * 1.02, y - 0.95, 0.04);
+        const edge = cl((1.95 - Math.abs(y - 0.85)) / 0.5);
+        tile.visible = edge > 0.01; tile.scale.setScalar(Math.max(0.001, edge));
+      });
+      const c0 = spring(t, w('refs', 6) - 0.1, 12);
+      clock.visible = c0 > 0.01; clock.scale.setScalar(Math.max(0.001, c0)); clock.position.set(0.9, 0.75, 1.5); clock.rotation.set(-0.15, -0.3, 0);
+      handM.rotation.z = -(t - w('refs', 6)) * 9; handH.rotation.z = -(t - w('refs', 6)) * 1.2;
+    }
+
+    // 17. дизайнер переворачивает карточку
+    {
+      const a = s('design');
+      const c0 = spring(t, a, 11);
+      dCard.scale.setScalar(Math.max(0.001, c0));
+      const FL = [w('design', 5), w('design', 7), w('design', 9)];
+      let st = 0, rot = 0;
+      FL.forEach((ft, i) => {
+        const x = pr(t, ft - 0.25, 0.55);
+        if (x >= 0.5) st = i + 1;
+        if (x > 0 && x < 1) rot = x < 0.5 ? eIn(x * 2) * (Math.PI / 2) : -(1 - eOut((x - 0.5) * 2)) * (Math.PI / 2);
+      });
+      dCard.rotation.set(0, rot + 0.12 * Math.sin(t * 0.8), 0);
+      dFace.material.map = STYLE[st];
+      designer.body.rotation.z = FL.reduce((acc, ft) => acc + 0.25 * Math.sin(Math.PI * pr(t, ft - 0.3, 0.4)), 0);
+    }
+
+    // 18. веер
+    {
+      const a = s('uniq');
       const spread = eIO(pr(t, w('uniq', 1) - 0.05, 0.7));
-      const POS = [[-1.25, 0.05, -0.2, 0.55, 0.12], [0, 0.12, 0.35, 0, 0], [1.25, 0.05, -0.2, -0.55, -0.12]];
-      FAN.forEach((p, k) => {
-        const x = eExpo(pr(t, a + k * 0.06, 0.6));
-        const [px, py, pz, ry, rz] = POS[k];
-        const c = P(540, 860);
-        p.g.position.set(c.x + px * spread, c.y + py * spread - (1 - x) * 1.4, pz * spread + (k === 1 ? 0.05 : 0));
-        p.g.rotation.set(0.05, ry * spread + 0.08 * Math.sin(t * 0.9 + k), rz * spread);
+      const POS = [[-0.98, -0.05, -0.3, 0.55, 0.1], [0, 0.05, 0.3, 0, 0], [0.98, -0.05, -0.3, -0.55, -0.1]];
+      FAN.forEach((p, i) => {
+        const x = spring(t, a + i * 0.06, 11);
+        const [px, py, pz, ry, rz] = POS[i];
+        p.g.position.set(px * spread, 1.2 + py * spread - (1 - x) * 2, pz * spread);
+        p.g.rotation.set(0, ry * spread + 0.06 * Math.sin(t * 0.9 + i), rz * spread);
+      });
+      const m0 = spring(t, w('uniq', 5) - 0.1, 13);
+      made.visible = m0 > 0.01; made.scale.setScalar(Math.max(0.001, m0 * 0.9)); made.position.set(0, 0.42, 1.45); made.rotation.x = -0.12;
+    }
+
+    // 19. проверка
+    {
+      const a = s('check');
+      const t0 = a + 0.45, tb = w('check', 5) - 0.05;
+      const GAPc = 0.95, v = (BAD * GAPc) / (tb - t0);
+      CARDS.forEach((c, i) => {
+        const x = i * GAPc - v * (t - t0);
+        const lift = i === BAD ? eExpo(pr(t, w('check', 6) - 0.1, 0.4)) : 0;
+        const away = i === BAD ? eIn(pr(t, w('check', 7) - 0.05, 0.6)) : 0;
+        c.g.position.set(x, 0.18 + 0.585 + lift * 0.5 - away * 1.2, 0.05 - away * 1.4);
+        c.g.rotation.set(-away * 1.3, -0.25 * Math.max(-1, Math.min(1, x)), i === BAD ? lift * 0.15 : 0);
+        const passed = t0 + (i * GAPc) / v;
+        const bt = spring(t, passed, 15);
+        c.badge.scale.setScalar(Math.max(0.001, bt)); c.badge.visible = bt > 0.01;
+      });
+      scan.position.y = 1.0 + 0.85 * Math.sin((t - a) * 4.2);
+      inspector.body.rotation.y = 0.3 * Math.sin(t * 2);
+    }
+
+    // 20. путь
+    {
+      const a = s('path');
+      STEP.forEach((stp, i) => {
+        const x = spring(t, a + i * 0.06, 12);
+        stp.g.scale.set(1, Math.max(0.001, x), 1);
+        const on = eExpo(pr(t, w('path', i) - 0.08, 0.3));
+        stp.top.visible = on > 0.01; stp.top.scale.set(Math.max(0.001, on), 1, Math.max(0.001, on));
       });
     }
 
-    // 19. проверка: кадры едут дугой сквозь рамку; прошедший получает галочку, брак — крест, поднимается и уезжает назад
+    // 21. коробка
     {
-      const a = s('check'), b = e('check');
-      const op = win(t, a, b);
-      fade(check, op);
-      const t0 = a + 0.4, tb = w('check', 5) - 0.05;
-      const GAP = 0.86, v = (BAD * GAP) / (tb - t0);
-      const base = P(540, 1030);
-      CARDS.forEach((c, k) => {
-        let x = k * GAP - v * (t - t0);
-        const lift = k === BAD ? eExpo(pr(t, w('check', 6) - 0.1, 0.4)) : 0;
-        const away = k === BAD ? eIn(pr(t, w('check', 7) - 0.05, 0.7)) : 0;
-        x -= away * 4;
-        c.g.position.set(base.x + x, base.y + lift * 0.62, -0.32 * x * x);
-        c.g.rotation.set(0, Math.max(-1, Math.min(1, -0.55 * x)), k === BAD ? lift * 0.18 : 0);
-        const passed = t0 + (k * GAP) / v;
-        const bt = eExpo(pr(t, passed, 0.3));
-        BADGES[k].scale.setScalar(Math.max(0.001, 0.3 * bt));
-        BADGES[k].material.opacity = bt * op * (1 - away);
+      const a = s('pack'), go = w('pack', 5) - 0.05;
+      const b0 = spring(t, a + 0.05, 11);
+      boxG.scale.setScalar(Math.max(0.001, b0)); boxG.rotation.y = -0.38 + 0.08 * Math.sin((t - a) * 0.8);
+      ITEMS.forEach((it, i) => {
+        const appear = spring(t, w('pack', [0, 1, 3][i]) - 0.1, 13);
+        const fly = eIn(pr(t, go + i * 0.1, 0.5));
+        it.g.visible = appear > 0.01 && fly < 0.98;
+        it.g.position.copy(vl(it.at, mouth, fly)).add(V(0, hop(fly, 0.7), 0));
+        it.g.scale.setScalar(Math.max(0.001, appear * (1 - 0.5 * fly)));
+        it.g.rotation.set(0.15 + fly * 2, 0.4 * Math.sin(t + i) + fly * 3, 0);
+        it.lb.visible = fly < 0.1;
       });
-      scanBar.position.y = 0.72 * Math.sin((t - a) * 4.5);
-      gm.opacity = op;
+      lidPivot.rotation.x = lerp(-1.95, 0, eIO(pr(t, go + 0.6, 0.35)));
+      sys.material.opacity = eOut(pr(t, w('pack', 7) - 0.1, 0.35));
     }
 
-    // 20. путь: ступени встают снизу вверх, на своём слове загораются лаймом
+    // 22. финал
     {
-      const a = s('path'), b = e('path');
-      const op = win(t, a, b);
-      fade(path, op);
-      STEP.forEach((st, k) => {
-        const x = eExpo(pr(t, a + k * 0.06, 0.5));
-        st.g.position.copy(P(300, STEP_Y(k) + (1 - x) * 120));
-        st.g.rotation.y = 0.5 + 0.12 * Math.sin(t * 0.8 + k * 0.5);
-        const on = eExpo(pr(t, w('path', k) - 0.08, 0.3));
-        st.box.material.color.set(0x2B3620).lerp(new THREE.Color(0xC7E24B), on);
-        st.on.material.opacity = on * op;
-        st.off.material.opacity = (1 - on) * op;
-      });
-    }
-
-    // 21. коробка: плитки встают на своих словах, на «собрал» летят дугой внутрь, крышка закрывается
-    {
-      const a = s('pack'), b = e('pack');
-      const op = win(t, a, b);
-      fade(pack, op);
-      boxG.rotation.y = -0.42 + 0.1 * Math.sin((t - a) * 0.8);
-      const go = w('pack', 5) - 0.05;
-      ITEMS.forEach((it, k) => {
-        const appear = eExpo(pr(t, w('pack', [0, 1, 3][k]) - 0.08, 0.45));
-        const fly = eIn(pr(t, go + k * 0.1, 0.55));
-        const pos = vlerp(it.at, boxMouth, fly).add(new THREE.Vector3(0, Math.sin(Math.PI * fly) * 0.8, 0));
-        it.g.position.copy(pos);
-        it.g.scale.setScalar(Math.max(0.001, appear * (1 - 0.55 * fly)));
-        it.g.rotation.set(0.2 + fly * 2, 0.5 * Math.sin(t + k) + fly * 3, 0);
-        it.g.visible = appear > 0.003 && fly < 0.98 && op > 0.003;
-        it.lab.material.opacity = (1 - pr(t, go + k * 0.1, 0.2)) * op;
-      });
-      lidPivot.rotation.x = lerp(-1.95, 0, eIO(pr(t, go + 0.65, 0.45)));
-      sysFace.material.opacity = eOut(pr(t, w('pack', 7) - 0.1, 0.35)) * op;
+      const a = s('cta');
+      const pulse = Math.sin(Math.PI * pr(t, a + 0.72, 0.3));
+      const t0 = spring(t, a - 0.05, 10);
+      tg.scale.setScalar(Math.max(0.001, t0 * (1 + 0.12 * pulse))); tg.rotation.set(0, 0.25 * Math.sin(t * 0.9), 0);
+      const ln = spring(t, w('cta', 3) - 0.15, 12);
+      const click = w('cta', 3) + 0.1, press = Math.sin(Math.PI * pr(t, click - 0.04, 0.16));
+      link.visible = ln > 0.01; link.scale.setScalar(Math.max(0.001, 0.8 * ln * (1 - 0.04 * press))); link.position.set(0, 0.38, 1.35); link.rotation.x = -0.35;
+      const sv = spring(t, w('cta', 7) - 0.12, 13);
+      bookmark.visible = sv > 0.01; bookmark.scale.setScalar(Math.max(0.001, sv)); bookmark.position.set(1.0, 1.05 + 0.06 * Math.sin(t * 2), 0.9); bookmark.rotation.set(0, -0.4 + 0.2 * Math.sin(t), 0);
+      saveB.visible = sv > 0.01; saveB.scale.setScalar(Math.max(0.001, sv)); saveB.position.set(0.95, 1.7, 0.9); saveB.rotation.x = -0.1;
+      const ct = spring(t, a + 0.55, 10);
+      cat.visible = ct > 0.01; cat.position.set(-1.0, 0.72, 0.85); cat.scale.set(-Math.max(0.001, ct * 0.85), Math.max(0.001, ct * 0.85), 1);
+      const c1 = eIO(pr(t, click - 0.5, 0.45)), c2 = eIO(pr(t, w('cta', 7) - 0.2, 0.4));
+      cursorB.visible = t > click - 0.55;
+      cursorB.position.copy(vl(vl(V(1.9, -0.2, 2.2), V(0.45, 0.38, 1.6), c1), V(1.08, 0.4, 1.45), c2)).add(V(0, 0, -0.06 * press));
+      cursorB.rotation.set(-0.3, 0, 0.35);
     }
 
     renderer.render(scene, camera);

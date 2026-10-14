@@ -8,6 +8,8 @@
  "манера": "[confident narrator, brisk lively pace]",
  "музыка ровно": 0.0675,
  "громкость звуков": 0.41,
+ "хвост": 0.12,
+ "опережение": 0.5,
  "звуки": [
   ["mixkit/1489-air-woosh.mp3", "code", -0.74, 0.3], ["mixkit/1489-air-woosh.mp3", "hype", -0.74, 0.3], ["mixkit/1489-air-woosh.mp3", "try", -0.74, 0.3],
   ["mixkit/1489-air-woosh.mp3", "slop", -0.74, 0.3], ["mixkit/1489-air-woosh.mp3", "why", -0.74, 0.3], ["mixkit/1489-air-woosh.mp3", "team", -0.74, 0.3],

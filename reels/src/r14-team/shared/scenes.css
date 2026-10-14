@@ -314,3 +314,6 @@
 .r10 .sys { left: 430px; top: 1420px; }
 .r10 .refs3d { position: absolute; inset: 0; perspective: 1200px; }
 .r10 .refs3d .refs { transform: rotateX(26deg) rotateZ(-7deg) scale(1.12); transform-origin: 540px 980px; }
+
+/* ── Третья версия: один мир — светлая студия, вёрстка только поверх ───────────────────────────────── */
+.r10 .bgv3 { position: absolute; inset: 0; background: #E7E8DD; }
