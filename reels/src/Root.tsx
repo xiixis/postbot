@@ -21,6 +21,8 @@ import { LayersReel } from './r8-layers/Layers';
 import { LENGTH as LAYERS_LENGTH } from './r8-layers/motion';
 import { PencilReel } from './r9-pencil/Pencil';
 import { LENGTH as PENCIL_LENGTH } from './r9-pencil/motion';
+import { Plugins } from './r10-plugins/Plugins';
+import plugins from './r10-plugins/timeline.json';
 import { LENGTH } from './series/grid';
 
 const V = { fps: 30, width: 1080, height: 1920 } as const;
@@ -50,6 +52,9 @@ export const Root = () => (
       <Composition id="MockPencil" component={MockPencil} durationInFrames={4} {...V} />
       <Composition id="MockChain" component={MockChain} durationInFrames={4} {...V} />
     </Folder>
+    {/* «5 бесплатных плагинов»: один ролик в двух исполнениях здесь, третье в hf/r10-plugins */}
+    <Composition id="Plugins" component={Plugins} defaultProps={{ engine: 'remotion' as const, sound: false }} durationInFrames={plugins.frames} {...V} />
+    <Composition id="PluginsHybrid" component={Plugins} defaultProps={{ engine: 'hybrid' as const, sound: false }} durationInFrames={plugins.frames} {...V} />
 
     {/* Пробы приёмов: на них ссылаются наши скилы. Это не ролики, а проверенные образцы кода. */}
     <Folder name="lab">

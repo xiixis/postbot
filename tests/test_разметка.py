@@ -16,6 +16,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import markup                                                # noqa: E402
 
 
+class БлокКода(unittest.TestCase):
+    def test_хвостовой_перевод_строки_не_входит_в_блок(self):
+        """Приложение Telegram не считает перевод строки в конце блока кода,
+        и фирменные значки после блока съезжали на знак (пост r11, 03.10.2026)."""
+        итог = markup.в_html("до:\n```\nnpx a\nnpx b\n```\n\nпосле")
+        self.assertIn("<pre><code>npx a\nnpx b</code></pre>", итог)
+
+
 class Ссылки(unittest.TestCase):
     def test_кавычка_в_адресе_не_дописывает_атрибут(self):
         """Кавычка закрывала href, и дальше писался любой атрибут."""

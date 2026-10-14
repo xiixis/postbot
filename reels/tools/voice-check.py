@@ -33,7 +33,7 @@ def звук(доводы: list[str]) -> np.ndarray:
 
 def громкость(файл: Path) -> float:
     вывод = subprocess.run(["ffmpeg", "-v", "info", "-i", str(файл), "-af", "ebur128", "-vn", "-f", "null", "-"],
-                           capture_output=True, text=True).stderr
+                           capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
     return float(re.findall(r"I:\s+(-?[\d.]+) LUFS", вывод)[-1])
 
 
