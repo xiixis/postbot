@@ -209,11 +209,41 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
     g.fillStyle = '#DADBD0'; [[24, 70, 150], [86, 140, 150], [24, 210, 120], [70, 280, 166], [24, 350, 140]].forEach(([x, y, ww]) => roundRect(g, x, y, ww, 46, 23));
   })), 1.2, 2.3, MSG.g);
   msgPhone.g.position.set(0, 1.18, -0.4);
-  const QS = [['как ты делаешь такие ролики?', V(0.05, 3.05, 0.5)], ['это нейросеть?', V(1.05, 2.45, 0.9)], ['скинь программу', V(-1.05, 2.05, 1.0)],
-    ['чем монтируешь?', V(1.1, 1.55, 1.3)], ['научи так же', V(-1.15, 1.1, 1.3)], ['сколько стоит монтаж?', V(0.35, 0.45, 1.7)]].map(([text, at], k) => {
-    const b = bubble(text, { px: 32 }); MSG.g.add(b); return { b, at, k };
+  // Лавина: десятки вопросов сыплются сверху всё гуще и ложатся горой у телефона, счётчик растёт до «99+»
+  // (владелец 14.10.2026: «чтобы в начале будто меня завалили сообщениями, чтобы их прям было оооочень много»).
+  const FLOOD_TEXT = ['как ты делаешь такие ролики?', 'это нейросеть?', 'скинь программу', 'чем монтируешь?', 'научи так же',
+    'сколько стоит монтаж?', 'где взять шаблон?', 'это After Effects?', 'кто тебе монтирует?', 'дай гайд', 'хочу так же',
+    'как??', 'это ИИ?', 'ответь пж', 'сделаешь мне?', 'какой софт?', 'сколько часов на ролик?', 'это Claude?',
+    'покажи процесс', 'а бесплатно можно?', 'научишь?', 'чем озвучиваешь?', 'это шаблон?', 'где скачать?'];
+  const r1 = (k) => { const x = Math.sin(k * 91.7 + 17.3) * 43758.5453; return x - Math.floor(x); };
+  const FLOOD_N = 110;
+  const FLOOD = Array.from({ length: FLOOD_N }, (_, k) => {
+    const b = bubble(FLOOD_TEXT[k % FLOOD_TEXT.length], { px: 27, bg: k % 5 === 2 ? 0xF1F2EA : 0xFBFBF6 });
+    MSG.g.add(b);
+    const u = k / (FLOOD_N - 1);
+    const x = (r1(k) - 0.5) * 3.1;
+    const layer = Math.floor(k / 11);
+    return {
+      b, k,
+      ts: -0.95 + 2.75 * Math.pow(u, 0.72),                    // всё гуще; на обложке первые уже летят и лежат
+      rest: V(x, 0.07 + layer * 0.11 + 0.55 * Math.max(0, 1 - Math.abs(x) / 1.6) * (layer / 9) + r1(k + 13) * 0.05, -0.05 + r1(k + 9) * 1.65),
+      from: V(x * 0.7 + (r1(k + 2) - 0.5), 6.4 + r1(k + 3) * 1.6, -0.5 + r1(k + 9) * 1.2),
+      rx: -0.55 - r1(k + 21) * 0.65, rz: (r1(k + 23) - 0.5) * 0.9, ry: (r1(k + 27) - 0.5) * 0.7, spin: (r1(k + 29) - 0.5) * 7,
+    };
   });
-  const ask = bubble('кто монтирует эти ролики?', { px: 44, bg: C.lime, weight: 800 }); MSG.g.add(ask);
+  const badgeCv = document.createElement('canvas'); badgeCv.width = 220; badgeCv.height = 120;
+  const badgeTex = tex(badgeCv);
+  let badgeShown = '';
+  const drawBadge = (txt) => {
+    if (txt === badgeShown) return; badgeShown = txt;
+    const g = badgeCv.getContext('2d'); g.clearRect(0, 0, 220, 120);
+    g.fillStyle = '#C7E24B'; roundRect(g, 4, 4, 212, 112, 56);
+    g.font = '800 70px Onest'; g.fillStyle = '#12130F'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 110, 64);
+    badgeTex.needsUpdate = true;
+  };
+  const badge = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.24), new THREE.MeshBasicMaterial({ map: badgeTex, transparent: true, toneMapped: false }));
+  badge.position.set(0.5, 1.12, 0.07); msgPhone.g.add(badge);
+  const ask = bubble('кто монтирует эти ролики?', { px: 40, bg: C.lime, weight: 800 }); MSG.g.add(ask);
   const nobody = bubble('Никто.', { px: 58, bg: C.fig, fg: '#F1F2EA', weight: 800, depth: 0.1 }); MSG.g.add(nobody);
   const whoPed = pedestal(0.62, 0.42, MSG.g);
   const codePlate = new THREE.Group(); MSG.g.add(codePlate);
@@ -563,7 +593,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
     const punch = 1 - 0.05 * pr(t, st.a, st.b - st.a);
     let p = st.p.clone(), l = st.l.clone();
     if (st.name === 'code') { const up = eIO(pr(t, s('self') - 0.1, 0.6)); p = vl(p, V(0, 7.0, 6.4), up); l = vl(l, V(0, 0.45, 0.3), up); }
-    if (st.name === 'msg') { const x = eIO(pr(t, s('who') - 0.05, 0.6)); p.x += 0.35 * x; l.x += 0.35 * x; }
+    if (st.name === 'msg') { const x = eIO(pr(t, s('who') - 0.05, 0.6)); p.x += 0.2 * x; l.x += 0.2 * x; }
     if (st.name === 'team') { const back = eIO(pr(t, s('much') - 0.05, 0.75)); p = vl(p, V(0, 8.6, 13.5), back); l = vl(l, V(0, 0.2, 0), back); p.x += 0.5 * Math.sin((t - st.a) * 0.25); }
     p = l.clone().add(p.sub(l).multiplyScalar(punch));
     return { p: p.add(V(st.x, 0, 0)), l: l.add(V(st.x, 0, 0)) };
@@ -591,21 +621,29 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
     {
       const up = s('who');
       const out = eIO(pr(t, up, 0.55));
-      QS.forEach(({ b, at, k: n }) => {
-        const appear = n < 3 ? 1 : spring(t, 0.15 + (n - 3) * 0.32, 14);
-        const from = V(0, 1.4, -0.3);
-        b.position.copy(vl(from, V(at.x * 0.72, at.y, at.z), appear)).add(V(0, 0.04 * Math.sin(t * 1.6 + n), 0));
-        b.position.add(V(at.x * 0.4 * out, -0.9 * out, -1.6 * out));          // старые вопросы уходят вниз и вглубь, не в заголовок
-        b.scale.setScalar(Math.max(0.001, (0.4 + 0.6 * appear) * (1 - 0.7 * out)));
-        b.rotation.set(-0.08, -at.x * 0.12, 0);
+      FLOOD.forEach((f) => {
+        const x = pr(t, f.ts, 0.62);
+        const sweep = eIn(pr(t, up + (f.k % 12) * 0.025, 0.5));          // на «Отвечаю» гора уезжает вглубь и тает
+        f.b.visible = t >= f.ts && sweep < 0.99;
+        if (!f.b.visible) return;
+        const fall = x * x;                                               // падение с разгоном
+        const settle = 0.05 * Math.sin(Math.PI * pr(t, f.ts + 0.62, 0.16));
+        f.b.position.copy(vl(f.from, f.rest, fall)).add(V(0, settle, 0)).add(V(f.rest.x * 0.5 * sweep, -1.1 * sweep, -2.6 * sweep));
+        const tumble = (1 - x) * f.spin;
+        f.b.rotation.set(lerp(-0.12, f.rx, x * x), f.ry + tumble * 0.25, f.rz + tumble);   // в полёте лицом к камере, кувыркается вбок
+        f.b.scale.setScalar(Math.max(0.001, 1 - sweep));
       });
+      const arrived = FLOOD.filter((f) => t >= f.ts + 0.5).length;
+      const cnt = Math.round(9 + arrived * 0.95);
+      drawBadge(cnt > 99 ? '99+' : String(cnt));
+      badge.scale.setScalar(1 + 0.12 * Math.sin(Math.PI * pr(t % 0.25, 0, 0.12)) * (t < up ? 1 : 0));
       const a = spring(t, w('hook', 3) - 0.14, 13);
-      ask.position.copy(vl(V(0, 1.4, -0.3), V(0, 0.95, 1.9), a)).add(V(0, 1.15 * out, -0.4 * out));
+      ask.position.copy(vl(V(0, 1.4, -0.3), V(0, 1.75, 2.1), a)).add(V(0.25 * out, 0.45 * out, -0.4 * out));
       ask.scale.setScalar(Math.max(0.001, a * (1 - 0.18 * out)));
       ask.rotation.set(-0.1, 0, 0);
       msgPhone.g.position.set(-1.3 * out, 1.18, -0.4 - 0.4 * out); msgPhone.g.rotation.y = 0.12 + 0.45 * out;
       const nb = spring(t, w('who', 1) - 0.08, 15);
-      nobody.position.set(-0.45 + 0.1 * (1 - nb), 1.55, 1.5); nobody.scale.setScalar(Math.max(0.001, nb)); nobody.rotation.set(-0.08, 0.1, 0);
+      nobody.position.set(-0.15 + 0.1 * (1 - nb), 1.5, 1.5); nobody.scale.setScalar(Math.max(0.001, nb)); nobody.rotation.set(-0.08, 0.1, 0);
       const pd = spring(t, w('who', 2) - 0.45, 12);
       whoPed.position.set(0.95, 0.21 - 0.6 * (1 - pd), 0.75); whoPed.visible = pd > 0.01;
       const cp = spring(t, w('who', 3) - 0.05, 13);
