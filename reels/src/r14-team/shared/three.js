@@ -40,8 +40,22 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
   const clay = (c, r = 0.82, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0, ...o });
   const mesh = (geo, mat, parent) => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; if (parent) parent.add(m); return m; };
   const rbox = (w, h, d, r = 0.06, seg = 4) => new RoundedBoxGeometry(w, h, d, seg, Math.min(r, w / 2 - 0.001, h / 2 - 0.001, d / 2 - 0.001));
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 60), clay(C.bg, 1));
-  floor.rotation.x = -Math.PI / 2; floor.position.x = 110; floor.receiveShadow = true; scene.add(floor);
+  // Студия без горизонта: пол плавно загибается в стену (циклорама), как в студийной съёмке Apple и DeepMind
+  // (владелец 14.10.2026 выбрал «студия без горизонта»). Профиль: пол до z = −1,6, дуга радиусом 3,4, стена на z = −5.
+  const cyc = (() => {
+    const prof = [];
+    for (let z = 9; z > -1.6; z -= 0.5) prof.push([z, 0]);
+    for (let i = 0; i <= 24; i++) { const a = (i / 24) * (Math.PI / 2); prof.push([-1.6 - 3.4 * Math.sin(a), 3.4 - 3.4 * Math.cos(a)]); }
+    for (let y = 4; y <= 22; y += 1) prof.push([-5.0, y]);
+    const x0 = -20, x1 = 110, pos = [], idx = [];
+    prof.forEach(([z, y]) => { pos.push(x0, y, z, x1, y, z); });
+    for (let i = 0; i < prof.length - 1; i++) { const a2 = i * 2; idx.push(a2, a2 + 1, a2 + 2, a2 + 1, a2 + 3, a2 + 2); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    return g;
+  })();
+  const floor = new THREE.Mesh(cyc, clay(C.bg, 1));
+  floor.receiveShadow = true; scene.add(floor);
 
   // ── Время сценария ────────────────────────────────────────────────────────────────────────────────
   const s = (id) => T.scenes[id].s, e = (id) => T.scenes[id].e, w = (id, i) => T.w[id][i];
@@ -612,7 +626,8 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
   };
 
   // ── Кадр ─────────────────────────────────────────────────────────────────────────────────────────
-  return (t) => {
+  let tMain = 0;                                         // время самого кадра: по нему лавина и счётчик, без размытия
+  const frame = (t) => {
     const k = placeCamera(t);
     ST.forEach((st, i) => { st.g.visible = Math.abs(i - k) <= 1; });
     heroAt(t);
@@ -622,21 +637,22 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
       const up = s('who');
       const out = eIO(pr(t, up, 0.55));
       FLOOD.forEach((f) => {
-        const x = pr(t, f.ts, 0.62);
-        const sweep = eIn(pr(t, up + (f.k % 12) * 0.025, 0.5));          // на «Отвечаю» гора уезжает вглубь и тает
-        f.b.visible = t >= f.ts && sweep < 0.99;
+        const tf = tMain;                                                 // вопросы читаются в полёте: без размытия
+        const x = pr(tf, f.ts, 0.62);
+        const sweep = eIn(pr(tf, up + (f.k % 12) * 0.025, 0.5));         // на «Отвечаю» гора уезжает вглубь и тает
+        f.b.visible = tf >= f.ts && sweep < 0.99;
         if (!f.b.visible) return;
         const fall = x * x;                                               // падение с разгоном
-        const settle = 0.05 * Math.sin(Math.PI * pr(t, f.ts + 0.62, 0.16));
+        const settle = 0.05 * Math.sin(Math.PI * pr(tf, f.ts + 0.62, 0.16));
         f.b.position.copy(vl(f.from, f.rest, fall)).add(V(0, settle, 0)).add(V(f.rest.x * 0.5 * sweep, -1.1 * sweep, -2.6 * sweep));
         const tumble = (1 - x) * f.spin;
         f.b.rotation.set(lerp(-0.12, f.rx, x * x), f.ry + tumble * 0.25, f.rz + tumble);   // в полёте лицом к камере, кувыркается вбок
         f.b.scale.setScalar(Math.max(0.001, 1 - sweep));
       });
-      const arrived = FLOOD.filter((f) => t >= f.ts + 0.5).length;
+      const arrived = FLOOD.filter((f) => tMain >= f.ts + 0.5).length;
       const cnt = Math.round(9 + arrived * 0.95);
       drawBadge(cnt > 99 ? '99+' : String(cnt));
-      badge.scale.setScalar(1 + 0.12 * Math.sin(Math.PI * pr(t % 0.25, 0, 0.12)) * (t < up ? 1 : 0));
+      badge.scale.setScalar(1 + 0.12 * Math.sin(Math.PI * pr(tMain % 0.25, 0, 0.12)) * (tMain < up ? 1 : 0));
       const a = spring(t, w('hook', 3) - 0.14, 13);
       ask.position.copy(vl(V(0, 1.4, -0.3), V(0, 1.75, 2.1), a)).add(V(0.25 * out, 0.45 * out, -0.4 * out));
       ask.scale.setScalar(Math.max(0.001, a * (1 - 0.18 * out)));
@@ -925,6 +941,29 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
       ct.body.lookAt(camera.position.x, wp.y, camera.position.z);
       if (ct.wob) ct.body.rotateZ(ct.wob);
     });
-    renderer.render(scene, camera);
+  };
+
+  // ── Размытие движения внутри объёма ────────────────────────────────────────────────────────────────
+  // На кадр сцена рисуется SUB раз в пределах половины кадра (затвор 180°) и усредняется: у летящих предметов гладкая
+  // смазка, неподвижное резкое, заголовки поверх не размываются. Смешивание подкадров рендера на 120 и 240 к/с давало
+  // «лесенку» из отдельных копий и двоило текст (проверено 14.10.2026), поэтому так.
+  const SUB = 8, SHUTTER = 0.5 / 30;
+  const rtSub = new THREE.WebGLRenderTarget(1080, 1920, { type: THREE.HalfFloatType, samples: 4 });
+  const rtAcc = new THREE.WebGLRenderTarget(1080, 1920, { type: THREE.HalfFloatType });
+  const quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const accScene = new THREE.Scene();
+  accScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: rtSub.texture, transparent: true, opacity: 1 / SUB,
+    blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, toneMapped: false })));
+  const outScene = new THREE.Scene();
+  outScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: rtAcc.texture, depthTest: false, depthWrite: false, toneMapped: true })));
+  return (t) => {
+    tMain = t;
+    renderer.setRenderTarget(rtAcc); renderer.setClearColor(0x000000, 0); renderer.clear();
+    for (let i = 0; i < SUB; i++) {
+      frame(Math.max(0, t - (SHUTTER * i) / SUB));
+      renderer.setRenderTarget(rtSub); renderer.render(scene, camera);
+      renderer.setRenderTarget(rtAcc); renderer.autoClear = false; renderer.render(accScene, quadCam); renderer.autoClear = true;
+    }
+    renderer.setRenderTarget(null); renderer.render(outScene, quadCam);
   };
 };
