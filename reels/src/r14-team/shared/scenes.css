@@ -1,0 +1,319 @@
+/* Вид ролика «Кто монтирует эти ролики?» (r14, HyperFrames). Кадр 1080×1920, цвета наши: графит, крем, лайм, олива,
+   лес; терракота — только Claude. Корневой класс .r10 ставит tools/hf-build.mjs. Важное держится левее 900 и выше 1500. */
+.r10 { position: absolute; inset: 0; overflow: hidden; background: #0A0B08; color: #F1F2EA;
+  font-family: 'Onest', system-ui, sans-serif; font-weight: 600; letter-spacing: -0.02em;
+  --disp: 'Unbounded', 'Onest', sans-serif;
+  --ink: #0A0B08; --gr: #12130F; --cream: #F1F2EA; --lime: #C7E24B; --olive: #56690C; --forest: #1B2108; --claude: #D97757;
+  --stone: #D8D8CF; --bad: #E5544B;
+  --dim: rgba(241, 242, 234, 0.6); --line: rgba(241, 242, 234, 0.18); --glass: rgba(241, 242, 234, 0.07); }
+.r10 * { box-sizing: border-box; }
+.r10 img { display: block; }
+.r10 .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 500; letter-spacing: 0; }
+.r10 .disp { font-family: var(--disp); font-weight: 800; letter-spacing: -0.045em; }
+.r10 .h { opacity: 0; }
+.r10 .abs { position: absolute; }
+.r10 .ic { width: 1em; height: 1em; display: block; flex: none; }
+
+/* Страницы: у каждого блока свой цвет, меняются целиком. */
+.r10 .pg { position: absolute; inset: 0; opacity: 0; }
+.r10 .pg-dark { background: #0A0B08; opacity: 1; }
+.r10 .pg-cream { background: #F1F2EA; }
+.r10 .pg-stone { background: var(--stone); }
+.r10 .pg-lime { background: var(--lime); }
+.r10 .pg-olive { background: var(--olive); }
+.r10 .pg-forest { background: var(--forest); }
+.r10 .glow { position: absolute; left: 540px; top: 900px; width: 0; height: 0; opacity: 0; }
+.r10 .glow i { position: absolute; left: -640px; top: -640px; width: 1280px; height: 1280px; border-radius: 50%; display: block; }
+.r10 .glow-lime i { background: radial-gradient(closest-side, rgba(137, 168, 28, 0.5), rgba(86, 105, 12, 0.26) 46%, rgba(86, 105, 12, 0) 72%); }
+.r10 .glow-warm i { background: radial-gradient(closest-side, rgba(217, 119, 87, 0.42), rgba(160, 84, 40, 0.2) 46%, rgba(160, 84, 40, 0) 72%); }
+.r10 .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 54% at 50% 46%, rgba(10, 11, 8, 0) 50%, rgba(10, 11, 8, 0.85) 100%); }
+
+.r10 .sc { position: absolute; inset: 0; opacity: 0; }
+.r10 .lt { color: var(--gr); --dim: #4A4D3C; --line: rgba(18, 19, 15, 0.14); --glass: rgba(255, 255, 255, 0.7); }
+
+.r10 .pill { position: absolute; display: inline-flex; align-items: center; gap: 14px; height: 76px; padding: 0 32px; border-radius: 38px;
+  font-size: 36px; font-weight: 700; white-space: nowrap; background: rgba(241, 242, 234, 0.1); border: 2px solid var(--line); }
+.r10 .pill .ic { font-size: 40px; }
+.r10 .pill.limep { background: var(--lime); color: var(--gr); border-color: transparent; }
+.r10 .pill.dark { background: var(--gr); color: var(--cream); border-color: transparent; }
+.r10 .pill.white { background: #FFFFFF; color: var(--gr); border-color: transparent; box-shadow: 0 20px 50px rgba(40, 46, 12, 0.16); }
+.r10 .cl { color: var(--claude); }
+.r10 .star { display: block; }
+.r10 .star path { fill: var(--claude); }
+.r10 .cur { width: 70px; height: 70px; display: block; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4)); }
+.r10 .cursor { position: absolute; left: 0; top: 0; width: 70px; height: 70px; z-index: 9; opacity: 0; }
+
+/* 1–2. Личные сообщения: стена вопросов, главный вопрос, ответ «Никто», карточка Claude. */
+.r10 .wall { position: absolute; inset: 0; }
+.r10 .msg { position: absolute; display: flex; align-items: center; gap: 16px; height: 96px; padding: 0 32px 0 18px; border-radius: 48px;
+  background: rgba(241, 242, 234, 0.09); border: 2px solid rgba(241, 242, 234, 0.12); font-size: 36px; font-weight: 600; white-space: nowrap;
+  color: rgba(241, 242, 234, 0.86); }
+.r10 .msg .av { width: 60px; height: 60px; border-radius: 50%; background: rgba(241, 242, 234, 0.14); display: grid; place-items: center; font-size: 34px;
+  color: rgba(241, 242, 234, 0.7); }
+.r10 .msg.d1 { filter: blur(2px); opacity: 0.7; }
+.r10 .msg.d2 { filter: blur(5px); opacity: 0.5; }
+.r10 .qb { position: absolute; left: 110px; top: 860px; width: 860px; display: flex; align-items: center; gap: 22px; padding: 34px 40px 38px 30px;
+  border-radius: 56px 56px 56px 16px; background: var(--lime); color: var(--gr); font-size: 56px; font-weight: 700; line-height: 1.12;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5); transform-origin: 0% 100%; }
+.r10 .qb .av { width: 92px; height: 92px; flex: none; border-radius: 50%; background: var(--gr); color: var(--lime); display: grid; place-items: center; font-size: 52px; }
+.r10 .qb .badge { position: absolute; right: -14px; top: -20px; width: 64px; height: 64px; border-radius: 50%; background: var(--claude); color: #fff;
+  font-size: 34px; font-weight: 800; display: grid; place-items: center; letter-spacing: 0; }
+.r10 .ans { position: absolute; right: 180px; top: 860px; height: 128px; padding: 0 56px; border-radius: 64px 64px 16px 64px; background: var(--cream); color: var(--gr);
+  display: flex; align-items: center; font-size: 72px; font-weight: 800; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45); transform-origin: 100% 100%; }
+.r10 .ans .dots { display: flex; gap: 12px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.r10 .ans .dots i { width: 20px; height: 20px; border-radius: 50%; background: #8B8E7C; display: block; }
+.r10 .ccard { position: absolute; left: 110px; top: 1090px; width: 860px; height: 250px; border-radius: 52px; display: flex; align-items: center; gap: 40px;
+  padding: 0 52px; background: #1A1B14; border: 3px solid rgba(217, 119, 87, 0.55); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5); }
+.r10 .ccard .seal { width: 150px; height: 150px; border-radius: 42px; background: rgba(217, 119, 87, 0.14); display: grid; place-items: center; }
+.r10 .ccard .seal svg { width: 100px; height: 100px; }
+.r10 .ccard .nm { font-family: var(--disp); font-weight: 800; font-size: 76px; letter-spacing: -0.045em; line-height: 1; }
+.r10 .ccard .nm small { display: block; font-family: 'Onest'; font-size: 36px; font-weight: 600; letter-spacing: -0.01em; color: var(--dim); margin-top: 14px; }
+
+/* 3–4. «Рисует видео» зачёркнуто, код, дорожки монтажа. */
+.r10 .gen { position: absolute; left: 140px; top: 540px; width: 800px; height: 560px; border-radius: 48px; overflow: hidden;
+  background: radial-gradient(circle at 30% 30%, #6E6A80, transparent 55%), radial-gradient(circle at 75% 70%, #7C6C64, transparent 55%), #3A3A40;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5); }
+.r10 .gen .blob { position: absolute; left: 250px; top: 120px; width: 300px; height: 300px; border-radius: 50%; filter: blur(40px);
+  background: radial-gradient(circle, rgba(220, 210, 240, 0.7), rgba(150, 140, 180, 0)); }
+.r10 .gen .play { position: absolute; left: 340px; top: 210px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 255, 255, 0.22);
+  display: grid; place-items: center; font-size: 60px; color: #fff; }
+.r10 .gen .lab { position: absolute; left: 40px; bottom: 40px; right: 40px; height: 80px; border-radius: 40px; background: rgba(0, 0, 0, 0.32);
+  display: flex; align-items: center; padding: 0 34px; gap: 18px; font-size: 34px; color: rgba(255, 255, 255, 0.85); overflow: hidden; }
+.r10 .gen .lab .ic { font-size: 38px; }
+.r10 .gen .lab b { position: absolute; top: 0; bottom: 0; width: 220px; left: -240px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)); display: block; }
+.r10 .strike { position: absolute; left: 140px; top: 540px; width: 800px; height: 560px; overflow: visible; }
+.r10 .strike path { fill: none; stroke: var(--lime); stroke-width: 16; stroke-linecap: round; }
+.r10 .code { position: absolute; left: 90px; top: 600px; width: 900px; border-radius: 44px; background: #15160F;
+  border: 2px solid rgba(241, 242, 234, 0.12); padding: 56px 48px; box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5); transform-origin: 50% 0%; }
+.r10 .code .ln { font-size: 38px; line-height: 1.7; white-space: pre; color: rgba(241, 242, 234, 0.92); overflow: hidden; }
+.r10 .code .ln i { font-style: normal; display: inline-block; }
+.r10 .code .k { color: var(--lime); }
+.r10 .code .n { color: #E8C468; }
+.r10 .code .s { color: #A9C3D6; }
+.r10 .code .c { color: rgba(241, 242, 234, 0.4); }
+.r10 .code .caret { display: inline-block; width: 4px; height: 40px; background: var(--lime); vertical-align: -8px; margin-left: 4px; }
+.r10 .edit { position: absolute; left: 70px; top: 1000px; width: 940px; padding: 26px; border-radius: 40px; background: #15160F;
+  border: 2px solid rgba(241, 242, 234, 0.12); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55); }
+.r10 .trk { position: relative; height: 82px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.r10 .trk:last-of-type { margin-bottom: 0; }
+.r10 .trk .tl { width: 150px; flex: none; font-size: 26px; font-weight: 700; color: rgba(241, 242, 234, 0.6); display: flex; align-items: center; gap: 10px; }
+.r10 .trk .tl .ic { font-size: 30px; color: var(--lime); }
+.r10 .trk .cl2 { height: 70px; border-radius: 14px; flex: none; overflow: hidden; display: flex; align-items: center; padding: 0 16px;
+  font-size: 24px; font-weight: 700; color: var(--gr); }
+.r10 .trk .cl2 img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .trk .wv { display: flex; align-items: center; gap: 5px; height: 70px; }
+.r10 .trk .wv i { display: block; width: 6px; border-radius: 3px; background: rgba(199, 226, 75, 0.7); }
+.r10 .trk .kf { width: 26px; height: 26px; background: var(--lime); transform: rotate(45deg); border-radius: 5px; flex: none; margin: 0 30px; }
+.r10 .edit .head { position: absolute; top: 14px; bottom: 14px; left: 196px; width: 4px; background: var(--cream); border-radius: 2px; }
+.r10 .edit .head::before { content: ''; position: absolute; left: -11px; top: -6px; width: 26px; height: 26px; border-radius: 6px; background: var(--cream); }
+.r10 .prev { position: absolute; left: 400px; top: 470px; width: 280px; height: 498px; border-radius: 40px; overflow: hidden; background: #0D0E0A;
+  border: 3px solid rgba(241, 242, 234, 0.18); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55); }
+.r10 .prev img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.r10 .done { left: 640px; top: 1450px; }
+
+/* 5–6. Хайп и «сделай ролик». */
+.r10 .hstar { position: absolute; left: 420px; top: 520px; width: 240px; height: 240px; }
+.r10 .hword { position: absolute; left: 0; width: 1080px; top: 800px; text-align: center; font-family: var(--disp); font-weight: 800;
+  font-size: 196px; letter-spacing: -0.06em; color: var(--claude); line-height: 1; }
+.r10 .heart { position: absolute; color: var(--claude); }
+.r10 .heart.o { color: var(--olive); }
+.r10 .heart.g { color: var(--gr); }
+.r10 .inp { position: absolute; left: 90px; top: 520px; width: 900px; height: 176px; border-radius: 52px; background: #FFFFFF; display: flex; align-items: center;
+  gap: 28px; padding: 0 34px 0 40px; box-shadow: 0 30px 80px rgba(40, 46, 12, 0.18); }
+.r10 .inp svg.star { width: 64px; height: 64px; flex: none; }
+.r10 .inp .tx { flex: 1; font-size: 60px; font-weight: 700; color: var(--gr); white-space: nowrap; }
+.r10 .inp .tx i { font-style: normal; opacity: 0; }
+.r10 .inp .caret { display: inline-block; width: 5px; height: 64px; background: var(--gr); vertical-align: -10px; margin-left: 6px; }
+.r10 .inp .send { width: 108px; height: 108px; border-radius: 50%; background: var(--gr); color: var(--lime); display: grid; place-items: center; font-size: 56px; flex: none; }
+.r10 .wait { position: absolute; left: 140px; top: 770px; width: 800px; height: 640px; border-radius: 48px; background: #E2E2D8; overflow: hidden; }
+.r10 .wait b { position: absolute; top: 0; bottom: 0; width: 360px; left: -380px; display: block;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0)); }
+.r10 .wait .ring { position: absolute; left: 340px; top: 260px; width: 120px; height: 120px; border-radius: 50%; border: 10px solid rgba(18, 19, 15, 0.12);
+  border-top-color: var(--gr); }
+
+/* 7. Нейрослоп. */
+.r10 .slop { position: absolute; left: 158px; top: 520px; width: 764px; display: grid; grid-template-columns: repeat(3, 240px); gap: 22px; }
+.r10 .tile { width: 240px; height: 240px; border-radius: 34px; background: #C4C3BC; position: relative; overflow: hidden; }
+.r10 .tile .bl { position: absolute; left: 50px; top: 50px; width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #EDE9F5, #A9A3BC 70%); }
+.r10 .tile .ic { position: absolute; left: 150px; top: 36px; font-size: 54px; color: #FFFFFF; }
+.r10 .stamp { position: absolute; left: 150px; top: 820px; width: 780px; height: 190px; border-radius: 40px; background: var(--gr); color: var(--lime);
+  display: grid; place-items: center; font-family: var(--disp); font-weight: 800; font-size: 104px; letter-spacing: -0.05em;
+  box-shadow: 0 30px 80px rgba(18, 19, 15, 0.35); transform: rotate(-6deg); }
+
+/* 8–9. Стоп, «модель», знак вопроса. */
+.r10 .hand { position: absolute; left: 380px; top: 520px; width: 320px; height: 320px; border-radius: 50%; background: var(--gr); color: var(--lime);
+  display: grid; place-items: center; font-size: 190px; }
+.r10 .model { position: absolute; left: 190px; top: 960px; width: 700px; height: 170px; border-radius: 85px; background: #FFFFFF; color: var(--gr);
+  display: flex; align-items: center; justify-content: center; gap: 22px; font-size: 64px; font-weight: 800; box-shadow: 0 30px 80px rgba(40, 46, 12, 0.22); }
+.r10 .model svg.star { width: 70px; height: 70px; }
+.r10 .mark { position: absolute; left: 150px; top: 960px; width: 780px; height: 170px; overflow: visible; }
+.r10 .mark path { fill: none; stroke: var(--gr); stroke-width: 18; stroke-linecap: round; }
+.r10 .qm { position: absolute; left: 0; width: 1080px; top: 560px; text-align: center; font-family: var(--disp); font-weight: 800; font-size: 620px;
+  line-height: 1; letter-spacing: -0.05em; color: var(--gr); }
+
+/* 10–13. Кольцо команды: Claude в центре, пять мест, скилы и MCP снизу. */
+.r10 .ringg { position: absolute; inset: 0; transform-origin: 540px 940px; }
+.r10 .orbit { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+.r10 .orbit circle { fill: none; stroke: rgba(241, 242, 234, 0.2); stroke-width: 3; }
+.r10 .orbit line { stroke: rgba(199, 226, 75, 0.55); stroke-width: 4; stroke-linecap: round; opacity: 0; }
+.r10 .core { position: absolute; left: 415px; top: 815px; width: 250px; height: 250px; border-radius: 50%; background: #1C1D16;
+  border: 4px solid var(--claude); display: grid; place-items: center; box-shadow: 0 0 0 18px rgba(217, 119, 87, 0.08), 0 40px 100px rgba(0, 0, 0, 0.5); }
+.r10 .core svg.star { width: 110px; height: 110px; }
+.r10 .corelab { position: absolute; left: 440px; width: 200px; top: 1082px; text-align: center; font-family: var(--disp); font-weight: 800; font-size: 40px;
+  color: var(--claude); letter-spacing: -0.04em; }
+.r10 .slot { position: absolute; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; border: 4px dashed rgba(241, 242, 234, 0.36);
+  background: #0E0F0B; display: grid; place-items: center; }
+.r10 .slot .fill { position: absolute; inset: -4px; border-radius: 50%; background: var(--lime); color: var(--gr); display: grid; place-items: center;
+  font-size: 74px; opacity: 0; }
+.r10 .slot .nm { position: absolute; top: 162px; left: 50%; transform: translateX(-50%); font-size: 32px; font-weight: 700; white-space: nowrap; opacity: 0; }
+.r10 .plug { top: 1380px; }
+
+/* 14–15. Одинаковые ролики. */
+.r10 .same { position: absolute; left: 152px; top: 560px; display: flex; gap: 28px; }
+.r10 .ph { width: 240px; height: 426px; border-radius: 38px; background: #2A2B24; position: relative; overflow: hidden; box-shadow: 0 30px 70px rgba(18, 19, 15, 0.28); }
+.r10 .ph .who { position: absolute; left: 45px; top: 110px; font-size: 150px; color: rgba(241, 242, 234, 0.78); }
+.r10 .ph .sub { position: absolute; left: 30px; right: 30px; bottom: 54px; height: 64px; border-radius: 16px; background: rgba(255, 255, 255, 0.92);
+  display: grid; align-content: center; gap: 10px; padding: 0 22px; }
+.r10 .ph .sub i { display: block; height: 10px; border-radius: 5px; background: #8E9080; }
+.r10 .ph .sub i + i { width: 60%; }
+.r10 .ph .spk { position: absolute; right: 24px; top: 26px; font-size: 54px; color: #E8C468; }
+
+/* 16. Референсы. */
+.r10 .refs { position: absolute; left: 173px; top: 470px; width: 734px; height: 1020px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 10%, #000 88%, transparent); mask-image: linear-gradient(transparent, #000 10%, #000 88%, transparent); }
+.r10 .refcol { position: absolute; left: 0; top: 0; display: grid; grid-template-columns: repeat(3, 230px); gap: 22px; }
+.r10 .rf { width: 230px; height: 300px; border-radius: 26px; position: relative; overflow: hidden; }
+.r10 .rf i { position: absolute; display: block; }
+.r10 .clock { left: 290px; top: 1290px; height: 96px; font-size: 40px; }
+.r10 .clock .dial { width: 60px; height: 60px; border-radius: 50%; border: 5px solid var(--gr); position: relative; flex: none; }
+.r10 .clock .dial b { position: absolute; left: 22px; top: 6px; width: 6px; height: 22px; border-radius: 3px; background: var(--gr); display: block;
+  transform-origin: 3px 20px; }
+
+/* 17. Дизайнер подбирает стиль: одна карточка меняет облик. */
+.r10 .dcard { position: absolute; left: 230px; top: 620px; width: 620px; height: 760px; border-radius: 56px; background: #F1F2EA; overflow: hidden;
+  box-shadow: 0 50px 110px rgba(10, 12, 4, 0.4); }
+.r10 .dv { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; }
+.r10 .dv0 { color: var(--gr); font-weight: 800; font-size: 138px; letter-spacing: -0.03em; text-transform: uppercase; }
+.r10 .dv0 u { position: absolute; left: 110px; right: 110px; top: 470px; height: 18px; background: var(--olive); border-radius: 9px; }
+.r10 .dv1 { color: var(--lime); font-family: var(--disp); font-weight: 800; font-size: 122px; letter-spacing: -0.06em; }
+.r10 .dv2 { color: var(--gr); font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 92px; letter-spacing: -0.02em; }
+.r10 .dv3 { color: var(--cream); font-weight: 800; font-size: 140px; letter-spacing: -0.04em; }
+.r10 .dv3 span { display: inline-block; transform: skewX(-10deg); }
+.r10 .dv3 em { position: absolute; left: 70px; top: 230px; width: 480px; height: 300px; border-radius: 50%; border: 6px solid var(--lime); }
+.r10 .dtag { left: 300px; top: 500px; }
+
+/* 18. Веер настоящих роликов канала. */
+.r10 .fan { position: absolute; left: 390px; top: 600px; width: 300px; height: 533px; }
+.r10 .fan .fp { position: absolute; inset: 0; border-radius: 44px; overflow: hidden; border: 4px solid #FFFFFF; box-shadow: 0 40px 90px rgba(18, 19, 15, 0.35);
+  transform-origin: 50% 110%; }
+.r10 .fan .fp img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .made { left: 250px; top: 1290px; }
+
+/* 19. Проверка: лента кадров под рамкой. */
+.r10 .strip { position: absolute; left: 0; top: 860px; height: 340px; }
+.r10 .fr { position: absolute; top: 0; width: 190px; height: 338px; border-radius: 26px; overflow: hidden; border: 3px solid rgba(241, 242, 234, 0.16); }
+.r10 .fr img { width: 100%; height: 100%; object-fit: cover; }
+.r10 .fr .ok, .r10 .fr .no { position: absolute; right: 10px; top: 10px; width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 38px; opacity: 0; }
+.r10 .fr .ok { background: var(--lime); color: var(--gr); }
+.r10 .fr .no { background: var(--bad); color: #fff; }
+.r10 .fr .shift { position: absolute; left: 20px; top: 120px; width: 170px; height: 70px; border-radius: 14px; background: rgba(229, 84, 75, 0.85); opacity: 0; }
+.r10 .scan { position: absolute; left: 435px; top: 840px; width: 210px; height: 378px; border-radius: 36px; border: 6px solid var(--lime);
+  box-shadow: 0 0 0 4000px rgba(10, 11, 8, 0.35); }
+.r10 .scan b { position: absolute; left: 10px; right: 10px; height: 6px; top: 20px; border-radius: 3px; background: var(--lime); display: block;
+  box-shadow: 0 0 24px rgba(199, 226, 75, 0.8); }
+.r10 .redo { left: 300px; top: 1290px; }
+.r10 .redo .ic { color: var(--bad); }
+.r10 .chk { left: 380px; top: 690px; }
+
+/* 20. Путь: пять шагов лестницей. */
+.r10 .path { position: absolute; left: 0; top: 0; }
+.r10 .rail { position: absolute; left: 236px; top: 560px; width: 8px; height: 760px; border-radius: 4px; background: rgba(241, 242, 234, 0.14); overflow: hidden; }
+.r10 .rail b { display: block; width: 100%; height: 100%; background: var(--lime); transform-origin: 50% 0%; transform: scaleY(0); }
+.r10 .step { position: absolute; left: 180px; height: 120px; display: flex; align-items: center; gap: 34px; }
+.r10 .step .dot { width: 120px; height: 120px; border-radius: 34px; background: #26301A; color: rgba(241, 242, 234, 0.5); display: grid; place-items: center;
+  font-size: 60px; border: 3px solid rgba(241, 242, 234, 0.12); }
+.r10 .step .nm { font-family: var(--disp); font-weight: 800; font-size: 72px; letter-spacing: -0.05em; color: rgba(241, 242, 234, 0.42); }
+.r10 .sys { left: 300px; top: 1390px; }
+
+/* 21. Всё в одной папке. */
+.r10 .folder { position: absolute; left: 330px; top: 900px; width: 420px; height: 420px; color: var(--olive); }
+.r10 .folder svg { width: 100%; height: 100%; display: block; }
+.r10 .folder span { position: absolute; left: 0; right: 0; top: 215px; text-align: center; font-family: var(--disp); font-weight: 800; font-size: 50px;
+  color: var(--cream); letter-spacing: -0.04em; }
+.r10 .item { height: 96px; font-size: 42px; }
+.r10 .item .ic { font-size: 46px; color: var(--olive); }
+
+/* 22. Финал: Telegram, «сохрани», кот. */
+.r10 .tg { position: absolute; left: 130px; top: 500px; width: 760px; border-radius: 52px; background: #FFFFFF; color: var(--gr); padding: 46px 46px 42px;
+  box-shadow: 0 40px 100px rgba(40, 46, 12, 0.25); }
+.r10 .tg .top { display: flex; align-items: center; gap: 30px; }
+.r10 .tg .tgi { width: 140px; height: 140px; border-radius: 50%; background: #2AABEE; color: #FFFFFF; display: grid; place-items: center; font-size: 84px; flex: none; }
+.r10 .tg .t1 { font-family: var(--disp); font-weight: 800; font-size: 62px; letter-spacing: -0.05em; line-height: 1; }
+.r10 .tg .t2 { font-size: 36px; font-weight: 600; color: #4A4D3C; margin-top: 12px; }
+.r10 .tg .go { margin-top: 38px; height: 112px; border-radius: 56px; background: var(--gr); color: var(--lime); display: flex; align-items: center;
+  justify-content: center; gap: 16px; font-size: 44px; font-weight: 800; position: relative; overflow: hidden; }
+.r10 .tg .go .ic { font-size: 46px; }
+.r10 .tg .go b { position: absolute; top: 0; bottom: 0; width: 200px; left: -220px; display: block;
+  background: linear-gradient(90deg, rgba(199, 226, 75, 0), rgba(199, 226, 75, 0.3), rgba(199, 226, 75, 0)); }
+.r10 .save { left: 420px; top: 1080px; height: 100px; font-size: 44px; }
+.r10 .save .ic { font-size: 48px; }
+.r10 .cat { position: absolute; left: 40px; top: 1010px; width: 360px; transform: scaleX(-1); filter: drop-shadow(0 30px 40px rgba(40, 46, 12, 0.3)); }
+
+/* Поверх: знак, полоса хода, заголовок-субтитры. */
+.r10 .logo { position: absolute; left: 72px; top: 132px; width: 92px; height: 92px; border-radius: 26px; background: #12130F; display: grid; place-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+.r10 .logo img { width: 60px; height: 60px; }
+.r10 .prog { position: absolute; left: 196px; top: 172px; width: 812px; display: flex; gap: 10px; --pf: #C7E24B; --pt: rgba(241, 242, 234, 0.22); }
+.r10 .prog i { flex: 1; height: 10px; border-radius: 5px; background: var(--pt); overflow: hidden; display: block; opacity: 0; transform-origin: 0 50%; }
+.r10 .prog b { display: block; width: 100%; height: 100%; border-radius: 5px; background: var(--pf); transform-origin: 0 50%; }
+.r10 .hl { position: absolute; left: 50px; width: 980px; top: 248px; text-align: center; color: var(--cream); }
+.r10 .hl div { white-space: nowrap; }
+.r10 .hl span { display: inline-block; margin: 0 0.12em; opacity: 0; }
+.r10 .hl .l1 { font-family: var(--disp); font-weight: 800; font-size: 62px; letter-spacing: -0.045em; line-height: 1.22; }
+.r10 .hl .l2 { font-size: 66px; font-weight: 600; line-height: 1.18; color: rgba(241, 242, 234, 0.72); }
+.r10 .hl.first .l1 { font-size: 70px; }
+.r10 .hl.first .l1 span { opacity: 1; }
+.r10 .hl .cl { color: var(--claude); }
+.r10 .hl .ac { color: var(--lime); }
+.r10 .hl.light { color: var(--gr); }
+.r10 .hl.light .l2 { color: #3E4133; }
+.r10 .hl.light .ac { background: var(--lime); color: var(--gr); border-radius: 16px; padding: 0 14px 4px; }
+.r10 .hl.lime { color: var(--gr); }
+.r10 .hl.lime .l2 { color: #2C3410; }
+.r10 .hl.lime .ac { background: var(--gr); color: var(--lime); border-radius: 16px; padding: 0 14px 4px; }
+
+/* ── Вторая версия (14.10.2026): объём, перспектива, настоящие логотипы ─────────────────────────────── */
+.r10 .gl { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.r10 .sc { perspective: 1500px; }
+.r10 .tilt { position: absolute; inset: 0; transform-style: preserve-3d; }
+.r10 .t-gen { transform: rotateY(-14deg) rotateX(6deg); transform-origin: 540px 820px; }
+.r10 .t-code { transform: rotateY(12deg) rotateX(5deg); transform-origin: 540px 850px; }
+.r10 .t-prev { transform: rotateY(-16deg); transform-origin: 540px 720px; }
+.r10 .t-edit { transform: rotateX(24deg); transform-origin: 540px 1200px; }
+.r10 .t-inp { transform: rotateX(12deg); transform-origin: 540px 608px; }
+.r10 .t-wait { transform: rotateX(18deg); transform-origin: 540px 1090px; }
+.r10 .t-tg { transform: rotateX(10deg) rotateY(-8deg); transform-origin: 510px 700px; }
+.r10 .wall3d { position: absolute; inset: 0; perspective: 1100px; perspective-origin: 50% 48%; }
+.r10 .wallin { position: absolute; inset: 0; transform-style: preserve-3d; }
+.r10 .brand { position: absolute; left: 330px; top: 1232px; width: 420px; color: #F1F2EA; }
+.r10 .word { display: block; width: 100%; height: auto; }
+.r10 .ccode { left: 352px; top: 1378px; }
+.r10 .codemark { width: 46px; height: 46px; display: block; flex: none; }
+.r10 .spark { display: block; flex: none; }
+.r10 .hword { position: absolute; left: 170px; top: 930px; width: 740px; color: #D97757; }
+.r10 .inp .spark { width: 64px; height: 64px; }
+.r10 .model .spark { width: 70px; height: 70px; }
+.r10 .tg .tgi { background: none; width: 140px; height: 140px; }
+.r10 .tglogo { width: 140px; height: 140px; display: block; }
+.r10 .made { left: 220px; top: 1290px; }
+.r10 .made .codemark { width: 40px; height: 40px; }
+.r10 .pname { position: absolute; left: 430px; font-family: var(--disp); font-weight: 800; font-size: 64px; letter-spacing: -0.05em; color: rgba(241, 242, 234, 0.38); }
+.r10 .sys { left: 430px; top: 1420px; }
+.r10 .refs3d { position: absolute; inset: 0; perspective: 1200px; }
+.r10 .refs3d .refs { transform: rotateX(26deg) rotateZ(-7deg) scale(1.12); transform-origin: 540px 980px; }
+
+/* ── Третья версия: один мир — светлая студия, вёрстка только поверх ───────────────────────────────── */
+.r10 .bgv3 { position: absolute; inset: 0; background: #E7E8DD; }
