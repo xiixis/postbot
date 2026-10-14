@@ -9,7 +9,7 @@
 // Кадр — чистая функция времени (событие hf-seek), без часов и случайных чисел.
 
 export const buildThree = async (THREE, X, canvas, T, A) => {
-  const { SVGLoader, RoundedBoxGeometry } = X;
+  const { SVGLoader, RoundedBoxGeometry, RoomEnvironment } = X;
   await Promise.all(['800 64px Unbounded', '700 40px Onest', '800 40px Onest', '600 40px Onest', '500 40px "JetBrains Mono"'].map((f) => document.fonts.load(f)));
 
   // ── Палитра и мир ─────────────────────────────────────────────────────────────────────────────────
@@ -33,6 +33,8 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
   key.shadow.blurSamples = 24;
   Object.assign(key.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 40 });
   scene.add(key, key.target);
+  // отражения только для металла и стекла телефона: глине они не нужны
+  const envTex = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 
   const V = (x, y, z) => new THREE.Vector3(x, y, z);
   const clay = (c, r = 0.82, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: 0, ...o });
@@ -130,26 +132,72 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
     phones: () => { const g = new THREE.Group(); mesh(new THREE.TorusGeometry(0.14, 0.025, 12, 32, Math.PI), T_, g); [-0.14, 0.14].forEach((x) => { const c = mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.06, 20), clay(C.lime), g); c.rotation.z = Math.PI / 2; c.position.set(x, -0.01, 0); }); return g; },
     loupe: () => { const g = new THREE.Group(); mesh(new THREE.TorusGeometry(0.1, 0.025, 12, 32), T_, g); const h = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.18, 12), T_, g); h.position.set(0.1, -0.13, 0); h.rotation.z = 0.7; return g; },
   };
-  // агент: одна форма на всех, разница только в инструменте (приём Buck и DeepMind)
-  const agent = (tool, parent) => {
+  // агент — наш маскот в позе своей роли (владелец 14.10.2026: «вместо круглых персонажей поставить моего маскота»).
+  // Объёмной модели кота нет, есть его 3D-рендеры: кот стоит картинкой на постаменте, всегда лицом к камере, с мягкой тенью.
+  const loader0 = new THREE.TextureLoader();
+  const CAT = Object.fromEntries(await Promise.all(['noutbuk', 'ideya', 'kamera', 'mikrofon', 'lupa'].map(async (n) => {
+    const t = await loader0.loadAsync(`${A}/cats/cat-${n}.png`); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return [n, t];
+  })));
+  const blobTex = tex(card(128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(30,32,20,.45)'); gr.addColorStop(1, 'rgba(30,32,20,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }));
+  const CATS = [];
+  const agent = (pose, parent, hgt = 0.98) => {
     const g = new THREE.Group();
     const ped = mesh(new THREE.CylinderGeometry(0.42, 0.46, 0.16, 48), clay(C.ped), g); ped.position.y = 0.08;
-    const body = new THREE.Group(); g.add(body);
-    mesh(new THREE.CapsuleGeometry(0.22, 0.32, 8, 24), clay(C.fig), body).position.y = 0.54;
-    [-0.08, 0.08].forEach((ex) => { const eye = mesh(new THREE.CapsuleGeometry(0.028, 0.05, 4, 8), clay(C.cream, 0.4), body); eye.position.set(ex, 0.68, 0.205); });
-    if (tool) { const t = TOOLS[tool](); t.position.set(0.3, 0.42, 0.12); body.add(t); }
+    const blob = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false, toneMapped: false }));
+    blob.rotation.x = -Math.PI / 2; blob.position.y = 0.162; g.add(blob);
+    const body = new THREE.Group(); body.position.y = 0.16; g.add(body);
+    const tx = CAT[pose], asp = tx.image.width / tx.image.height;
+    const geo = new THREE.PlaneGeometry(hgt * asp, hgt); geo.translate(0, hgt / 2, 0);
+    body.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tx, transparent: true, alphaTest: 0.35, toneMapped: false })));
     if (parent) parent.add(g);
-    return { g, ped, body };
+    const a = { g, ped, body, wob: 0 }; CATS.push(a); return a;
   };
   // настоящий кадр ролика: телефон с текстурой
   const loader = new THREE.TextureLoader();
   const img = async (file) => { const t = await loader.loadAsync(`${A}/${file}`); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
   const REAL = Object.fromEntries(await Promise.all(['fan1', 'fan2', 'fan3', 's1', 's2', 's3', 's4', 's5', 's6', 's7'].map(async (f) => [f, await img(`real/${f}.jpg`)])));
-  const phone = (map, wd, ht, parent, body = C.fig) => {
+  // Телефон как настоящий: контур с радиусом углов 16 % ширины выдавлен с округлой фаской, рамка — титан с отражениями,
+  // кнопки по бокам, блок камер на спинке, экран с чёрной кромкой и «островком» (владелец 14.10.2026: «модельку телефона
+  // сделать более настоящей»).
+  const titan = new THREE.MeshStandardMaterial({ color: 0x3B3C3F, metalness: 0.88, roughness: 0.32, envMap: envTex, envMapIntensity: 1.1 });
+  const glassBlack = new THREE.MeshStandardMaterial({ color: 0x0B0B0C, metalness: 0.2, roughness: 0.12, envMap: envTex, envMapIntensity: 0.9 });
+  const screenOf = (src, ratio) => {                            // картинка или холст → экран с кромкой и островком
+    const W2 = 540, H2 = Math.round(540 * ratio);
+    const cv = document.createElement('canvas'); cv.width = W2; cv.height = H2;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#060606'; roundRect(g, 0, 0, W2, H2, W2 * 0.15);
+    const b = W2 * 0.032;
+    g.save(); g.beginPath(); g.roundRect(b, b, W2 - 2 * b, H2 - 2 * b, W2 * 0.125); g.clip();
+    const sw = src.width, sh = src.height, k = Math.max((W2 - 2 * b) / sw, (H2 - 2 * b) / sh);
+    g.drawImage(src, (W2 - sw * k) / 2, (H2 - sh * k) / 2, sw * k, sh * k); g.restore();
+    g.fillStyle = '#000'; roundRect(g, W2 * 0.36, b + W2 * 0.03, W2 * 0.28, W2 * 0.075, W2 * 0.0375);
+    return tex(cv);
+  };
+  const phoneShape = (w2, h2, r) => {
+    const s = new THREE.Shape(), x = -w2 / 2, y = -h2 / 2;
+    s.moveTo(x + r, y); s.lineTo(x + w2 - r, y); s.absarc(x + w2 - r, y + r, r, -Math.PI / 2, 0, false);
+    s.lineTo(x + w2, y + h2 - r); s.absarc(x + w2 - r, y + h2 - r, r, 0, Math.PI / 2, false);
+    s.lineTo(x + r, y + h2); s.absarc(x + r, y + h2 - r, r, Math.PI / 2, Math.PI, false);
+    s.lineTo(x, y + r); s.absarc(x + r, y + r, r, Math.PI, Math.PI * 1.5, false);
+    return s;
+  };
+  const phone = (map, wd, ht, parent) => {
     const g = new THREE.Group();
-    mesh(rbox(wd, ht, 0.09, 0.08), clay(body, 0.5), g);
-    const scr = new THREE.Mesh(new THREE.PlaneGeometry(wd - 0.07, ht - 0.07), new THREE.MeshBasicMaterial({ map, toneMapped: false }));
-    scr.position.z = 0.047; g.add(scr);
+    const d = wd * 0.075, bev = d * 0.42;
+    const geo = new THREE.ExtrudeGeometry(phoneShape(wd - 2 * bev, ht - 2 * bev, wd * 0.16 - bev), { depth: d - 2 * bev, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 8, curveSegments: 28 });
+    geo.translate(0, 0, -(d - 2 * bev) / 2);
+    mesh(geo, titan, g);
+    const front = new THREE.Mesh(new THREE.ShapeGeometry(phoneShape(wd * 0.985, ht * 0.99, wd * 0.155), 28), glassBlack); front.position.z = d / 2 + 0.001; g.add(front);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(wd * 0.965, ht * 0.975), new THREE.MeshBasicMaterial({ map: screenOf(map.image, (ht * 0.975) / (wd * 0.965)), transparent: true, toneMapped: false }));
+    scr.position.z = d / 2 + 0.003; g.add(scr);
+    const btn = (x, y, hh) => { const m = mesh(rbox(wd * 0.03, hh, d * 0.45, 0.004), titan, g); m.position.set(x, y, 0); };
+    btn(-wd / 2 - wd * 0.006, ht * 0.27, ht * 0.05); btn(-wd / 2 - wd * 0.006, ht * 0.17, ht * 0.08); btn(-wd / 2 - wd * 0.006, ht * 0.06, ht * 0.08);
+    btn(wd / 2 + wd * 0.006, ht * 0.15, ht * 0.13);
+    const cam = mesh(rbox(wd * 0.42, wd * 0.42, d * 0.25, wd * 0.08), titan, g); cam.position.set(-wd * 0.2, ht * 0.5 - wd * 0.3, -d / 2 - d * 0.1);
+    [[-0.09, 0.09], [-0.09, -0.09], [0.09, 0]].forEach(([a, b2]) => {
+      const l = mesh(new THREE.CylinderGeometry(wd * 0.075, wd * 0.075, d * 0.3, 32), glassBlack, g); l.rotation.x = Math.PI / 2;
+      l.position.set(-wd * 0.2 + a * wd, ht * 0.5 - wd * 0.3 + b2 * wd, -d / 2 - d * 0.22);
+    });
     if (parent) parent.add(g);
     return { g, scr };
   };
@@ -302,7 +350,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
   const TEAM = S.team;
   pedestal(0.62, 0.42, TEAM.g);
   const R = 1.18;
-  const ROLE_TOOLS = ['pen', 'palette', 'film', 'phones', 'loupe'];
+  const ROLE_TOOLS = ['noutbuk', 'ideya', 'kamera', 'mikrofon', 'lupa'];
   const AG = ROLE_TOOLS.map((tl, k) => {
     const a = agent(tl, TEAM.g);
     const ang = -Math.PI / 2 + (k * Math.PI * 2) / 5 + Math.PI;
@@ -337,8 +385,8 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
     g.fillStyle = '#8E9080'; roundRect(g, 38, 318, 134, 8, 4); roundRect(g, 38, 332, 85, 8, 4);
     drawIcon(g, 'sparkle', 160, 18, 34, '#E8C468');
   }));
-  const scrA = sameScreen(false), scrB = sameScreen(true);
-  const PH3 = [-1.0, 0, 1.0].map((x) => { const p = phone(scrA, 0.84, 1.52, SAME.g); p.g.position.set(x, 0.8, 0); return p; });
+  const scrA = screenOf(sameScreen(false).image, (1.52 * 0.975) / (0.84 * 0.965)), scrB = screenOf(sameScreen(true).image, (1.52 * 0.975) / (0.84 * 0.965));
+  const PH3 = [-1.0, 0, 1.0].map((x) => { const p = phone(sameScreen(false), 0.84, 1.52, SAME.g); p.g.position.set(x, 0.8, 0); return p; });
 
   // ── 16. Референсы: наклонная доска с плитками листается, часы ───────────────────────────────────────
   const REFS = S.refs;
@@ -368,7 +416,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
 
   // ── 17. Дизайнер-агент переворачивает карточку: «ролик» в четырёх обликах ────────────────────────────
   const DES = S.design;
-  const designer = agent('palette', DES.g); designer.g.position.set(-1.05, 0, 0.75); designer.g.rotation.y = 0.5;
+  const designer = agent('ideya', DES.g, 1.15); designer.g.position.set(-1.05, 0, 0.75); designer.g.rotation.y = 0.5;
   const dCard = new THREE.Group(); DES.g.add(dCard); dCard.position.set(0.35, 1.3, 0);
   mesh(rbox(1.75, 2.35, 0.08, 0.12), clay(C.ped), dCard);
   const STYLE = [
@@ -398,7 +446,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
   [[-0.62, 1.0], [0.62, 1.0]].forEach(([x, hgt]) => mesh(rbox(0.12, 2.0, 0.12, 0.05), clay(C.fig, 0.5), gate).position.set(x, hgt, 0));
   mesh(rbox(1.36, 0.12, 0.12, 0.05), clay(C.fig, 0.5), gate).position.set(0, 2.0, 0);
   const scan = mesh(rbox(1.1, 0.05, 0.5, 0.02), clay(C.lime, 0.5, { emissive: C.lime, emissiveIntensity: 0.25 }), gate);
-  const inspector = agent('loupe', CHK.g); inspector.g.position.set(1.25, 0, -0.85); inspector.g.rotation.y = -0.5;
+  const inspector = agent('lupa', CHK.g, 1.1); inspector.g.position.set(0.95, 0, -1.0); inspector.g.rotation.y = -0.5;
   const STRIP = ['s1', 's2', 's4', 's6', 's5', 's3', 's7'];
   const BAD = 3;
   const CARDS = STRIP.map((f, k) => {
@@ -677,7 +725,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
       // «задача» переходит к агенту на слове его роли; принявший подпрыгивает, его постамент загорается лаймом
       const ROLE_T = [w('roles', 0), w('roles', 1), w('roles', 2), w('roles', 3), w('roles', 5)];
       let cur = -1; ROLE_T.forEach((rt, i) => { if (t >= rt - 0.3) cur = i; });
-      const above = (i) => (i < 0 ? V(0, 1.75, 0.05) : AG[i].g.position.clone().add(V(0, 1.15, 0)));
+      const above = (i) => (i < 0 ? V(0, 1.85, 0.05) : AG[i].g.position.clone().add(V(0, 1.5, 0)));   // над головой кота, не на ней
       if (cur < 0) {
         const x = spring(t, ROLE_T[0] - 0.9, 12);
         task.visible = x > 0.01; task.position.copy(above(-1)); task.scale.setScalar(Math.max(0.001, x));
@@ -690,7 +738,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
       AG.forEach((ag, i) => {
         const got = i <= cur ? eOut(pr(t, ROLE_T[i] - 0.02, 0.25)) : 0;
         ag.ped.material.color.set(C.ped).lerp(new THREE.Color(C.lime), got);
-        ag.body.position.y = hop(pr(t, ROLE_T[i] - 0.02, 0.3), 0.18);
+        ag.body.position.y = 0.16 + hop(pr(t, ROLE_T[i] - 0.02, 0.3), 0.18);
       });
       PLUGS.forEach((p, i) => {
         const at = w('skills', i ? 4 : 2) - 0.1;
@@ -746,7 +794,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
       });
       dCard.rotation.set(0, rot + 0.12 * Math.sin(t * 0.8), 0);
       dFace.material.map = STYLE[st];
-      designer.body.rotation.z = FL.reduce((acc, ft) => acc + 0.25 * Math.sin(Math.PI * pr(t, ft - 0.3, 0.4)), 0);
+      designer.wob = FL.reduce((acc, ft) => acc + 0.12 * Math.sin(Math.PI * pr(t, ft - 0.3, 0.4)), 0);
     }
 
     // 18. веер
@@ -780,7 +828,7 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
         c.badge.scale.setScalar(Math.max(0.001, bt)); c.badge.visible = bt > 0.01;
       });
       scan.position.y = 1.0 + 0.85 * Math.sin((t - a) * 4.2);
-      inspector.body.rotation.y = 0.3 * Math.sin(t * 2);
+      inspector.wob = 0.04 * Math.sin(t * 2);
     }
 
     // 20. путь
@@ -832,6 +880,13 @@ export const buildThree = async (THREE, X, canvas, T, A) => {
       cursorB.rotation.set(-0.3, 0, 0.35);
     }
 
+    // коты всегда лицом к камере (по горизонтали), покачивание — поверх
+    CATS.forEach((ct) => {
+      if (!ct.g.parent || !ct.g.parent.visible) return;
+      const wp = new THREE.Vector3(); ct.body.getWorldPosition(wp);
+      ct.body.lookAt(camera.position.x, wp.y, camera.position.z);
+      if (ct.wob) ct.body.rotateZ(ct.wob);
+    });
     renderer.render(scene, camera);
   };
 };
