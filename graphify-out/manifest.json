@@ -5802,9 +5802,9 @@
     "semantic_hash": ""
   },
   "reels/tools/hf-build.mjs": {
-    "mtime": 1791125318.16263,
-    "seen": 1791988430.146539,
-    "ast_hash": "c920deec0692ed458ceefa53e7c0eb16",
+    "mtime": 1791988675.6496015,
+    "seen": 1791988747.2584589,
+    "ast_hash": "44bdbd0f3540ed1f7c69d63829d98562",
     "semantic_hash": ""
   },
   "reels/tools/hf-render.sh": {
@@ -5814,9 +5814,9 @@
     "semantic_hash": ""
   },
   "reels/tools/layout.py": {
-    "mtime": 1790978058.7789602,
-    "seen": 1790978081.250412,
-    "ast_hash": "9226094ab4a022472c7b5ab18a0d07e8",
+    "mtime": 1791988675.6501932,
+    "seen": 1791988747.258461,
+    "ast_hash": "82f3fc46e48dd8b9db0e3b1d44ebdb1d",
     "semantic_hash": ""
   },
   "reels/tools/loop.py": {
@@ -5862,9 +5862,9 @@
     "semantic_hash": ""
   },
   "reels/tools/voice-one.py": {
-    "mtime": 1790978058.7814856,
-    "seen": 1790978081.250417,
-    "ast_hash": "9196936b82599fad576783e57f13b844",
+    "mtime": 1791988675.651089,
+    "seen": 1791988747.2584682,
+    "ast_hash": "badbd23cfa7efe77fa94dd90c3fdc3f0",
     "semantic_hash": ""
   },
   "reels/tools/voice.py": {
@@ -5976,9 +5976,9 @@
     "semantic_hash": ""
   },
   "reels/README.md": {
-    "mtime": 1791131621.855738,
-    "seen": 1791988430.146785,
-    "ast_hash": "5d765c048bf1d2232c762a39c0aca6f0",
+    "mtime": 1791988675.606541,
+    "seen": 1791988747.258711,
+    "ast_hash": "60961fb944e828ac06fbe5f14964cf5e",
     "semantic_hash": ""
   },
   "reels/public/sfx/keyboard/LICENSE.md": {
@@ -8841,6 +8841,204 @@
     "mtime": 1791012813.0,
     "seen": 1791988430.147511,
     "ast_hash": "fc0b73eb6b1aed71c50abc593ac5e19f",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/data-build.mjs": {
+    "mtime": 1791988675.6452577,
+    "seen": 1791988747.258427,
+    "ast_hash": "eda09b29a24f91a0467376334e251500",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/shared/data.js": {
+    "mtime": 1791988675.6456969,
+    "seen": 1791988747.2584279,
+    "ast_hash": "206a1342201d8c210be3a16c744a407a",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/shared/scenes.js": {
+    "mtime": 1791988675.6464126,
+    "seen": 1791988747.2584288,
+    "ast_hash": "9d2fdd5d51afdf1fb3c22175251952c2",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/shared/three.js": {
+    "mtime": 1791988675.6469467,
+    "seen": 1791988747.25843,
+    "ast_hash": "0a5fe59fd78b41ed71640315770ff407",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/timeline.json": {
+    "mtime": 1791988675.6477637,
+    "seen": 1791988747.25843,
+    "ast_hash": "aa80224beb13ae7abe12419d0b8bd06c",
+    "semantic_hash": ""
+  },
+  "reels/voice/r14.json": {
+    "mtime": 1791988675.6515265,
+    "seen": 1791988747.258476,
+    "ast_hash": "e87a4e267b04a3363d2b5f35cafb2b32",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/\u041f\u041e\u0414\u041f\u0418\u0421\u042c.txt": {
+    "mtime": 1791988675.6481643,
+    "seen": 1791988747.258739,
+    "ast_hash": "8d21fcda8be297e8e35556ddf5a86009",
+    "semantic_hash": ""
+  },
+  "reels/src/r14-team/\u0422\u0415\u0417\u0418\u0421.md": {
+    "mtime": 1791988675.6488519,
+    "seen": 1791988747.25874,
+    "ast_hash": "564cd61d8bac81d541fab288e4fa1cb2",
+    "semantic_hash": ""
+  },
+  "reels/public/team/brand/claude-color.svg": {
+    "mtime": 1791988675.607006,
+    "seen": 1791988747.259307,
+    "ast_hash": "9e17036145c6f918d950b9ba9435f5b7",
+    "semantic_hash": ""
+  },
+  "reels/public/team/brand/claude-text.svg": {
+    "mtime": 1791988675.6073549,
+    "seen": 1791988747.259308,
+    "ast_hash": "156095641d956377a7f3dbb38914e3a5",
+    "semantic_hash": ""
+  },
+  "reels/public/team/brand/claudecode-color.svg": {
+    "mtime": 1791988675.6077082,
+    "seen": 1791988747.259308,
+    "ast_hash": "d7ca693a5aa3a0aad91c952bb3514788",
+    "semantic_hash": ""
+  },
+  "reels/public/team/brand/telegram.svg": {
+    "mtime": 1791988675.608419,
+    "seen": 1791988747.259309,
+    "ast_hash": "d7bb1c357fbf52fee0c2b82b190f055c",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cat-joy.png": {
+    "mtime": 1791988675.6099286,
+    "seen": 1791988747.259309,
+    "ast_hash": "d0992fd9ca327f66329a13946191a1f8",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cat-laptop.png": {
+    "mtime": 1791988675.6118348,
+    "seen": 1791988747.25931,
+    "ast_hash": "89905509b240b034547e991ab1424f61",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cat-point.png": {
+    "mtime": 1791988675.6137989,
+    "seen": 1791988747.2593112,
+    "ast_hash": "03331cc93a98292e3b81da83a67aebde",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cat-share.png": {
+    "mtime": 1791988675.615902,
+    "seen": 1791988747.2593112,
+    "ast_hash": "6b7842c7f0270019d525873eeaeb5519",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cats/cat-ideya.png": {
+    "mtime": 1791988675.6178942,
+    "seen": 1791988747.2593122,
+    "ast_hash": "6fcb4eb87d58013fc99c5ff6322fb747",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cats/cat-kamera.png": {
+    "mtime": 1791988675.61942,
+    "seen": 1791988747.2593129,
+    "ast_hash": "3d54b9b00cd685c87e200c484a399407",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cats/cat-lupa.png": {
+    "mtime": 1791988675.620538,
+    "seen": 1791988747.2593129,
+    "ast_hash": "372e805b4199a1c2a982f78a9569fd88",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cats/cat-mikrofon.png": {
+    "mtime": 1791988675.621906,
+    "seen": 1791988747.2593138,
+    "ast_hash": "e669300a5bb70b7451596b5c18f532c4",
+    "semantic_hash": ""
+  },
+  "reels/public/team/cats/cat-noutbuk.png": {
+    "mtime": 1791988675.6236434,
+    "seen": 1791988747.2593138,
+    "ast_hash": "442a57e8815d171370b149b63e10adf1",
+    "semantic_hash": ""
+  },
+  "reels/public/team/logo.png": {
+    "mtime": 1791988675.6307485,
+    "seen": 1791988747.259315,
+    "ast_hash": "7406ee4a0b68cb39e3bbc7d726bd65f0",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/fan1.jpg": {
+    "mtime": 1791988675.631673,
+    "seen": 1791988747.259316,
+    "ast_hash": "8f51a82008799230d733a57072ef7837",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/fan2.jpg": {
+    "mtime": 1791988675.6324337,
+    "seen": 1791988747.259316,
+    "ast_hash": "f49478927c64b3c64580311345208694",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/fan3.jpg": {
+    "mtime": 1791988675.633173,
+    "seen": 1791988747.259317,
+    "ast_hash": "d88d8657d70300bd584694860ea9bdf5",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s1.jpg": {
+    "mtime": 1791988675.633736,
+    "seen": 1791988747.259317,
+    "ast_hash": "88bf3bd9adb750ee5a8e7fe433344ce0",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s2.jpg": {
+    "mtime": 1791988675.6341913,
+    "seen": 1791988747.259318,
+    "ast_hash": "35278c4cdcab1766cc2a42dc3c29f8ea",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s3.jpg": {
+    "mtime": 1791988675.6347604,
+    "seen": 1791988747.259319,
+    "ast_hash": "332bf811008796bf0b4f85d8935a7e69",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s4.jpg": {
+    "mtime": 1791988675.6350965,
+    "seen": 1791988747.259319,
+    "ast_hash": "4b67ea25169eaac75c4bc596bc54a01b",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s5.jpg": {
+    "mtime": 1791988675.6356008,
+    "seen": 1791988747.25932,
+    "ast_hash": "0639df0f382755e5f86fcefcbf5d9408",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s6.jpg": {
+    "mtime": 1791988675.636109,
+    "seen": 1791988747.259321,
+    "ast_hash": "44af499e8555d4d53ee60fca60a9f320",
+    "semantic_hash": ""
+  },
+  "reels/public/team/real/s7.jpg": {
+    "mtime": 1791988675.6367857,
+    "seen": 1791988747.259321,
+    "ast_hash": "1487c003f3060ebaed3ef897974fdd2c",
+    "semantic_hash": ""
+  },
+  "reels/public/team/v1/sound.m4a": {
+    "mtime": 1791988675.6443837,
+    "seen": 1791988747.259501,
+    "ast_hash": "09c88aaf465b4dd1ba055f472d0f994d",
     "semantic_hash": ""
   }
 }
