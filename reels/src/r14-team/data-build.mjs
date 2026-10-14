@@ -28,11 +28,24 @@ const icons = Object.fromEntries(REGULAR.map((n) => [n, svgInner('regular', n)])
 const fill = Object.fromEntries(FILL.map((n) => [n, svgInner('fill', n)]));
 const bold = Object.fromEntries(BOLD.map((n) => [n, svgInner('bold', n)]));
 
+// Настоящие логотипы, не по памяти: Claude, надпись Claude и Claude Code — набор @lobehub/icons-static-svg 1.95.1 (MIT),
+// Telegram — simple-icons 13.21.0 (CC0). Файлы лежат в public/team/brand, здесь из них берутся контуры.
+const brandDir = path.join(root, 'public', 'team', 'brand');
+const dOf = (file) => [...fs.readFileSync(path.join(brandDir, file), 'utf8').matchAll(/\sd="([^"]+)"/g)].map((m) => m[1]);
+const brand = {
+  spark: dOf('claude-color.svg')[0],          // знак Claude, viewBox 0 0 24 24
+  text: dOf('claude-text.svg'),               // надпись Claude, viewBox 0 0 97 24
+  code: dOf('claudecode-color.svg')[0],       // Claude Code, viewBox 0 0 24 24, evenodd
+  tg: dOf('telegram.svg')[0],                 // Telegram, viewBox 0 0 24 24
+};
+
 const out = `// Собрано src/r14-team/data-build.mjs, руками не править.
 // Иконки Phosphor (MIT): содержимое <svg viewBox="0 0 256 256" fill="currentColor">.
 export const ICONS = ${JSON.stringify(icons)};
 export const FILL = ${JSON.stringify(fill)};
 export const BOLD = ${JSON.stringify(bold)};
+// Логотипы: контуры из файлов public/team/brand (источник и лицензии — в data-build.mjs).
+export const BRAND = ${JSON.stringify(brand)};
 `;
 fs.mkdirSync(path.join(here, 'shared'), { recursive: true });
 fs.writeFileSync(path.join(here, 'shared', 'data.js'), out);

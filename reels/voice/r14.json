@@ -32,7 +32,8 @@
   ["lib/error.mp3", "check:5", -0.05, 0.3], ["lib/whoosh-short.mp3", "check:7", -0.05, 0.3],
   ["lib/pop.mp3", "path:0", -0.05, 0.35], ["lib/pop.mp3", "path:1", -0.05, 0.35], ["lib/pop.mp3", "path:2", -0.05, 0.35],
   ["lib/pop.mp3", "path:3", -0.05, 0.35], ["lib/pop.mp3", "path:4", -0.05, 0.35],
-  ["mixkit/3005-pops-whoosh.mp3", "pack:5", 0.0, 0.3],
+  ["mixkit/3005-pops-whoosh.mp3", "pack:5", 0.0, 0.3], ["lib/click-soft.mp3", "pack:5", 0.95, 0.45],
+  ["lib/pop.mp3", "slop:3", -0.05, 0.35], ["lib/pop.mp3", "same2:2", -0.05, 0.35], ["lib/whoosh-short.mp3", "cta", -0.15, 0.32],
   ["mixkit/1109-select-click.mp3", "cta:3", 0.1, 0.5], ["mixkit/1109-select-click.mp3", "cta:7", 0.15, 0.5], ["lib/chime.mp3", "cta:7", 0.2, 0.28]
  ],
  "строки": [

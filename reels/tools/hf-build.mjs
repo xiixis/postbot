@@ -42,6 +42,34 @@ fs.cpSync(pub, path.join(out, 'assets'), { recursive: true, filter: (f) => !/hf-
 if (!bare) fs.copyFileSync(sound, path.join(out, 'assets', 'sound.m4a'));
 fs.copyFileSync(path.join(root, 'node_modules', 'gsap', 'dist', 'gsap.min.js'), path.join(out, 'assets', 'gsap.min.js'));
 
+// Объём: если у ролика есть shared/three.js, рядом кладётся Three.js из node_modules (в рендере сети нет), а на
+// страницу — карта импортов и модуль сцены. Сцена рисует кадр по событию hf-seek от HyperFrames, а не по часам;
+// готовность (шрифты для надписей, текстуры) отдаёт через window.__hf.buildReady, рендер её ждёт.
+// Проверено пробой 14.10.2026 (r14): знак Claude выдавлен из SVG, свет и отражения, кадры повторяются.
+const threeFile = path.join(src, 'shared', 'three.js');
+const three = !bare && fs.existsSync(threeFile) ? fs.readFileSync(threeFile, 'utf8') : '';
+const THREE_ADDONS = { SVGLoader: 'loaders/SVGLoader.js', RoomEnvironment: 'environments/RoomEnvironment.js', RoundedBoxGeometry: 'geometries/RoundedBoxGeometry.js' };
+if (three) {
+  fs.copyFileSync(path.join(root, 'node_modules', 'three', 'build', 'three.module.js'), path.join(out, 'assets', 'three.module.js'));
+  for (const rel of Object.values(THREE_ADDONS)) {
+    fs.mkdirSync(path.dirname(path.join(out, 'assets', 'addons', rel)), { recursive: true });
+    fs.copyFileSync(path.join(root, 'node_modules', 'three', 'examples', 'jsm', rel), path.join(out, 'assets', 'addons', rel));
+  }
+}
+const threeHead = three ? `    <script type="importmap">{ "imports": { "three": "./assets/three.module.js", "three/addons/": "./assets/addons/" } }</script>\n` : '';
+const threeBody = three ? `    <script type="module">
+import * as THREE from 'three';
+${Object.entries(THREE_ADDONS).map(([n, rel]) => `import { ${n} } from 'three/addons/${rel}';`).join('\n')}
+// объём: src/${reel}/shared/three.js
+${three.replace(/^export /gm, '')}
+window.__hf = window.__hf || {};
+window.__hf.buildReady = window.__hf.buildReady || {};
+let draw = null;
+window.__hf.buildReady['${reel}-three'] = buildThree(THREE, { ${Object.keys(THREE_ADDONS).join(', ')} }, document.getElementById('gl'), T, 'assets')
+  .then((f) => { draw = f; f(window.__hfThreeTime || 0); });
+window.addEventListener('hf-seek', (e) => { if (draw) draw(e.detail.time); });
+    </script>\n` : '';
+
 const D = T.length.toFixed(2);
 // У <video> время задаётся на самом теге, и HyperFrames запрещает видео внутри размеченного временем
 // предка (lint: video_nested_in_timed_element; кадры берутся не те, клип пропадает посреди окна).
@@ -54,7 +82,7 @@ const html = `<!doctype html>
     <meta name="viewport" content="width=1080, height=1920" />
     <title>${scenario['композиция']}</title>
     <script src="assets/gsap.min.js"></script>
-    <style>
+${threeHead}    <style>
 ${fonts}
 html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0A0B08; }
 #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
@@ -80,7 +108,7 @@ buildScenes(gsap, tl, stage, T);
 ${bare ? '' : "buildOverlay(gsap, tl, document.getElementById('overlay'), T);"}
 window.__timelines["main"] = tl;
     </script>
-  </body>
+${threeBody}  </body>
 </html>
 `;
 fs.writeFileSync(path.join(out, 'index.html'), html);
